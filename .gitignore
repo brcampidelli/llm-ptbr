@@ -1,0 +1,22 @@
+# modelos e checkpoints (pesados — nunca versionar)
+models/
+*.safetensors
+*.gguf
+*.bin
+*.pt
+
+# dados gerados / intermediários
+data/raw/
+data/processed/
+*.jsonl
+eval/results/
+
+# ambiente
+.venv/
+__pycache__/
+*.pyc
+.env
+
+# harness clonado
+lm-evaluation-harness/
+artigos para estudos/

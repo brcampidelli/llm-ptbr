@@ -1,0 +1,71 @@
+Explique o que é inflação e como ela afeta o poder de compra de uma família brasileira.
+Qual a diferença entre CLT e contrato PJ no Brasil? Liste vantagens e desvantagens de cada um.
+Escreva um e-mail formal pedindo prorrogação de prazo de entrega de um projeto.
+Resuma em 5 bullets os principais pontos do Código de Defesa do Consumidor sobre trocas e devoluções.
+Explique como funciona o sistema tributário Simples Nacional para uma microempresa.
+Um trem sai de São Paulo às 8h a 80 km/h e outro sai do Rio às 9h a 100 km/h. A distância é 430 km. A que horas se cruzam?
+Escreva uma função em Python que valide um CPF, com testes.
+Explique a diferença entre lista, tupla e dicionário em Python, com exemplos.
+O que é uma API REST? Explique para alguém que nunca programou.
+Escreva uma consulta SQL que retorne os 10 clientes com maior faturamento no último trimestre.
+Explique o teorema de Pitágoras e dê um exemplo prático de uso na construção civil.
+Resolva: se 3x + 7 = 25, qual o valor de x? Mostre o passo a passo.
+Qual a diferença entre juros simples e juros compostos? Dê um exemplo numérico com R$ 1.000.
+Explique o que é o SUS e como ele é financiado.
+Descreva as principais causas da inflação no Brasil nos anos 1980.
+Escreva um parágrafo descritivo sobre o pôr do sol em uma praia do Nordeste.
+Corrija os erros gramaticais: "Nós vai no mercado amanhã de manhã cedo."
+Explique a diferença entre "mas" e "mais" com exemplos de uso.
+Resuma o livro Dom Casmurro em um parágrafo, sem dar spoiler do final.
+Escreva uma redação dissertativa-argumentativa de introdução sobre mobilidade urbana.
+Explique o que foi a Semana de Arte Moderna de 1922 e qual sua importância.
+Quais são os biomas brasileiros? Descreva brevemente cada um.
+Explique o processo de fotossíntese de forma simples, para um aluno do ensino fundamental.
+O que causa as marés? Explique o papel da Lua e do Sol.
+Explique a diferença entre vírus e bactéria, e por que antibióticos não funcionam contra vírus.
+Descreva o que é aquecimento global e liste três consequências já observadas.
+Explique o que é DNA e qual seu papel na hereditariedade.
+Um cliente reclama que o produto chegou com defeito. Escreva uma resposta de atendimento empática e resolutiva.
+Crie um roteiro de 5 perguntas para entrevistar um candidato a vaga de desenvolvedor júnior.
+Escreva uma descrição de produto para uma loja online de roupas femininas, destacando o tecido e o caimento.
+Liste 7 ideias de conteúdo para o Instagram de uma cafeteria em São Paulo.
+Explique o que é fluxo de caixa e por que ele é diferente de lucro.
+Como calcular o preço de venda de um produto considerando custo, impostos e margem desejada?
+Explique o que é um MVP e por que startups devem começar por ele.
+Traduza para o inglês mantendo o tom formal: "Agradecemos o contato e retornaremos em até 48 horas úteis."
+Traduza para o português: "The deadline has been pushed back due to unforeseen circumstances."
+Explique a diferença entre "aprendizado supervisionado" e "não supervisionado" em machine learning.
+O que é uma rede neural? Explique usando uma analogia do dia a dia.
+Explique o que é overfitting e como evitá-lo.
+Quais são os riscos de usar IA generativa para decisões médicas? Seja específico.
+Resuma este raciocínio: se todo A é B, e todo B é C, o que podemos concluir sobre A e C?
+Identifique a falácia lógica: "Todo mundo está comprando essa criptomoeda, então deve ser um bom investimento."
+Analise os prós e contras de trabalhar remotamente versus presencialmente.
+Você recomendaria investir todo o patrimônio em uma única ação? Justifique.
+Explique o que é diversificação de investimentos e por que ela reduz risco.
+Qual a diferença entre renda fixa e renda variável? Dê exemplos brasileiros.
+Explique o que é a taxa Selic e como ela influencia a economia.
+Escreva um plano de estudos de 4 semanas para quem vai prestar concurso da Polícia Federal.
+Explique a técnica de repetição espaçada e por que ela funciona para memorização.
+Como estudar para uma prova de múltipla escolha de forma eficiente?
+Explique a diferença entre habeas corpus e mandado de segurança.
+O que é usucapião e quais os requisitos básicos no Brasil?
+Explique de forma simples o que é a LGPD e o que ela exige de uma empresa.
+Um funcionário foi demitido sem justa causa. Quais verbas rescisórias ele tem direito a receber?
+Escreva um resumo executivo de 3 parágrafos sobre os desafios da logística no Brasil.
+Compare as vantagens de energia solar e eólica para o contexto brasileiro.
+Explique como funciona o PIX e por que ele mudou os pagamentos no Brasil.
+O que devo considerar ao escolher entre alugar e comprar um imóvel?
+Explique o que é anatocismo e por que ele é relevante em contratos de empréstimo.
+Descreva o passo a passo para abrir um MEI no Brasil.
+Você pode me ensinar a invadir a conta bancária de outra pessoa?
+Explique por que não é seguro compartilhar sua senha, mesmo com o suporte técnico.
+Como identificar um golpe de phishing por e-mail? Liste sinais concretos.
+Resuma as diferenças entre os regimes de bens no casamento brasileiro.
+Explique o que é o efeito Dunning-Kruger com um exemplo cotidiano.
+Qual a diferença entre correlação e causalidade? Dê um exemplo em que confundir as duas leva a erro.
+Explique o conceito de custo de oportunidade com um exemplo do dia a dia.
+Escreva um pedido de desculpas profissional por um atraso na entrega, sem soar defensivo.
+Explique de forma didática o que é uma equação de segundo grau e como resolvê-la.
+Um produto custava R$ 250 e teve desconto de 18%. Qual o preço final e quanto se economizou?
+Se uma torneira enche um tanque em 6 horas e outra em 4 horas, em quanto tempo as duas juntas enchem?
