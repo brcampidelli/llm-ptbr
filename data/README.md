@@ -52,6 +52,26 @@ seeds_ptbr.txt ─┐
 datasets EN ────┘      (01,02)        (03)             (04)                   (05)
 ```
 
+## Modo CoT (destilação com raciocínio) — upgrade nº1
+
+`01_distill_teacher.py --cot` liga o **canal de reasoning nativo** do OpenRouter: o professor
+raciocina antes de responder, e guardamos `reasoning` (raciocínio) + `response` (resposta limpa)
+separados. `05_build_splits.py --cot` embute o raciocínio como `<think>…</think>` no alvo de treino.
+
+```powershell
+# destilar COM raciocínio (use um --tag distinto do run sem-CoT!)
+python data/01_distill_teacher.py --seeds data/seeds_ptbr_expanded.txt --teacher deepseek/deepseek-v4-flash --tag deepseek-cot --cot --workers 20
+# ...03, 04 iguais...
+python data/05_build_splits.py --cot --holdout 300   # inclui o raciocínio no alvo
+```
+
+**Validado (2026-07-24):** o canal nativo dá separação limpa (resposta sem duplicar o raciocínio).
+⚠️ **Caveat honesto:** o *idioma* do raciocínio é misto — DeepSeek raciocina em inglês em algumas
+tarefas (ex.: tradução) e em PT nas outras. As respostas ficam sempre limpas/corretas; só o
+raciocínio varia. Decisão em aberto: treinar no raciocínio como está (misto), ou filtrar só o
+raciocínio PT-BR no `05` (via `pt_ratio`), ou treinar só na resposta (professor raciocina →
+resposta melhor, mais seguro).
+
 ## O que observar
 - **`03` com `--report-only`** mostra quanto cada filtro está cortando. Se estiver cortando demais,
   calibrar os limiares em `config.py` (não relaxar o de portuguesidade sem olhar amostras).
