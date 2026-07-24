@@ -46,6 +46,33 @@ Uso no Colab (3 células curtas, nesta ordem):
 - Auto-fechamento de parênteses, cache de sessão, edição multi-linha: custou muito
   tempo. **Doravante: clonar o repo e rodar `!python train/...`**, não digitar código.
 
+### 5. Dependências: instalar TUDO junto (o pip resolve versões consistentes)
+- Whack-a-mole confirmado: instalar `trl` sozinho DEGRADOU o bitsandbytes → voltou o
+  erro `requires bitsandbytes>=0.46.1`. Instalações incrementais brigam entre si.
+- **Colab NÃO traz `trl`** por padrão (traz transformers 5.13/peft/accelerate/datasets).
+- **causal-conv1d NÃO compila no Colab** (`Building wheel ... exit code 1`) — sem
+  toolchain CUDA compatível com torch. Precisaria de wheel pré-compilado (release do
+  GitHub) casando torch+cuda+python. Ficou como trabalho futuro; NÃO bloqueia treinar
+  (o gated delta rule cai no fallback torch; na L4 22GB o TREINO real — com gradient
+  checkpointing + batch 1 — cabe, ao contrário do meu benchmark sintético que dava OOM
+  por rodar forward/backward sem as otimizações do Trainer).
+
+## RECEITA DE 3 CÉLULAS (validada 2026-07-24) — usar esta
+
+    # Célula 1 — clonar o pipeline (repo agora PUBLICO)
+    !git clone -q https://github.com/brcampidelli/llm-ptbr.git
+
+    # Célula 2 — instalar TUDO junto (pip resolve versoes). causal-conv1d omitido de proposito.
+    !pip install -q -U bitsandbytes trl flash-linear-attention
+
+    # Célula 3 — treinar via subprocesso (importa deps frescas do disco; sem restart)
+    !cd llm-ptbr && python train/sft_qlora.py \
+        --data data/processed/sft_ptbr.jsonl --epochs 1 --out /content/qwen35-4b-ptbr-sft
+
+## Salvar o adapter fora do runtime efêmero
+    from google.colab import drive; drive.mount('/content/drive')
+    !cp -r /content/qwen35-4b-ptbr-sft /content/drive/MyDrive/
+
 ## Repo privado — autenticação do clone
 O repo llm-ptbr é privado. Duas opções para o clone no Colab:
   (a) Secret do Colab: adicionar GH_TOKEN em Secrets (icone de chave) e usar
