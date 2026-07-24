@@ -72,6 +72,25 @@ raciocínio varia. Decisão em aberto: treinar no raciocínio como está (misto)
 raciocínio PT-BR no `05` (via `pt_ratio`), ou treinar só na resposta (professor raciocina →
 resposta melhor, mais seguro).
 
+## Fase 4 (dados) — Preferências para DPO: `06_build_preferences.py`
+
+Gera pares `{prompt, chosen, rejected}` para o `train/dpo_qlora.py`. **chosen** = professor
+forte; **rejected** = modelo fraco (`weak`), o próprio aluno pós-SFT (`student` = error
+bootstrapping), ou resposta degradada (`degraded`). Um **juiz aberto valida cada par**: mantém,
+inverte se o rejected for na verdade melhor, ou descarta empates (DPO não pode ver ruído).
+
+```powershell
+# modo weak (roda agora, sem GPU): chosen=deepseek-v4-pro, rejected=mistral-nemo, juiz=qwen3.5-9b
+python data/06_build_preferences.py --seeds data/seeds_ptbr_expanded.txt --workers 20
+# error bootstrapping (depois do SFT): rejected = respostas do proprio aluno
+python data/06_build_preferences.py --seeds ... --rejected-mode student --student-file data/raw/student.jsonl
+```
+
+**Validado (2026-07-24):** juiz `qwen3.5-9b` raciocina — precisa de `max_tokens` folgado (512) e
+veredito delimitado (`VEREDITO=X`), senão letras soltas do raciocínio (o 'E' de "processo") viram
+falso empate. Custo: ~3-4 chamadas/par. Rendimento no teste: 2 pares válidos + 1 invertido de 3
+(empates descartados, como deve ser).
+
 ## O que observar
 - **`03` com `--report-only`** mostra quanto cada filtro está cortando. Se estiver cortando demais,
   calibrar os limiares em `config.py` (não relaxar o de portuguesidade sem olhar amostras).
