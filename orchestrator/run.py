@@ -79,6 +79,10 @@ def main() -> int:
                     help="so decide a rota e mede fast-path — NAO carrega modelo (sem GPU)")
     ap.add_argument("--no-4bit", action="store_true")
     ap.add_argument("--max-new", type=int, default=512)
+    ap.add_argument("--thinking", action="store_true",
+                    help="deixa o modelo raciocinar (<think>) antes de responder. "
+                         "Padrao: DESLIGADO — na comeia raciocinio gasta os tokens do "
+                         "fast-path (achado do teste na L4)")
     args = ap.parse_args()
 
     reg = load_registry(args.registry)
@@ -117,7 +121,9 @@ def main() -> int:
     # ---- modo real: carrega a comeia e gera ---------------------------------
     from hive import Hive
 
-    hive = Hive(reg, four_bit=not args.no_4bit, max_new_tokens=args.max_new)
+    hive = Hive(reg, four_bit=not args.no_4bit, max_new_tokens=args.max_new,
+                thinking=args.thinking)
+    print(f"raciocinio (<think>): {'LIGADO' if args.thinking else 'desligado'}")
     hive.load()
 
     latencies: list[float] = []

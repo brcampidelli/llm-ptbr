@@ -36,6 +36,33 @@ def write_jsonl(path: Path, rows: Iterable[dict]) -> int:
     return n
 
 
+# --- Raciocínio (<think>) -----------------------------------------------------
+
+# Bloco fechado: <think>...</think> — o que sobra depois é a resposta.
+_THINK_CLOSED = re.compile(r"<think>.*?</think>", re.DOTALL | re.IGNORECASE)
+# Bloco ABERTO e nunca fechado: acontece quando max_new_tokens corta no meio do
+# raciocínio. Aí NÃO existe resposta — o texto inteiro é raciocínio.
+_THINK_OPEN = re.compile(r"<think>.*$", re.DOTALL | re.IGNORECASE)
+# Alguns modelos emitem só o fechamento (o <think> vem no template do chat).
+_THINK_CLOSE_ONLY = re.compile(r"^.*?</think>", re.DOTALL | re.IGNORECASE)
+
+
+def strip_think(text: str) -> tuple[str, bool]:
+    """Remove o raciocínio e devolve (resposta, truncado).
+
+    `truncado=True` significa que o modelo foi cortado ANTES de fechar o
+    raciocínio — não há resposta final, só raciocínio. Quem chama decide o que
+    fazer (avisar, reduzir prompt, ou aumentar max_new_tokens).
+    """
+    out = _THINK_CLOSED.sub("", text)
+    if "</think>" in out.lower():          # fechamento órfão (abertura no template)
+        out = _THINK_CLOSE_ONLY.sub("", out, count=1)
+    if "<think>" in out.lower():           # abertura sem fechamento -> truncado
+        out = _THINK_OPEN.sub("", out)
+        return out.strip(), True
+    return out.strip(), False
+
+
 # --- Normalização e n-gramas --------------------------------------------------
 
 _WS = re.compile(r"\s+")

@@ -25,13 +25,21 @@ from pathlib import Path
 
 from registry import Bee, Registry
 
+# Reusa a limpeza de <think> do pipeline de dados (mesmo problema, um só lugar).
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "data"))
+from common import strip_think  # noqa: E402
+
 
 class Hive:
     def __init__(self, registry: Registry, four_bit: bool = True,
-                 max_new_tokens: int = 512) -> None:
+                 max_new_tokens: int = 512, thinking: bool = False) -> None:
         self.reg = registry
         self.four_bit = four_bit
         self.max_new_tokens = max_new_tokens
+        # O Qwen3.5 raciocina (<think>) por padrao e gasta os tokens de saida
+        # pensando — na comeia isso e desperdicio (o fast-path quer resposta
+        # curta e barata). Desligamos na origem; a limpeza fica como rede.
+        self.thinking = thinking
         self.model = None
         self.tokenizer = None
         self._is_peft = False
@@ -112,9 +120,17 @@ class Hive:
         # nao um tensor puro. Passar isso direto para generate() quebra em
         # `inputs_tensor.shape[0]`. Pedimos return_dict e expandimos com **inputs
         # (leva o attention_mask de brinde). Tolera as duas formas de retorno.
-        enc = self.tokenizer.apply_chat_template(
-            msgs, add_generation_prompt=True, return_tensors="pt", return_dict=True
-        )
+        tpl_kwargs: dict = {"add_generation_prompt": True, "return_tensors": "pt",
+                            "return_dict": True}
+        if not self.thinking:
+            # convencao da familia Qwen3; templates que nao conhecem o kwarg
+            # levantam TypeError -> caimos no caminho sem ele (a limpeza resolve).
+            tpl_kwargs["enable_thinking"] = False
+        try:
+            enc = self.tokenizer.apply_chat_template(msgs, **tpl_kwargs)
+        except TypeError:
+            tpl_kwargs.pop("enable_thinking", None)
+            enc = self.tokenizer.apply_chat_template(msgs, **tpl_kwargs)
         device = "cuda" if torch.cuda.is_available() else "cpu"
         if hasattr(enc, "input_ids") or isinstance(enc, dict):
             inputs = {k: v.to(device) for k, v in dict(enc).items()
@@ -140,5 +156,15 @@ class Hive:
                 do_sample=False, pad_token_id=self.tokenizer.eos_token_id,
             )
         dt = time.time() - t0
-        text = self.tokenizer.decode(out[0][prompt_len:], skip_special_tokens=True).strip()
+        raw = self.tokenizer.decode(out[0][prompt_len:], skip_special_tokens=True).strip()
+        # Rede de seguranca: mesmo com enable_thinking=False alguns checkpoints
+        # (incl. adapters treinados com <think> no alvo) ainda raciocinam.
+        text, truncated = strip_think(raw)
+        if truncated or not text:
+            # cortou no meio do raciocinio: nao ha resposta final. Ser honesto em
+            # vez de devolver raciocinio como se fosse resposta.
+            text = (text or "").strip() or (
+                f"[sem resposta final: o modelo gastou os {max_new_tokens or self.max_new_tokens} "
+                "tokens raciocinando. Aumente --max-new ou use --thinking off]"
+            )
         return text, dt
