@@ -84,28 +84,11 @@ amostra incompleta ou de réguas diferentes — (1) o `--limit 60` que pegava s�
 fica: não concluir padrão antes da amostra fechar, e nunca comparar números medidos em condições
 diferentes.**
 
-O gate barrou a 1ª tentativa (base em 93,3%). Construímos então o filtro **"o base erra"** — só entra
-no dataset a tarefa cuja solução do professor **passa** E o base **falha**. Resultado: 877 candidatas
-→ **239 tarefas difíceis (27,3%)**. Treino: 216 exemplos, 2 épocas, 17 min na L4.
-
-| Conjunto | Base | **Adapter** | Delta |
-|---|---|---|---|
-| **DIFÍCEIS (60)** | 5,0% (3/60) | **50,0%** (30/60) | **+45 pp** |
-| **FÁCEIS (40)** — não-regressão | ~100% | **90,0%** (36/40) | **−10 pp** ⚠️ |
-
-**O maior ganho absoluto do projeto** — e não por acaso: foi a única abelha cujo dataset teve
-dificuldade **medida**, não presumida. De 3 para 30 tarefas resolvidas nas mesmas tarefas que o base
-errava.
-
-⚠️ **Houve dano colateral, e isso precisa ser dito:** o adapter quebrou ~4 tarefas fáceis que o base
-acertava. Foi exatamente para detectar isso que guardamos o `coder_tasks_easy.jsonl` — sem esse teste,
-reportaríamos "+45 pp" escondendo o preço. **Mitigações**: 1 época em vez de 2 (a loss caiu 0,27→0,17
-na 2ª, provável fonte da regressão); misturar ~30% de fáceis no treino para ancorar; ou LoRA r 16→8.
-
-📐 **Nota metodológica:** o base nas difíceis deu **5%**, não 0% como esperávamos "por construção".
-Causa: o filtro gera em **lote** (batch 8, padding à esquerda) e o eval gera **uma por vez** —
-diferenças de ponto flutuante em batching viram acerto/erro em casos de borda. Por isso medimos o
-base novamente em vez de assumir 0%: sem isso, atribuiríamos ao adapter 5 pontos que não são dele.
+**Como o dataset foi construído:** o gate barrou a 1ª tentativa (base em 93,3%). Construímos então o
+filtro **"o base erra"** — só entra a tarefa cuja solução do professor **passa** E o base **falha**.
+Resultado: 877 candidatas → **239 tarefas difíceis (27,3%)**. Treino: 216 exemplos, 17 min na L4.
+O `coder_tasks_easy.jsonl` (as 638 descartadas por fáceis) virou o **holdout de não-regressão** — sem
+ele, reportaríamos o ganho escondendo o preço.
 
 ⚠️ O adapter ficou em `/content` (efêmero, morre com o runtime do Colab). **O treino é reproduzível
 em ~17 min** a partir do que está versionado: `08_gen_coder_tasks` → `09_filter_hard_tasks` →
