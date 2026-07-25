@@ -51,6 +51,41 @@ Medida em toda rota pelo `Router` e reportada ao fim de cada execução.
 
 ## 📊 Resultados medidos
 
+### 🛡️ Verificador determinístico — over-calling cortado pela metade SEM treinar (2026-07-25)
+
+Padrão do **interwhen** (arXiv 2602.11202): verificação de processo no laço, em código.
+Mesmo holdout, mesmo adapter, mesma amostra — a única variável é o verificador ligado:
+
+| Métrica | Sem verificador | **Com verificador** | Delta |
+|---|---|---|---|
+| **Over-calling** (o alvo) | 16,0% | **8,0%** | **−50%** |
+| Under-calling | 11,4% | **5,7%** | **−50%** |
+| JSON válido | 88,6% | **91,4%** | +2,8 pp |
+| Ferramenta certa | 88,6% | **91,4%** | +2,8 pp |
+| **Score composto** | 87,4% | **91,6%** | **+4,2 pp** |
+| Latência (comeia ponta-a-ponta) | 10,2s | 10,5s | **+3%** ← o custo |
+
+`7 violações detectadas, 5 corrigidas no retry (71%)`
+
+**O que surpreendeu:** esperávamos um trade-off (menos over-calling **às custas** de mais
+under-calling). Não houve — **os dois caíram 50%**. Porque o verificador não enviesa numa direção:
+checa **as duas** direções da decisão (JSON indevido → corrige para texto; texto indevido → corrige
+para JSON).
+
+**Precisão medida ANTES de ligar** (`orchestrator/test_verifier.py`, 150 exemplos rotulados, sem GPU):
+**100% ao dizer "não precisa de ferramenta"**, **0 falsos positivos perigosos**, 44,7% dos casos
+deixados como `unknown` (não interfere). Esse gate importa: um falso positivo aí *bloquearia uma
+chamada legítima e pioraria o sistema*.
+
+**Bônus observado no log:** a abelha inventou uma ferramenta inexistente (`search`); o verificador
+pegou a alucinação e devolveu a lista válida do catálogo. Sem ele, a chamada iria para execução e
+falharia silenciosamente.
+
+**O caso que resiste:** `write_file` da letra de uma música — a abelha chama a ferramenta certa, mas
+o `--max-new 200` corta o JSON no meio. O verificador detecta (`json_truncado`) e pede JSON curto,
+mas a letra não cabe. **É limite nosso de tokens, não erro do modelo** — e agora aparece contabilizado
+à parte (2,9%) em vez de somado injustamente ao under-calling.
+
 ### 🎯 Fase 1 — a abelha AGÊNTICA funcionou (2026-07-25) ✅ **primeiro ganho real do projeto**
 
 Adapter treinado em 1.495 exemplos de tool-use (2 épocas, 2h56 na L4), avaliado no holdout
@@ -201,8 +236,10 @@ que o Bruno já tinha). O dataset **não é o gargalo financeiro** — com US$10
 - [x] **Hipótese generalista testada e refutada** com poder estatístico
 - [x] **Comeia rodando**: backbone 1×, hot-swap, roteamento correto, fast-path 80%
 - [x] **Abelha agêntica bate o base NA TAREFA DELA** ✅ **+28,5 pp** (score 58,9% → 87,4%)
-- [ ] **Reduzir o over-calling** (4% → 16%): rubrica com "Tool Appropriateness" (ATLAS) na função de
-      perda, e/ou verificador de modo em runtime (interwhen) — ver `docs/estudo-11-papers-2026-07-24.md`
+- [x] **Reduzir o over-calling** ✅ **16% → 8%** com verificador determinístico, **sem treinar**
+      (score 87,4% → 91,6%; custo: +3% de latência)
+- [ ] **Atacar o over-calling residual (8%)** na função de perda: rubrica com "Tool Appropriateness"
+      (ATLAS) + rejection-sampling SFT/DPO (Collab-RAG) — ver `docs/estudo-11-papers-2026-07-24.md`
 - [ ] **Avaliação de geração com juiz** para a `chat_ptbr` (múltipla escolha não mede o que SFT muda)
 - [ ] **Fast-path alto o bastante** para a comeia ser mais barata que chamar o forte sempre
 - [ ] **Roda local**: GGUF quantizado no RTX 5070 8 GB
