@@ -1,0 +1,48 @@
+{"bee": "coder", "lang": "pt", "expect": "code", "prompt": "Escreva uma função Python que remova duplicatas de uma lista mantendo a ordem original. Explique em uma frase o que ela faz."}
+{"bee": "coder", "lang": "pt", "expect": "code", "prompt": "Escreva uma função Python que verifique se uma string é um palíndromo, ignorando espaços e pontuação. Explique em uma frase o que ela faz."}
+{"bee": "coder", "lang": "pt", "expect": "code", "prompt": "Escreva uma função Python que conte a frequência de cada palavra em um texto. Explique em uma frase o que ela faz."}
+{"bee": "coder", "lang": "pt", "expect": "code", "prompt": "Escreva uma função Python que converta um número de segundos no formato HH:MM:SS. Explique em uma frase o que ela faz."}
+{"bee": "coder", "lang": "pt", "expect": "code", "prompt": "Escreva uma função Python que junte dois dicionários somando os valores das chaves em comum. Explique em uma frase o que ela faz."}
+{"bee": "coder", "lang": "pt", "expect": "code", "prompt": "Escreva uma função Python que retorne os N maiores elementos de uma lista. Explique em uma frase o que ela faz."}
+{"bee": "coder", "lang": "en", "expect": "code", "prompt": "Write a Python function that removes duplicates from a list while keeping the original order. Explain in one sentence what it does."}
+{"bee": "coder", "lang": "en", "expect": "code", "prompt": "Write a Python function that checks whether a string is a palindrome, ignoring spaces and punctuation. Explain in one sentence what it does."}
+{"bee": "coder", "lang": "en", "expect": "code", "prompt": "Write a Python function that counts the frequency of each word in a text. Explain in one sentence what it does."}
+{"bee": "coder", "lang": "en", "expect": "code", "prompt": "Write a Python function that converts a number of seconds into the HH:MM:SS format. Explain in one sentence what it does."}
+{"bee": "coder", "lang": "en", "expect": "code", "prompt": "Write a Python function that merges two dictionaries, summing the values of shared keys. Explain in one sentence what it does."}
+{"bee": "coder", "lang": "en", "expect": "code", "prompt": "Write a Python function that returns the N largest elements of a list. Explain in one sentence what it does."}
+{"bee": "coder", "lang": "es", "expect": "code", "prompt": "Escribe una función de Python que elimine duplicados de una lista manteniendo el orden original. Explica en una frase qué hace."}
+{"bee": "coder", "lang": "es", "expect": "code", "prompt": "Escribe una función de Python que compruebe si una cadena es un palíndromo, ignorando espacios y puntuación. Explica en una frase qué hace."}
+{"bee": "coder", "lang": "es", "expect": "code", "prompt": "Escribe una función de Python que cuente la frecuencia de cada palabra en un texto. Explica en una frase qué hace."}
+{"bee": "coder", "lang": "es", "expect": "code", "prompt": "Escribe una función de Python que convierta un número de segundos al formato HH:MM:SS. Explica en una frase qué hace."}
+{"bee": "coder", "lang": "es", "expect": "code", "prompt": "Escribe una función de Python que combine dos diccionarios sumando los valores de las claves comunes. Explica en una frase qué hace."}
+{"bee": "coder", "lang": "es", "expect": "code", "prompt": "Escribe una función de Python que devuelva los N elementos más grandes de una lista. Explica en una frase qué hace."}
+{"bee": "coder", "lang": "fr", "expect": "code", "prompt": "Écris une fonction Python qui supprime les doublons d'une liste en conservant l'ordre initial. Explique en une phrase ce qu'elle fait."}
+{"bee": "coder", "lang": "fr", "expect": "code", "prompt": "Écris une fonction Python qui vérifie si une chaîne est un palindrome, en ignorant les espaces et la ponctuation. Explique en une phrase ce qu'elle fait."}
+{"bee": "coder", "lang": "fr", "expect": "code", "prompt": "Écris une fonction Python qui compte la fréquence de chaque mot dans un texte. Explique en une phrase ce qu'elle fait."}
+{"bee": "coder", "lang": "fr", "expect": "code", "prompt": "Écris une fonction Python qui convertit un nombre de secondes au format HH:MM:SS. Explique en une phrase ce qu'elle fait."}
+{"bee": "coder", "lang": "fr", "expect": "code", "prompt": "Écris une fonction Python qui fusionne deux dictionnaires en additionnant les valeurs des clés communes. Explique en une phrase ce qu'elle fait."}
+{"bee": "coder", "lang": "fr", "expect": "code", "prompt": "Écris une fonction Python qui renvoie les N plus grands éléments d'une liste. Explique en une phrase ce qu'elle fait."}
+{"bee": "agentica", "lang": "pt", "expect": "tool", "prompt": "Qual é a temperatura agora em Lisboa?"}
+{"bee": "agentica", "lang": "pt", "expect": "tool", "prompt": "Me diga o preço atual da ação da Apple."}
+{"bee": "agentica", "lang": "pt", "expect": "tool", "prompt": "Quanto é 48239 multiplicado por 1177?"}
+{"bee": "agentica", "lang": "pt", "expect": "text", "prompt": "O que significa a sigla API? Responda em duas ou três frases."}
+{"bee": "agentica", "lang": "pt", "expect": "text", "prompt": "Me dê dois conselhos para dormir melhor. Explique brevemente cada um."}
+{"bee": "agentica", "lang": "pt", "expect": "text", "prompt": "Explique em duas ou três frases a diferença entre uma lista e uma tupla."}
+{"bee": "agentica", "lang": "en", "expect": "tool", "prompt": "What is the temperature in Lisbon right now?"}
+{"bee": "agentica", "lang": "en", "expect": "tool", "prompt": "Tell me the current stock price of Apple."}
+{"bee": "agentica", "lang": "en", "expect": "tool", "prompt": "What is 48239 multiplied by 1177?"}
+{"bee": "agentica", "lang": "en", "expect": "text", "prompt": "What does the acronym API stand for? Answer in two or three sentences."}
+{"bee": "agentica", "lang": "en", "expect": "text", "prompt": "Give me two pieces of advice for sleeping better. Briefly explain each one."}
+{"bee": "agentica", "lang": "en", "expect": "text", "prompt": "Explain in two or three sentences the difference between a list and a tuple."}
+{"bee": "agentica", "lang": "es", "expect": "tool", "prompt": "¿Cuál es la temperatura en Lisboa ahora mismo?"}
+{"bee": "agentica", "lang": "es", "expect": "tool", "prompt": "Dime el precio actual de las acciones de Apple."}
+{"bee": "agentica", "lang": "es", "expect": "tool", "prompt": "¿Cuánto es 48239 multiplicado por 1177?"}
+{"bee": "agentica", "lang": "es", "expect": "text", "prompt": "¿Qué significa la sigla API? Responde en dos o tres frases."}
+{"bee": "agentica", "lang": "es", "expect": "text", "prompt": "Dame dos consejos para dormir mejor. Explica brevemente cada uno."}
+{"bee": "agentica", "lang": "es", "expect": "text", "prompt": "Explica en dos o tres frases la diferencia entre una lista y una tupla."}
+{"bee": "agentica", "lang": "fr", "expect": "tool", "prompt": "Quelle est la température à Lisbonne en ce moment ?"}
+{"bee": "agentica", "lang": "fr", "expect": "tool", "prompt": "Donne-moi le cours actuel de l'action Apple."}
+{"bee": "agentica", "lang": "fr", "expect": "tool", "prompt": "Combien font 48239 multiplié par 1177 ?"}
+{"bee": "agentica", "lang": "fr", "expect": "text", "prompt": "Que signifie le sigle API ? Réponds en deux ou trois phrases."}
+{"bee": "agentica", "lang": "fr", "expect": "text", "prompt": "Donne-moi deux conseils pour mieux dormir. Explique brièvement chacun."}
+{"bee": "agentica", "lang": "fr", "expect": "text", "prompt": "Explique en deux ou trois phrases la différence entre une liste et un tuple."}
