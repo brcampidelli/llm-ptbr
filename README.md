@@ -51,6 +51,43 @@ Medida em toda rota pelo `Router` e reportada ao fim de cada execução.
 
 ## 📊 Resultados medidos
 
+### 🛑 Fase 2 — abelha CODER: treino CANCELADO pelo gate (2026-07-25)
+
+**Resultado negativo, documentado de propósito** — evitou repetir o erro mais caro do projeto.
+
+Medimos o **base ANTES de treinar** (`eval/eval_coder.py`, pass@1 por execução, 60 tarefas):
+
+```
+⭐ pass@1 (execução): 56/60 = 93,3%
+devolveu código     : 60/60 = 100,0%
+falhas              : assert falhou 4 (7%) — errou a lógica, nada deixou de compilar
+```
+
+| Abelha | score/pass@1 do **base** | Espaço | Desfecho |
+|---|---|---|---|
+| SFT generalista PT-BR | 0,93 (belebele) | nenhum | 3h de GPU → **0 de 7** ganhos |
+| `agentica` | **45,7%** | enorme | **+28,5 pp** ✅ |
+| `coder` | **93,3%** | ~nenhum | **treino cancelado** 🛑 |
+
+**Diagnóstico honesto (o erro foi de desenho, não de pipeline):** pedimos ao professor "exercícios
+de função Python" e ele gerou **exercícios de livro-texto** (dois ponteiros, Levenshtein, contagem de
+frequência, validação de CPF) — tarefas que aparecem milhares de vezes no pré-treino do Qwen. A
+validação por execução garantiu que as tarefas eram **corretas**; presumimos que correto implicava
+**difícil**. São eixos independentes. Pista que existia e não foi lida na hora: **189 duplicatas** na
+geração — o professor convergindo indicava saturação do espaço de tarefas óbvias.
+
+**O que as 4 falhas ensinam (a informação mais útil):** `remover_acentos`, `camel_to_snake`,
+`bytes_to_readable`, `teto_sem_math` — todas por `assert falhou`. O 4B escreve código que **roda**,
+mas erra **casos de borda** e **detalhes de especificação** (implementar `ceil` sem `math`,
+arredondamento de unidades). É esse o dataset que faltava.
+
+**Regra que fica no projeto:** dificuldade tem que ser **medida, não presumida**. Gerar candidatas e
+manter só as que **o base erra** — é a regra do Collab-RAG (descartar itens em que todas as amostras
+têm a mesma recompensa, porque não ensinam nada), virando currículo automático.
+
+**O gate se pagou:** descobrimos "sem espaço" em **12 min de avaliação e ~US$0,40**, contra **3h de
+L4** no caso do SFT PT-BR.
+
 ### 🛡️ Verificador determinístico — over-calling cortado pela metade SEM treinar (2026-07-25)
 
 Padrão do **interwhen** (arXiv 2602.11202): verificação de processo no laço, em código.
@@ -160,7 +197,7 @@ concluir. Por isso repetimos com 3× mais dados e n=300.)*
 |---|---|---|
 | `chat_ptbr` | chat/generalista PT-BR | ✅ **adapter real** (SFT-v2, 5.657 ex) |
 | `agentica` | tool-use / seguir instrução | ✅ **adapter real e VALIDADO** (1.495 ex, +28,5 pp vs base) |
-| `coder` | código em escopo limitado | ⏳ Fase 2 (gatilhos já ativos) |
+| `coder` | código em escopo limitado | 🛑 **treino cancelado pelo gate** (base já em 93,3% pass@1) |
 | `base_forte` | fallback do raciocínio difícil | ✅ backbone base (futuro: 7–11B/nuvem) |
 | multimodal | imagem/áudio | ⏳ Fase 4 — modelo **separado ~9B** (Qwen3.5-VL) |
 
