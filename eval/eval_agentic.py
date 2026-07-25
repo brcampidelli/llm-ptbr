@@ -87,6 +87,11 @@ def main() -> int:
     ap.add_argument("--max-new", type=int, default=200)
     ap.add_argument("--no-4bit", action="store_true")
     ap.add_argument("--tag", default=None)
+    ap.add_argument("--verify", action="store_true",
+                    help="liga o verificador deterministico no laco (orchestrator/"
+                         "verifier.py): em violacao, injeta feedback e regenera. "
+                         "Mede o efeito REAL do verificador no over-calling.")
+    ap.add_argument("--max-retries", type=int, default=1)
     args = ap.parse_args()
 
     rows = [r for r in read_jsonl(args.data) if get_messages(r)]
@@ -120,14 +125,21 @@ def main() -> int:
         model = PeftModel.from_pretrained(model, args.peft)
     model.eval()
 
+    # verificador opcional no laco (mesmo componente do orchestrator/run.py)
+    vf = None
+    if args.verify:
+        sys.path.insert(0, str(ROOT / "orchestrator"))
+        import verifier as vf  # noqa: F811
+        print("verificador: LIGADO (feedback corretivo + retry)\n")
+
     # contadores
     n_tool = n_text = 0
     json_ok = tool_right = 0
     over_call = under_call = truncated = 0
+    n_viol = n_fixed = 0
     falhas: list[tuple[str, str, str]] = []
 
-    for i, row in enumerate(rows, 1):
-        system, user, ref, kind = split_example(row)
+    def gen_once(system: str | None, user: str) -> str:
         msgs = ([{"role": "system", "content": system}] if system else []) \
             + [{"role": "user", "content": user}]
         tpl: dict = {"add_generation_prompt": True, "return_tensors": "pt", "return_dict": True}
@@ -138,10 +150,29 @@ def main() -> int:
         inputs = {k: v.to("cuda") for k, v in dict(enc).items() if hasattr(v, "to")}
         plen = inputs["input_ids"].shape[1]
         with torch.no_grad():
-            gen = model.generate(**inputs, max_new_tokens=args.max_new, do_sample=False,
-                                 pad_token_id=tok.eos_token_id)
-        raw = tok.decode(gen[0][plen:], skip_special_tokens=True).strip()
+            g = model.generate(**inputs, max_new_tokens=args.max_new, do_sample=False,
+                               pad_token_id=tok.eos_token_id)
+        return tok.decode(g[0][plen:], skip_special_tokens=True).strip()
+
+    for i, row in enumerate(rows, 1):
+        system, user, ref, kind = split_example(row)
+        raw = gen_once(system, user)
         pred, _ = strip_think(raw)
+
+        # ── laco do verificador (mede o efeito REAL no over-calling) ──
+        # O verificador NAO ve o rotulo (kind) — decide so pela query e pela saida.
+        if vf is not None:
+            for attempt in range(args.max_retries + 1):
+                v = vf.verify(user, raw, tools)
+                if v.ok:
+                    if attempt:
+                        n_fixed += 1
+                    break
+                n_viol += 1
+                if attempt >= args.max_retries:
+                    break
+                raw = gen_once(system, f"{user}\n\n[CORREÇÃO OBRIGATÓRIA] {v.feedback}")
+            pred, _ = strip_think(raw)
 
         pred_obj = _d7.extract_json(pred)
         ref_obj = _d7.extract_json(ref)
@@ -195,6 +226,8 @@ def main() -> int:
     print("=" * 66)
     score = (json_ok + tool_right + (n_text - over_call)) / max(1, 2 * n_tool + n_text)
     print(f"score composto: {score:.1%}  (JSON valido + tool certa + nao-over-call)")
+    if vf is not None:
+        print(f"verificador   : {n_viol} violacao(oes) detectada(s), {n_fixed} corrigida(s) no retry")
 
     if falhas:
         print(f"\nprimeiras {min(8, len(falhas))} falhas:")
