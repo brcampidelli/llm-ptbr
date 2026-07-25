@@ -31,22 +31,34 @@ IN = PROCESSED_DIR / "decontaminated.jsonl"
 EVAL_OUT = PROCESSED_DIR / "sft_ptbr.eval.jsonl"
 
 
-def to_chat(row: dict, cot: bool = False, system: str | None = None) -> dict:
+def to_chat(row: dict, cot: bool = False, system: str | None = None,
+            prompt_completion: bool = False) -> dict:
     answer = row["response"]
     reasoning = row.get("reasoning", "")
     if cot and reasoning:
         answer = f"<think>\n{reasoning}\n</think>\n\n{answer}"
-    msgs = []
+
     # System message opcional. Necessario para abelhas cujo comportamento depende
     # de contexto — a agentica precisa VER o catalogo de ferramentas no treino,
     # senao decora as 14 em vez de aprender a ler o catalogo e escolher.
-    if system:
-        msgs.append({"role": "system", "content": system})
-    msgs += [
-        {"role": "user", "content": row["instruction"]},
-        {"role": "assistant", "content": answer},
-    ]
-    out = {"messages": msgs, "source": row.get("source", "?")}
+    head = ([{"role": "system", "content": system}] if system else []) \
+        + [{"role": "user", "content": row["instruction"]}]
+    tail = [{"role": "assistant", "content": answer}]
+
+    # ⚠️ MASCARAMENTO DA LOSS (bug real medido em 2026-07-24):
+    # no formato "messages" o TRL calcula a loss em TODOS os tokens (o
+    # assistant_only_loss e False por padrao). Com system prompt grande isso
+    # destroi o sinal: no dataset agentico, system=928 tok (92,1%), user=17,5
+    # (1,7%), assistant=62,2 (6,2%) -> 93,8% da loss caia em prompt, e o system
+    # e IDENTICO nos 1495 exemplos. A loss despencava 1,273->0,0755 por DECORAR
+    # o catalogo, nao por aprender a escolher ferramenta.
+    # No formato prompt/completion o TRL mascara o prompt automaticamente — e
+    # nao depende do chat template ter marcador {% generation %}.
+    if prompt_completion:
+        out = {"prompt": head, "completion": tail}
+    else:
+        out = {"messages": head + tail}
+    out["source"] = row.get("source", "?")
     if row.get("kind"):          # abelha agentica: tool_call | text
         out["kind"] = row["kind"]
     return out
@@ -66,6 +78,11 @@ def main() -> int:
     ap.add_argument("--system-file", type=Path, default=None,
                     help="arquivo com a system message a embutir em cada exemplo "
                          "(a abelha agentica precisa do catalogo de ferramentas)")
+    ap.add_argument("--prompt-completion", action="store_true",
+                    help="emite {prompt, completion} em vez de {messages}. RECOMENDADO "
+                         "quando houver --system-file: o TRL mascara a loss do prompt "
+                         "automaticamente. Sem isso a loss cai sobre o system prompt "
+                         "repetido e o sinal de treino vira lixo (ver comentario em to_chat).")
     args = ap.parse_args()
 
     ensure_dirs()
@@ -80,10 +97,19 @@ def main() -> int:
             return 1
         system = args.system_file.read_text(encoding="utf-8-sig").strip()
         print(f"system message: {len(system)} chars de {args.system_file.name}")
+        if not args.prompt_completion:
+            print("⚠️ AVISO: --system-file SEM --prompt-completion. A loss vai cair sobre o "
+                  "system prompt repetido e o sinal de treino fica diluido. "
+                  "Use --prompt-completion.", file=sys.stderr)
+
+    fmt = "prompt/completion (loss mascarada no prompt)" if args.prompt_completion \
+        else "messages (loss em TODOS os tokens)"
+    print(f"formato : {fmt}")
 
     raw_rows = [r for r in read_jsonl(args.in_path) if r.get("instruction") and r.get("response")]
     n_with_reasoning = sum(1 for r in raw_rows if r.get("reasoning"))
-    rows = [to_chat(r, cot=args.cot, system=system) for r in raw_rows]
+    rows = [to_chat(r, cot=args.cot, system=system,
+                    prompt_completion=args.prompt_completion) for r in raw_rows]
     if not rows:
         print("ERRO: nenhum exemplo valido.", file=sys.stderr)
         return 1

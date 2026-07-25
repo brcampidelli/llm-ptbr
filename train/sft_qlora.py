@@ -131,6 +131,23 @@ def main() -> int:
 
     dataset = load_dataset("json", data_files=str(args.data), split="train")
 
+    # ⚠️ DIAGNOSTICO DE MASCARAMENTO DA LOSS — nunca treinar as cegas de novo.
+    # Bug real (2026-07-24): com {"messages"} + system prompt grande, o TRL calcula
+    # a loss em TODOS os tokens (assistant_only_loss=False por padrao). No dataset
+    # agentico o system tinha 928 tok (92,1% do exemplo) e era IDENTICO nos 1495
+    # exemplos -> a loss caiu 1,273->0,0755 DECORANDO o catalogo, com so 6,2% dos
+    # tokens medindo a habilidade real. O formato prompt/completion faz o TRL
+    # mascarar o prompt sozinho (e nao exige {% generation %} no chat template).
+    cols = set(dataset.column_names)
+    if {"prompt", "completion"} <= cols:
+        print("loss     : MASCARADA no prompt (dataset prompt/completion) ✅")
+    elif "messages" in cols:
+        print("loss     : em TODOS os tokens (dataset 'messages')")
+        print("           ⚠️ se houver system prompt grande e repetido, o sinal fica")
+        print("           diluido. Regere os splits com 05_build_splits --prompt-completion.")
+    else:
+        print(f"AVISO: colunas inesperadas no dataset: {sorted(cols)}", file=sys.stderr)
+
     cfg = SFTConfig(
         output_dir=str(args.out),
         num_train_epochs=args.epochs,
