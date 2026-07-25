@@ -70,6 +70,7 @@ SYSTEM = (
 )
 
 PROMPT_TMPL = """Crie {n} exercícios de função Python sobre o tema: **{tema}**.
+{exclusoes}{dificuldade}
 
 Devolva APENAS um array JSON, sem texto em volta. Cada item:
 {{
@@ -89,6 +90,38 @@ Regras rígidas:
 - Nomes de função em snake_case e em inglês ou português, mas consistentes com a docstring."""
 
 _ARRAY_RE = re.compile(r"\[\s*\{.*\}\s*\]", re.DOTALL)
+
+# ─────────────────────── pressão de diversidade e dificuldade ─────────────────
+# Achado real (2026-07-25): 189 de ~619 candidatas (30%) saíram DUPLICADAS — o
+# professor converge para as mesmas tarefas apesar da rotação de temas. E o filtro
+# "o base erra" mostrou que só 20,3% são difíceis o bastante para ensinar algo.
+# Estas duas injeções atacam os dois gargalos direto no prompt.
+
+def bloco_exclusoes(nomes: list[str], k: int = 40) -> str:
+    """Manda uma amostra dos nomes já criados como PROIBIDOS (anti-duplicata)."""
+    if not nomes:
+        return ""
+    amostra = random.sample(nomes, min(k, len(nomes)))
+    return ("\n\n⚠️ Estes exercícios JÁ EXISTEM. NÃO os repita nem crie variações "
+            "próximas deles:\n" + ", ".join(sorted(amostra)))
+
+
+# O modelo-alvo (Qwen3.5-4B) acerta 80% dos exercícios de livro-texto. Pedir
+# dificuldade explicitamente eleva o aproveitamento do filtro. As categorias vêm
+# de COMO o base erra de fato: 78% por assert falhou (caso de borda / detalhe de
+# especificação), 22% por erro de execução.
+BLOCO_DIFICULDADE = """
+
+⚠️ DIFICULDADE — um modelo de 4B já resolve exercício de livro-texto. Faça exercícios
+que exijam PRECISÃO, não só a ideia geral. Priorize:
+- casos de borda que quebram a solução ingênua (vazio, um elemento, empate, negativo,
+  zero, limites, unicode/acentos, maiúsculas, duplicatas);
+- detalhes de ESPECIFICAÇÃO que precisam ser seguidos à risca (regra de arredondamento
+  e desempate, ordem exata da saída, formato exato da string, o que fazer em erro);
+- restrições que proíbem o caminho óbvio ("sem usar math", "sem sorted", "in-place",
+  "uma passada só", "sem regex");
+- composição de duas regras que interagem (ex.: filtrar E agrupar E ordenar por 2 chaves).
+Inclua nos testes ao menos um assert de caso de borda que a solução ingênua erraria."""
 
 
 def parse_items(raw: str) -> list[dict]:
@@ -146,6 +179,12 @@ def main() -> int:
     ap.add_argument("--workers", type=int, default=10)
     ap.add_argument("--timeout", type=int, default=8)
     ap.add_argument("--seed", type=int, default=42)
+    ap.add_argument("--temperature", type=float, default=1.0,
+                    help="mais alta = mais diversidade (30% das candidatas saiam duplicadas)")
+    ap.add_argument("--no-exclusions", action="store_true",
+                    help="desliga a lista de nomes proibidos (anti-duplicata)")
+    ap.add_argument("--no-hard-hint", action="store_true",
+                    help="desliga a pressao por dificuldade (so 20,3% passavam no filtro)")
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
 
@@ -166,8 +205,13 @@ def main() -> int:
     print(f"saida     : {OUT}")
 
     if args.dry_run:
+        print(f"temperatura: {args.temperature} | exclusoes: {not args.no_exclusions} "
+              f"| pressao de dificuldade: {not args.no_hard_hint}")
         print("\n[dry-run] nada chamado. Prompt do primeiro tema:\n")
-        print(PROMPT_TMPL.format(n=args.per_call, tema=TEMAS[0])[:900])
+        print(PROMPT_TMPL.format(
+            n=args.per_call, tema=TEMAS[0],
+            exclusoes=bloco_exclusoes(sorted(nomes)) if not args.no_exclusions else "",
+            dificuldade="" if args.no_hard_hint else BLOCO_DIFICULDADE))
         return 0
 
     api_key = os.environ.get("OPENROUTER_API_KEY")
@@ -183,10 +227,14 @@ def main() -> int:
         if stop.is_set():
             return
         tema = TEMAS[i % len(TEMAS)]
+        with lock:
+            excl = bloco_exclusoes(sorted(nomes)) if not args.no_exclusions else ""
+        prompt = PROMPT_TMPL.format(
+            n=args.per_call, tema=tema, exclusoes=excl,
+            dificuldade="" if args.no_hard_hint else BLOCO_DIFICULDADE)
         try:
-            raw = call_teacher(PROMPT_TMPL.format(n=args.per_call, tema=tema),
-                               args.teacher, api_key, system=SYSTEM,
-                               temperature=0.9, max_tokens=3500)
+            raw = call_teacher(prompt, args.teacher, api_key, system=SYSTEM,
+                               temperature=args.temperature, max_tokens=3500)
         except Exception as e:
             with lock:
                 c["api_fail"] += 1
