@@ -165,15 +165,19 @@ LANG_MARKERS = {k: {t for t in v if _seen[t] == 1} for k, v in _LANG_RAW.items()
 # ⭐ ORTOGRAFIA DISTINTIVA — o sinal mais forte, sobretudo para separar PT de ES,
 # que compartilham vocabulário demais. Pesa mais que palavra funcional porque
 # "ção/nh/lh" só existe em português e "ción/ñ" só em espanhol.
+# ⚠️ Só entram padrões REALMENTE exclusivos. Erros já cometidos e corrigidos:
+#   • "à" NÃO é francês-exclusivo — o português usa crase o tempo todo ("à noite");
+#   • "ê" existe em PT (você, três) e em FR;
+#   • "ç" existe em PT e FR — vale pouco sozinho, fica com os digramas.
 _LANG_PATTERNS = {
-    "pt": [r"ç", r"ã", r"õ", r"nh", r"lh", r"ções\b", r"ção\b", r"\bnão\b",
-           r"\bvocê\b", r"\bé\b", r"\bmas\b.{0,40}\bque\b"],
+    "pt": [r"ã", r"õ", r"ão\b", r"ções\b", r"ção\b", r"nh", r"lh",
+           r"\bnão\b", r"\bvocê\b", r"\bé\b", r"\bum[ae]\b", r"\bpara\b"],
     "es": [r"ñ", r"¿", r"¡", r"ción\b", r"ciones\b", r"\bel\b", r"\blos\b",
-           r"\bpero\b", r"\bmuy\b", r"\bhay\b"],
-    "fr": [r"œ", r"ê", r"û", r"à\b", r"\bqu'", r"\bd'", r"\bl'", r"eux\b",
-           r"\bcette\b", r"\best\b", r"\bles\b", r"\bune\b"],
+           r"\bpero\b", r"\bmuy\b", r"\bhay\b", r"\bes\b", r"\bun[ao]\b"],
+    "fr": [r"œ", r"\bqu'", r"\bd'", r"\bl'", r"eux\b", r"aux\b", r"\bcette\b",
+           r"\best\b", r"\bles\b", r"\bune\b", r"\bdes\b", r"\bpour\b"],
     "en": [r"\bthe\b", r"\bof\b", r"\bto\b", r"\bis\b", r"\bit\b", r"'s\b",
-           r"\bing\b|ing\b", r"\byou\b"],
+           r"ing\b", r"\byou\b", r"\band\b", r"\bwith\b"],
 }
 _LANG_RE = {k: [re.compile(p, re.IGNORECASE) for p in v]
             for k, v in _LANG_PATTERNS.items()}
