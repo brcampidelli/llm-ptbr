@@ -83,6 +83,11 @@ def main() -> int:
                     help="deixa o modelo raciocinar (<think>) antes de responder. "
                          "Padrao: DESLIGADO — na comeia raciocinio gasta os tokens do "
                          "fast-path (achado do teste na L4)")
+    ap.add_argument("--no-verify", action="store_true",
+                    help="desliga o verificador deterministico de tool-call")
+    ap.add_argument("--max-retries", type=int, default=1,
+                    help="tentativas corretivas por violacao. 1 basta: no interwhen o "
+                         "PRIMEIRO feedback entrega o grosso do ganho (+32,6 pp)")
     args = ap.parse_args()
 
     reg = load_registry(args.registry)
@@ -127,14 +132,45 @@ def main() -> int:
     hive.load()
 
     latencies: list[float] = []
+    # estatistica do verificador: quantas violacoes e de que tipo
+    violations: dict[str, int] = {}
+    n_corrected = 0
+
+    tools = {}
+    if not args.no_verify:
+        import verifier as vf
+        tools = vf._d7.load_tools()
 
     def answer(q: str) -> None:
+        nonlocal n_corrected
         d = router.route(q)
         bee = reg.get(d.bee_name)
         text, dt = hive.generate(bee, q, max_new_tokens=args.max_new)
-        latencies.append(dt)
+        total_dt = dt
         tag = "FAST" if d.fast_path else "slow"
         print(f"\n[{tag}] abelha={d.bee_name} ({dt:.1f}s) — {d.reason}")
+
+        # ── laco de verificacao (padrao interwhen: verificar no laco, em codigo) ──
+        if not args.no_verify:
+            for attempt in range(args.max_retries + 1):
+                v = vf.verify(q, text, tools)
+                if v.ok:
+                    if attempt:
+                        n_corrected += 1
+                    break
+                violations[v.violation] = violations.get(v.violation, 0) + 1
+                print(f"   ⚠️ verificador: {v.violation}")
+                if attempt >= args.max_retries:
+                    print("   (sem tentativas restantes — devolvendo como esta)")
+                    break
+                # retry com feedback corretivo injetado na query
+                print(f"   ↻ corrigindo: {v.feedback[:80]}")
+                text, dt2 = hive.generate(
+                    bee, f"{q}\n\n[CORREÇÃO OBRIGATÓRIA] {v.feedback}",
+                    max_new_tokens=args.max_new)
+                total_dt += dt2
+
+        latencies.append(total_dt)
         print(text)
 
     if queries:
@@ -157,6 +193,14 @@ def main() -> int:
     if latencies:
         print(f"latencia media: {sum(latencies)/len(latencies):.1f}s "
               f"(min {min(latencies):.1f}s / max {max(latencies):.1f}s)")
+    if not args.no_verify:
+        total_v = sum(violations.values())
+        if total_v:
+            det = " | ".join(f"{k}={v}" for k, v in sorted(violations.items()))
+            print(f"verificador: {total_v} violacao(oes) detectada(s) — {det}")
+            print(f"             {n_corrected} corrigida(s) no retry")
+        else:
+            print("verificador: nenhuma violacao (todas as saidas passaram)")
     return 0
 
 
