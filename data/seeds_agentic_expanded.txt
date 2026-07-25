@@ -708,10 +708,7 @@ Reproduza a música. (qual música?)
 Ligue para alguém. (quem? número?)
 But "Ligue para alguém" requires phone calls - possibly external? But it's a command to assistant that might have calling ability. However, we should avoid anything
 Analyze the Request:
-Goal:** Generate 15 *new* and varied user requests that would require the `send_email` tool.
-Context:** The assistant has the `send_email` tool (arguments: `to`, `subject`, `body`). It's described as "IRREVERSIBLE — use only with explicit request".
 Format:** One request per line, numbered 1 through 15. Write as the user would speak. *Do not* mention the tool name. Be concrete. Vary the form (question, order, polite request, short phrase). Mostly Portuguese (BR), about 1 in 6 in English.
-Constraint:** *Only* generate the requests, *never* the responses or JSONs. Let's review the examples given. The examples show requests for *other* tools (summary, calendar, translation, weather). The final instruction is to generate requests that would specifically trigger `send_email`.
 Brainstorming `send_email` Triggers:
 Direct requests:* "Send an email to X about Y.
 Polite requests:* "Could you please email Z?
@@ -926,7 +923,6 @@ Resuma a página do Spotify sobre o Brasil: https://newsroom.spotify.com/br-bras
 Quero um resumo de 150 palavras desse link sobre história do café: https://www.todamateria.com.br/historia-do-cafe-no-brasil/
 We need to generate 15 ambiguous user requests that lack required info. They must not require external tools. Keep arithmetic trivial. Most in Portuguese, ~1/6 in English. Each request on its own line numbered.
 Also remember: assistant must ask for missing info. So the request must be missing something obvious.
-Generate 15. Mix of PT and EN. About 1/6 in English: 15/6 = 2.5, so 2 or 3 in English. Let's do 3 in English, 12 in Portuguese.
 Lembre-me de algo às 15h. (Missing what)
 Adicione ao calendário. (Missing what, when)
 Quanto é? (Missing expression)
@@ -1597,8 +1593,6 @@ Need help translating this product description from Japanese to English.
 Traduza este tutorial de culinária do italiano para o português.
 Como se escreve "obrigado" em mandarim?
 Translate this travel guide from Portuguese to French.
-Goal: Generate 15 new and varied user requests that require the `run_python` tool.
-Tool: `run_python` (code: `code`).
 Format: One line each, numbered (1. 2. ...).
 Style: User's natural language, *never* mention the tool name, specific and concrete, varied forms (question, order, polite request, short phrase).
 Language: Mostly Brazilian Portuguese, about 1 in 6 in English.

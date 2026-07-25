@@ -123,7 +123,7 @@ def main() -> int:
     # contadores
     n_tool = n_text = 0
     json_ok = tool_right = 0
-    over_call = under_call = 0
+    over_call = under_call = truncated = 0
     falhas: list[tuple[str, str, str]] = []
 
     for i, row in enumerate(rows, 1):
@@ -149,8 +149,18 @@ def main() -> int:
         if kind == "tool_call":
             n_tool += 1
             if pred_obj is None:
-                under_call += 1
-                falhas.append(("under-call", user[:60], pred[:60]))
+                # ⚠️ Distinguir TRUNCADO de under-calling de verdade. Caso real:
+                # '{"tool": "write_file", "args": {"path": "lyrics.txt", "conte'
+                # — o modelo ESTAVA chamando a ferramenta certa, mas --max-new
+                # cortou no meio (a letra da musica era longa). Contar isso como
+                # "respondeu em texto" subestima a abelha e culpa o modelo por um
+                # limite nosso.
+                if pred.lstrip().startswith("{"):
+                    truncated += 1
+                    falhas.append(("TRUNCADO (max-new baixo)", user[:60], pred[-40:]))
+                else:
+                    under_call += 1
+                    falhas.append(("under-call", user[:60], pred[:60]))
             else:
                 if _d7.validate_call(pred_obj, tools) is None:
                     json_ok += 1
@@ -178,6 +188,7 @@ def main() -> int:
     print(f"  JSON valido (catalogo)           {pct(json_ok, n_tool)}")
     print(f"  ferramenta CERTA (= referencia)  {pct(tool_right, n_tool)}")
     print(f"  under-calling (respondeu texto)  {pct(under_call, n_tool)}")
+    print(f"  truncado (limite --max-new)      {pct(truncated, n_tool)}  <- artefato nosso")
     print("-" * 66)
     print(f"{'casos que NAO exigem ferramenta':<34} {n_text}")
     print(f"  ⚠️ OVER-CALLING (veio JSON)       {pct(over_call, n_text)}")

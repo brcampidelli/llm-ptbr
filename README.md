@@ -51,6 +51,42 @@ Medida em toda rota pelo `Router` e reportada ao fim de cada execução.
 
 ## 📊 Resultados medidos
 
+### 🎯 Fase 1 — a abelha AGÊNTICA funcionou (2026-07-25) ✅ **primeiro ganho real do projeto**
+
+Adapter treinado em 1.495 exemplos de tool-use (2 épocas, 2h56 na L4), avaliado no holdout
+(`eval/eval_agentic.py`, 60 exemplos: 35 que exigem ferramenta + 25 que não exigem):
+
+| Métrica | Base | **Adapter** | Delta |
+|---|---|---|---|
+| **JSON válido** (contra o catálogo) | 45,7% | **88,6%** | **+42,9 pp** |
+| **Ferramenta certa** (= referência) | 45,7% | **88,6%** | **+42,9 pp** |
+| **Under-calling** (deixou de chamar) | 54,3% | **11,4%** | **−42,9 pp** |
+| Over-calling (chamou sem precisar) | 4,0% | 16,0% | +12,0 pp ⚠️ |
+| **Score composto** | 58,9% | **87,4%** | **+28,5 pp** |
+
+**A abelha quase dobrou a acurácia de tool-calling** e praticamente eliminou o problema central do
+base — que era ignorar as ferramentas. Contraste com nossa própria história: o SFT generalista PT-BR
+deu **0 de 7** ganhos porque o base já era forte *e* a régua era errada (múltipla escolha). Aqui, com
+**abelha especializada + régua certa**, o ganho é inequívoco. É a tese da comeia com número, não com
+argumento.
+
+**Custos honestos:**
+- **Over-calling subiu (4% → 16%):** a abelha ficou mais afeita a chamar ferramenta, errando em 4 dos
+  25 casos conversacionais. Trade-off real — mas trocamos ~3 erros novos por ~15 acertos novos.
+  **Não houve colapso de modo** (ainda responde em texto em 84% dos casos de texto; entropia final
+  0,2765, longe dos 0,076 do run com loss contaminada).
+- **O 87,4% está SUBESTIMADO.** Inspecionando as falhas uma a uma, várias não são erro do modelo:
+  rótulos errados no dado (ex.: "crie um evento na agenda" marcado como `text`, quando chamar
+  `create_calendar_event` é o certo), casos ambíguos marcados como `tool_call` em que a abelha
+  corretamente pediu esclarecimento, **1 JSON truncado** pelo `--max-new 200` no meio de uma escrita
+  longa (a ferramenta estava certa), e **1 semente contaminada** com o meta-prompt do gerador.
+  Corrigido: o eval agora separa `truncado` de `under-calling`, e o filtro do `07b` rejeita
+  meta-prompt vazado (6 sementes removidas de 1.690).
+
+⚠️ **Lição de configuração:** `save_total_limit=2` apagou o checkpoint-120, então a comparação
+"época 1 vs época 2" ficou inviável (sobraram 180 e 188, próximos demais). Para as próximas abelhas,
+subir esse limite — a curva sugeria que a época 2 rendeu pouco, e isso valia ser medido.
+
 ### Fase 0 — a comeia rodando na L4 (2026-07-24) ✅
 ```
 ⭐ FRACAO DE FAST-PATH: 80.0%  (8/10)
@@ -88,7 +124,7 @@ concluir. Por isso repetimos com 3× mais dados e n=300.)*
 | Abelha | Foco | Estado |
 |---|---|---|
 | `chat_ptbr` | chat/generalista PT-BR | ✅ **adapter real** (SFT-v2, 5.657 ex) |
-| `agentica` | tool-use / seguir instrução | 🔨 **1.495 exemplos prontos**, adapter em treino (Fase 1) |
+| `agentica` | tool-use / seguir instrução | ✅ **adapter real e VALIDADO** (1.495 ex, +28,5 pp vs base) |
 | `coder` | código em escopo limitado | ⏳ Fase 2 (gatilhos já ativos) |
 | `base_forte` | fallback do raciocínio difícil | ✅ backbone base (futuro: 7–11B/nuvem) |
 | multimodal | imagem/áudio | ⏳ Fase 4 — modelo **separado ~9B** (Qwen3.5-VL) |
@@ -164,8 +200,10 @@ que o Bruno já tinha). O dataset **não é o gargalo financeiro** — com US$10
 - [x] **Pipeline ponta-a-ponta validado** (dados → treino → avaliação com significância)
 - [x] **Hipótese generalista testada e refutada** com poder estatístico
 - [x] **Comeia rodando**: backbone 1×, hot-swap, roteamento correto, fast-path 80%
-- [ ] **Abelha agêntica bate o base NA TAREFA DELA** (eval de tool-use, não MMLU)
-- [ ] **Avaliação de geração com juiz** (múltipla escolha não mede o que SFT muda)
+- [x] **Abelha agêntica bate o base NA TAREFA DELA** ✅ **+28,5 pp** (score 58,9% → 87,4%)
+- [ ] **Reduzir o over-calling** (4% → 16%): rubrica com "Tool Appropriateness" (ATLAS) na função de
+      perda, e/ou verificador de modo em runtime (interwhen) — ver `docs/estudo-11-papers-2026-07-24.md`
+- [ ] **Avaliação de geração com juiz** para a `chat_ptbr` (múltipla escolha não mede o que SFT muda)
 - [ ] **Fast-path alto o bastante** para a comeia ser mais barata que chamar o forte sempre
 - [ ] **Roda local**: GGUF quantizado no RTX 5070 8 GB
 - [ ] **Release**: model card + pesos + demo no HF

@@ -106,6 +106,18 @@ def parse_lines(raw: str) -> list[str]:
     return out
 
 
+# O professor as vezes ecoa a PROPRIA INSTRUCAO em vez de gerar um pedido de
+# usuario. Achado real: 3 de 1690 sementes vazaram assim (ex.: "Goal: Generate 15
+# new and varied user requests that require the run_python tool."). Passavam pelo
+# filtro antigo porque nao comecam com "{" nem contem '"tool"'. Uma delas chegou
+# ao holdout e apareceu como falha na avaliacao.
+_META_LEAK = re.compile(
+    r"^\s*(\*{0,2}goal\*{0,2}\s*:|here are|aqui est[aã]o|generate\s+\d+|"
+    r"gere\s+\d+\s+pedidos|regras\s*:|exemplos de pedidos|mix of pt and en)",
+    re.IGNORECASE,
+)
+
+
 def acceptable(text: str) -> str | None:
     if len(text) < MIN_LEN:
         return "curto demais"
@@ -116,6 +128,11 @@ def acceptable(text: str) -> str | None:
     # o professor as vezes vaza o JSON apesar da instrucao
     if '"tool"' in text or text.strip().startswith("{"):
         return "vazou json/resposta"
+    if _META_LEAK.search(text):
+        return "vazou o meta-prompt (instrucao ecoada em vez de pedido)"
+    # referencia a ferramenta por nome tecnico = o professor descreveu a tarefa
+    if "`" in text and "tool" in text.lower():
+        return "menciona a ferramenta por nome tecnico"
     return None
 
 
