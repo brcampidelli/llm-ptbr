@@ -38,7 +38,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "data"))
-from common import read_jsonl, strip_think  # noqa: E402
+from common import detect_lang, read_jsonl, strip_think  # noqa: E402
 from config import DEFAULT_TEACHER, assert_teacher_allowed  # noqa: E402
 from teacher_api import call_teacher  # noqa: E402
 
@@ -107,13 +107,21 @@ def main() -> int:
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--no-4bit", action="store_true")
     ap.add_argument("--tag", default=None)
+    ap.add_argument("--no-judge", action="store_true",
+                    help="roda SEM juiz e SEM chave de API: mede so CONSISTENCIA DE "
+                         "IDIOMA (o modelo respondeu no idioma da pergunta?) e "
+                         "degeneracao. E o modo de falha mais provavel de um adapter "
+                         "treinado so em PT-BR sobre um backbone de 201 idiomas.")
     args = ap.parse_args()
 
-    assert_teacher_allowed(args.judge)          # REGRA DURA: juiz aberto
-    key = os.environ.get("OPENROUTER_API_KEY")
-    if not key:
-        print("ERRO: defina OPENROUTER_API_KEY (juiz).", file=sys.stderr)
-        return 1
+    key = None
+    if not args.no_judge:
+        assert_teacher_allowed(args.judge)      # REGRA DURA: juiz aberto
+        key = os.environ.get("OPENROUTER_API_KEY")
+        if not key:
+            print("ERRO: defina OPENROUTER_API_KEY, ou use --no-judge para medir "
+                  "so consistencia de idioma (sem API).", file=sys.stderr)
+            return 1
 
     langs = [l.strip() for l in args.langs.split(",") if l.strip()]
     por_lang: dict[str, list[str]] = defaultdict(list)
@@ -138,7 +146,7 @@ def main() -> int:
 
     print(f"modelo : {args.model}")
     print(f"adapter: {args.peft}")
-    print(f"juiz   : {args.judge}  (aberto)")
+    print(f"juiz   : {'(DESLIGADO — so consistencia de idioma)' if args.no_judge else args.judge + '  (aberto)'}")
     print(f"prompts: {total} em {len(por_lang)} idiomas ({', '.join(langs)})\n")
 
     tok = AutoTokenizer.from_pretrained(args.model)
@@ -156,27 +164,69 @@ def main() -> int:
     exemplos: list[dict] = []
     feito = 0
 
+    # consistencia de idioma: respondeu no idioma da pergunta?
+    idioma = {l: {"base_ok": 0, "adapter_ok": 0, "base_ind": 0, "adapter_ind": 0,
+                  "n": 0} for l in por_lang}
+    fugas: list[dict] = []      # casos em que respondeu em OUTRO idioma
+
     for lang, prompts in por_lang.items():
         for p in prompts:
-            model.set_adapter(model.active_adapters[0] if model.active_adapters else "default")
             r_adapter = gerar(model, tok, p, args.max_new)
             with model.disable_adapter():
                 r_base = gerar(model, tok, p, args.max_new)
 
-            swap = rng.random() < 0.5          # randomiza posição A/B
-            a, b = (r_base, r_adapter) if swap else (r_adapter, r_base)
-            v = julgar(p, a, b, args.judge, key)
-            if v == "E":
-                venc = "empate"
-            else:
-                escolhido = a if v == "A" else b
-                venc = "base" if escolhido is r_base else "adapter"
-            resultados[lang][venc] += 1
-            exemplos.append({"lang": lang, "prompt": p[:80], "vencedor": venc})
+            # ── métrica sem juiz: consistência de idioma ──
+            d_ad, d_ba = detect_lang(r_adapter), detect_lang(r_base)
+            idioma[lang]["n"] += 1
+            for nome, det in (("adapter", d_ad), ("base", d_ba)):
+                if det == lang:
+                    idioma[lang][f"{nome}_ok"] += 1
+                elif det == "?":
+                    idioma[lang][f"{nome}_ind"] += 1
+                else:
+                    fugas.append({"lang": lang, "modelo": nome, "detectado": det,
+                                  "prompt": p[:60], "resposta": (r_adapter if nome == "adapter"
+                                                                 else r_base)[:80]})
+
+            if not args.no_judge:
+                swap = rng.random() < 0.5      # randomiza posição A/B
+                a, b = (r_base, r_adapter) if swap else (r_adapter, r_base)
+                v = julgar(p, a, b, args.judge, key)
+                if v == "E":
+                    venc = "empate"
+                else:
+                    escolhido = a if v == "A" else b
+                    venc = "base" if escolhido is r_base else "adapter"
+                resultados[lang][venc] += 1
+                exemplos.append({"lang": lang, "prompt": p[:80], "vencedor": venc})
 
             feito += 1
             if feito % 8 == 0 or feito == total:
                 print(f"  {feito}/{total}", flush=True)
+
+    # ── relatorio 1: consistencia de idioma (sempre roda, nao precisa de juiz) ──
+    print("\n" + "=" * 72)
+    print("⭐ CONSISTENCIA DE IDIOMA — respondeu no idioma da pergunta?")
+    print(f"{'idioma':<12} {'base':>12} {'ADAPTER':>12}   leitura")
+    print("-" * 72)
+    tb = ta = tn = 0
+    for lang in por_lang:
+        d = idioma[lang]
+        n = d["n"]; tb += d["base_ok"]; ta += d["adapter_ok"]; tn += n
+        delta = d["adapter_ok"] - d["base_ok"]
+        leitura = ("igual" if delta == 0 else
+                   f"⚠️ ADAPTER PIOR ({delta})" if delta < 0 else f"adapter melhor (+{delta})")
+        print(f"{NOMES.get(lang, lang):<12} {d['base_ok']:>5}/{n:<6} "
+              f"{d['adapter_ok']:>5}/{n:<6}   {leitura}")
+    print("-" * 72)
+    print(f"{'TOTAL':<12} {tb:>5}/{tn:<6} {ta:>5}/{tn:<6}   "
+          f"{'⚠️ REGRESSAO MULTILINGUE' if ta < tb else 'sem regressao de idioma'}")
+    if fugas:
+        print(f"\nrespondeu no idioma ERRADO ({len(fugas)} casos):")
+        for f in fugas[:8]:
+            print(f"   [{f['modelo']:>7}] perguntou em {f['lang']}, respondeu em "
+                  f"{f['detectado']}: {f['resposta'][:60]}")
+    print("=" * 72)
 
     print("\n" + "=" * 68)
     print(f"{'idioma':<12} {'base':>8} {'ADAPTER':>9} {'empate':>8}   leitura")

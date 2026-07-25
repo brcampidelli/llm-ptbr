@@ -116,6 +116,92 @@ _AMBIGUOUS = _PT_MARKERS & _EN_MARKERS
 _PT_MARKERS -= _AMBIGUOUS
 _EN_MARKERS -= _AMBIGUOUS
 
+# --- Detecção de idioma (pt/en/es/fr) — determinística, sem dependência -------
+# Serve para medir se o modelo RESPONDE NO IDIOMA DA PERGUNTA. É o modo de falha
+# mais provável de um adapter treinado só em PT-BR sobre um backbone de 201
+# idiomas: perguntam em inglês, ele responde em português. Isso é mensurável sem
+# juiz e sem API.
+#
+# ⚠️ Mesma armadilha do _AMBIGUOUS acima, agora entre 4 idiomas: "a", "de", "en",
+# "la", "e"... aparecem em vários. Só ficam os marcadores EXCLUSIVOS de cada um.
+# ⚠️ PT e ES compartilham quase toda palavra funcional (que, para, mas, porque,
+# sobre, ser, esta...). Depois da deduplicação sobravam pouquíssimos marcadores
+# de PT e frases factuais sem "não/você" ficavam indetectáveis. Por isso as
+# listas incluem MUITAS funcionais de cada idioma — o que sobrevive ao corte é o
+# que de fato distingue.
+_LANG_RAW = {
+    "pt": {"nao", "uma", "com", "voce", "muito", "isso", "seu", "sua", "pelo",
+           "pela", "quando", "tambem", "entao", "sao", "fazer", "tem", "pode",
+           "ate", "das", "dos", "aos", "nas", "essa", "esse", "onde", "ja",
+           "ainda", "sempre", "assim", "sem", "apenas", "depois", "aqui",
+           "agora", "quem", "qual", "melhor", "maior", "coisa", "tempo", "vez",
+           "dia", "ele", "eles", "elas", "nosso", "meu", "minha", "foi", "eh"},
+    "en": {"the", "and", "you", "that", "this", "with", "for", "your", "are",
+           "have", "can", "will", "from", "they", "what", "when", "about",
+           "which", "there", "would", "should", "make", "more", "but", "because",
+           "water", "salt", "rain", "them", "where", "while", "than", "then",
+           "some", "such", "also", "into", "over", "after", "before", "each",
+           "very", "most", "just", "like", "time", "way", "day", "does", "did"},
+    "es": {"una", "con", "usted", "muy", "esto", "pero", "cuando", "tambien",
+           "entonces", "puede", "hacer", "tiene", "los", "las", "del", "porque",
+           "donde", "ya", "siempre", "asi", "sin", "solo", "despues", "aqui",
+           "ahora", "quien", "cual", "mejor", "mayor", "cosa", "tiempo", "vez",
+           "dia", "ellos", "ellas", "nuestro", "mi", "fue", "sal", "agua",
+           "lluvia", "roca", "mar", "hacia", "sobre", "entre", "entre"},
+    "fr": {"une", "avec", "pour", "vous", "tres", "cela", "parce", "quand",
+           "aussi", "alors", "peut", "faire", "les", "des", "dans", "votre",
+           "nous", "sont", "ce", "qui", "mais", "ou", "deja", "toujours",
+           "ainsi", "sans", "seulement", "apres", "ici", "maintenant", "meilleur",
+           "chose", "temps", "fois", "jour", "ils", "elles", "notre", "mon",
+           "etait", "eau", "sel", "pluie", "roche", "mer", "vers", "entre"},
+}
+# remove tudo que aparece em mais de um idioma
+_seen: dict[str, int] = {}
+for _toks in _LANG_RAW.values():
+    for _t in _toks:
+        _seen[_t] = _seen.get(_t, 0) + 1
+LANG_MARKERS = {k: {t for t in v if _seen[t] == 1} for k, v in _LANG_RAW.items()}
+
+# ⭐ ORTOGRAFIA DISTINTIVA — o sinal mais forte, sobretudo para separar PT de ES,
+# que compartilham vocabulário demais. Pesa mais que palavra funcional porque
+# "ção/nh/lh" só existe em português e "ción/ñ" só em espanhol.
+_LANG_PATTERNS = {
+    "pt": [r"ç", r"ã", r"õ", r"nh", r"lh", r"ções\b", r"ção\b", r"\bnão\b",
+           r"\bvocê\b", r"\bé\b", r"\bmas\b.{0,40}\bque\b"],
+    "es": [r"ñ", r"¿", r"¡", r"ción\b", r"ciones\b", r"\bel\b", r"\blos\b",
+           r"\bpero\b", r"\bmuy\b", r"\bhay\b"],
+    "fr": [r"œ", r"ê", r"û", r"à\b", r"\bqu'", r"\bd'", r"\bl'", r"eux\b",
+           r"\bcette\b", r"\best\b", r"\bles\b", r"\bune\b"],
+    "en": [r"\bthe\b", r"\bof\b", r"\bto\b", r"\bis\b", r"\bit\b", r"'s\b",
+           r"\bing\b|ing\b", r"\byou\b"],
+}
+_LANG_RE = {k: [re.compile(p, re.IGNORECASE) for p in v]
+            for k, v in _LANG_PATTERNS.items()}
+
+
+def detect_lang(text: str) -> str:
+    """'pt' | 'en' | 'es' | 'fr' | '?' — heurística barata, não é detector real.
+
+    Serve para medir CONSISTÊNCIA DE IDIOMA (o modelo respondeu no idioma da
+    pergunta?), não para classificar texto em produção. Combina ortografia
+    distintiva (peso 2 — é o que separa PT de ES) com palavras funcionais
+    exclusivas (peso 1). Devolve '?' quando o sinal é fraco ou empatado: chutar
+    seria pior que admitir indefinição.
+    """
+    if not text or not text.strip():
+        return "?"
+    low = text.lower()
+    score = {k: 0.0 for k in _LANG_RE}
+    for k, pats in _LANG_RE.items():
+        score[k] += 2.0 * sum(1 for p in pats if p.search(low))
+    toks = set(normalize(text).split())
+    for k, marks in LANG_MARKERS.items():
+        score[k] += len(toks & marks)
+    ordenado = sorted(score.values(), reverse=True)
+    if ordenado[0] < 3 or (len(ordenado) > 1 and ordenado[0] == ordenado[1]):
+        return "?"
+    return max(score, key=lambda k: score[k])
+
 
 _FENCED = re.compile(r"```.*?```", re.DOTALL)
 _INLINE_CODE = re.compile(r"`[^`\n]+`")
