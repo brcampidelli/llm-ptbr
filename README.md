@@ -51,7 +51,36 @@ Medida em toda rota pelo `Router` e reportada ao fim de cada execução.
 
 ## 📊 Resultados medidos
 
-### 🛑 Fase 2 — abelha CODER: treino CANCELADO pelo gate (2026-07-25)
+### 🎯 Fase 2 — abelha CODER: **+45 pp** nas difíceis, com regressão de −10 pp nas fáceis (2026-07-25)
+
+O gate barrou a 1ª tentativa (base em 93,3%). Construímos então o filtro **"o base erra"** — só entra
+no dataset a tarefa cuja solução do professor **passa** E o base **falha**. Resultado: 877 candidatas
+→ **239 tarefas difíceis (27,3%)**. Treino: 216 exemplos, 2 épocas, 17 min na L4.
+
+| Conjunto | Base | **Adapter** | Delta |
+|---|---|---|---|
+| **DIFÍCEIS (60)** | 5,0% (3/60) | **50,0%** (30/60) | **+45 pp** |
+| **FÁCEIS (40)** — não-regressão | ~100% | **90,0%** (36/40) | **−10 pp** ⚠️ |
+
+**O maior ganho absoluto do projeto** — e não por acaso: foi a única abelha cujo dataset teve
+dificuldade **medida**, não presumida. De 3 para 30 tarefas resolvidas nas mesmas tarefas que o base
+errava.
+
+⚠️ **Houve dano colateral, e isso precisa ser dito:** o adapter quebrou ~4 tarefas fáceis que o base
+acertava. Foi exatamente para detectar isso que guardamos o `coder_tasks_easy.jsonl` — sem esse teste,
+reportaríamos "+45 pp" escondendo o preço. **Mitigações**: 1 época em vez de 2 (a loss caiu 0,27→0,17
+na 2ª, provável fonte da regressão); misturar ~30% de fáceis no treino para ancorar; ou LoRA r 16→8.
+
+📐 **Nota metodológica:** o base nas difíceis deu **5%**, não 0% como esperávamos "por construção".
+Causa: o filtro gera em **lote** (batch 8, padding à esquerda) e o eval gera **uma por vez** —
+diferenças de ponto flutuante em batching viram acerto/erro em casos de borda. Por isso medimos o
+base novamente em vez de assumir 0%: sem isso, atribuiríamos ao adapter 5 pontos que não são dele.
+
+⚠️ O adapter ficou em `/content` (efêmero, morre com o runtime do Colab). **O treino é reproduzível
+em ~17 min** a partir do que está versionado: `08_gen_coder_tasks` → `09_filter_hard_tasks` →
+conversão → `05_build_splits --prompt-completion` → `sft_qlora`.
+
+### 🛑 A 1ª tentativa da CODER: treino CANCELADO pelo gate (2026-07-25)
 
 **Resultado negativo, documentado de propósito** — evitou repetir o erro mais caro do projeto.
 
@@ -197,7 +226,7 @@ concluir. Por isso repetimos com 3× mais dados e n=300.)*
 |---|---|---|
 | `chat_ptbr` | chat/generalista PT-BR | ✅ **adapter real** (SFT-v2, 5.657 ex) |
 | `agentica` | tool-use / seguir instrução | ✅ **adapter real e VALIDADO** (1.495 ex, +28,5 pp vs base) |
-| `coder` | código em escopo limitado | 🛑 **treino cancelado pelo gate** (base já em 93,3% pass@1) |
+| `coder` | funções Python verificáveis por execução | ✅ **treinada e validada**: +45 pp nas difíceis (5%→50%), −10 pp nas fáceis. Adapter efêmero — reproduzível em 17 min |
 | `base_forte` | fallback do raciocínio difícil | ✅ backbone base (futuro: 7–11B/nuvem) |
 | multimodal | imagem/áudio | ⏳ Fase 4 — modelo **separado ~9B** (Qwen3.5-VL) |
 
