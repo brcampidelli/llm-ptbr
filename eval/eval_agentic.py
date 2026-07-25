@@ -47,10 +47,22 @@ _spec.loader.exec_module(_d7)
 DEFAULT_EVAL = ROOT / "data" / "processed" / "sft_agentic.eval.jsonl"
 
 
+def get_messages(row: dict) -> list[dict]:
+    """Aceita os DOIS formatos de split: {messages} e {prompt, completion}.
+
+    O holdout agentico usa prompt/completion (para o TRL mascarar a loss do
+    prompt no treino — ver data/05_build_splits.py). Aqui so precisamos das
+    mensagens em ordem, então concatenamos.
+    """
+    if row.get("messages"):
+        return row["messages"]
+    return list(row.get("prompt") or []) + list(row.get("completion") or [])
+
+
 def split_example(row: dict) -> tuple[str | None, str, str, str]:
     """(system, user, referencia, kind) a partir do formato chat."""
     system = user = ref = None
-    for m in row["messages"]:
+    for m in get_messages(row):
         if m["role"] == "system":
             system = m["content"]
         elif m["role"] == "user":
@@ -77,7 +89,7 @@ def main() -> int:
     ap.add_argument("--tag", default=None)
     args = ap.parse_args()
 
-    rows = [r for r in read_jsonl(args.data) if r.get("messages")]
+    rows = [r for r in read_jsonl(args.data) if get_messages(r)]
     if args.limit:
         rows = rows[: args.limit]
     if not rows:
