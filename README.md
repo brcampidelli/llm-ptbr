@@ -29,9 +29,12 @@ query ──► Router (regras + complexidade) ──► escolhe a abelha
         ┌─────────────────┬───────────────────┼──────────────────────┐
         ▼                 ▼                   ▼                      ▼
    agentica            coder             chat_ptbr (default)   base_forte (fallback)
-   tool-use            código            PT-BR                 raciocínio difícil
-   [adapter]           [adapter]         [adapter REAL]         [backbone base]
+   tool-use            código            chat multilíngue      raciocínio difícil
+   [adapter]           [adapter]         [backbone puro] ⚠️     [backbone base]
     FAST                FAST              FAST                   slow
+
+⚠️ o adapter da chat_ptbr foi APOSENTADO em 2026-07-25 (reprovou no juiz e na
+   consistência de idioma). A rota continua; o modelo por trás é o backbone.
 ```
 
 **1 backbone carregado UMA vez + N adapters LoRA a quente.** Cada abelha é um adapter → vira
@@ -50,6 +53,37 @@ Quantas queries **evitam o modelo caro**. Alta ⇒ a comeia é econômica. Baixa
 Medida em toda rota pelo `Router` e reportada ao fim de cada execução.
 
 ## 📊 Resultados medidos
+
+### 🚨 `chat_ptbr` APOSENTADA — reprovou na régua certa (2026-07-25)
+
+A abelha **default** (~40% do tráfego) e a única sem ganho comprovado foi finalmente medida com o
+instrumento adequado: **juiz de geração + consistência de idioma**, 48 prompts held-out em pt/en/es/fr
+(contaminação verificada: 0 de 48 aparecem nas 6.006 sementes de treino).
+
+**Consistência de idioma — respondeu no idioma da pergunta?**
+
+| Idioma | Base | Adapter | |
+|---|---|---|---|
+| português | 12/12 | 12/12 | igual |
+| **inglês** | 12/12 | **2/12** | ⚠️ **−10** |
+| espanhol | 12/12 | 9/12 | ⚠️ −3 |
+| francês | 12/12 | 10/12 | ⚠️ −2 |
+| **TOTAL** | **48/48** | **33/48** | ⚠️ **regressão multilíngue** |
+
+**Em inglês, o adapter responde em português 10 de 12 vezes.** Ex.: *"The ocean is salty because…"* →
+*"A salinidade do oceano é causada pela evaporação…"*. Isso rodava **em produção** na rota default.
+
+**Juiz aberto** (deepseek-v4-flash, posição A/B randomizada): o base vence em **todos os 4 idiomas**
+(26 × 19 × 3 empates) — **inclusive em português**, o idioma para o qual o adapter foi treinado. Taxa
+de vitória do adapter: **42,2%**.
+
+**Decisão:** `adapter_path` zerado. A rota de chat passa a usar o **backbone puro** (multilíngue, 201
+idiomas), mantendo roteamento e system prompt. Reativável com `CHAT_ADAPTER=<caminho>`.
+
+⚠️ **A lição metodológica mais cara do projeto:** este adapter passou por uma avaliação de **n=300** e
+foi declarado "não conclusivo" (0 de 7 tasks). **Múltipla escolha não tinha como detectar isso** — o
+modelo escolhe uma letra, não gera texto. A régua errada escondeu um defeito grave durante todo o
+projeto. **Medir com o instrumento errado é pior que não medir: dá a falsa sensação de ter medido.**
 
 ### 🎯 Fase 2 — abelha CODER: **+40 pp** nas difíceis, −17,5 pp nas fáceis (held-out limpo, 2026-07-25)
 
@@ -251,7 +285,7 @@ concluir. Por isso repetimos com 3× mais dados e n=300.)*
 
 | Abelha | Foco | Estado |
 |---|---|---|
-| `chat_ptbr` | chat/generalista PT-BR | ✅ **adapter real** (SFT-v2, 5.657 ex) |
+| `chat_ptbr` | chat/generalista | 🚫 **adapter APOSENTADO** — reprovou no juiz (42,2%) e na consistência de idioma (33/48 vs 48/48). Rota mantida sobre o **backbone puro** (multilíngue) |
 | `agentica` | tool-use / seguir instrução | ✅ **adapter real e VALIDADO** (1.495 ex, +28,5 pp vs base) |
 | `coder` | funções Python verificáveis por execução | ✅ **treinada e validada em held-out limpo**: +40 pp nas difíceis (1,7%→41,7%, 24×), −17,5 pp nas fáceis. Adapter efêmero — reproduzível em 17 min |
 | `base_forte` | fallback do raciocínio difícil | ✅ backbone base (futuro: 7–11B/nuvem) |
@@ -333,7 +367,8 @@ que o Bruno já tinha). O dataset **não é o gargalo financeiro** — com US$10
       (score 87,4% → 91,6%; custo: +3% de latência)
 - [ ] **Atacar o over-calling residual (8%)** na função de perda: rubrica com "Tool Appropriateness"
       (ATLAS) + rejection-sampling SFT/DPO (Collab-RAG) — ver `docs/estudo-11-papers-2026-07-24.md`
-- [ ] **Avaliação de geração com juiz** para a `chat_ptbr` (múltipla escolha não mede o que SFT muda)
+- [x] **Avaliação de geração com juiz** para a `chat_ptbr` — feita, e **reprovou** (ver seção acima)
+- [ ] **Testar o mesmo risco multilíngue na `agentica` e na `coder`** (treinadas ~5/6 e docstrings em PT)
 - [ ] **Fast-path alto o bastante** para a comeia ser mais barata que chamar o forte sempre
 - [ ] **Roda local**: GGUF quantizado no RTX 5070 8 GB
 - [ ] **Release**: model card + pesos + demo no HF
