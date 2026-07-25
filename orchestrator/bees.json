@@ -33,8 +33,8 @@
     },
     {
       "name": "chat_ptbr",
-      "description": "Abelha real (SFT-v2, 5657 ex). Chat/generalista PT-BR. Catch-all barato quando nenhum trigger casa e a query e simples.",
-      "adapter_path": "${CHAT_ADAPTER:-/content/drive/MyDrive/qwen35-4b-ptbr-sft}",
+      "description": "⚠️ APOSENTADA (2026-07-25) — adapter DESLIGADO por medicao. O SFT-v2 (5657 ex, 100% PT-BR) foi finalmente avaliado com a regua certa (juiz de geracao + consistencia de idioma, 48 prompts held-out em pt/en/es/fr) e REPROVOU nas duas: (1) consistencia de idioma 48/48 no base vs 33/48 no adapter — em INGLES responde em portugues 10 de 12 vezes; (2) juiz aberto prefere o BASE em TODOS os 4 idiomas (26 x 19), inclusive em portugues. Nao era neutra, era prejudicial. Mantida como rota de chat, mas sobre o BACKBONE PURO (multilingue, 201 idiomas). Para reativar o adapter: defina CHAT_ADAPTER=<caminho>.",
+      "adapter_path": "${CHAT_ADAPTER:-}",
       "priority": 50,
       "fast_path": true,
       "system_prompt": "Voce e um assistente brasileiro prestativo. Responda em portugues brasileiro natural e correto.",
