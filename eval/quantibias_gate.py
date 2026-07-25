@@ -65,11 +65,20 @@ def generate_all(model_id: str, peft: str | None, prompts: list[str], four_bit: 
     outs = []
     for p in prompts:
         msgs = [{"role": "user", "content": p}]
-        ids = tok.apply_chat_template(msgs, add_generation_prompt=True, return_tensors="pt").to("cuda")
+        # ⚠️ transformers 5.x devolve BatchEncoding (dict), nao tensor puro —
+        # passar direto para generate() quebra em `inputs_tensor.shape[0]`.
+        # (bug real, pego ao rodar o orquestrador na L4; ver orchestrator/hive.py)
+        enc = tok.apply_chat_template(msgs, add_generation_prompt=True,
+                                      return_tensors="pt", return_dict=True)
+        if hasattr(enc, "input_ids") or isinstance(enc, dict):
+            inputs = {k: v.to("cuda") for k, v in dict(enc).items() if hasattr(v, "to")}
+        else:
+            inputs = {"input_ids": enc.to("cuda")}
+        prompt_len = inputs["input_ids"].shape[1]
         with torch.no_grad():
-            gen = model.generate(ids, max_new_tokens=max_new, do_sample=False,
+            gen = model.generate(**inputs, max_new_tokens=max_new, do_sample=False,
                                  pad_token_id=tok.eos_token_id)
-        text = tok.decode(gen[0][ids.shape[1]:], skip_special_tokens=True).strip()
+        text = tok.decode(gen[0][prompt_len:], skip_special_tokens=True).strip()
         outs.append(text)
 
     del model

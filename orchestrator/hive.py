@@ -108,11 +108,20 @@ class Hive:
 
         use_adapter = bee.name in self.loaded_adapters
         msgs = self._build_messages(bee, query)
-        ids = self.tokenizer.apply_chat_template(
-            msgs, add_generation_prompt=True, return_tensors="pt"
+        # ⚠️ transformers 5.x: apply_chat_template devolve um BatchEncoding (dict),
+        # nao um tensor puro. Passar isso direto para generate() quebra em
+        # `inputs_tensor.shape[0]`. Pedimos return_dict e expandimos com **inputs
+        # (leva o attention_mask de brinde). Tolera as duas formas de retorno.
+        enc = self.tokenizer.apply_chat_template(
+            msgs, add_generation_prompt=True, return_tensors="pt", return_dict=True
         )
-        if torch.cuda.is_available():
-            ids = ids.to("cuda")
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        if hasattr(enc, "input_ids") or isinstance(enc, dict):
+            inputs = {k: v.to(device) for k, v in dict(enc).items()
+                      if hasattr(v, "to")}
+        else:                                  # retorno legado: tensor puro
+            inputs = {"input_ids": enc.to(device)}
+        prompt_len = inputs["input_ids"].shape[1]
 
         # abelha COM adapter -> ativa esse adapter; abelha base -> desliga todos.
         if self._is_peft:
@@ -127,9 +136,9 @@ class Hive:
         t0 = time.time()
         with torch.no_grad(), ctx:
             out = self.model.generate(
-                ids, max_new_tokens=max_new_tokens or self.max_new_tokens,
+                **inputs, max_new_tokens=max_new_tokens or self.max_new_tokens,
                 do_sample=False, pad_token_id=self.tokenizer.eos_token_id,
             )
         dt = time.time() - t0
-        text = self.tokenizer.decode(out[0][ids.shape[1]:], skip_special_tokens=True).strip()
+        text = self.tokenizer.decode(out[0][prompt_len:], skip_special_tokens=True).strip()
         return text, dt
