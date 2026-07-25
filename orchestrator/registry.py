@@ -72,10 +72,19 @@ class Registry:
         return sorted(special, key=lambda b: b.priority)
 
 
+# ${VAR:-default} — sintaxe de shell que o os.path.expandvars NAO entende (ele
+# procuraria uma variavel chamada "VAR:-default" e deixaria o texto literal).
+# Precisamos dela porque o mesmo bees.json roda em lugares diferentes: no Colab o
+# adapter vive em /content (efemero), no Drive, ou local em models/. Assim o
+# default fica versionado e quem quiser sobrescreve com uma variavel de ambiente.
+_VAR_DEFAULT = re.compile(r"\$\{([A-Za-z_]\w*):-([^}]*)\}")
+
+
 def _expand(path: str | None) -> str | None:
-    """Resolve ${VAR} e ~ nos caminhos de adapter (Drive no Colab vs local)."""
+    """Resolve ${VAR:-default}, ${VAR} e ~ nos caminhos de adapter."""
     if not path:
         return None
+    path = _VAR_DEFAULT.sub(lambda m: os.environ.get(m.group(1)) or m.group(2), path)
     return os.path.expanduser(os.path.expandvars(path))
 
 

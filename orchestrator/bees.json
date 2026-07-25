@@ -6,7 +6,7 @@
     {
       "name": "agentica",
       "description": "Abelha REAL (Fase 1): tool-use / seguir-instrucao. Adapter treinado em 1495 exemplos (886 tool_call + 609 texto), 2 epocas, loss mascarada no prompt. train_loss 0,4848 | token acc 93,2% | entropia 0,2765.",
-      "adapter_path": "/content/drive/MyDrive/qwen35-4b-agentica",
+      "adapter_path": "${AGENTICA_ADAPTER:-/content/drive/MyDrive/qwen35-4b-agentica}",
       "priority": 10,
       "fast_path": true,
       "system_prompt": "Voce e um assistente agentico. Quando a tarefa exige uma ferramenta, responda SOMENTE com um JSON {\"tool\": ..., \"args\": {...}}. Caso contrario, responda direto e em portugues.",
@@ -19,8 +19,8 @@
     },
     {
       "name": "coder",
-      "description": "PLANEJADA (Fase 2). Codigo em escopo limitado. Adapter ainda nao existe -> hoje cai no backbone base.",
-      "adapter_path": null,
+      "description": "Abelha REAL (Fase 2): funcoes Python verificaveis por execucao. Treinada em 216 tarefas que o BASE ERRA (filtro data/09). Medido em held-out limpo: dificeis 1,7%->41,7% (24x o base), faceis 100%->82,5%. Config vencedora: 2 epocas, 100% dificil (1 epoca e mistura 30% foram medidas e sao PIORES). ⚠️ adapter EFEMERO no Colab (/content morre com o runtime) — reproduza com: python colab/reproduce_coder.py --out <caminho>",
+      "adapter_path": "${CODER_ADAPTER:-/content/qwen35-4b-coder}",
       "priority": 20,
       "fast_path": true,
       "system_prompt": "Voce e um programador. Responda com codigo correto e conciso. Explique so o essencial.",
@@ -34,7 +34,7 @@
     {
       "name": "chat_ptbr",
       "description": "Abelha real (SFT-v2, 5657 ex). Chat/generalista PT-BR. Catch-all barato quando nenhum trigger casa e a query e simples.",
-      "adapter_path": "/content/drive/MyDrive/qwen35-4b-ptbr-sft",
+      "adapter_path": "${CHAT_ADAPTER:-/content/drive/MyDrive/qwen35-4b-ptbr-sft}",
       "priority": 50,
       "fast_path": true,
       "system_prompt": "Voce e um assistente brasileiro prestativo. Responda em portugues brasileiro natural e correto.",

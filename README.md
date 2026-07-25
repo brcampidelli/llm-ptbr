@@ -90,9 +90,22 @@ Resultado: 877 candidatas → **239 tarefas difíceis (27,3%)**. Treino: 216 exe
 O `coder_tasks_easy.jsonl` (as 638 descartadas por fáceis) virou o **holdout de não-regressão** — sem
 ele, reportaríamos o ganho escondendo o preço.
 
-⚠️ O adapter ficou em `/content` (efêmero, morre com o runtime do Colab). **O treino é reproduzível
-em ~17 min** a partir do que está versionado: `08_gen_coder_tasks` → `09_filter_hard_tasks` →
-conversão → `05_build_splits --prompt-completion` → `sft_qlora`.
+⚠️ O adapter vive em `/content` no Colab (**efêmero** — morre com o runtime). Em vez de depender de
+um artefato que some, **o treino é o artefato**: um comando reproduz tudo em ~17 min.
+
+```bash
+python colab/reproduce_coder.py --out /content/qwen35-4b-coder   # ou um caminho no Drive
+```
+
+O script é **retomável** (pula o filtro caro se `coder_tasks_hard.jsonl` já existir) e traz os
+defaults da config vencedora embutidos.
+
+**Registro portável no `bees.json`:** os caminhos usam `${VAR:-default}` — o default fica versionado
+e cada máquina sobrescreve com uma variável de ambiente, sem editar o JSON:
+
+```bash
+CODER_ADAPTER=models/coder AGENTICA_ADAPTER=models/agentica python orchestrator/run.py --sample
+```
 
 ### 🛑 A 1ª tentativa da CODER: treino CANCELADO pelo gate (2026-07-25)
 
