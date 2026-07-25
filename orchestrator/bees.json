@@ -5,8 +5,8 @@
   "bees": [
     {
       "name": "agentica",
-      "description": "PLANEJADA (Fase 1). Tool-use / seguir-instrucao / chamar ferramenta. Adapter ainda nao existe -> hoje cai no backbone base.",
-      "adapter_path": null,
+      "description": "Abelha REAL (Fase 1): tool-use / seguir-instrucao. Adapter treinado em 1495 exemplos (886 tool_call + 609 texto), 2 epocas, loss mascarada no prompt. train_loss 0,4848 | token acc 93,2% | entropia 0,2765.",
+      "adapter_path": "/content/drive/MyDrive/qwen35-4b-agentica",
       "priority": 10,
       "fast_path": true,
       "system_prompt": "Voce e um assistente agentico. Quando a tarefa exige uma ferramenta, responda SOMENTE com um JSON {\"tool\": ..., \"args\": {...}}. Caso contrario, responda direto e em portugues.",
