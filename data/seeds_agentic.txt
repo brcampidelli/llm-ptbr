@@ -1,0 +1,91 @@
+Qual a cotação atual da PETR4?
+Me diga o preço da ação da Apple agora.
+Quanto está valendo o Bitcoin hoje? Busque na internet.
+Vai chover amanhã em Belo Horizonte?
+Como está o tempo em Recife nos próximos 3 dias?
+Qual a previsão do tempo para São Paulo?
+Busque na internet as notícias mais recentes sobre a Selic.
+Pesquise quais são os melhores frameworks de agentes de IA em 2026.
+Procure na web o que é a arquitetura Mixture-of-Agents.
+Quanto é 48239 vezes 1177?
+Calcule a raiz quadrada de 152399025.
+Qual o resultado de (8712 - 3199) dividido por 7?
+Calcule quantos segundos existem em 17 dias.
+Leia o arquivo /etc/hostname e me diga o conteúdo.
+Abra o arquivo relatorio_vendas.csv e mostre o começo.
+Leia o config.yaml do projeto.
+Liste os arquivos da pasta /var/log.
+Quais arquivos .py existem no diretório src?
+Mostre o conteúdo da pasta de downloads.
+Grave um arquivo notas.txt com o texto "reunião às 14h".
+Crie um arquivo hello.py que imprime "olá mundo".
+Salve a lista de tarefas em todo.md.
+Quantos usuários se cadastraram no último mês? Consulte o banco.
+Rode uma query para somar o faturamento por produto.
+Busque no banco os 10 pedidos mais recentes.
+Execute uma consulta que conte quantos registros tem a tabela clientes.
+Execute este código Python: print(sum(range(100)))
+Rode um script Python que gere os 20 primeiros números de Fibonacci.
+Use Python para contar quantas vogais tem a palavra "paralelepípedo".
+Traduza "the quick brown fox jumps over the lazy dog" para o português.
+Traduza este texto para o inglês: "bom dia, tudo bem com você?"
+Traduza "guten Morgen" para o português.
+Resuma o conteúdo desta página: https://arxiv.org/abs/2506.02153
+Faça um resumo de https://pt.wikipedia.org/wiki/Aprendizado_de_maquina
+Me dê um resumo curto de https://news.ycombinator.com
+Faça uma requisição GET para https://api.github.com/users/brcampidelli
+Busque o JSON de https://api.exemplo.com/v1/status
+Consulte o endpoint https://httpbin.org/get e me mostre a resposta.
+Crie um evento na agenda: reunião de equipe amanhã às 10h.
+Agende "consulta médica" para 2026-08-15 às 09:30, duração 60 minutos.
+Marque na agenda o dentista na sexta às 16h.
+Envie um e-mail para joao@empresa.com com o assunto "Proposta" dizendo que anexei o orçamento.
+Manda um e-mail pra maria@teste.com avisando que a reunião foi remarcada, assunto "Reunião remarcada".
+What is the current stock price of MSFT?
+Search the web for the latest news about small language models.
+Read the file /tmp/output.log and show me what is inside.
+Run this SQL: SELECT COUNT(*) FROM orders WHERE status = 'paid'
+List all files in the current directory.
+What's the weather like in Lisbon tomorrow?
+Translate "obrigado pela ajuda" to English.
+Calculate 2 to the power of 32.
+Summarize the page at https://openai.com/research
+Faça um GET em https://api.coingecko.com/api/v3/ping
+Consulte a cotação do dólar buscando na internet.
+Qual a capital da Austrália?
+Explique o que é uma função recursiva.
+Me conte uma curiosidade sobre o Brasil.
+O que significa a sigla API?
+Quem escreveu Dom Casmurro?
+Explique a diferença entre lista e tupla em Python.
+Bom dia! Como você está?
+Obrigado pela ajuda de ontem.
+Você prefere café ou chá?
+Me dê três ideias de nome para um aplicativo de finanças.
+Escreva um haiku sobre o mar.
+O que é aprendizado supervisionado?
+Qual a diferença entre HTTP e HTTPS?
+Explique em uma frase o que faz o comando git rebase.
+Quanto é 2 mais 2?
+Qual a fórmula da área de um círculo?
+Me explique o que é um modelo de linguagem pequeno.
+Por que o céu é azul?
+Qual é o maior planeta do sistema solar?
+Resuma em duas frases o conceito de overfitting.
+Dê um exemplo de uso do padrão Repository.
+Qual a diferença entre SQL e NoSQL?
+Explique o que é uma LoRA em fine-tuning.
+Como funciona a quantização de modelos?
+What does the acronym REST stand for?
+Explain what a transformer architecture is.
+Give me three tips for writing clean code.
+Preciso saber o clima. (falta a cidade)
+Consulte o banco. (não disse o que consultar)
+Traduza este texto. (não disse o texto nem o idioma)
+Leia o arquivo. (não disse qual)
+Me manda um e-mail. (não disse para quem nem o conteúdo)
+Descubra a cotação da PETR4 e depois calcule quanto valem 300 ações.
+Leia o arquivo vendas.csv e some a coluna total.
+Busque a previsão do tempo em Curitiba e crie um evento na agenda se for chover.
+Traduza o README do projeto para inglês e salve como README.en.md.
+Pesquise os concorrentes e escreva um resumo em concorrentes.md.

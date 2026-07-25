@@ -31,18 +31,25 @@ IN = PROCESSED_DIR / "decontaminated.jsonl"
 EVAL_OUT = PROCESSED_DIR / "sft_ptbr.eval.jsonl"
 
 
-def to_chat(row: dict, cot: bool = False) -> dict:
+def to_chat(row: dict, cot: bool = False, system: str | None = None) -> dict:
     answer = row["response"]
     reasoning = row.get("reasoning", "")
     if cot and reasoning:
         answer = f"<think>\n{reasoning}\n</think>\n\n{answer}"
-    return {
-        "messages": [
-            {"role": "user", "content": row["instruction"]},
-            {"role": "assistant", "content": answer},
-        ],
-        "source": row.get("source", "?"),
-    }
+    msgs = []
+    # System message opcional. Necessario para abelhas cujo comportamento depende
+    # de contexto — a agentica precisa VER o catalogo de ferramentas no treino,
+    # senao decora as 14 em vez de aprender a ler o catalogo e escolher.
+    if system:
+        msgs.append({"role": "system", "content": system})
+    msgs += [
+        {"role": "user", "content": row["instruction"]},
+        {"role": "assistant", "content": answer},
+    ]
+    out = {"messages": msgs, "source": row.get("source", "?")}
+    if row.get("kind"):          # abelha agentica: tool_call | text
+        out["kind"] = row["kind"]
+    return out
 
 
 def main() -> int:
@@ -51,16 +58,32 @@ def main() -> int:
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--cot", action="store_true",
                     help="inclui o raciocínio (campo 'reasoning') como <think> no alvo de treino")
+    # Parametros para servir QUALQUER abelha da comeia (default = pipeline PT-BR original).
+    ap.add_argument("--in", dest="in_path", type=Path, default=IN,
+                    help="jsonl de entrada {instruction,response}")
+    ap.add_argument("--out", type=Path, default=SFT_OUT, help="jsonl de treino")
+    ap.add_argument("--eval-out", type=Path, default=EVAL_OUT, help="jsonl de holdout")
+    ap.add_argument("--system-file", type=Path, default=None,
+                    help="arquivo com a system message a embutir em cada exemplo "
+                         "(a abelha agentica precisa do catalogo de ferramentas)")
     args = ap.parse_args()
 
     ensure_dirs()
-    if not IN.exists():
-        print(f"ERRO: {IN} nao existe. Rode data/04_decontaminate.py antes.", file=sys.stderr)
+    if not args.in_path.exists():
+        print(f"ERRO: {args.in_path} nao existe. Rode a etapa anterior antes.", file=sys.stderr)
         return 1
 
-    raw_rows = [r for r in read_jsonl(IN) if r.get("instruction") and r.get("response")]
+    system = None
+    if args.system_file:
+        if not args.system_file.exists():
+            print(f"ERRO: system-file nao existe: {args.system_file}", file=sys.stderr)
+            return 1
+        system = args.system_file.read_text(encoding="utf-8-sig").strip()
+        print(f"system message: {len(system)} chars de {args.system_file.name}")
+
+    raw_rows = [r for r in read_jsonl(args.in_path) if r.get("instruction") and r.get("response")]
     n_with_reasoning = sum(1 for r in raw_rows if r.get("reasoning"))
-    rows = [to_chat(r, cot=args.cot) for r in raw_rows]
+    rows = [to_chat(r, cot=args.cot, system=system) for r in raw_rows]
     if not rows:
         print("ERRO: nenhum exemplo valido.", file=sys.stderr)
         return 1
@@ -74,12 +97,23 @@ def main() -> int:
     holdout = min(args.holdout, max(0, len(rows) // 10))  # nunca mais que 10% do total
     eval_rows, train_rows = rows[:holdout], rows[holdout:]
 
-    n_train = write_jsonl(SFT_OUT, train_rows)
-    n_eval = write_jsonl(EVAL_OUT, eval_rows)
+    n_train = write_jsonl(args.out, train_rows)
+    n_eval = write_jsonl(args.eval_out, eval_rows)
 
-    print(f"treino  : {n_train} -> {SFT_OUT}")
-    print(f"holdout : {n_eval} -> {EVAL_OUT}")
-    print("\nProximo: python train/sft_qlora.py --data data/processed/sft_ptbr.jsonl")
+    # Distribuicao por 'kind' (abelha agentica): tool_call vs text. Se o texto
+    # sumir, a abelha vira "chama ferramenta pra tudo" (over-calling).
+    kinds = {}
+    for r in train_rows:
+        if r.get("kind"):
+            kinds[r["kind"]] = kinds.get(r["kind"], 0) + 1
+    if kinds:
+        tot = sum(kinds.values())
+        dist = " | ".join(f"{k}={v} ({v/tot:.0%})" for k, v in sorted(kinds.items()))
+        print(f"tipos   : {dist}")
+
+    print(f"treino  : {n_train} -> {args.out}")
+    print(f"holdout : {n_eval} -> {args.eval_out}")
+    print(f"\nProximo: python train/sft_qlora.py --data {args.out}")
     return 0
 
 

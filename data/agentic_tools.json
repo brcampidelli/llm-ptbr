@@ -1,0 +1,89 @@
+{
+  "_comment": "Catalogo de ferramentas da abelha agentica. Injetado no prompt da destilacao (07) E usado para VALIDAR a saida do professor: tool precisa existir aqui, args obrigatorios presentes, nenhum arg desconhecido. Dado que nao valida e descartado (par ruim estraga adapter).",
+  "tools": [
+    {
+      "name": "web_search",
+      "description": "Busca na internet por informacao atual ou publica.",
+      "args": {"query": "texto da busca", "max_results": "inteiro, opcional"},
+      "required": ["query"]
+    },
+    {
+      "name": "http_get",
+      "description": "Faz GET numa URL e devolve o corpo da resposta.",
+      "args": {"url": "URL completa", "headers": "objeto, opcional"},
+      "required": ["url"]
+    },
+    {
+      "name": "read_file",
+      "description": "Le o conteudo de um arquivo local.",
+      "args": {"path": "caminho do arquivo", "max_bytes": "inteiro, opcional"},
+      "required": ["path"]
+    },
+    {
+      "name": "write_file",
+      "description": "Escreve (ou sobrescreve) um arquivo local.",
+      "args": {"path": "caminho do arquivo", "content": "conteudo a gravar"},
+      "required": ["path", "content"]
+    },
+    {
+      "name": "list_dir",
+      "description": "Lista os arquivos de um diretorio.",
+      "args": {"path": "caminho do diretorio", "pattern": "glob, opcional"},
+      "required": ["path"]
+    },
+    {
+      "name": "run_sql",
+      "description": "Executa uma consulta SQL de LEITURA num banco.",
+      "args": {"query": "SELECT ...", "database": "nome do banco, opcional"},
+      "required": ["query"]
+    },
+    {
+      "name": "run_python",
+      "description": "Executa um trecho de codigo Python e devolve a saida.",
+      "args": {"code": "codigo Python"},
+      "required": ["code"]
+    },
+    {
+      "name": "calculator",
+      "description": "Avalia uma expressao matematica exata.",
+      "args": {"expression": "expressao, ex: (1234*57)/3"},
+      "required": ["expression"]
+    },
+    {
+      "name": "get_weather",
+      "description": "Previsao do tempo de uma cidade.",
+      "args": {"city": "nome da cidade", "days": "inteiro, opcional"},
+      "required": ["city"]
+    },
+    {
+      "name": "send_email",
+      "description": "Envia um e-mail. Acao IRREVERSIVEL — usar so com pedido explicito.",
+      "args": {"to": "destinatario", "subject": "assunto", "body": "corpo"},
+      "required": ["to", "subject", "body"]
+    },
+    {
+      "name": "create_calendar_event",
+      "description": "Cria um evento na agenda.",
+      "args": {"title": "titulo", "start": "ISO 8601", "duration_minutes": "inteiro"},
+      "required": ["title", "start"]
+    },
+    {
+      "name": "get_stock_price",
+      "description": "Cotacao atual de um ativo pelo ticker.",
+      "args": {"ticker": "ex: PETR4, AAPL", "exchange": "opcional"},
+      "required": ["ticker"]
+    },
+    {
+      "name": "translate_text",
+      "description": "Traduz um texto entre idiomas.",
+      "args": {"text": "texto", "target_lang": "idioma destino", "source_lang": "opcional"},
+      "required": ["text", "target_lang"]
+    },
+    {
+      "name": "summarize_url",
+      "description": "Baixa uma pagina e resume o conteudo.",
+      "args": {"url": "URL", "max_words": "inteiro, opcional"},
+      "required": ["url"]
+    }
+  ]
+}

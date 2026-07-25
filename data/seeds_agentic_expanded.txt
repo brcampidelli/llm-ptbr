@@ -1,0 +1,1690 @@
+Qual a cotação atual da PETR4?
+Me diga o preço da ação da Apple agora.
+Quanto está valendo o Bitcoin hoje? Busque na internet.
+Vai chover amanhã em Belo Horizonte?
+Como está o tempo em Recife nos próximos 3 dias?
+Qual a previsão do tempo para São Paulo?
+Busque na internet as notícias mais recentes sobre a Selic.
+Pesquise quais são os melhores frameworks de agentes de IA em 2026.
+Procure na web o que é a arquitetura Mixture-of-Agents.
+Quanto é 48239 vezes 1177?
+Calcule a raiz quadrada de 152399025.
+Qual o resultado de (8712 - 3199) dividido por 7?
+Calcule quantos segundos existem em 17 dias.
+Leia o arquivo /etc/hostname e me diga o conteúdo.
+Abra o arquivo relatorio_vendas.csv e mostre o começo.
+Leia o config.yaml do projeto.
+Liste os arquivos da pasta /var/log.
+Quais arquivos .py existem no diretório src?
+Mostre o conteúdo da pasta de downloads.
+Grave um arquivo notas.txt com o texto "reunião às 14h".
+Crie um arquivo hello.py que imprime "olá mundo".
+Salve a lista de tarefas em todo.md.
+Quantos usuários se cadastraram no último mês? Consulte o banco.
+Rode uma query para somar o faturamento por produto.
+Busque no banco os 10 pedidos mais recentes.
+Execute uma consulta que conte quantos registros tem a tabela clientes.
+Execute este código Python: print(sum(range(100)))
+Rode um script Python que gere os 20 primeiros números de Fibonacci.
+Use Python para contar quantas vogais tem a palavra "paralelepípedo".
+Traduza "the quick brown fox jumps over the lazy dog" para o português.
+Traduza este texto para o inglês: "bom dia, tudo bem com você?"
+Traduza "guten Morgen" para o português.
+Resuma o conteúdo desta página: https://arxiv.org/abs/2506.02153
+Faça um resumo de https://pt.wikipedia.org/wiki/Aprendizado_de_maquina
+Me dê um resumo curto de https://news.ycombinator.com
+Faça uma requisição GET para https://api.github.com/users/brcampidelli
+Busque o JSON de https://api.exemplo.com/v1/status
+Consulte o endpoint https://httpbin.org/get e me mostre a resposta.
+Crie um evento na agenda: reunião de equipe amanhã às 10h.
+Agende "consulta médica" para 2026-08-15 às 09:30, duração 60 minutos.
+Marque na agenda o dentista na sexta às 16h.
+Envie um e-mail para joao@empresa.com com o assunto "Proposta" dizendo que anexei o orçamento.
+Manda um e-mail pra maria@teste.com avisando que a reunião foi remarcada, assunto "Reunião remarcada".
+What is the current stock price of MSFT?
+Search the web for the latest news about small language models.
+Read the file /tmp/output.log and show me what is inside.
+Run this SQL: SELECT COUNT(*) FROM orders WHERE status = 'paid'
+List all files in the current directory.
+What's the weather like in Lisbon tomorrow?
+Translate "obrigado pela ajuda" to English.
+Calculate 2 to the power of 32.
+Summarize the page at https://openai.com/research
+Faça um GET em https://api.coingecko.com/api/v3/ping
+Consulte a cotação do dólar buscando na internet.
+Qual a capital da Austrália?
+Explique o que é uma função recursiva.
+Me conte uma curiosidade sobre o Brasil.
+O que significa a sigla API?
+Quem escreveu Dom Casmurro?
+Explique a diferença entre lista e tupla em Python.
+Bom dia! Como você está?
+Obrigado pela ajuda de ontem.
+Você prefere café ou chá?
+Me dê três ideias de nome para um aplicativo de finanças.
+Escreva um haiku sobre o mar.
+O que é aprendizado supervisionado?
+Qual a diferença entre HTTP e HTTPS?
+Explique em uma frase o que faz o comando git rebase.
+Quanto é 2 mais 2?
+Qual a fórmula da área de um círculo?
+Me explique o que é um modelo de linguagem pequeno.
+Por que o céu é azul?
+Qual é o maior planeta do sistema solar?
+Resuma em duas frases o conceito de overfitting.
+Dê um exemplo de uso do padrão Repository.
+Qual a diferença entre SQL e NoSQL?
+Explique o que é uma LoRA em fine-tuning.
+Como funciona a quantização de modelos?
+What does the acronym REST stand for?
+Explain what a transformer architecture is.
+Give me three tips for writing clean code.
+Preciso saber o clima. (falta a cidade)
+Consulte o banco. (não disse o que consultar)
+Traduza este texto. (não disse o texto nem o idioma)
+Leia o arquivo. (não disse qual)
+Me manda um e-mail. (não disse para quem nem o conteúdo)
+Descubra a cotação da PETR4 e depois calcule quanto valem 300 ações.
+Leia o arquivo vendas.csv e some a coluna total.
+Busque a previsão do tempo em Curitiba e crie um evento na agenda se for chover.
+Traduza o README do projeto para inglês e salve como README.en.md.
+Pesquise os concorrentes e escreva um resumo em concorrentes.md.
+Como está o tempo em São Paulo hoje?
+Qual a previsão do tempo para o Rio de Janeiro nos próximos 3 dias?
+Vai chover em Belo Horizonte amanhã?
+Preciso saber a temperatura em Porto Alegre para o fim de semana.
+What's the weather forecast for London this weekend?
+Como está o clima em Salvador agora?
+Me diga a previsão do tempo em Curitiba para os próximos 5 dias.
+Está fazendo calor em Fortaleza hoje?
+Vou viajar para Brasília na quarta-feira, como estará o tempo?
+What's the weather like in Tokyo tomorrow?
+Qual a temperatura máxima prevista para Manaus amanhã?
+Haverá neblina em Florianópolis no sábado?
+Previsão do tempo em Recife para os próximos 7 dias.
+Como estará o tempo em Natal no domingo?
+What's the weather in Sydney for the next 2 days?
+Quanto é 2.574,83 vezes 93,7?
+Calcule a raiz quadrada de 1.234.567.
+15% de 2.850,00 reais, qual o valor?
+Some 0,00045 + 0,00123 e me dê o resultado em notação científica.
+Qual o resultado de 2^10 - 3^5?
+Divida 7.890 por 0,00056.
+Preciso saber o valor de log10(8.500) com duas casas decimais.
+Quanto é (45,7 + 12,3) * (89,1 - 23,4)?
+3.456,78 dividido por 123,45, quero o quociente e o resto inteiro.
+Qual é o seno de 30 graus multiplicado por 100?
+Calcule o fatorial de 12.
+What is the result of (1.234 - 567) * 89 + 0,5?
+Se 1 dólar vale 5,45 reais, quanto são 750 dólares e 30 centavos em reais?
+7 elevado a 0,5, depois multiplique por 3,14.
+Some 1/3 + 1/7 e dê o resultado como fração simplificada.
+Agenda uma reunião com o João sobre o projeto amanhã às 10h, com duração de 30 minutos.
+Marca um evento de "Revisão de Sprint" para quarta-feira às 14h, com 1 hora de duração.
+Pode criar um evento no calendário chamado "Almoço com a equipe" no dia 15/03 às 12h, por 45 minutos?
+Cria um lembrete de "Aniversário da Maria" para o dia 20 de abril às 9h, duração de 15 minutos.
+Add a calendar event titled "Doctor Appointment" next Monday at 8:30 AM, lasting 1 hour.
+Quero agendar uma "Apresentação de Resultados" para o dia 10 às 11h30, com duração de 2 horas.
+Marca "Treinamento de Segurança" na próxima sexta-feira às 9h, por 90 minutos.
+Cria um evento "Reunião com Cliente" para amanhã às 15h, com duração de 40 minutos.
+Por favor, adicione um evento de "Workshop de IA" no dia 22/08 às 14h, com 3 horas de duração.
+Schedule a "Team Standup" for tomorrow at 9:15 AM, 30 minutes long.
+Agende uma "Entrevista com Candidato" para quinta-feira às 10h30, duração de 1 hora.
+Cria um evento chamado "Fechamento do Mês" no dia 31 às 16h, com 20 minutos.
+Marca "Reunião de Alinhamento" para hoje às 17h, por 25 minutos, por favor.
+Add a "Project Review" event this Friday at 2 PM, duration 45 minutes.
+Quero criar um evento "Café com o CEO" no dia 12/06 às 8h, com 1 hora de duração.
+Me liste os arquivos da pasta /home/usuario/documentos com extensão .pdf.
+Quais arquivos estão no diretório C:\Projetos\relatorios?
+Você pode me mostrar o conteúdo da pasta /var/log que contenham "error" no nome?
+Lista os arquivos CSV do diretório /dados/vendas.
+I need to see all files in the directory ~/scripts that start with "backup".
+O que tem na pasta /tmp/uploads?
+Mostre os arquivos .txt do diretório /home/usuario/notas.
+Dá uma olhada nos arquivos da pasta /mnt/storage/fotos com padrão "2023*".
+Quero ver os arquivos .log do diretório /var/log/syslog.
+Lista os arquivos .py em /home/usuario/projetos/python.
+Can you list files in the directory /opt/data that end with ".json"?
+Quais arquivos estão em /home/usuario/downloads com "relatorio" no nome?
+Me mostre os arquivos do diretório /etc/nginx/conf.d que são .conf.
+Lista todos os arquivos .md na pasta /home/usuario/docs.
+Preciso ver os arquivos .xlsx do diretório /home/usuario/planilhas.
+Quantos usuários ativos temos no plano premium?
+Me mostre os nomes dos produtos que nunca foram vendidos.
+Qual foi a receita total da loja matriz em janeiro de 2024?
+Poderia consultar o saldo da conta bancária do cliente CNPJ 12.345.678/0001-90?
+Liste os pedidos com status "enviado" que ainda não foram entregues.
+Quantas avaliações abaixo de 3 estrelas o produto "X-Box Series S" recebeu?
+Mostre os 3 vendedores com maior comissão no último semestre.
+Qual a média de idade dos funcionários do departamento de TI?
+Preciso do histórico de preços do ativo PETR4 nos últimos 30 dias.
+How many orders were placed by customers from Canada in 2023?
+Show me all transactions where the amount exceeds $10,000.
+Quais fornecedores tiveram mais de 5 entregas atrasadas no mês anterior?
+Me dê a lista de clientes inativos há mais de 90 dias na região Nordeste.
+Verifique se há registros duplicados na tabela de logs de acesso.
+Você pode listar os 10 filmes mais alugados na locadora no ano passado?
+Qual é a cotação atual da AMBEV (ABEV3) na Bovespa?
+Quanto vale a ação da Petrobras (PETR4) agora?
+Preciso do preço do S&P 500 (SPY) na NYSE.
+Me mostre o valor do índice Ibovespa (BOVA11) neste momento.
+Você pode verificar o preço do Bitcoin através do ETF QBTC11 na B3?
+Qual é o valor da ação da Apple (AAPL) na NASDAQ?
+Como está a cotação do dólar comercial via o ticker DOLFUT na B3?
+Eu quero saber o preço do ouro usando o ticker GOLD11.
+Dê-me a cotação do Bradesco (BBDC4) na Bovespa.
+Qual é o valor atual do ETF de S&P 500 (IVVB11)?
+Check the current stock price for Microsoft (MSFT) on NASDAQ.
+Qual é a cotação do Banco do Brasil (BBAS3) agora mesmo?
+Preciso saber o valor da ação da Vale (VALE3) na Bovespa.
+Como está o preço da Magazine Luiza (MGLU3) hoje?
+Verifique o valor do índice Dow Jones (DIA) na NYSE.
+Olá! Como você está hoje?
+Muito obrigado pela sua ajuda, foi essencial.
+O que você acha de eu começar um diário de gratidão?
+Escreva uma frase criativa sobre o pôr do sol.
+Você prefere ler livros físicos ou digitais?
+Pode me dar uma ideia de presente para uma amiga que adora plantas?
+Crie um pequeno poema de quatro versos sobre amizade.
+Agradeço demais pela paciência em me explicar isso.
+Qual cor você acha que combina mais com uma sala pequena e clara?
+Invente um nome fictício para um café aconchegante.
+Hi, can you recommend a good book for a rainy afternoon?
+O que você acha de eu tentar aprender a tocar violão?
+Escreva uma saudação divertida para um e-mail de aniversário.
+Thanks for listening – your opinion really matters to me.
+Se você pudesse descrever o cheiro da chuva em três palavras, quais seriam?
+Me lembre desse evento mais tarde.
+Pode me dar uma dica?
+Agende uma reunião.
+What's the answer?
+Envie uma mensagem para ele.
+Calcule a média.
+Mova o arquivo.
+Converta esse valor.
+Me avise quando acabar.
+Faça uma busca.
+Send a notification.
+Crie uma lista.
+Me mostre a previsão.
+Traduza isso.
+Organize meus contatos.
+Quem foi o primeiro presidente do Brasil?
+Qual a fórmula química da água?
+O que significa a sigla ONU?
+Em que ano terminou a Segunda Guerra Mundial?
+Qual é o planeta mais próximo do Sol?
+Quanto é 7 vezes 8?
+O que é fotossíntese?
+Qual a capital da França?
+Quantos ossos tem o corpo humano adulto?
+What is the boiling point of water in Celsius?
+Quem descobriu o Brasil?
+O que significa a palavra "democracia"?
+Qual é o maior oceano do mundo?
+Quanto é 15 mais 9?
+Qual foi a previsão do tempo para São Paulo hoje?
+Procure o preço das ações da Petrobras hoje.
+Me mostre as últimas notícias sobre inteligência artificial.
+Quem é o atual presidente da Argentina?
+O que estão falando sobre o novo iPhone no Twitter?
+Tem vaga de emprego para programador Python no Rio de Janeiro?
+Ache o horário do jogo do Flamengo no domingo.
+Quanto custa uma passagem de avião de Curitiba para Buenos Aires?
+Estou com dúvida sobre o significado da palavra "ubíquo".
+Preciso de receitas de bolo de chocolate sem glúten.
+Qual é a população atual do Japão?
+Verifique a cotação do dólar comercial em tempo real.
+What is the current exchange rate for USD to EUR?
+Quem venceu a última eleição presidencial no Chile?
+Busque artigos recentes sobre vacinação infantil no Brasil.
+Qual é a previsão do tempo para São Paulo hoje?
+Me mostra a cotação do dólar em relação ao real agora.
+Puxe a última notícia da Reuters sobre tecnologia.
+Qual é a definição da palavra "inefável" no dicionário Priberam?
+Quanto está valendo 1 Bitcoin atualmente?
+Verifica se o site https://www.google.com está acessível.
+Me dá o resumo da página da Wikipedia sobre inteligência artificial.
+Me conta uma curiosidade aleatória.
+Conte uma piada para mim.
+Que horas são agora?
+Qual é o meu IP público?
+Busque os repositórios mais populares do JavaScript no GitHub.
+Qual é o título da página inicial do UOL?
+Quantos casos de COVID-19 foram registrados hoje no Brasil?
+Find the current population of Tokyo.
+Qual é a capital da França?
+O que é a mitose?
+Quanto é 9 mais 7?
+Quem escreveu "Os Lusíadas"?
+Qual a função do cloroplasto nas células vegetais?
+Quantos continentes existem no mundo?
+Que planeta é conhecido como "Planeta Vermelho"?
+What is the atomic number of carbon?
+Quem foi o primeiro homem a orbitar a Terra?
+Qual é a raiz quadrada de 16?
+Quanto é 6 vezes 9?
+Pode resumir o conteúdo da página https://pt.wikipedia.org/wiki/Brasil para mim?
+Me dá um resumo da notícia no link https://g1.globo.com/ultimas-noticias/ sobre os principais destaques de hoje.
+What's the main point of this article? https://www.bbc.com/news/world-europe-12345678
+Resumo de dois parágrafos da página https://www.cnnbrasil.com.br/politica/ sobre a última votação no Congresso.
+Extrai um resumo curto (máx 100 palavras) do artigo em https://www.technologyreview.com/2025/01/10/ai-advances/
+Preciso de um resumo da descrição do produto nessa URL: https://www.amazon.com/dp/B0EXAMPLE
+Me dá os pontos principais do post do blog https://blog.google/technology/ai/new-features/
+Faça um resumo de até 200 palavras do conteúdo em https://www.gov.br/pt-br/noticias
+Summarize the key information from https://en.wikipedia.org/wiki/Climate_change in a few sentences.
+Resuma para mim o relatório do IPCC disponível em https://www.ipcc.ch/report/ar6/wg1/
+Pode resumir a página https://www.receita.fazenda.gov.br/ para eu entender os serviços principais?
+Quero um resumo bem rápido (50 palavras) do que está na homepage do site https://www.uol.com.br/
+Resumo do artigo científico em https://arxiv.org/abs/2501.12345 sobre machine learning.
+Dá um resumo de 150 palavras do conteúdo da página https://www.nytimes.com/2025/01/15/technology/ai-regulation.html
+Me resume a aba "Sobre" da empresa no site https://www.apple.com/br/
+Traduza "Life is like a box of chocolates, you never know what you're gonna get" para o português brasileiro.
+Você pode traduzir este parágrafo do alemão para o inglês? "Die Sonne scheint, aber es ist kalt.
+Preciso da tradução do menu de um restaurante mexicano: "Tacos al pastor con piña y cilantro, servidos con salsa verde.
+Traduza a placa em italiano: "Vietato l'ingresso ai non autorizzati.
+Como se diz em francês "Por favor, você pode me ajudar a encontrar a estação de trem?
+Converta esta citação em latim para o português: "Carpe diem, quam minimum credula postero.
+Traduza o seguinte e-mail do japonês para o inglês: "この度はご連絡いただきありがとうございます。
+Qual é a tradução para o espanhol de "Estou muito feliz em conhecê-lo"?
+Traduza este tweet do italiano: "Non vedo l'ora di vederti stasera!
+Dê a versão em português de "The early bird catches the worm.
+Preciso traduzir esta receita do coreano para o inglês: "김치찌개를 만들기 위해 배추김치, 돼지고기, 두부를 준비합니다.
+Traduza essa frase do holandês: "Hoe laat is het?" para o português.
+You need to translate the following English tweet into French: "Can't wait for the weekend! 🎉
+Traduza a legenda de uma foto em alemão: "Schöne Aussicht von hier oben.
+Como fica em russo a frase "Onde fica o banheiro?
+Mande um e-mail para o João com o assunto "Reunião amanhã" e corpo confirmando as 10h.
+Envie um e-mail para suporte@empresa.com.br reclamando sobre o atraso no pedido #12345.
+Você pode me enviar um e-mail para maria@gmail.com com o resumo do artigo que acabei de te pedir?
+Preciso que você envie um e-mail para meu chefe (chefe@firma.com) com o assunto "Relatório mensal" e o corpo com os números do mês passado.
+Envia um email pra mim mesmo com uma lista de compras.
+Please send an email to john.doe@example.com with subject "Meeting canceled" and body saying the 3pm meeting is off.
+Manda um e-mail para a professora (profa@universidade.br) pedindo prorrogação do prazo do trabalho.
+Envie um e-mail de agradecimento para ana@corp.com pelo feedback no projeto.
+Pode mandar um e-mail para o RH (rh@empresa.com) solicitando informações sobre o plano de saúde?
+Send an email to support@tool.com with subject "Bug report" and describe the error that appeared on screen.
+Envie um e-mail para o cliente cliente@exemplo.com com o orçamento atualizado conforme conversamos.
+Manda um email para contato1@a.com e contato2@b.com com o assunto "Newsletter de Janeiro" e o corpo do texto que te passei.
+Preciso que você envie um e-mail para o meu irmão (irmao@email.com) convidando para o churrasco no sábado.
+Envia um e-mail para tech@software.com com assunto "Erro no sistema" e corpo descrevendo a mensagem de erro.
+Send an email to myself with a reminder to buy milk.
+Calcula 15% de 340 reais e me mostra o resultado.
+Qual é o resto da divisão de 1024 por 7?
+Gere os primeiros 10 números ímpares a partir de 1.
+Simula o lançamento de um dado de 6 faces 50 vezes e me dá a contagem de cada face.
+Converta 100 graus Fahrenheit para Celsius.
+Cria uma lista com os 5 maiores valores da sequência Fibonacci.
+Check if the number 289 is a perfect square.
+Descobre se a palavra "arara" é um palíndromo.
+Quanto é a raiz quadrada de 1444?
+Ordena a lista [9, 2, 7, 4, 6, 1, 8, 3, 5] em ordem crescente e me mostra.
+Soma todos os números de 1 a 100 e exibe o total.
+Gera uma senha aleatória de 8 caracteres (letras e números).
+Verifica se o ano 2024 é bissexto.
+Calcula o fatorial de 8 e mostra o resultado.
+Me diz quantos dias há entre 1 de janeiro de 2024 e 15 de março de 2024.
+Me lembre de algo importante mais tarde.
+Traduza esta frase.
+Qual é a capital desse país?
+Resolva essa equação para mim.
+Conte uma piada engraçada.
+Give me a summary of that document.
+O que acha sobre esse assunto?
+Me explique o significado desta palavra.
+Calcule a soma desses números.
+What time is the meeting?
+Liste os ingredientes dessa receita.
+Defina este termo técnico.
+Como faço para resolver esse problema?
+Tell me a story about that.
+Compare essas duas opções.
+Muito obrigado pela ajuda de ontem, foi essencial.
+O que você acha de um poema sobre o pôr do sol?
+Me dê uma ideia criativa para um conto de mistério.
+Você acha que prefiro viajar para a praia ou para a montanha?
+Escreva uma frase inspiradora sobre recomeços.
+Qual a sua opinião sobre aprender um novo idioma?
+Pode me ajudar a pensar em um nome para um gato preto?
+Obrigado pela paciência, você é um ótimo assistente.
+Tenho duas maçãs e você me dá mais três, quantas tenho?
+O que acharia de um diálogo entre um livro e um e-reader?
+Me sugira um hobby relaxante para começar.
+Você prefere café ou chá? Por quê?
+Write a short, funny caption for a photo of a sleepy dog.
+Escreva uma mensagem de aniversário curta e carinhosa.
+Qual a população estimada da cidade de São Paulo para 2024?
+Puxa o preço de fechamento da ação PETR4 no último dia útil.
+Quantos pedidos foram cancelados na tabela orders no mês passado?
+Me mostre o nome e email dos clientes que compraram mais de R$ 500 em janeiro.
+Quantos filmes do gênero "Ação" estão cadastrados no banco?
+Quero a lista de produtos com estoque abaixo de 10 unidades.
+Give me the total sales amount for the year 2024 in the north region.
+Qual o número de alunos matriculados no curso de Ciência da Computação na UFMG?
+Verifica se existe algum registro de log de erro na tabela system_logs após as 18h de ontem.
+Quantos usuários ativos temos no banco de dados de produção?
+Me traga o nome e salário dos funcionários do departamento de TI ordenados do maior para o menor.
+Qual a média de avaliação dos restaurantes cadastrados na cidade de Curitiba?
+Quantas transações foram realizadas na conta corrente 12345-6 no mês de novembro?
+Mostre os 5 livros mais vendidos da tabela vendas_livros no último trimestre.
+Quero saber quantos servidores estão com status "offline" no inventário.
+Mostra o conteúdo do arquivo /home/joao/meu_relatorio.txt.
+Poderia ler o arquivo de log em /var/log/sistema/erros.log, por favor?
+Leia o código fonte em ~/projetos/app.py para mim.
+O que tá escrito no arquivo /etc/config.yaml?
+Quero ver o conteúdo de /home/maria/notas.txt.
+Abra o arquivo de configuração em C:\Usuários\Ana\repositorio\settings.json.
+Read the file /home/user/data.csv and show its contents.
+Preciso que você leia o início do arquivo /dados/pesquisa.txt, só os primeiros 500 bytes.
+Dá uma olhada no arquivo /tmp/backup.sql, me mostra o que tem.
+Mostre-me o que está em /home/pedro/lista_tarefas.md.
+Poderia ler o arquivo de saída em ./resultados/output.log?
+Leia o arquivo /opt/meuapp/README.md com no máximo 1000 bytes.
+Quero saber o conteúdo de /home/lucas/documento_final.pdf.
+Pode abrir o arquivo /var/www/index.html e mostrar o texto?
+Read the contents of /home/bob/config.ini.
+Qual é a cotação do dólar hoje?
+Pode verificar o preço do Bitcoin agora?
+Me mostre a previsão do tempo para São Paulo amanhã.
+Busca o artigo sobre inteligência artificial na Wikipédia.
+Quantos habitantes tem o Rio de Janeiro segundo o último censo?
+Qual é o endereço do site da prefeitura de Belo Horizonte?
+Verifica quantos episódios tem a série "Stranger Things" no IMDb.
+What is the current exchange rate between USD and EUR?
+Puxa a tabela de classificação do Brasileirão 2024.
+Quero saber o resultado do jogo do Flamengo ontem.
+Busca uma receita de bolo de cenoura com cobertura de chocolate.
+Me dá a letra da música "Garota de Ipanema".
+Qual é o PIB do Brasil no último ano divulgado?
+Find the latest news about the Mars rover.
+Verifica a hora atual em Tóquio agora.
+Me mostre as principais notícias sobre inteligência artificial hoje.
+Find the latest stock price for Apple Inc.
+Quem foi o último vencedor do Oscar de melhor filme?
+Preciso da receita de bolo de cenoura com cobertura de chocolate.
+O que diz o artigo 5º da Constituição Federal sobre liberdade de expressão?
+Quais os jogos mais vendidos de 2024 até agora?
+Me dê três curiosidades sobre a história do Rio de Janeiro.
+Look up the population of Tokyo in 2023.
+Qual o endereço do Museu do Ipiranga em São Paulo?
+Quem são os artistas confirmados no Rock in Rio 2024?
+Preciso de uma lista com as melhores praias do Nordeste brasileiro.
+Como está o tempo em Londres agora?
+Search for the latest scientific discoveries about Mars.
+Quais foram os gols do último jogo do Flamengo?
+Qual vai ser a previsão para Tóquio nos próximos 5 dias?
+Me diga o clima em Buenos Aires amanhã.
+Vai fazer frio em Gramado no final de semana? Quero saber de sábado e domingo.
+O tempo em Londres para os próximos 3 dias, por favor.
+Preciso saber se vai chover em Recife amanhã.
+Como é o clima em Paris hoje e amanhã?
+What's the weather like in New York City for the next two days?
+Me dá a previsão do tempo para Berlim nos próximos 7 dias?
+Vai ter sol em Florianópolis no domingo?
+Para o Rio de Janeiro, como fica o tempo amanhã e depois?
+O tempo em Lisboa para os próximos 4 dias.
+Check the weather in Sydney for the next 3 days.
+Quero saber a temperatura em Brasília para hoje e amanhã.
+Previsão do tempo para Santiago, Chile, nos próximos 2 dias, por obséquio.
+Qual é o preço atual da ação da Petrobras (PETR4) na Bovespa?
+Me dê a cotação do Itaú Unibanco (ITUB4) agora.
+Preciso saber o valor da ação da Vale (VALE3) hoje.
+Como está a ação da Ambev (ABEV3) na Bovespa?
+Cotação do Bradesco (BBDC4) por favor.
+Quanto está valendo a ação da Magazine Luiza (MGLU3) neste momento?
+Stock price for Apple (AAPL) on Nasdaq.
+Qual o preço da ação da Eletrobras (ELET3) agora?
+Pode me informar a cotação da ação da Gerdau (GGBR4) na Bovespa?
+Quero o valor atual da ação da Weg (WEGE3).
+Cotação da ação da SulAmérica (SULA11) na Bovespa, por favor.
+How much is a share of Microsoft (MSFT) on Nasdaq?
+Preciso da cotação da ação da Cielo (CIEL3) agora.
+Qual o preço da ação do Banco do Brasil (BBAS3) na Bovespa?
+Dê-me o valor atual da ação da Embraer (EMBR3) na Bovespa.
+Quanto é 1234 vezes 5678?
+Calculate 15% of 2000.
+Qual é a raiz quadrada de 144?
+Preciso saber o resultado de (23 + 45) * (67
+Me mostra o que tem escrito no arquivo "meu_projeto/README.md".
+Qual é o conteúdo do arquivo /etc/hostname do servidor?
+Pode ler o arquivo "logs/erro_2024-01-15.log" e me dizer se tem algum erro crítico?
+Abre o arquivo "config.json" e me mostra as configurações do banco de dados.
+Quero ver as primeiras 500 linhas do arquivo "dados_vendas.csv".
+Read the file "user_manual.txt" and find the section about installation.
+Verifique o conteúdo do arquivo "senhas.txt" (mas não me mostre as senhas, só me diga se existe).
+Me mostre o arquivo "relatorio_final.docx" resumido, só os principais pontos.
+Leia o arquivo "script.py" e me explique o que ele faz.
+O que tem dentro do arquivo "backup/2023-12-01_dump.sql"?
+Pode abrir "instrucoes.html" e ver se o link do site está funcionando?
+Show me the content of "notes.txt" from the root directory.
+Quero que leia o arquivo "meu_diario.txt" e me conte a história do dia 10 de março.
+Verifique se o arquivo "chave_publica.pem" tem o formato correto.
+Me mostre o começo do arquivo "livro_capitulo1.txt", só os primeiros 200 caracteres.
+Veja quais arquivos estão na pasta /home/usuario/projetos.
+Me mostre os arquivos do diretório de downloads que têm extensão .pdf.
+Quero listar o que tem na pasta /var/log/syslog.
+Dá uma olhada nos arquivos dentro de C:\Users\Maria\Documentos.
+Quais arquivos estão no diretório /etc/nginx/sites-enabled?
+Liste todos os arquivos .txt na pasta /home/ana/relatorios.
+Preciso saber o que tem dentro do diretório /opt/aplicacao/logs.
+Show me the contents of the directory /mnt/data/backups.
+Me mostre os arquivos que começam com "2024" na pasta /home/fotos/eventos.
+O que tem na pasta D:\Projetos\Python\scripts?
+Verifique os arquivos .csv no diretório /home/joao/dados_vendas.
+List the files in /usr/share/nginx/html that match "index*".
+Quero ver os arquivos da pasta /tmp/uploads, por favor.
+Exiba todos os arquivos .log que estão em /var/log/apache2.
+Dá uma listada nos arquivos do diretório /home/roberto/documentos/contratos.
+Calcula quanto é 2 elevado a 100 e me mostra o resultado.
+Verifica se o número 1729 é primo ou não.
+Gere os primeiros 20 números da sequência de Fibonacci.
+What's the square root of 123456789?
+Decodifica essa string em base64: SGVsbG8gV29ybGQ=
+Simula uma rolagem de um dado de 6 faces 1000 vezes e me dá a frequência de cada face.
+Converte 1000 dólares para reais usando a taxa de câmbio que você tem em mente.
+Cria uma lista dos divisores de 360.
+Calcula o fatorial de 15.
+Gere um número aleatório entre 1 e 100 e guarda na variável 'sorteio'.
+Dá o valor de pi com 20 casas decimais.
+Ordena esta lista de números do menor para o maior: [45, 12, 78, 3, 99, 22, 67, 1].
+Verifica quantos segundos existem em um ano bissexto.
+Sorteia 6 números da Mega-Sena (sem repetir).
+Printa a tabuada completa do 7.
+Qual é a fórmula química da água?
+Quem escreveu a peça "Romeu e Julieta"?
+Em que ano o homem pisou na Lua pela primeira vez?
+Qual é a capital do Brasil?
+What is the chemical symbol for gold?
+Qual é a função do fígado no corpo humano?
+Quem foi o primeiro presidente dos Estados Unidos?
+O que é um substantivo abstrato?
+Qual é a distância aproximada da Terra ao Sol?
+What is the boiling point of water in degrees Celsius?
+Quem descobriu a penicilina?
+O que é a teoria da relatividade geral?
+Em que continente fica o Egito?
+Marque uma reunião de planejamento estratégico para amanhã às 10h, com 1 hora de duração.
+Agende um evento de aniversário da Maria para o dia 10/12/2024 às 14h, com 2 horas de duração.
+Pode criar um treinamento de segurança no trabalho na próxima quarta-feira às 9h, com 3 horas de duração?
+Preciso de um lembrete para reunião com o cliente ABC no dia 05/11/2024 às 15h, duração 30 minutos.
+Agenda um webinar sobre inteligência artificial para o dia 15/01/2025 às 11h, com 1h30 de duração.
+Crie um evento de almoço de confraternização da equipe para sexta-feira às 12h, com 1 hora de duração.
+Schedule a daily stand-up meeting for tomorrow at 9:30 AM, 15 minutes long.
+Vou precisar de um evento de revisão de sprint no dia 20/12/2024 às 14h, com 2 horas de duração.
+Marque uma sessão de brainstorming de novos produtos para o dia 03/01/2025 às 10h, duração 1 hora.
+Agende uma aula de pilates para o dia 08/12/2024 às 18h, com 45 minutos de duração.
+Crie um evento de workshop de vendas no dia 12/12/2024 às 8h, com 4 horas de duração.
+Pode marcar um café com o fornecedor XYZ no dia 18/11/2024 às 16h, 30 minutos?
+Preciso agendar uma apresentação de resultados para o conselho no dia 22/01/2025 às 9h, com 1h30 de duração.
+Create a calendar event for a dentist appointment on November 25th at 3 PM, 45 minutes long.
+Marque um evento de confraternização de fim de ano para o dia 20/12/2024 às 19h, com 3 horas de duração.
+Salva este texto no arquivo ~/notas.txt: "Comprar leite, pão e ovos amanhã.
+Cria um arquivo chamado resumo.txt com o resumo do capítulo 3 de "O Capital".
+Escreve no caminho /home/usuario/config.json o seguinte: {"tema": "escuro", "idioma": "pt-BR"}.
+Preciso que você grave um poema de 4 linhas sobre o mar em ~/poema.txt.
+Pode criar um arquivo ~/lista_tarefas.txt com as tarefas: lavar roupa, estudar Python, correr 5 km.
+Gera um arquivo chamado dados.txt contendo os números: 10, 20, 30, 40.
+Save this text to ~/usernotes.txt: "Meeting at 3 PM with Alice.
+Cria um arquivo ~/receita.txt com a receita de pão de queijo simples.
+Escreve no arquivo ~/backup/log.txt a linha: "Backup realizado em 2023-10-05 às 14:30.
+Quero que você grave um arquivo ~/agenda.txt com os compromissos: segunda: reunião, quarta: aula de yoga.
+Cria um arquivo ~/projeto/instrucoes.txt com o texto: "Execute o script app.py para iniciar.
+Gera um arquivo ~/lembrete.txt: "Comprar presente para aniversário da Maria no sábado.
+Write a file at ~/weekly_goals.txt: "Finish project report, call dentist, read 2 chapters.
+Salva em ~/contatos.txt o nome e telefone: João Silva, 11987654321.
+Cria um arquivo ~/codigo/exemplo.py com: print("Olá, mundo!") e salve.
+Bom dia! Como você está se sentindo hoje?
+Agradeço muito pela paciência em me explicar esse assunto.
+Você poderia sugerir um tema interessante para um texto criativo sobre amizade?
+O que você acha de começar um diário pessoal para organizar os pensamentos?
+Escreva uma frase curta e inspiradora sobre superação.
+Muito obrigado pelo conselho de ontem, foi muito útil.
+Você acha que vale a pena aprender a tocar um instrumento musical por hobby?
+Hi! Could you share your opinion on whether reading fiction is good for empathy?
+Preciso de uma ideia para um nome criativo de um clube do livro.
+Crie um haicai sobre a chegada da primavera.
+Obrigada pela conversa agradável; gostei muito de trocar ideias com você.
+O que você recomendaria para alguém que quer desenvolver mais criatividade?
+Você prefere trabalhar em equipe ou sozinho? Por quê?
+Escreva um pequeno diálogo entre um otimista e um pessimista sobre o tempo.
+Agradeço pela ajuda rápida! Você sempre resolve tudo com clareza.
+O que é a fotossíntese?
+Em que ano ocorreu a chegada do homem à Lua?
+Quanto é 8 vezes 7?
+O que significa a sigla DNA?
+Quantos dias tem um ano bissexto?
+Quem pintou a Mona Lisa?
+O que é um adjetivo?
+Qual é a fórmula da água?
+Obrigado pela ajuda de ontem, você foi muito útil.
+O que você acha de ler ficção científica?
+Escreva um pequeno poema sobre o pôr do sol.
+Você prefere café ou chá pela manhã?
+Pode me dar uma ideia para um conto sobre um gato que descobre um segredo?
+Agradeço imensamente pela sua paciência.
+Em sua opinião, qual a melhor estação do ano?
+Crie uma frase criativa para começar uma história de mistério.
+Oi! Tudo bem? Queria saber sua opinião sobre viajar sozinho.
+Valeu mesmo pela dica do restaurante, foi ótimo!
+What do you think about learning a new language?
+Escreva um haikai sobre o inverno.
+Você acha que é melhor trabalhar em casa ou no escritório?
+Muito obrigado por me ouvir, você é um ótimo assistente.
+Traduza este parágrafo do relatório financeiro para inglês: "A receita líquida cresceu 12% no trimestre, impulsionada pelo aumento nas vendas do segmento de tecnologia.
+Could you translate this French menu item into Portuguese? "Filet mignon sauce au poivre avec gratin dauphinois.
+Preciso do texto abaixo em espanhol para enviar ao cliente na Argentina: "Seu pedido será processado em até 48 horas úteis.
+Traduza este e-mail em alemão para português: "Wir bestätigen den Eingang Ihrer Anfrage und werden uns in Kürze bei Ihnen melden.
+Pode traduzir essa frase do site para inglês? "Acesse nossa central de ajuda para tirar dúvidas sobre garantia.
+Quero a tradução deste tweet em italiano para o português: "Oggi ho visitato il Colosseo per la prima volta, emozionante!
+Translate this English sentence to Japanese: "Please confirm your reservation by replying to this email.
+Traduza o seguinte trecho de um contrato jurídico do português para o francês: "As partes concordam em manter sigilo absoluto sobre os termos deste acordo.
+Me traduza essa mensagem de atendimento ao cliente para espanhol: "Olá, sua reclamação foi registrada e será analisada em até 5 dias úteis.
+Preciso que você traduza esta legenda de vídeo do árabe para o português: "مرحباً بكم في هذه الجولة السياحية في دبي.
+Do you mind translating this product description from Portuguese to English? "Cadeira ergonômica ajustável com suporte lombar e braços acolchoados.
+Traduza essa citação do português para o alemão: "A persistência é o caminho do êxito." – Charles Chaplin
+Passe essa resposta automática para o russo: "Obrigado por entrar em contato. Responderemos em breve.
+Traduza este aviso do coreano para o português: "이 출입구는 비상시에만 사용하십시오.
+Translate this short poem from Portuguese to Italian: "O vento sussurra segredos no jardim, entre flores que dançam sem fim.
+Qual é a previsão do tempo para o Recife no próximo sábado?
+Quem venceu o jogo do Flamengo contra o Palmeiras ontem?
+How many calories are in a medium avocado?
+Busque a letra completa da música "Águas de Março" de Tom Jobim.
+O que significa a expressão "to kill two birds with one stone" em português?
+Qual é o valor do dólar comercial hoje em relação ao real?
+Find the current stock price of Apple (AAPL).
+Quem foi o ganhador do Prêmio Nobel de Literatura em 2023?
+Me mostre a receita de bolo de cenoura com cobertura de chocolate.
+A que horas será o próximo show da Taylor Swift em São Paulo?
+Qual é a população atual da cidade de Salvador?
+What is the latest news about the hurricane in the Gulf of Mexico?
+Quem é o atual ministro da economia do Brasil?
+Busque o horário de funcionamento do Museu do Louvre em Paris.
+Qual é o peso atômico do elemento oxigênio?
+Verifique a cotação do dólar hoje no site da API do Banco Central.
+Pega o JSON da API do GitHub para o repositório facebook/react.
+Me mostre o conteúdo da página de ajuda da Wikipedia sobre "Inteligência artificial".
+Acesse a URL https://api.weather.gov/points/39.7456,-97.0892 e me dê os dados.
+Quero saber o preço do Bitcoin agora, use a API da CoinDesk.
+Busque o artigo sobre "Mudanças climáticas" na Wikipédia em português.
+Faça uma requisição GET para https://jsonplaceholder.typicode.com/posts/1 e me mostre o resultado.
+Pega o feed RSS do blog do Google AI.
+Verifique o status do site example.com com um GET simples.
+Obtenha a lista de usuários da API https://reqres.in/api/users?page=2.
+Acesse a página de notícias da Globo.com e me dê o título principal.
+Me dê a resposta da API de previsão do tempo para São Paulo, SP, Brasil.
+Get the latest commit from the Kubernetes GitHub repo via API.
+Fetch the robots.txt from https://www.google.com/robots.txt.
+Baixe o conteúdo da página inicial da Wikipedia em inglês.
+Veja o que tem na minha pasta de Downloads, por favor.
+Quais arquivos estão em /var/log/nginx?
+Pode listar os arquivos com extensão .txt no diretório /home/joao/documentos?
+Tem como ver o conteúdo da pasta do projeto "site-novo"?
+Mostre os arquivos JavaScript na pasta /assets/js.
+O que está na minha área de trabalho?
+List files in /home/user/backups that contain "2025" in the name.
+Quero saber quais CSVs estão em /dados/vendas/.
+Dê uma olhada nos arquivos de configuração em /etc/ssh/.
+Pode listar o que tem em /tmp?
+Verifique os arquivos de log do sistema em /var/log.
+Mostre os PDFs na pasta /home/maria/documentos/.
+Quais arquivos estão no drive compartilhado /mnt/network/share?
+List files ending with ".yml" in /etc/ansible/.
+Tem algum arquivo .py na pasta scripts?
+Salve uma lista de compras em ~/compras.txt com: arroz, feijão, leite, ovos, pão, manteiga.
+Crie um arquivo /tmp/meu_script.sh com o conteúdo `#!/bin/bash\necho "Olá, mundo!"` e dê permissão de execução.
+Grava no arquivo ~/notas.txt a seguinte anotação: "Reunião com cliente amanhã às 14h, levar apresentação.
+Escreva um arquivo de configuração do meu servidor nginx em /etc/nginx/sites-available/meusite.com com o conteúdo: server { listen 80; server_name meusite.com; root /var/www/meusite; }
+Pode salvar um trecho de código Python em ~/teste.py? O código: print("Hello World").
+Registre no arquivo ~/log.txt a entrada: "2025-03-21 10:00 - Início da auditoria.
+Crie um arquivo README.md no diretório do projeto com a descrição: "# Projeto Análise de Dados\n## Como usar\nExecute `python main.py`.
+Salve a letra da música 'Garota de Ipanema' em ~/musica.txt.
+Write a text file `~/todo.txt` with these tasks: "1. Finish report, 2. Call dentist, 3. Buy groceries.
+Atualize o arquivo /etc/hosts adicionando a linha: "127.0.0.1 meuapp.local".
+Crie um arquivo de backup da minha agenda em ~/agenda_backup.txt com o conteúdo: "Seg: reunião 9h, Ter: dentista 11h, Qua: aula 14h".
+Gere um arquivo JSON em /dados/config.json com: {"host": "localhost", "port": 3000, "debug": true}.
+Escreva uma carta formal de demissão em ~/demissao.txt endereçada ao RH, dizendo que estou saindo por motivos pessoais.
+Salve o resultado da consulta SQL em ~/consulta.sql: SELECT * FROM usuarios WHERE ativo = 1;
+Crie um arquivo de senhas em ~/senhas.txt (criptografado não precisa, só texto) com: "email: senha123, banco: minhaSenha@2025".
+We need to generate 15 ambiguous user requests that lack required information. They must not require external tools, only simple arithmetic. Most in Portuguese, about 1 in 6 in English. Examples: "leia o arquivo" without specifying which file.
+Let's think of common ambiguous requests:
+Send an email" - missing recipient, subject, body.
+Add a meeting" - missing date, time, participants.
+Calculate the total" - missing items or numbers.
+Summarize this document" - missing document reference.
+Translate this sentence" - missing target language.
+Convert the units" - missing from/to units.
+Set a reminder" - missing time/date.
+Find the address" - missing person/place.
+Check my calendar" - missing date/time.
+Tell me a joke" - not ambiguous, but maybe missing theme? Actually ambiguous if user wants type of joke. But better focus on missing info.
+Compare these two" - missing what to compare.
+Write a poem" - missing topic/style.
+What's the weather?" - missing location (but weather is external tool, so avoid).
+What time is it in Tokyo?" - external? Actually time zone conversion is simple, but could be considered external. Avoid.
+Schedule a call" - missing who, when.
+Update my profile" - missing what field.
+Delete the file" - missing which file.
+Move the appointment" - missing which, to when.
+Send a message" - missing to whom, what.
+Create a document" - missing content/title.
+Set an alarm" - missing time.
+Turn off the lights" - but that's IoT, likely external. Avoid.
+Add an item to my shopping list" - missing item.
+Save this note" - missing note content.
+Remind me about something" - missing what, when.
+All must be internal, no external APIs. Simple arithmetic: "Calculate 3+5" is fine, but ambiguous would be "Calculate this" without numbers.
+We'll produce 15 lines. Some in English (maybe 2 or 3). Ensure each is clearly missing required info.
+Envie um e-mail. (missing: destinatário, assunto, corpo)
+Adicione um compromisso na agenda. (missing: data, hora, descrição)
+Calcule o total. (missing: quais valores?)
+Traduza esta frase. (missing: idioma alvo)
+Compare esses dois itens. (missing: quais itens?)
+Crie um documento novo. (missing: título, conteúdo)
+Delete o arquivo. (missing: qual arquivo?)
+Atualize minha lista de tarefas. (missing: o que atualizar?)
+Set a reminder. (missing: what time? what for?)
+Send a message to John. (missing: content? Actually "to John" gives recipient, but still missing body. Could be ambiguous if John is not defined? But okay. Maybe better: "Send a message." missing recipient and body.)
+Shedule a meeting. (missing: with whom, when)
+Convert the units. (missing: value, from/to units)
+Find the address. (missing: whose address?)
+What is the sum? (missing: of what numbers?)
+Write a short story. (missing: theme or characters? Usually ambiguous if only "write a story" without topic. But that might be too open-ended. Better to specify missing element: "Write a story about..." but missing topic? Actually "Write a story." is ambiguous because no genre/theme. That's fine.)
+But need to ensure no external tools. "Find the address" might be internal if it's in a contact list? But could imply searching external database. Better to avoid. Replace with "Encontre o contato" (which contact?).
+Let's adjust to be clearly ambiguous for internal assistant actions (like managing calendar, notes, reminders, calculations, etc.):
+Envie um e-mail. (precisa destinatário, assunto, corpo)
+Adicione um compromisso. (precisa data/hora/descrição)
+Calcule isso. (precisa valores)
+Traduza "hello" para o português. (isso não é ambíguo? Especificou texto e idioma? Na verdade "hello" é o texto, para português é destino. Mas pode ser considerado não ambíguo. Trocar: "Traduza esta frase." (qual frase? para qual idioma?)
+Resuma este texto. (qual texto?)
+Crie uma nota. (qual conteúdo?)
+Delete o item. (qual item?)
+Atualize a tarefa. (qual tarefa? o que atualizar?)
+Set an alarm. (for when?)
+Send a text. (to whom? what text?)
+Agende uma reunião. (com quem? quando?)
+Converta 10 milhas. (para qual unidade? "10 milhas" não diz para que converter. Isso é ambíguo.)
+Mostre as fotos. (quais fotos? de onde?)
+Reproduza a música. (qual música?)
+Ligue para alguém. (quem? número?)
+But "Ligue para alguém" requires phone calls - possibly external? But it's a command to assistant that might have calling ability. However, we should avoid anything
+Analyze the Request:
+Goal:** Generate 15 *new* and varied user requests that would require the `send_email` tool.
+Context:** The assistant has the `send_email` tool (arguments: `to`, `subject`, `body`). It's described as "IRREVERSIBLE — use only with explicit request".
+Format:** One request per line, numbered 1 through 15. Write as the user would speak. *Do not* mention the tool name. Be concrete. Vary the form (question, order, polite request, short phrase). Mostly Portuguese (BR), about 1 in 6 in English.
+Constraint:** *Only* generate the requests, *never* the responses or JSONs. Let's review the examples given. The examples show requests for *other* tools (summary, calendar, translation, weather). The final instruction is to generate requests that would specifically trigger `send_email`.
+Brainstorming `send_email` Triggers:
+Direct requests:* "Send an email to X about Y.
+Polite requests:* "Could you please email Z?
+Specific content requests:* "Write an email reminding the team about the deadline.
+Different contexts:* Work (reminders, proposals, contacts), personal (invitations, thank yous, apologies), technical (reports, summaries).
+Variations in form:
+Send an email...
+Can you email...
+I need you to draft an email...
+Please write and send an email...
+Schedule an email to be sent..." (Wait, scheduling might be out of scope unless the tool supports it, better stick to sending now or vague "send"). Let's stick to "send" action.
+Email [person] that...
+Concrete details:
+Names: Maria, João, Dr. Silva, support@company.com, myboss@work.com.
+Subjects: "Relatório mensal", "Feedback do curso", "Proposta comercial", "Convite", "Agradecimento".
+Bodies: Specific mentions of data, files (even if just text reference), meetings.
+Drafting the 15 Requests:
+Envia um e-mail marcando uma reunião com a equipe de vendas.
+Critique:* "Envia" is a command. Need more detail. "Envia um e-mail para mariana.silva@empresa.com com o assunto 'Reunião de alinhamento' e o corpo 'Olá, podemos nos reunir na quinta às 14h?'
+Let's refine:* "Envia um e-mail para mariana@empresa.com marcando uma reunião para quinta às 14h.
+Gostaria que você enviasse um e-mail de agradecimento para o palestrante.
+Critique:* Need specifics. "Envia um e-mail de agradecimento para o Dr. Carlos (carlos@palestra.com) pelo evento de hoje. O corpo deve ser formal e citar a palestra sobre IA.
+Preciso cancelar minha assinatura. Envie um e-mail para cancelamento@site.com solicitando o cancelamento da minha conta (email: usuario@teste.com).
+Mande um e-mail para o RH informando que vou faltar amanhã por motivos de saúde.
+Pode enviar um e-mail para o suporte técnico (suporte@tech.com) relatando que o sistema travou? O título pode ser "Erro no módulo X".
+Faça o envio da ata da reunião para todos os participantes (joao@a.com, maria@a.com, pedro@a.com). O assunto é "Ata - Reunião 10/10".
+Send an email to my boss (john.doe@company.com) with the subject 'Weekly Report' and the body summarising the sales numbers: 500 units sold this week.
+Para finalizar o pedido, preciso que você envie um e-mail de confirmação para cliente@store.com com os dados do produto (Notebook XYZ, R$ 4.500) e o prazo de entrega (5 dias úteis).
+Envie um e-mail convidando todos do setor para a confraternização de fim de ano no dia 20/12 às 19h. O endereço de e-mail está na lista 'setor_financeiro@grupo.com'.
+Please forward this message to maria@domain.com: 'Confirme presença na reunião de amanhã.'" (Wait, "forward" might not be the exact tool. "Envie um e-mail..." is better).
+Reconsider:* Just ask to send a specific text. "Envie exatamente este texto para fulano@email.com: 'Estou cancelando o pedido 12345.'
+Pode redigir e enviar um e-mail para reclamações@loja.com? O assunto é "Produto com defeito" e quero relatar que o liquidificador chegou quebrado.
+Envie um e-mail para todos os meus contatos (o grupo '
+Quanto é 357 vezes 892?
+Calcula 15% de 2400 para mim.
+Qual é a raiz quadrada de 15625?
+Se eu dividir 9876 por 123, qual é o resultado exato?
+Me dá o valor de 2 elevado à décima potência.
+Quanto é 45 mais 78 vezes 3?
+1024 menos 512 mais 256, quanto dá?
+Preciso saber o resultado de 0.25 vezes 400.
+What is 144 divided by 12 plus 8?
+Calcule a área de um círculo com raio 7 cm (use pi como 3.1416).
+Se eu tenho 3 dúzias de ovos e compro mais 18, quantos ovos tenho no total?
+Descubra o valor de 12345 mais 9876 vezes 2.
+70% de 3500 é igual a quanto?
+Quanto é 1/3 de 99 somado a 22?
+Qual o resultado de 5 fatorial (5!)?
+Calcule a média dos números 10, 20, 30, 40 e 50.
+Quanto é 7 fatorial?
+Converta 100 dólares para reais, considerando a cotação de 5,20.
+Gere uma lista de 10 números aleatórios entre 1 e 100.
+Qual é o volume de uma esfera de raio 5 cm? Use pi=3,14159.
+Verifique se o número 17 é primo.
+Quantos dias existem entre 1 de janeiro de 2020 e 1 de janeiro de 2024?
+Simule o lançamento de um dado 1000 vezes e me diga quantas vezes saiu o número 6.
+Resolva a equação 2x + 5 = 15.
+Calcule a raiz quadrada de 144.
+Compute the sum of squares of numbers from 1 to 10.
+Quanto é 2^10?
+Calcule a área de um triângulo com base 10 e altura 8.
+Determine o máximo divisor comum entre 36 e 48.
+Preciso saber se vai chover em Curitiba amanhã.
+Me diga o clima em Nova York para os próximos 5 dias.
+Vai fazer frio em Porto Alegre no fim de semana?
+What's the weather like in London tomorrow?
+Estou planejando uma viagem, como estará o tempo em Salvador daqui a dois dias?
+Previsão do tempo para Belo Horizonte nos próximos 7 dias, por favor.
+Como está o clima em Brasília agora?
+Gostaria de saber se vai nevar em Chicago nos próximos 4 dias.
+O tempo em Fortaleza para o próximo final de semana, pode me informar?
+Qual a temperatura máxima esperada em Recife amanhã?
+Pode me dar a previsão do tempo para Manaus nos próximos 2 dias?
+Tell me the weather forecast for Tokyo for the next 3 days.
+Vai fazer sol em Florianópolis no domingo?
+Envia um e-mail para o Rh confirmando minha participação na reunião de amanhã às 10h.
+Manda um lembrete por e-mail para o pessoal do financeiro sobre o prazo de fechamento do mês na sexta.
+Envia um convite de aniversário para a lista de contatos que está no arquivo "convidados.txt".
+Pode enviar um e-mail para suporte@empresa.com com o assunto "Erro no módulo de login" e o corpo descrevendo que aparece código 500?
+Dispara um e-mail para o cliente João Silva (joao@email.com) com o orçamento anexado e assunto "Orçamento reforma – v.2".
+Manda uma mensagem de agradecimento para a equipe de vendas pelo esforço no trimestre.
+Envia um e-mail para o professor com o trabalho final da disciplina em PDF.
+Please send an email to all participants with the subject "Event Reminder – Tomorrow at 3 PM" and the body "Don't forget the workshop.".
+Envia um e-mail automático de boas-vindas para o novo funcionário Carlos, com login e senha provisórios.
+Manda um e-mail para o contato do cliente dizendo que o pedido #1234 já foi despachado.
+Envia um e-mail de cobrança para o devedor José, com valor R$ 1.500,00 e vencimento em 10 dias.
+Dispara um e-mail para o RH com a minha solicitação de férias para o período de 1 a 15 de agosto.
+Manda um e-mail para todos os líderes com o link da pesquisa de clima organizacional.
+Envia um e-mail para o time de TI reportando que o sistema está lento desde as 14h.
+Please send an email to the team with subject "Weekly status update" and body "Please submit your updates by Friday.
+Quantos alunos estão matriculados na disciplina de Banco de Dados neste semestre?
+Me mostre o total de vendas do produto X na loja Y em 2023.
+Qual foi a temperatura máxima registrada em Porto Alegre ontem?
+Lista os 5 usuários com mais pontos de fidelidade no sistema.
+Preciso saber quantos pedidos foram cancelados no mês passado.
+Dá pra ver o saldo médio das contas poupança abertas em 2024?
+Quantas avaliações com nota 5 o filme “Matrix” recebeu na plataforma?
+Mostre o número de funcionários que moram em Belo Horizonte.
+Qual é a receita total gerada por cada vendedor no primeiro trimestre?
+Quantos artigos científicos foram publicados por autores da USP em 2022?
+Lista os 3 países com maior número de usuários cadastrados.
+Qual a média de tempo de entrega dos pedidos da transportadora Loggi?
+How many orders were placed in the last 7 days?
+Show me the top 10 customers by total purchase amount in 2024.
+Quantos livros estão disponíveis na biblioteca com ano de publicação após 2020?
+Qual é a cotação atual da Petrobras (PETR4) na Bovespa?
+Check the current stock price of Apple (AAPL) on NASDAQ.
+Me diga o valor da ação do Itaú Unibanco (ITUB4) agora.
+Quanto está valendo a ação da Vale (VALE3) neste momento?
+What's the stock price of Microsoft (MSFT) right now?
+Preciso saber a cotação da Ambev (ABEV3) hoje.
+Mostre o preço atual da ação do Banco do Brasil (BBAS3).
+Como está a ação da Weg (WEGE3) neste instante?
+Give me the current stock price of Alphabet (GOOGL).
+Quanto custa a ação da Embraer (EMBR3) na Bovespa?
+Verifique a cotação do Magazine Luiza (MGLU3) agora.
+What is the price of NVIDIA (NVDA) on NASDAQ?
+Me informe o valor atual da ação da Cemig (CMIG4).
+Preciso da cotação de Bradesco (BBDC4) por favor.
+How much is Amazon (AMZN) trading at currently?
+Me adicione ao evento lá do mês passado.
+Muda a cor do tema para uma mais escura.
+Traduz aquele texto que eu te mandei outro dia.
+Escreve um e-mail para o João sobre o projeto.
+Pode criar um lembrete para amanhã?
+Altera o preço do produto na planilha para o novo valor.
+Organiza os arquivos da pasta por ordem de tamanho.
+Adiciona a tarefa que estava pendente na minha lista.
+Manda uma mensagem pro pessoal avisando que a reunião foi cancelada.
+Calcula quanto é a metade daquele valor que eu falei.
+Agende uma reunião para discutir os resultados.
+Mostra as últimas fotos que foram tiradas.
+Set a timer for the usual time.
+Aciona o alerta sonoro quando o processo terminar.
+Envia as instruções de acesso para o novo funcionário.
+Cria um arquivo poema.txt com o soneto de Camões "Amor é fogo que arde sem se ver".
+Salva em /tmp/relatorio.txt os últimos 10 commits do repositório atual no formato "hash|autor|data|mensagem".
+Gera um arquivo contato.html com um formulário de contato usando Bootstrap 5 e campos nome, email e mensagem.
+Write a file called stock_prices.json with the closing prices of PETR4, VALE3 and ITUB4 for the last 5 trading days (use realistic values).
+Cria um script backup.py que copia todos os arquivos .csv da pasta data/ para uma pasta backup/ com timestamp no nome.
+Salva em configuracoes.yaml as credenciais de acesso à API do Twitter (consumer_key, consumer_secret, access_token, access_token_secret) com placeholders.
+Escreve o arquivo .env.local com as variáveis DATABASE_URL=sqlite:///db.sqlite3 e DEBUG=True para o projeto django_blog.
+Gera um arquivo carta.txt com uma carta formal solicitando reembolso para a loja "Super Eletrônicos", pedido #48291, valor R$ 1.299,90.
+Cria um código Python em utils.py com uma função que valida CPF usando o algoritmo dos dígitos verificadores.
+Save a SQL file named init_schema.sql that creates tables users (id, name, email) and orders (id, user_id, total, created_at) with foreign key.
+Salva no arquivo meus_dados.csv as seguintes informações: Nome, Idade, Cidade | João, 28, São Paulo | Maria, 34, Rio de Janeiro | Carlos, 41, Belo Horizonte.
+Cria um arquivo redirects.txt com as regras de redirecionamento 301 do antigo site blog.exemplo.com para o novo site exemploblog.com.br/categoria/post-slug.
+Gera um arquivo resumo.txt com um resumo do artigo científico "Attention Is All You Need" em português com 15 linhas, destacando a arquitetura Transformer, self-attention e encoders.
+Write a file called index.html that contains a simple HTML page with a title "Meu Portfólio", a header with navigation links, and a section with three project cards.
+Marca uma reunião com o pessoal do marketing para amanhã às 14h, duração de 1 hora.
+Cria um evento no calendário chamado “Aniversário do João” no dia 15 de outubro, das 19h às 22h.
+Pode agendar um lembrete no calendário para a consulta médica na próxima segunda, às 10h, com duração de 30 minutos?
+Quero reservar um horário no calendário para revisão do projeto, na sexta às 16h, 2 horas de duração.
+Agenda uma call com a equipe de vendas para quarta-feira, 11h, 45 minutos.
+Cria um evento para o treinamento do novo sistema no dia 20/11, das 9h às 12h.
+Marca um happy hour na sexta, às 18h, com duração de 3 horas.
+Adiciona um compromisso no calendário: "Almoço com cliente" no dia 8, às 12h30, com 1h30 de duração.
+Schedule a team standup for tomorrow at 9:30 AM, lasting 15 minutes.
+Cria um evento para a palestra sobre IA na quinta, 14h, com 1 hora de duração.
+Agendar no calendário: revisão de desempenho do Pedro, na próxima terça, 15h, duração de 1 hora.
+Põe no calendário um lembrete para pagar o boleto do condomínio no dia 5, às 8h, 15 minutos.
+Quero agendar um workshop de design para o dia 12/12, das 14h às 17h.
+Cria um evento para a reunião de planejamento estratégico na segunda-feira, 9h, duração de 2 horas e meia.
+Schedule a one-on-one meeting with Maria for next Thursday at 2 PM, 30 minutes long.
+Quem foi o primeiro homem a pisar na Lua?
+Quem escreveu "Grande Sertão: Veredas"?
+What is the boiling point of water at sea level?
+Cite três planetas do sistema solar.
+O que é mitose?
+Qual o maior oceano da Terra?
+What is the primary function of red blood cells?
+O que é um substantivo concreto?
+Qual a raiz quadrada de 144?
+Em que ano a Segunda Guerra Mundial terminou?
+O que significa a palavra "democracia" em grego antigo?
+Quais são os três estados físicos da matéria mais comuns?
+How many continents are there on Earth?
+Quem foi Marie Curie?
+O que é uma célula?
+Quem inventou a lâmpada incandescente?
+Qual é o nome do processo de transformação da lagarta em borboleta?
+How many bones are in the adult human body (approximately)?
+Bom dia! O que você acha de começarmos o dia com uma reflexão sobre gratidão?
+Muito obrigado pela ajuda de ontem. Você tem alguma sugestão de como posso retribuir?
+Qual sua opinião sobre a importância de ter hobbies para a saúde mental?
+Escreva um pequeno texto criativo de duas frases sobre um encontro inesperado no metrô.
+Olá, tudo bem? Você poderia me dar uma ideia de como organizar melhor minha rotina?
+Agradeço pela conversa anterior. O que você acha de lermos um conto juntos depois?
+Crie um haicai sobre o pôr do sol no campo.
+What's your opinion on keeping a daily journal for personal growth?
+Boa tarde! Que tal trocarmos ideias sobre como ser mais produtivo sem estresse?
+Muito obrigado pela paciência. Você tem alguma dica para cultivar a paciência no dia a dia?
+Escreva uma saudação em forma de poesia de dois versos para um amigo que está longe.
+Você acha que é melhor aprender uma nova habilidade sozinho ou em grupo? Por quê?
+Olá! Você poderia me sugerir um tema para escrever um parágrafo reflexivo hoje?
+Agradeço de coração. Qual sua opinião sobre o poder de um simples "obrigado"?
+Write a short creative sentence describing a quiet morning in a library.
+Me dá um resumo do que tem nesse link: https://pt.wikipedia.org/wiki/Jardim_Botânico_do_Rio_de_Janeiro
+Pode resumir o artigo "Mudanças climáticas no Brasil" da Wikipedia para mim? Máximo de 300 palavras.
+O que diz essa página sobre a bolsa de valores hoje? https://www.b3.com.br/pt_br/
+Resuma o conteúdo do site da prefeitura de São Paulo: https://www.capital.sp.gov.br/
+Quero saber o principal ponto do texto nessa URL: https://www.bbc.com/portuguese/articles/c1eg8x8x2xlo
+Can you summarize this page about AI trends? https://www.technologyreview.com/ai/
+Dê um resumo de até 200 palavras do artigo sobre o Rio Amazonas nesse link: https://pt.wikipedia.org/wiki/Rio_Amazonas
+Me ajuda a entender essa notícia longa: https://g1.globo.com/economia/noticia/2023/10/05/pib-brasil.ghtml
+Resuma o conteúdo do blog de tecnologia: https://tecnoblog.net/
+O que tem de importante nessa página de receitas? https://www.tudogostoso.com.br/receita/2-bolo-de-cenoura.html (resumo em 100 palavras)
+Pode extrair um resumo desse artigo científico? https://www.nature.com/articles/s41586-023-06747-5 (máximo 400 palavras)
+Summarize the main points from this travel blog: https://www.nomadicmatt.com/travel-guides/brazil/
+Me dá um resumo rápido do que está no site da ONU Brasil: https://brasil.un.org/
+Resuma a página do Spotify sobre o Brasil: https://newsroom.spotify.com/br-brasil/
+Quero um resumo de 150 palavras desse link sobre história do café: https://www.todamateria.com.br/historia-do-cafe-no-brasil/
+We need to generate 15 ambiguous user requests that lack required info. They must not require external tools. Keep arithmetic trivial. Most in Portuguese, ~1/6 in English. Each request on its own line numbered.
+Also remember: assistant must ask for missing info. So the request must be missing something obvious.
+Generate 15. Mix of PT and EN. About 1/6 in English: 15/6 = 2.5, so 2 or 3 in English. Let's do 3 in English, 12 in Portuguese.
+Lembre-me de algo às 15h. (Missing what)
+Adicione ao calendário. (Missing what, when)
+Quanto é? (Missing expression)
+Crie uma lista. (Missing what list)
+Traduza isso. (Missing o que)
+Explique-me. (Missing o que)
+Me dê um exemplo. (Missing de que)
+Toque uma música. (Missing qual - but this might be external if it requires playing music? Actually we assume assistant can't play music, so it's just a request that would require action. It
+Me envie o arquivo financeiro.
+Ligue para o suporte técnico.
+Traduza este documento para mim.
+Faça um resumo do conteúdo.
+Agende um encontro para amanhã.
+Envie uma mensagem para João.
+Me ajude com a planilha orçamentária.
+Procure o contato do cliente.
+Escreva um e-mail sobre o projeto.
+Prepare um relatório do orçamento.
+Send a reminder to the team.
+Delete the old version of the file.
+Me ajude com o sistema de notas.
+Calcule o valor total da venda.
+Organize os dados da pesquisa.
+Qual foi o resultado do jogo do Corinthians ontem?
+Procura o preço atual do Bitcoin em reais.
+Quais são as principais notícias sobre a empresa Apple hoje?
+Find the latest COVID-19 statistics for Brazil.
+Quantos habitantes tem a cidade de São Paulo em 2024?
+Me mostra as últimas postagens do perfil @NASA no Twitter.
+Qual é a previsão do tempo para o Rio de Janeiro no próximo fim de semana?
+Pesquisa o significado da palavra "resiliência" em português.
+Look up the current exchange rate between USD and EUR.
+Quem venceu o Oscar de melhor filme em 2023?
+Encontra o número de telefone da pizzaria mais próxima da Avenida Paulista.
+Quais são os filmes em cartaz nos cinemas de Brasília hoje?
+Busca a biografia resumida de Machado de Assis.
+What is the population of New York City as of 2024?
+Pode ler o conteúdo do arquivo /etc/hosts para mim?
+Mostre o relatório financeiro que está em ./relatorios/2023-12-31_resumo.txt
+Preciso ver a primeira página do log de erros do servidor: /var/log/apache2/error.log
+Qual é a configuração atual do meu ambiente?
+Salve a seguinte lista de compras no arquivo compras.txt: arroz, feijão, óleo, sal e açúcar.
+Poderia criar um arquivo chamado notas.txt com o texto "Ligar para João amanhã às 10h"?
+Escreva um arquivo de configuração chamado config.ini com as linhas [database] host=localhost port=5432.
+Preciso que você grave o relatório financeiro de março no caminho /home/dados/relatorio_marco.txt.
+Crie um arquivo chamado ideias.txt e coloque três ideias para o novo projeto: automação de tarefas, chat interno, painel de métricas.
+Write the following Python code to a file named script.py: print("Hello, world!").
+Você pode salvar a letra da música "Imagine" no arquivo lyrics.txt? Começa com "Imagine there's no heaven".
+Faça um arquivo chamado agenda.txt com os compromissos de amanhã: 9h reunião, 14h almoço, 16h apresentação.
+Gere um arquivo log.txt com o texto "Início do experimento: 15/04/2025 08:30:00, status: OK".
+Escreva no arquivo cidades.txt as capitais: Brasília, Buenos Aires, Santiago e Lima.
+Preciso de um arquivo credenciais.txt com usuário = admin e senha = 123456 (mas não compartilhe com ninguém).
+Crie um arquivo poemas.txt com o poema "O tempo não para" de Cazuza, apenas a primeira estrofe.
+Salve os resultados da pesquisa no arquivo /tmp/pesquisa.txt: "80% dos entrevistados preferem café preto".
+Write the following JSON to a file named data.json: {"nome": "Maria", "idade": 30, "cidade": "São Paulo"}.
+Pode criar um arquivo chamado senhas_hash.txt com "bcrypt: $2y$12$..."? Coloque esse hash de exemplo.
+Quais arquivos estão na pasta /etc/nginx?
+Liste todos os arquivos .py no diretório /home/projeto/src.
+Mostre o conteúdo do diretório documentos.
+O que tem na pasta /var/log?
+Pode listar os arquivos em /tmp?
+Quais arquivos com extensão .csv existem em /data/import?
+Me mostre o que há na pasta ~/Downloads.
+Quero ver todos os arquivos que começam com "relatorio" no diretório atual.
+Liste os arquivos em /usr/share/applications.
+O que tem na pasta /home/usuario/backup?
+Quais pastas estão em /mnt?
+Pode listar os arquivos .jpg em /home/usuario/fotos?
+Show me the files in /var/www/html.
+Liste os arquivos ocultos no diretório home.
+Quais são os arquivos do diretório /opt?
+Verifica o status da API do GitHub agora.
+Pode buscar o artigo da Wikipedia sobre o Rio Amazonas para mim?
+Qual é o preço atual do Bitcoin em dólar? Faz a consulta.
+Veja o valor do dólar hoje no site do Banco Central.
+Obtém a previsão do tempo para São Paulo no site do Climatempo.
+Baixa o conteúdo da página de ajuda do Python na versão 3.12.
+Verifica se o site da empresa está no ar, acessa a homepage.
+Me dá o resultado da partida de futebol de ontem no site ESPN.
+Check the latest news headline from BBC's RSS feed.
+Busca a cotação do euro em relação ao real no Google Finance.
+Puxa os dados da tirinha do Calvin e Haroldo de hoje.
+Consulta o número de seguidores do perfil @code no Twitter via API pública.
+Traz o texto do discurso de posse do presidente no site do Planalto.
+Acessa a documentação da biblioteca "requests" em Python no Read the Docs.
+Verifica se o servidor da intranet está respondendo na porta 8080.
+Quanto é 15% de 340?
+Some 1287 e 4569, por favor.
+Qual é a raiz quadrada de 1444?
+Divida 9876 por 32 e me dê o resultado exato.
+Calcule o volume de um cubo com aresta de 5,5 cm.
+Quantos minutos há em 3 semanas?
+Se uma camisa custa R$ 79,90 com 20% de desconto, qual o preço final?
+Converta 250 graus Fahrenheit para Celsius.
+Qual é o juro simples de um capital de R$ 2.000,00 a 4% ao mês durante 6 meses?
+Preciso saber a área de um círculo com raio de 12 metros.
+Se eu corro 5 km em 25 minutos, qual a minha velocidade média em km/h?
+Determine o valor de 2^10.
+Quanto é 0,75 multiplicado por 1/3?
+Calcule o seno de 30 graus.
+How many seconds are there in 2.5 hours?
+Como vai estar o tempo no Rio de Janeiro amanhã?
+Preciso saber a previsão do tempo para Buenos Aires nos próximos 3 dias.
+Vai chover em Porto Alegre neste fim de semana?
+Qual a temperatura máxima prevista para Belo Horizonte hoje?
+Dá uma olhada no clima em Salvador para os próximos 5 dias.
+Está fazendo muito frio em Curitiba essa semana? Veja a previsão.
+Me diga o tempo em Brasília para amanhã e depois de amanhã.
+Quero viajar para Florianópolis, como vai ser o tempo nos próximos 7 dias?
+Vai ter sol em Recife amanhã?
+Como está a previsão para Fortaleza nos próximos 2 dias?
+What's the weather like in New York City today?
+Neve em Chicago nos próximos 3 dias?
+Preveja o tempo em Manaus para o próximo domingo.
+Como estará o clima em Natal para os próximos 4 dias?
+Vai fazer calor em São Paulo amanhã?
+Pode resumir o conteúdo do artigo na URL https://pt.wikipedia.org/wiki/Inteligência_artificial para mim?
+Me dá um resumo da página sobre mudanças climáticas em https://www.nationalgeographic.com/environment/article/global-warming-overview.
+Qual é a essência do que está escrito em https://exame.com/investimento/mercados/bolsa-de-valores-hoje/? Quero um resumo com até 200 palavras.
+Resuma a notícia principal em https://g1.globo.com/ para mim, por favor.
+Gostaria de um resumo rápido da página https://www.gov.br/receitafederal/pt-br/assuntos/meu-imposto-de-renda.
+O que tem de importante no texto de https://www.bbc.com/portuguese/articles/c3gx6gndl2po? Faça um resumo curto.
+Pode pegar o conteúdo de https://www.cnnbrasil.com.br/politica/ e resumir os principais pontos?
+I need a summary of the article at https://www.theguardian.com/technology/ai-artificial-intelligence.
+Me dá um resumo de até 150 palavras sobre a página https://olhardigital.com.br/2023/05/10/ciencia-e-espaco/descoberta-de-novo-planeta/.
+Qual é a ideia central do texto em https://www.uol.com.br/tilt/noticias/redacao/2023/10/20/ia-generativa.htm?
+Resuma para mim o conteúdo de https://www.terra.com.br/economia/dolar-hoje, com foco nos destaques.
+Pode sumarizar a página https://www.tecmundo.com.br/ciencia/270000-descoberta-cientista-brasileiro-revoluciona-energia-solar.htm? Quero um resumo de 300 palavras.
+O que diz a reportagem em https://noticias.uol.com.br/ultimas-noticias/bbc/2024/02/15/europa-seca.htm? Resuma.
+Give me a brief summary of the content on https://www.nytimes.com/interactive/2024/01/25/climate/extreme-weather-global-warming.html, about 100 words.
+Faça um resumo da página https://www.infomoney.com.br/mercados/soja-atinge-maxima/ e me conte os principais números.
+Qual é o valor atual da Petrobras (PETR4) na bolsa?
+Me mostre a cotação do Magazine Luiza (MGLU3) agora.
+How much is Apple (AAPL) trading for on NASDAQ?
+Preciso saber o preço da ação da Ambev (ABEV3) neste momento.
+Cotação da Vale (VALE3) atualizada, por favor.
+Dê-me o preço da ação do Bradesco (BBDC4) agora.
+Quanto está valendo o papel da Weg (WEGE3) hoje?
+What's the current stock price for Microsoft (MSFT) on the NYSE?
+Verifique o valor da Localiza (RENT3) para mim, obrigado.
+Estou acompanhando o mercado; qual a cotação da Embraer (EMBR3)?
+Preciso da cotação da Sul América (SULA11) agora mesmo.
+How is Amazon (AMZN) doing on NASDAQ right now?
+Me informe o preço da ação da Ultrapar (UGPA3) no momento.
+Cotação da Raízen (RAIZ4) atual, por favor.
+Qual o valor atual da Marfrig (MRFG3) na bolsa?
+Pode traduzir este parágrafo do livro para o inglês?
+Como se fala "obrigado pela ajuda" em mandarim?
+Traduza essa placa em alemão que está na foto: "Ausfahrt freihalten".
+Could you translate this Spanish menu for me? "Tortilla de patatas, gazpacho y paella valenciana.
+Preciso traduzir o e-mail do cliente do francês para o português, o assunto é sobre reembolso.
+O que significa "grazie mille" em português?
+Traduza este texto em russo que recebi por WhatsApp sobre uma reunião.
+Pode converter esta receita de culinária japonesa para o português?
+Traduz a legenda do vídeo do YouTube que está em coreano para o inglês, por favor.
+Como escrevo "Onde fica o banheiro?" em italiano?
+Translate this Portuguese poem into French: "As flores murcham sem o sol da amizade.
+Me ajude a traduzir este contrato de prestação de serviço do espanhol para o português.
+O que quer dizer "je ne comprends pas" em português?
+Traduza este artigo de notícia em árabe para o inglês, é sobre economia global.
+Pode traduzir essas instruções do manual do aparelho que estão em holandês para o português?
+Qual é a população atual da cidade de São Paulo?
+Quantos alunos estão matriculados na disciplina "Banco de Dados" neste semestre?
+Qual foi a cotação de fechamento do IBOVESPA no dia 20 de março de 2025?
+Liste os 10 produtos mais vendidos na nossa loja online no último mês.
+Quais são os filmes do diretor Christopher Nolan disponíveis no catálogo do serviço de streaming?
+How many new user accounts were created in the last 48 hours?
+Você poderia consultar o saldo atual da conta corrente do cliente João Silva, agência 1234, conta 56789-0?
+Quantas passagens aéreas foram vendidas para o destino Paris com embarque em janeiro de 2025?
+Mostre o nome e o cargo de todos os funcionários do departamento de Tecnologia da Informação.
+Qual foi a temperatura máxima registrada em Chicago no dia 1º de julho de 2023?
+Quais são os 5 repositórios mais estrelados da organização "openai" no GitHub, a partir do nosso mirror?
+Quantas vendas foram realizadas na filial do shopping Vila Olímpia no último trimestre?
+What is the average rating of hotels in the city of Buenos Aires from our review database?
+Liste todos os artigos científicos publicados pela autora "Maria Santos" no ano de 2023.
+Me informe a quantidade total de vendas e o valor médio do ticket no mês passado, separado por categoria de produto.
+Me mostre o conteúdo do arquivo /home/joao/relatorio_vendas_2024.pdf.
+O que está escrito no arquivo /var/log/nginx/error.log de hoje?
+Você pode ler o arquivo de configuração ~/.ssh/config para mim?
+Preciso ver o conteúdo do arquivo C:\Users\maria\documentos\contrato_final.txt.
+Abra o arquivo dados_exportados.csv e me diga quantas linhas tem.
+Leia o arquivo README.md do repositório atual.
+Mostre o arquivo de log /tmp/app_debug.log.
+Could you read the file "config.json" from the project root?
+Me mostre as primeiras 20 linhas do arquivo /var/log/syslog.
+Preciso olhar o conteúdo do arquivo notas_curso.txt na pasta Downloads.
+Leia o arquivo /home/admin/error_report.log.
+Mostre o arquivo hosts.txt localizado em /etc/hosts.
+Abra o arquivo script.py da pasta /projetos/algoritmo.
+Quero ver o arquivo de saída output.csv gerado pelo experimento.
+Leia o arquivo de configuração do banco de dados: /etc/mysql/my.cnf.
+Manda um e-mail para maria@empresa.com com assunto "Reunião confirmada" e corpo explicando os detalhes do encontro de amanhã às 10h.
+Envia uma mensagem para o suporte da loja, pedindo atualização sobre meu pedido #4521, assunto: "Status do pedido".
+Você poderia enviar um e-mail para o RH informando minha ausência no dia 15/03 por motivo médico?
+Preciso que você mande um e-mail formal para o cliente João Silva com o orçamento revisado anexado.
+Envia um e-mail para a equipe de marketing com assunto "Novas diretrizes da campanha" e o texto que está neste arquivo.
+Send an email to professor@university.edu with subject "Extension request" and body explaining I need one more week for the assignment.
+Manda um e-mail de parabéns para a equipe pelo fechamento do trimestre, assunto: "Resultados excelentes".
+Quero que você envie um e-mail para o suporte técnico (suporte@tech.com) reportando erro no sistema ERP.
+Por favor, envie um e-mail para contato@fornecedor.com.br solicitando o orçamento de 500 unidades do item X.
+Envia um e-mail para todos da lista "projeto@grupo.com" com o novo cronograma de entregas.
+Manda um e-mail de confirmação para o cliente Pedro sobre a reserva do voo LH1234 no dia 20/04.
+Preciso de um e-mail educado para a diretora da escola
+O que você acha de começarmos uma conversa sobre livros? Qual seu gênero favorito?
+Você poderia me dar uma sugestão de atividade para fazer no fim de semana sozinho?
+Qual a sua opinião sobre a importância de ler notícias todos os dias?
+Me ajude a escrever um pequeno poema sobre o pôr do sol, com duas estrofes.
+Você acha que é melhor viajar para a praia ou para o campo nas férias?
+Oi! Você tem alguma ideia criativa para eu decorar meu quarto com pouco dinheiro?
+Valeu mesmo pela resposta rápida aqui! É bom saber que posso contar com você.
+Hello! Can you help me come up with a short story idea about a lost cat?
+Qual sua opinião sobre aprender um novo idioma sendo adulto? Vale a pena o esforço?
+Me dê uma ideia de presente simples e barato para o Dia das Mães.
+Tchau, obrigado pela conversa! Foi um prazer falar com você hoje.
+Crie para mim um pequeno conto de duas frases sobre um dia chuvoso.
+What do you think is the best way to start learning to cook as a beginner?
+Dá um resumo da matéria do Estadão sobre novas regras para motoristas de aplicativo: https://www.estadao.com.br/economia/novas-regras-motoristas-aplicativo-2024
+Me explica em até 100 palavras o que diz essa página da Wikipedia sobre a Revolução Farroupilha: https://pt.wikipedia.org/wiki/Revolu%C3%A7%C3%A3o_Farroupilha
+Pode resumir o post do blog da Alura sobre Python assíncrono? O link é https://www.alura.com.br/artigos/python-assincrono-asyncio
+What's the key takeaway from this Forbes article on remote work trends? https://www.forbes.com/sites/remote-work-trends-2024
+Extrai os pontos principais do discurso do presidente na Câmara, disponível em https://www.gov.br/planalto/pt-br/discursos/discurso-do-presidente-na-camara-2024
+Resuma a página de produto do iPhone 15 no site da Apple Brasil: https://www.apple.com/br/iphone-15
+Me dá um resumo de 50 palavras sobre o artigo científico da Nature sobre CRISPR: https://www.nature.com/articles/s41586-023-06789-0
+Preciso de um resumo rápido da receita de bolo de cenoura no TudoGostoso: https://www.tudogostoso.com.br/receita/23-bolo-de-cenoura.html
+What's the main argument in this New York Times opinion piece? https://www.nytimes.com/2024/03/01/opinion/ai-regulation.html
+Resume o conteúdo do site da prefeitura de São Paulo sobre a campanha de vacinação: https://www.prefeitura.sp.gov.br/cidade/secretarias/saude/vacinacao
+Pode resumir a página do IMDb com os detalhes do filme "O Auto da Compadecida"? https://www.imdb.com/title/tt0271383/
+Quero um resumo do tutorial de Git da Rocketseat no Medium: https://medium.com/rocketseat/tutorial-git-e-github-para-iniciantes
+Me dá os pontos-chave do relatório anual da Petrobras de 2023: https://www.investidorpetrobras.com.br/relatorios-anuais/2023
+Resuma a notícia do G1 sobre o acidente na BR-101: https://g1.globo.com/sp/sao-paulo/noticia/2024/02/29/acidente-br-101.ghtml
+What does this page from the Python documentation explain about generators? https://docs.python.org/3/tutorial/classes.html#generators
+Marque uma reunião com o Pedro para amanhã às 10h, duração de 1 hora.
+Você pode agendar um evento no calendário para o aniversário da Maria no dia 15 de março às 19h, duração 2 horas?
+Cria um lembrete no calendário: "Pagar conta de luz" no próximo dia 20 às 9h, duração 30 minutos.
+Add a calendar event for "Dentist appointment" next Monday at 14:00, duration 1 hour.
+Coloca no calendário: "Apresentação do projeto" no dia 10/05 às 15h, duração 2h.
+Pode marcar no calendário a consulta médica na quinta-feira às 16h30? Duração 45 minutos.
+Schedule a meeting with the team for next Friday at 11:00, duration 1.5 hours.
+Crie um evento "Reunião de vendas" no dia 25/05 às 14h, duração 1 hora.
+Lembrar de levar o carro no mecânico no sábado às 8h, duração 2h.
+Marcar no calendário: "Almoço com cliente" no dia 12/06 às 12h, duração 1h30.
+Adicione um evento para "Sessão de cinema" no próximo domingo às 20h, duração 3h.
+You need to create a calendar event for "Webinar on AI" on 2025-03-20 at 10:00, duration 60 minutes.
+Agenda "Revisão de código" na terça-feira às 10h, duração 2 horas.
+Põe no calendário: "Consulta veterinária" no dia 2 de abril às 15h, duração 30 minutos.
+Could you please schedule a "Birthday dinner" for next Saturday at 20:00, lasting 2 hours?
+O que é um átomo?
+O que é um verbo transitivo?
+Quantos planetas existem no sistema solar?
+O que é a gravidade?
+Traduza este parágrafo do relatório financeiro para o inglês.
+Pode traduzir "Guten Morgen, wie geht es Ihnen?" para o português?
+Como se diz "obrigado" em japonês?
+Traduza a seguinte frase para o espanhol: "A reunião é às três da tarde.
+Preciso de uma tradução para o francês deste e-mail comercial.
+Traduza "Where is the nearest hospital?" para o alemão.
+Converta este texto do italiano para o português brasileiro.
+Me ajude a traduzir "I love you" para o russo, por favor.
+Traduza este documento do holandês para o inglês.
+Pode verter "Bonjour, je m'appelle Marie" para o português?
+Traduza "Good morning" para o mandarim.
+Preciso que traduza esta citação do latim: "Carpe diem".
+Como fica "saudade" em italiano?
+Traduza este trecho do sueco para o português.
+Converta "Hello, how are you?" for the Korean language.
+Muito obrigado pela sua ajuda com aquele problema.
+O que você acha de viajar sozinho pela primeira vez?
+Escreva uma saudação criativa para começar um discurso de formatura.
+Qual sua opinião sobre aprender a tocar um instrumento musical?
+Crie uma pequena história sobre uma gaivota que encontrou um mapa.
+Você prefere trabalhar em silêncio ou com música? Por quê?
+Agradeço muito pela paciência em me explicar isso.
+Me dê três ideias criativas para um presente de aniversário simples.
+O que você acha da frase "a felicidade está nas pequenas coisas"?
+Escreva um poema de quatro versos sobre a chuva caindo.
+Você acha que é mais importante ter muitos amigos ou poucos e verdadeiros?
+Invente um nome para uma cafeteria temática de livros e justifique sua escolha.
+Hello! What's your favorite way to start the day?
+In your opinion, what makes a good friend?
+Envie um e-mail para o cliente.
+Delete os arquivos duplicados.
+Desenhe um gráfico com os dados.
+Calcule o total da compra.
+Reordene a lista de tarefas.
+Atualize o registro do usuário.
+Traduza a frase para o alemão.
+Write a summary of the meeting notes.
+Encontre o contato do gerente.
+Organize os arquivos na pasta.
+Adicione um lembrete para amanhã.
+Compare as duas versões do documento.
+Verifique o status do serviço online.
+Informe a senha do Wi-Fi.
+Add a new task to the project tracker.
+Pode ler o arquivo /home/joao/notas.txt pra mim?
+Quero ver o conteúdo do relatorio_final.md na pasta Documentos.
+Abre o arquivo config.json que tá no diretório do projeto.
+Me mostre as primeiras linhas do /var/log/nginx/access.log, só os primeiros 500 bytes.
+Preciso que você leia o arquivo dados_vendas.csv que está em ~/planilhas.
+Tem como abrir o /etc/apt/sources.list e ver o que tem lá?
+Leia o arquivo /tmp/backup.sql, mas só os primeiros 2000 bytes.
+Mostre o conteúdo do script.py na minha área de trabalho.
+Pode ler o arquivo lista_compras.txt que deixei em ~/Documentos?
+Quero ver o README.md do repositório clonado em /home/user/projeto.
+Read the file /home/user/.env and show me the database password.
+Abre o arquivo error.log que tá em /opt/app/logs, só os últimos 1000 bytes.
+Me mostre o que tem no arquivo hosts no /etc/hosts.
+Preciso do conteúdo do arquivo /root/.bashrc, se você tiver acesso.
+Leia o arquivo resumo_aula.txt que está em ~/Desktop/estudos.
+Me mostre todos os arquivos da pasta C:\Projetos\Financeiro\Relatorios.
+Você pode listar o que tem no diretório /home/usuario/documentos/contratos?
+Quais arquivos estão na pasta ./logs/ do servidor?
+Lista os arquivos com extensão .txt na pasta /tmp/backups.
+Preciso ver o conteúdo da pasta D:\Fotos\2024\Janeiro.
+Pode verificar quais arquivos existem em /var/www/html/site/assets?
+Mostre os arquivos .pdf que estão em C:\Users\Joao\Downloads\Faturas.
+What files are in the directory /opt/app/config?
+Quero saber quais arquivos tem na pasta ./src/componentes do projeto.
+Lista pra mim os arquivos .csv no diretório /dados/vendas/2024.
+Tem como ver o que tem na pasta ~/Área de Trabalho/Projetos/NovoApp?
+Mostre todos os arquivos .log que estão em C:\Windows\Temp.
+Quais os arquivos na pasta /mnt/backup/servidor01?
+List the files with pattern "*.xlsx" in the directory /mnt/dados/planilhas.
+Pode listar o conteúdo de C:\MeusDocumentos\Contrato_CLiente_123?
+Qual é a velocidade da luz no vácuo, em metros por segundo?
+Qual é o nome do processo pelo qual as plantas produzem alimento usando a luz solar?
+Puxa a cotação do dólar hoje, por favor.
+Qual é a previsão do tempo para São Paulo neste fim de semana?
+Veja os últimos tweets do perfil @NASA no Twitter.
+Busca o preço do Bitcoin agora na CoinGecko.
+Como está a qualidade do ar em Pequim hoje?
+Me mostra a letra da música "Trem das Onze" do Adoniran Barbosa.
+Check the current status of the SpaceX Starlink satellites.
+Quero saber os resultados da última rodada do Brasileirão.
+Encontra o CEP do endereço Rua Augusta, 500, São Paulo.
+Qual é a população atual do Brasil segundo o IBGE?
+Procura o artigo da Wikipédia sobre inteligência artificial em português.
+Dá uma olhada no feed de notícias da BBC Brasil.
+How many COVID-19 cases were reported in Japan yesterday?
+Busca o valor do IPCA acumulado nos últimos 12 meses.
+Me mostra a previsão do mar para o Rio de Janeiro amanhã.
+Calcula a data da próxima sexta-feira 13 a partir de hoje.
+Preciso gerar os 10 primeiros números da sequência de Fibonacci.
+What is the result of 15 raised to the power of 7 divided by 3?
+Cria uma função que verifica se um número é primo e testa com 997.
+Soma todos os números pares de 1 a 1000 e me dá o resultado.
+Simula o lançamento de um dado 100 vezes e me mostra a frequência de cada face.
+Calcula a raiz quadrada de 123456789 com precisão de 5 casas decimais.
+Gera uma lista com os 20 primeiros números primos.
+Faz a multiplicação de duas matrizes 3x3: [[1,2,3],[4,5,6],[7,8,9]] e [[9,8,7],[6,5,4],[3,2,1]].
+Quantos segundos existem em 3 anos não bissextos?
+Preciso converter 255 graus Celsius para Kelvin e Fahrenheit.
+Usa a biblioteca datetime para saber em que dia da semana caiu 15 de novembro de 1889.
+Gera um gráfico de barras ASCII da frequência das letras na palavra "anticonstitucionalissimamente".
+Find the greatest common divisor of 1440 and 1080.
+Cria uma lista de 20 números aleatórios entre 1 e 100 e calcula a média, mediana e moda deles.
+Qual foi o resultado do último jogo do Flamengo no Brasileirão?
+Quanto custa o dólar turismo hoje nas casas de câmbio de São Paulo?
+Me diga as principais notícias sobre inteligência artificial esta semana.
+Procura o preço do PlayStation 5 na Amazon Brasil e me mostra o menor.
+Qual vai ser a temperatura máxima em Curitiba no próximo domingo?
+Find the current population of Tokyo and the most recent growth rate.
+Quero saber o horário de funcionamento do Museu do Ipiranga amanhã.
+Qual o ranking das universidades brasileiras no QS World University Rankings 2024?
+Busca a cotação do Bitcoin agora em reais.
+Quantos habitantes tem Porto Alegre segundo o último censo do IBGE?
+Quais são os filmes mais populares no Netflix Brasil hoje?
+O que está sendo dito nas redes sociais sobre o novo iPhone 16?
+Preciso do endereço e telefone da padaria mais perto da Avenida Paulista.
+What are the opening hours of the Louvre Museum in Paris for this Thursday?
+Descubra se a empresa Magazine Luiza está contratando para vagas de tecnologia agora.
+Qual vai ser o tempo em Maceió nos próximos 3 dias?
+Preciso saber se vai chover em São Paulo no sábado.
+Como está a previsão do tempo para Curitiba amanhã?
+Me mostre o clima em Porto Alegre para os próximos 5 dias, por favor.
+Vou viajar para Salvador, me diga como fica o tempo lá nos próximos 7 dias.
+Quero saber a previsão do tempo em Belo Horizonte para hoje e amanhã.
+Dá uma olhada na previsão do Rio de Janeiro para os próximos 4 dias.
+Como estará o clima em Fortaleza no domingo?
+Check the weather in New York for the next 2 days.
+Preciso planejar um churrasco em Brasília, veja se vai fazer sol no sábado e domingo.
+Me informe a temperatura em Recife para os próximos 6 dias.
+Qual a previsão do tempo para Manaus na próxima quarta-feira?
+Veja como fica o clima em Florianópolis nos próximos 5 dias, estou planejando uma viagem.
+Como estará o tempo em Goiânia amanhã e depois de amanhã?
+I need the weather forecast for London for the next week, please.
+Quanto é 893 dividido por 27?
+Calcula 15% de 2.340 reais para mim.
+What is the square root of 1,225?
+Me dá o resultado de 2^10 menos 512.
+Preciso da fórmula de Bhaskara para x² - 5x + 6 = 0, mas só o valor das raízes.
+Some 1.450 com 3.287 e depois multiplique por 0,15.
+Quanto é 7 fatorial (7!)?
+Calcule a área de um círculo com raio de 8 cm, considerando pi como 3,14.
+Qual é o logaritmo natural de 100?
+Adicione 25% de 400 ao resultado de 12 vezes 13.
+What is the monthly payment for a $10,000 loan at 5% annual interest over 3 years? (use simple interest formula)
+Quanto é 3/4 de 1.200 metros?
+Resolve: 45 + 67 * 2 - 18 / 3.
+Encontre 40% de 850 e subtraia 125.
+Calcule a média aritmética de 7, 12, 19, 25 e 31.
+Muito obrigado pela ajuda de ontem, valeu mesmo!
+Escreve um poema de quatro versos sobre o silêncio da madrugada.
+Será que é melhor eu terminar aquele projeto ou pedir mais prazo?
+Você acha que viajar sozinho é uma boa experiência?
+Cria uma frase criativa para colocar na abertura do meu caderno de receitas.
+O que você sugeriria para eu ler num dia chuvoso?
+Boa tarde! Só passando para agradecer pela resposta rápida.
+Você acha que eu deveria tentar aprender a tocar violão?
+Write a haiku about a cat sleeping on a windowsill.
+Me ajuda a pensar em um nome para um blog de culinária vegana?
+Agradeço demais pela dica de organização, já estou aplicando!
+Qual sua opinião sobre meditação para iniciantes?
+Salve o resumo da palestra de ontem no arquivo ./palestras/resumo_ia.txt com o texto: "O palestrante abordou os avanços em modelos de linguagem, destacando a importância da ética.
+Crie um arquivo chamado dados.csv na pasta /home/usuario/planilhas/ com as colunas: nome, idade, cidade; e uma linha: João, 30, São Paulo.
+Por favor, escreva a receita de bolo de cenoura no arquivo ~/receitas/bolo_cenoura.txt, incluindo ingredientes e modo de preparo básico.
+Gere um arquivo JavaScript chamado script.js no diretório atual com uma função que exibe "Olá, mundo!" no console.
+Pode anotar no arquivo ideias.txt a seguinte frase: "Criar um app que recomenda filmes baseados no humor do usuário.
+Save this log entry to /var/log/app.log: "2025-04-07 14:22:10 - INFO - Usuário admin fez login com sucesso.
+Escreva no arquivo ./configuracoes/banco.yaml as seguintes linhas: host: 192.168.1.100, port: 5432, database: meu_db.
+Crie um arquivo de texto chamado ~/metas_2025.txt com a lista: "1. Aprender Python, 2. Correr 5 km, 3. Ler 12 livros.
+Quantos clientes da cidade de São Paulo compraram no último mês? (banco vendas)
+Mostre o total de vendas por categoria no banco 'ecommerce'.
+Qual a média de temperatura registrada em janeiro de 2023 no banco 'clima'?
+Liste os 10 artistas mais ouvidos no Spotify em 2024, banco 'musica'.
+How many users logged in yesterday from Brazil? (database 'users')
+Qual o estoque atual do produto 'ABC-123' no banco 'inventario'?
+Exiba o nome e salário dos funcionários do departamento de TI (banco 'rh').
+Encontre o preço médio dos imóveis vendidos em Florianópolis no banco 'imoveis'.
+Mostre a quantidade de pedidos por status no banco 'pedidos'.
+What was the highest temperature recorded in Dubai in August 2024? (database 'weather')
+Liste os cursos com mais de 100 alunos matriculados no banco 'educacao'.
+Qual a receita total de cada loja no banco 'vendas'?
+Mostre os emails dos clientes que não fizeram compras nos últimos 90 dias, banco 'clientes'.
+How many flights were delayed by more than 2 hours in 2024? (database 'airlines')
+Exiba o total de pontos acumulados por cada usuário no programa de fidelidade (banco 'fidelidade').
+Me mostre os dados.
+Envie uma mensagem urgente.
+Converte a temperatura.
+Calcule o total de vendas.
+Please update the record.
+Agende uma reunião para amanhã.
+Traduza este texto.
+Altere o nome do arquivo.
+Me lembre de fazer algo mais tarde.
+Encontre o erro no código.
+Guarde esta informação no lugar certo.
+Count the items for me.
+Me ajude a resolver este problema.
+Crie um backup do documento.
+Repita o último comando.
+Me diga o preço da ação da Apple (AAPL) agora na Nasdaq.
+Como está o valor da Vale (VALE3) hoje?
+Quanto custa uma ação da Tesla (TSLA) neste momento?
+Preciso saber o fechamento do Itaú (ITUB4) de hoje.
+What's the current stock price of Microsoft (MSFT) on Nasdaq?
+Cotação do Magazine Luiza (MGLU3) agora, por favor.
+Como está o preço do Bradesco (BBDC4) na Bovespa?
+Me mostre o valor da Ambev (ABEV3) neste instante.
+Qual a cotação da Nike (NKE) na NYSE agora?
+Preço da ação da PetroRio (PRIO3) hoje, por favor.
+Atualize o valor da Gerdau (GGBR4) para mim.
+Dá uma olhada no preço da Amazon (AMZN) na Nasdaq agora.
+Cotação da Kroton (KROT3) em tempo real?
+How much is a share of Google (GOOGL) worth right now?
+Em que ano ocorreu a Proclamação da República no Brasil?
+Qual é a raiz quadrada de 64?
+Qual é a velocidade da luz no vácuo?
+How many continents are there?
+Qual é a fórmula da área de um círculo?
+Qual é a capital da Austrália?
+O que é a teoria da evolução de Darwin?
+Quem foi Albert Einstein?
+Qual é a montanha mais alta do mundo?
+Em que século começou a Revolução Industrial?
+Who painted the Mona Lisa?
+Me liga amanhã.
+Envia a mensagem pra ela.
+Confirma aquela informação no sistema.
+Calcula a diferença entre os dois valores.
+Traduz isso pra mim.
+Look up the definition of that word.
+Me mostra o resultado daquela conta que fizemos ontem.
+Adiciona aquele evento no meu calendário.
+Envia o e-mail.
+Soma os números da lista.
+Check if the file is ready.
+Anota aquele recado.
+Altera a data do compromisso.
+Print that document for me.
+Quanto é o dobro desse número?
+Me dê uma opinião sincera: qual presente de aniversário você acha mais significativo, algo material ou uma experiência?
+Oi, tudo bem? Só passando para agradecer pela ajuda de ontem. Você foi muito útil.
+Preciso de uma ideia criativa para escrever um conto de duas linhas sobre um encontro inesperado em uma biblioteca.
+Você acha que é melhor começar o dia com exercícios físicos ou com leitura? Quero saber sua opinião.
+Bom dia! Como você está hoje? Espero que esteja tendo um ótimo começo de semana.
+Escreva um pequeno poema de quatro versos sobre o silêncio da noite, usando rimas simples.
+Obrigado pela paciência nas perguntas anteriores. Você é um assistente muito educado.
+Na sua opinião, qual é a maior qualidade que uma pessoa pode ter em um amigo?
+Hello! How are you doing? I just wanted to say thanks for being so helpful.
+Me ajude com uma ideia para uma frase de efeito que eu possa colocar em um cartão de agradecimento.
+Você acha que viajar sozinho é mais enriquecedor do que viajar em grupo? Quero ouvir sua perspectiva.
+Crie um diálogo curto de três falas entre uma nuvem e o vento, em tom poético.
+Muito obrigado pela sua disponibilidade! Você realmente facilita meu trabalho.
+What do you think is the most important skill for someone to learn in life? I'd like your opinion.
+Preciso de uma sugestão para começar um texto criativo sobre um amanhecer no campo. Algo simples e bonito.
+Resuma o artigo principal do site G1 de hoje.
+Dá um resumo da página sobre o filme Duna no Wikipedia.
+O que diz o comunicado oficial do Banco Central sobre a taxa Selic?
+Summarize the latest blog post on the official OpenAI blog.
+Me resuma o conteúdo da página de receita de pavê do TudoGostoso.
+Pode resumir o texto da notícia sobre o furacão Milton na CNN Brasil?
+Quero um resumo da página do LinkedIn do presidente da Petrobras.
+What's the main point of the Wikipedia article on quantum computing?
+Resuma o release de resultados da Apple do último trimestre.
+Dá uma olhada no FAQ do site da Receita Federal sobre Imposto de Renda e me dê os pontos principais.
+Summarize the content of this URL: https://www.example.com/policy/privacy
+Me resuma a biografia do autor no site da editora Companhia das Letras.
+O que tem de importante na página de promoções do site das Casas Bahia?
+Resuma o artigo científico do arXiv sobre o modelo GPT-4.
+Vê se a página do evento no Sympla tem informações sobre data e local.
+Manda um email para maria@exemplo.com com assunto "Reunião amanhã" e corpo "Confirmo a reunião às 10h.
+Envia um email para o professor solicitando a prorrogação do prazo do trabalho de Ciência de Dados.
+Poderia enviar um email de agradecimento para o cliente João após a compra do pacote premium?
+Preciso que você envie um email para o suporte técnico da Microsoft relatando o erro #404 no sistema.
+Envia um email para todos os funcionários com o comunicado sobre o feriado de 7 de setembro.
+Manda um email para ana@empresa.com com o assunto "Relatório Mensal" e corpo "Segue em anexo o relatório de agosto.
+Send an email to john@domain.com with subject "Invoice #456" and body "Please find the invoice attached for payment.
+Poderia enviar um email de cobrança para o cliente Pedro, lembrando o vencimento da fatura em 5 dias?
+Envia um email para o RH com meu pedido de férias para o período de 15 a 30 de janeiro.
+Manda um email para o fornecedor confirmando o pedido #12345 de 100 unidades do item X.
+Envia um email para o time de vendas com a nova meta trimestral de R$ 2 milhões.
+Send an email to support@company.com about the login issue I'm facing since yesterday.
+Preciso que você envie um email de boas-vindas para o novo colaborador Carlos, com o login e senha provisórios.
+Envia um email para a diretoria com o resumo da reunião de ontem sobre o projeto Alpha.
+Manda um email para mim mesmo com a lista de tarefas do dia e o lembrete da consulta às 14h.
+Qual é a cotação atual do dólar em reais?
+Me mostra a previsão do tempo para São Paulo hoje.
+I need the latest news about artificial intelligence from techcrunch.com.
+Busca o preço do Bitcoin agora.
+Verifica se o site da minha empresa está online: https://meusite.com.br.
+Quero o texto completo do artigo que está em https://example.com/artigo123.
+Quantos habitantes tem a cidade de Belo Horizonte segundo o IBGE?
+Pode buscar a letra da música "Bohemian Rhapsody"?
+Me dá o preço da ação da Petrobras na Bovespa hoje.
+Traz a página inicial do Wikipedia sobre Albert Einstein.
+Check the current exchange rate for EUR to USD.
+Preciso do conteúdo dessa URL: https://api.publicapis.org/entries.
+Mostra o cardápio do restaurante que está em https://cardapio.do/restaurante.
+Busca a receita de pão de queijo no site www.tudogostoso.com.br.
+Salve o log de erros do sistema em /tmp/erros.txt com as últimas 100 linhas, por favor.
+Crie um arquivo de configuração chamado /etc/meuapp.conf com as linhas: host=localhost, port=8080, debug=true.
+Pode escrever um script Python em /home/ana/script.py que leia um arquivo CSV e imprima a média de uma coluna?
+Gere um arquivo markdown em ./docs/README.md com o resumo do projeto "API de Clima".
+Preciso que você salve a letra da música "Oceano" do Djavan em /tmp/musica.txt.
+Faça um arquivo /tmp/relatorio.md com o resultado da análise de vendas do mês passado.
+Write a CSV file /tmp/employees.csv with columns: name, role, salary; and three sample rows.
+Crie um arquivo index.html simples em /var/www/html/index.html com um título e um parágrafo.
+Salve o conteúdo atual da área de transferência em ~/area_de_transferencia.txt.
+Pode escrever uma lista de tarefas em /tmp/tarefas.txt com "Comprar leite", "Pagar conta", "Ler livro"?
+Gere um arquivo de log simulado em /tmp/app.log com 10 entradas de erro no formato [timestamp] ERROR: mensagem.
+Crie um arquivo /tmp/backup.sh com o comando tar -czf backup.tar.gz /home/usuario/dados e dê permissão de execução.
+Write a JSON file /tmp/settings.json with keys: theme, fontSize, language; set to "dark", 14, "pt-BR".
+Salve a saída do comando `ls -la /etc` em /tmp/lista_etc.txt.
+Preciso de um arquivo /tmp/notas.txt com as notas: Matemática 8.5, Português 7.0, História 9.2.
+Abre o arquivo /var/log/syslog pra eu ver as últimas entradas.
+Me mostre o conteúdo do relatório de despesas em /home/ana/relatorio_despesas_2024.txt.
+Pode ler o arquivo de configuração do PostgreSQL em /etc/postgresql/16/main/postgresql.conf?
+Dá uma olhada no log de acesso do servidor web, /var/log/nginx/access.log.
+What's inside /data/inputs/customer_orders.csv? I need the first few lines.
+Leia o código-fonte /home/dev/projeto/src/utils.py e veja se tem a função de validação.
+Preciso ver o conteúdo de /tmp/tarefas_pendentes.txt, por favor.
+Abra o arquivo de hosts /etc/hosts e me diga quais IPs estão mapeados.
+Mostre as primeiras 400 bytes do arquivo /mnt/backup/dump.sql.
+Verifique o arquivo de senhas temporário /tmp/credenciais.txt, só as primeiras 100 caracteres.
+Exibe o conteúdo do log de erros do Apache: /var/log/apache2/error.log.
+Checa o que está escrito no arquivo ~/todo.txt.
+Preciso do conteúdo de /home/analise/dados_vendas_2024.json.
+Mostre o arquivo de configuração do firewall: /etc/iptables/rules.v4.
+Leia o arquivo de notas /home/maria/anotacoes_reuniao.txt.
+Quais arquivos estão na pasta /home/usuario/documentos?
+Pode listar o conteúdo do diretório C:\Users\João\Downloads?
+Me mostre os arquivos .pdf que estão em /var/log.
+What files are in the current directory?
+Preciso ver os arquivos de configuração na pasta /etc/nginx.
+Liste todos os arquivos com extensão .py no diretório do projeto.
+Quais são os arquivos na pasta compartilhada da rede?
+Pode me dar uma lista do que tem em /tmp?
+Mostre apenas os arquivos que começam com "relatório" na pasta Documentos.
+I need to see the contents of ~/Downloads, please.
+Verifique os arquivos .log em /var/log/apache2.
+Quais arquivos estão na subpasta "fotos" dentro de "imagens"?
+Lista os arquivos que contêm "backup" no nome, no diretório /data.
+Pode listar o diretório /opt/lampp/htdocs?
+Show me all files with the pattern "2024*" in the folder /home/user/reports.
+Quantos pedidos foram feitos no último trimestre com valor acima de R$500?
+Liste os 5 produtos mais vendidos da categoria "eletrônicos" em janeiro de 2024.
+Qual é o total de vendas por vendedor no mês de fevereiro?
+Mostre os nomes e emails de todos os clientes que moram em São Paulo e que compraram algo em 2023.
+Quais funcionários foram admitidos após 2020 e têm mais de 30 anos?
+Dê o saldo médio das contas correntes abertas em 2022 por estado.
+Quantas transações foram realizadas entre 1º e 15 de março com valor maior que R$200?
+Show the top 10 most profitable products by total revenue in 2024.
+Liste os fornecedores que entregaram mais de 100 unidades de um mesmo produto no último semestre.
+Qual é o número de alunos por curso na universidade com mais de 50 alunos matriculados?
+Find all orders where the shipping address is in California and the total is less than $50.
+Quantas passagens aéreas foram compradas para o Rio de Janeiro em dezembro de 2023?
+Mostre o nome dos artistas que têm mais de 10 músicas no ranking da semana passada.
+Qual a média de avaliação dos filmes lançados em 2023 que pertencem ao gênero "comédia"?
+Gere um relatório com o estoque atual dos itens com quantidade abaixo de 10 unidades.
+Calcula os primeiros 20 números da sequência de Fibonacci para mim.
+Quero saber quantos dias faltam para o Natal de 2025.
+Gere uma senha aleatória segura com 12 caracteres, incluindo números e símbolos.
+Qual é a média de temperatura máxima em São Paulo nos últimos 7 dias?
+Calcula o valor futuro de um investimento de R$ 10.000,00 a 0,5% ao mês por 24 meses.
+Preciso de uma lista de números primos entre 100 e 200.
+Simula o lançamento de dois dados 10.000 vezes e me mostra a frequência de cada soma.
+Extraia o domínio e o caminho desta URL: https://www.exemplo.com/blog/artigo-1?ref=teste
+Encontre o maior número inteiro que divide 84 e 126 ao mesmo tempo.
+Quanto é 0,1 + 0,2 em ponto flutuante? Diz o resultado exato.
+Converta 1000 dólares em reais usando a cotação de hoje (1 USD = 5,05 BRL).
+Qual é a raiz quadrada de 169? Mostra também o cálculo passo a passo.
+How many seconds are there in a 30-day month?
+Decodifique esta sequência em base64 para texto: SG9sYSwgTXVuZG8h
+Gere a tabuada de multiplicação do 7 até o 10.
+Quanto é 15% de 2.500 reais?
+Se eu tenho 3.500 dólares e a cotação está 5,20, quantos reais eu tenho?
+Qual é a área de um círculo com raio de 7 cm? Use pi como 3,14.
+Preciso dividir igualmente 4.890 reais entre 6 pessoas, quanto cada uma recebe?
+Se um trem viaja a 120 km/h por 3 horas e 45 minutos, quantos quilômetros percorre?
+Qual é a raiz quadrada de 1.225?
+Uma receita pede 2/3 de xícara de açúcar, mas tenho apenas 1/4. Quanto falta?
+Se eu investir 10.000 reais a 0,8% ao mês por 12 meses, qual o montante final? Juros simples.
+Quantos segundos há em 2 dias, 5 horas e 30 minutos?
+Se uma pizza tem 8 fatias e comemos 3, qual a porcentagem restante?
+What is the result of 2^10?
+Convert 25 degrees Celsius to Fahrenheit.
+Se um desconto de 20% é aplicado em um produto de 89,90, qual o valor final?
+Um carro percorre 28 km com 1 litro. Quantos litros para 350 km?
+Some 1.234 + 567, depois divida por 0,25.
+Qual é a média desses números aqui?
+Pode calcular a diferença entre esses dois valores?
+Quanto dá a soma disso com aquilo?
+Me ajude a dividir esse número por aquele outro.
+Some estes dois números e me dê o resultado.
+Which of these numbers is bigger?
+Subtraia um valor do outro e me diga o que sobra.
+Faça a multiplicação desses dois dígitos.
+Quanto é o total se eu juntar essas duas quantias?
+Take the smaller number and add it to the larger one.
+Me informe o resultado dessa conta simples.
+Divida o maior número pelo menor e me responda.
+Quanto é a diferença entre esses dois valores?
+Add these two figures together, please.
+Pode me dizer o resultado dessa operação aritmética?
+Traduza este e-mail do cliente para o português, por favor.
+Como se diz "bom apetite" em francês?
+Preciso da tradução deste manual do usuário do alemão para o português.
+Traduza a frase "A reunião foi remarcada para sexta-feira" para o inglês.
+Pode traduzir este artigo de notícias do espanhol para o português?
+Could you translate this contract from English to Portuguese?
+Qual é a tradução de "saudade" para o inglês?
+Traduza esta legenda de vídeo para o português brasileiro.
+Preciso que você traduza este poema do francês para o português.
+Traduza este relatório financeiro do português para o inglês.
+Pode me ajudar a traduzir esta carta de demissão para o alemão?
+Need help translating this product description from Japanese to English.
+Traduza este tutorial de culinária do italiano para o português.
+Como se escreve "obrigado" em mandarim?
+Translate this travel guide from Portuguese to French.
+Goal: Generate 15 new and varied user requests that require the `run_python` tool.
+Tool: `run_python` (code: `code`).
+Format: One line each, numbered (1. 2. ...).
+Style: User's natural language, *never* mention the tool name, specific and concrete, varied forms (question, order, polite request, short phrase).
+Language: Mostly Brazilian Portuguese, about 1 in 6 in English.
+Constraint: Do NOT generate responses or JSONs, only the requests.
+Brainstorming Diverse User Requests for `run_python`:
+Data Analysis:* Calculate something, filter data, read a file.
+Pega o arquivo .csv na pasta Downloads e me diz a média de vendas do último trimestre.
+Calcula a raiz quadrada de 144 e me mostra o resultado.
+Simulation/Calculation:* Math, physics, finance.
+Simula 10 lançamentos de um dado de 6 faces e mostra a sequência.
+Calcula o montante de um investimento de R$ 10.000 a 5% ao mês por 12 meses.
+What is the 10th Fibonacci number?
+Web Scraping/API calls (if allowed within the script)*: Usually, pure Python can use `requests`/`urllib`. Let's assume the environment allows basic web requests or file operations.
+Faz uma requisição para a API do GitHub e me mostra o número de estrelas do repositório python/cpython.
+Baixa a cotação do dólar do site do Banco Central usando Python.
+Puxa os dados do clima para a cidade de São Paulo da API pública wttr.in.
+Text Processing/Mangling:
+Inverte a string 'Socorram-me, subi no ônibus em Marrocos'.
+Conta quantas palavras diferentes tem no texto 'O rato roeu a roupa do rei de Roma'.
+Code Generation/Testing (Meta):
+Testa se a string '(){}[]' é uma sequência de parênteses válida.
+Gera a tabuada do 7.
+Specific Libraries (e.g., datetime, math, json):
+Que dia da semana caiu o Natal de 2023?
+Quantos dias faltam para o próximo ano novo?
+Gera um número aleatório entre 1 e 100.
+File Manipulation (reading/writing to sandbox):
+Cria um arquivo de texto com a letra do hino do Brasil.
+Lê o arquivo 'dados.txt' que está no diretório atual.
+Selecting and Refining 15 Requests:
+Variety is key.
+Language mix.
+1.** (Portuguese, CSV/Data) "Pega o arquivo 'vendas_2024.csv' na pasta 'Documentos' e calcula o total de vendas por vendedor.
+2.** (Portuguese, Math) "Calcula a hipotenusa de um triângulo retângulo com catetos medindo 3 e 4 metros.
+3.** (English, Sequence) "Write a script to find the largest prime number smaller than 1000.
+4.** (Portuguese, API/Web) "Faz uma consulta na API do ViaCEP para o CEP 01001-000 e me mostra o endereço completo.
+5.** (Portuguese, Text manipulation) "Inverte a ordem das palavras na frase 'A linguagem Python é muito poderosa'.
+6.** (Portuguese, Date/Time) "Quantos dias úteis existem entre 1º de janeiro de 2024 e 31 de dezembro de 2024?
+7.** (English, Simulation) "Simulate rolling two dice 1000 times and tell me how many times the sum was 7.
+8.** (Portuguese, Finance) "Calcula o valor futuro de um investimento de R$ 5.000,00 com aportes mensais de R$ 200,00 durante 3 anos, considerando juros de 0,8% ao mês.
+9.** (Portuguese, Code Test) "Testa se a função lambda 'lambda x: x % 2 == 0' retorna True para o número 10.
+10.** (Portuguese, Files) "Cria um arquivo chamado 'senhas.txt' com 5 senhas aleatórias de 8 caracteres cada.
+11.** (English, Data Structure) "Create a Python dictionary from the list ['a', 'b', 'c'] and [1, 2, 3] and show the result.
+12.** (Portuguese, Statistics) "Dada a lista de notas [7, 8, 10, 6, 5, 9], calcula a média, a med
+Agenda uma reunião com a equipe de marketing para amanhã às 10h, com duração de 1 hora.
+Preciso de um lembrete para a consulta médica no dia 15/12/2024 às 14h30, duração 45 minutos.
+Cria um evento de aniversário do João no próximo sábado, das 20h às 23h.
+Marca um webinar sobre IA para o dia 20/01/2025, das 9h às 12h.
+Pode adicionar um compromisso de almoço com a Maria no dia 10/11/2024 ao meio-dia, duração 1h30?
+Quero agendar uma sessão de treino de yoga toda segunda às 7h, com 1 hora de duração.
+Coloca na agenda: "Entrega do relatório" no dia 05/12/2024 às 17h, duração 30 minutos.
+Me lembre de fazer a chamada com o cliente ABC dia 18/11/2024 às 16h, duração 1 hora.
+Add a calendar event for the team standup tomorrow at 9:30 AM, 15 minutes.
+Cria um evento de feriado: "Reveillon" no dia 31/12/2024, das 18h à meia-noite.
+Preciso agendar uma videoconferência com o suporte técnico para hoje às 15h, duração 2 horas.
+Marca uma reunião de revisão de projeto no dia 22/11/2024 às 11h, duração 1h15.
+Adiciona na agenda: "Workshop de inovação" no dia 01/02/2025 das 8h às 17h.
+Pode criar um evento para
+Muito obrigado pela ajuda de ontem. Você é um ótimo assistente.
+O que você acha de eu começar a escrever um diário? Vale a pena?
+Me dê uma ideia criativa para um conto de três parágrafos sobre uma nuvem que decide não chover.
+Você poderia me dar sua opinião sincera sobre pintar a sala de verde-claro?
+Preciso de um elogio rápido para animar meu dia. Pode inventar um?
+Hello! Can you give me a fun fact about the word "serendipity"?
+Se você fosse um personagem de livro, que tipo de personalidade teria?
+O que você acha de acordar cedo para fazer exercícios? É melhor que à noite?
+Escreva um poema de duas linhas sobre um gato preguiçoso.
+Agradeço pela paciência enquanto explico minhas ideias confusas.
+What's your opinion on using emojis in professional emails?
+Crie um slogan curto e criativo para uma cafeteria que vende livros usados.
+Acha que vale a pena aprender a tocar violão sozinho ou é melhor ter professor?
+Oi! Só passando para dizer que estou grato por ter você por perto.
+Como vai estar o tempo em Florianópolis neste fim de semana?
+Previsão do tempo para São Paulo nos próximos 3 dias, por favor.
+Vai chover em Porto Alegre no próximo sábado?
+Me diga o clima em Salvador para os próximos 5 dias.
+Preciso saber se vai fazer frio em Curitiba na próxima semana.
+Como está a previsão do tempo em Brasília para amanhã e depois?
+Quero ver a previsão do tempo para Manaus nos próximos 2 dias.
+Dá uma olhada no tempo em Fortaleza para o próximo domingo.
+Está prevista chuva em Recife para amanhã?
+Previsão completa para o Rio de Janeiro nos próximos 7 dias.
+Como vai ser o tempo em Natal na próxima sexta-feira?
+Quero saber a previsão do tempo para Goiânia nos próximos 3 dias.
+Qual a sensação térmica esperada em São Luís amanhã?
+O usuário pede 15 pedidos de usuário que levariam ao uso da ferramenta web_search. Preciso gerar cada um em uma linha, numerado, em português brasileiro (a maioria) e um em inglês. Variações: pergunta, ordem, pedido educado, frase curta. Concreto: cidades, tickers, etc.
+Me diga quem foi o campeão da última Copa do Mundo de futebol.
+Busque o resultado do jogo do Flamengo de ontem.
+Cotação do dólar hoje, por
