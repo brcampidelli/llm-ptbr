@@ -51,7 +51,38 @@ Medida em toda rota pelo `Router` e reportada ao fim de cada execução.
 
 ## 📊 Resultados medidos
 
-### 🎯 Fase 2 — abelha CODER: **+45 pp** nas difíceis, com regressão de −10 pp nas fáceis (2026-07-25)
+### 🎯 Fase 2 — abelha CODER: **+40 pp** nas difíceis, −17,5 pp nas fáceis (held-out limpo, 2026-07-25)
+
+⚠️ **Os números abaixo SUBSTITUEM uma versão anterior contaminada.** O primeiro eval usava
+`--limit 60` (as 60 primeiras do arquivo bruto), mas o `05_build_splits` **embaralha** antes de
+separar o holdout — logo ~52 dessas 60 estavam no TREINO. Refizemos tudo com held-out real.
+
+**Matriz completa (mesma régua, held-out nunca treinado):**
+
+| Config | Difíceis (60) | Fáceis (40) | Soma |
+|---|---|---|---|
+| Base | 1,7% | **100,0%** | — |
+| 1 época, 100% difícil | 28,3% | 87,5% | 115,8 |
+| Misto 30% fáceis, 2 ép. | 36,7% | 77,5% | 114,2 |
+| **2 épocas, 100% difícil** | **41,7%** | 82,5% | **124,2** ⭐ |
+
+**Vencedor: 2 épocas, 100% difícil** — 1,7% → **41,7%** nas difíceis (**24×** o base, **+40 pp**),
+ao custo de **−17,5 pp** nas fáceis.
+
+**Hipótese da ancoragem: TESTADA E REJEITADA.** Misturar 30% de tarefas fáceis no treino, para
+"ancorar" o comportamento antigo, produziu uma config **dominada**: pior nas difíceis (36,7 vs 41,7)
+*e* pior nas fáceis (77,5 vs 82,5). Não ancorou nada.
+
+**Quanto do resultado original era memorização:** o "+45 pp" contaminado virou **+40 pp** honesto —
+~5 pontos eram o modelo reproduzindo tarefas vistas no treino. E o dano colateral era maior do que
+parecia: −17,5 pp, não −10 pp.
+
+📐 **Erro metodológico recorrente do projeto, registrado:** três vezes neste dia tiramos conclusão de
+amostra incompleta ou de réguas diferentes — (1) o `--limit 60` que pegava só o começo do arquivo;
+(2) declarar "efeito marginal" do filtro em 424/877 quando a metade antiga não tinha as correções;
+(3) inferir um "trade-off linear" com 3 das 4 configurações medidas — a 4ª desmentiu. **Regra que
+fica: não concluir padrão antes da amostra fechar, e nunca comparar números medidos em condições
+diferentes.**
 
 O gate barrou a 1ª tentativa (base em 93,3%). Construímos então o filtro **"o base erra"** — só entra
 no dataset a tarefa cuja solução do professor **passa** E o base **falha**. Resultado: 877 candidatas
@@ -226,7 +257,7 @@ concluir. Por isso repetimos com 3× mais dados e n=300.)*
 |---|---|---|
 | `chat_ptbr` | chat/generalista PT-BR | ✅ **adapter real** (SFT-v2, 5.657 ex) |
 | `agentica` | tool-use / seguir instrução | ✅ **adapter real e VALIDADO** (1.495 ex, +28,5 pp vs base) |
-| `coder` | funções Python verificáveis por execução | ✅ **treinada e validada**: +45 pp nas difíceis (5%→50%), −10 pp nas fáceis. Adapter efêmero — reproduzível em 17 min |
+| `coder` | funções Python verificáveis por execução | ✅ **treinada e validada em held-out limpo**: +40 pp nas difíceis (1,7%→41,7%, 24×), −17,5 pp nas fáceis. Adapter efêmero — reproduzível em 17 min |
 | `base_forte` | fallback do raciocínio difícil | ✅ backbone base (futuro: 7–11B/nuvem) |
 | multimodal | imagem/áudio | ⏳ Fase 4 — modelo **separado ~9B** (Qwen3.5-VL) |
 
