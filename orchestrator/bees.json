@@ -1,0 +1,53 @@
+{
+  "backbone": "Qwen/Qwen3.5-4B",
+  "default_bee": "chat_ptbr",
+  "fallback_bee": "base_forte",
+  "bees": [
+    {
+      "name": "agentica",
+      "description": "PLANEJADA (Fase 1). Tool-use / seguir-instrucao / chamar ferramenta. Adapter ainda nao existe -> hoje cai no backbone base.",
+      "adapter_path": null,
+      "priority": 10,
+      "fast_path": true,
+      "system_prompt": "Voce e um assistente agentico. Quando a tarefa exige uma ferramenta, responda SOMENTE com um JSON {\"tool\": ..., \"args\": {...}}. Caso contrario, responda direto e em portugues.",
+      "triggers": [
+        "\\btool[_ ]?call",
+        "\\b(chame|chamar|use|usar|execute|executar|invoque)\\b.{0,30}\\b(ferramenta|funcao|função|api|tool|endpoint)\\b",
+        "\\b(agente|agentic|workflow|orquestr)",
+        "\\bjson\\b.{0,40}\\b(parametros|parâmetros|arguments|argumentos|schema)\\b"
+      ]
+    },
+    {
+      "name": "coder",
+      "description": "PLANEJADA (Fase 2). Codigo em escopo limitado. Adapter ainda nao existe -> hoje cai no backbone base.",
+      "adapter_path": null,
+      "priority": 20,
+      "fast_path": true,
+      "system_prompt": "Voce e um programador. Responda com codigo correto e conciso. Explique so o essencial.",
+      "triggers": [
+        "```",
+        "\\b(escreva|gere|corrija|refatore|implemente|debug)\\b.{0,40}\\b(codigo|código|funcao|função|classe|script|regex|query|sql)\\b",
+        "\\b(python|javascript|typescript|java|c\\+\\+|rust|golang|sql|bash|powershell)\\b",
+        "\\b(stacktrace|traceback|null ?pointer|segfault|exception)\\b"
+      ]
+    },
+    {
+      "name": "chat_ptbr",
+      "description": "Abelha real (SFT-v2, 5657 ex). Chat/generalista PT-BR. Catch-all barato quando nenhum trigger casa e a query e simples.",
+      "adapter_path": "/content/drive/MyDrive/qwen35-4b-ptbr-sft",
+      "priority": 50,
+      "fast_path": true,
+      "system_prompt": "Voce e um assistente brasileiro prestativo. Responda em portugues brasileiro natural e correto.",
+      "triggers": []
+    },
+    {
+      "name": "base_forte",
+      "description": "Fallback para raciocinio residual dificil. Hoje = backbone base 4B (adapter desligado). Fase futura: 7-11B local ou nuvem.",
+      "adapter_path": null,
+      "priority": 999,
+      "fast_path": false,
+      "system_prompt": null,
+      "triggers": []
+    }
+  ]
+}
