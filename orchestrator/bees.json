@@ -5,11 +5,11 @@
   "bees": [
     {
       "name": "agentica",
-      "description": "Abelha REAL (Fase 1): tool-use / seguir-instrucao. Adapter treinado em 1495 exemplos (886 tool_call + 609 texto), 2 epocas, loss mascarada no prompt. train_loss 0,4848 | token acc 93,2% | entropia 0,2765.",
+      "description": "Abelha REAL (Fase 1): tool-use / seguir-instrucao. Adapter treinado em 1495 exemplos (886 tool_call + 609 texto), 2 epocas, loss mascarada no prompt. train_loss 0,4848 | token acc 93,2% | entropia 0,2765. ⚠️ DEFEITO CONHECIDO NAO CORRIGIDO (2026-07-25): este system_prompt NAO traz o CATALOGO DE FERRAMENTAS, mas o adapter foi TREINADO com um system que traz (data/07_distill_agentic.py build_system). Ou seja, em producao pedimos JSON de tool-call sem dizer quais ferramentas existem. O teste multilingue (24/24 de formato) rodou com o system DE TREINO, entao ele NAO valida esta rota como ela esta configurada. Conserto: o hive deve montar o system da agentica a partir do catalogo. Medir antes de declarar resolvido.",
       "adapter_path": "${AGENTICA_ADAPTER:-/content/drive/MyDrive/qwen35-4b-agentica}",
       "priority": 10,
       "fast_path": true,
-      "system_prompt": "Voce e um assistente agentico. Quando a tarefa exige uma ferramenta, responda SOMENTE com um JSON {\"tool\": ..., \"args\": {...}}. Caso contrario, responda direto e em portugues.",
+      "system_prompt": "Voce e um assistente agentico. Quando a tarefa exige uma ferramenta, responda SOMENTE com um JSON {\"tool\": ..., \"args\": {...}}. Caso contrario, responda direto, no MESMO IDIOMA do pedido.",
       "triggers": [
         "\\btool[_ ]?call",
         "\\b(chame|chamar|use|usar|execute|executar|invoque)\\b.{0,30}\\b(ferramenta|funcao|função|api|tool|endpoint)\\b",
@@ -19,11 +19,11 @@
     },
     {
       "name": "coder",
-      "description": "Abelha REAL (Fase 2): funcoes Python verificaveis por execucao. Treinada em 216 tarefas que o BASE ERRA (filtro data/09). Medido em held-out limpo: dificeis 1,7%->41,7% (24x o base), faceis 100%->82,5%. Config vencedora: 2 epocas, 100% dificil (1 epoca e mistura 30% foram medidas e sao PIORES). ⚠️ adapter EFEMERO no Colab (/content morre com o runtime) — reproduza com: python colab/reproduce_coder.py --out <caminho>",
+      "description": "Abelha REAL (Fase 2): funcoes Python verificaveis por execucao. Treinada em 216 tarefas que o BASE ERRA (filtro data/09). Medido em held-out limpo: dificeis 1,7%->41,7% (24x o base), faceis 100%->82,5%. Config vencedora: 2 epocas, 100% dificil (1 epoca e mistura 30% foram medidas e sao PIORES). ⚠️ adapter EFEMERO no Colab (/content morre com o runtime) — reproduza com: python colab/reproduce_coder.py --out <caminho>. ⚠️ system_prompt REMOVIDO em 2026-07-25 por medicao: o prompt em PORTUGUES fazia a abelha responder em portugues a pedidos em INGLES (adapter 0/6, base 1/6). Sem system prompt: 6/6 nos dois, e 'tem codigo' continua 6/6 — o prompt nao estava pagando o proprio custo. Instruir 'responda no idioma do pedido' EM PORTUGUES piora (0/6 nos dois): o que contamina e o IDIOMA do prompt, nao o conteudo dele.",
       "adapter_path": "${CODER_ADAPTER:-/content/qwen35-4b-coder}",
       "priority": 20,
       "fast_path": true,
-      "system_prompt": "Voce e um programador. Responda com codigo correto e conciso. Explique so o essencial.",
+      "system_prompt": null,
       "triggers": [
         "```",
         "\\b(escreva|gere|corrija|refatore|implemente|debug)\\b.{0,40}\\b(codigo|código|funcao|função|classe|script|regex|query|sql)\\b",
@@ -33,11 +33,11 @@
     },
     {
       "name": "chat_ptbr",
-      "description": "⚠️ APOSENTADA (2026-07-25) — adapter DESLIGADO por medicao. O SFT-v2 (5657 ex, 100% PT-BR) foi finalmente avaliado com a regua certa (juiz de geracao + consistencia de idioma, 48 prompts held-out em pt/en/es/fr) e REPROVOU nas duas: (1) consistencia de idioma 48/48 no base vs 33/48 no adapter — em INGLES responde em portugues 10 de 12 vezes; (2) juiz aberto prefere o BASE em TODOS os 4 idiomas (26 x 19), inclusive em portugues. Nao era neutra, era prejudicial. Mantida como rota de chat, mas sobre o BACKBONE PURO (multilingue, 201 idiomas). Para reativar o adapter: defina CHAT_ADAPTER=<caminho>.",
+      "description": "⚠️ APOSENTADA (2026-07-25) — adapter DESLIGADO por medicao. O SFT-v2 (5657 ex, 100% PT-BR) foi finalmente avaliado com a regua certa (juiz de geracao + consistencia de idioma, 48 prompts held-out em pt/en/es/fr) e REPROVOU nas duas: (1) consistencia de idioma 48/48 no base vs 33/48 no adapter — em INGLES responde em portugues 10 de 12 vezes; (2) juiz aberto prefere o BASE em TODOS os 4 idiomas (26 x 19), inclusive em portugues. Nao era neutra, era prejudicial. Mantida como rota de chat, mas sobre o BACKBONE PURO (multilingue, 201 idiomas). Para reativar o adapter: defina CHAT_ADAPTER=<caminho>. ⚠️ system_prompt REMOVIDO em 2026-07-25: ele dizia 'Responda em portugues brasileiro' — ou seja, mesmo com o adapter desligado, a rota DEFAULT (~40% do trafego) continuava FORCANDO portugues em cima de um backbone de 201 idiomas. Desligar o adapter sem tirar o prompt teria consertado metade do problema.",
       "adapter_path": "${CHAT_ADAPTER:-}",
       "priority": 50,
       "fast_path": true,
-      "system_prompt": "Voce e um assistente brasileiro prestativo. Responda em portugues brasileiro natural e correto.",
+      "system_prompt": null,
       "triggers": []
     },
     {
