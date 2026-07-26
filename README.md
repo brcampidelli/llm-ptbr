@@ -99,11 +99,33 @@ ausente, contra os 35% pedidos — efeito de seleção do filtro). Por isso o ev
 esquecido** separado de alucinação: sem essa coluna, **sub-extração passaria por virtude** — um
 modelo que omite tudo nunca alucina e exibiria "0% de alucinação".
 
-⚠️ **Descoberta sobre o instrumento:** o gate **não é bit-reproduzível**. Duas execuções deram 513 e
-510 difíceis (0,3% de diferença) porque a geração em lote muda o padding e a aritmética de ponto
-flutuante junto. Consequência prática grave: `shuffle(seed=42)` sobre pools de tamanho diferente dá
-permutações totalmente distintas, então **um holdout regerado depois do treino fica contaminado**
-(~73% dele estaria no treino). Foi pego antes de reportar; o adapter foi retreinado no split atual.
+⚠️→✅ **Descoberta sobre o instrumento, e o conserto estrutural.** O gate **não é bit-reproduzível**:
+duas execuções deram 513 e 510 difíceis (0,3%) porque a geração em lote muda o padding e a
+aritmética de ponto flutuante junto. Consequência grave: `shuffle(seed=42)` sobre pools de tamanho
+diferente dá permutações totalmente distintas, então **um holdout regerado depois do treino nascia
+contaminado** (~73% dele dentro do treino). Foi pego antes de reportar, e o adapter foi retreinado.
+
+**O conserto não foi tomar cuidado — foi remover a possibilidade.** O split agora é decidido por
+`sha1(documento) % 1000`, não pela posição numa lista embaralhada. Medido: **pool de 510 vs 507 →
+holdout difere em 0 itens.** O mesmo documento cai sempre do mesmo lado, então treinar hoje e
+reavaliar amanhã passou a ser uma comparação válida. (`sha1` e não `hash()`: o `hash()` do Python é
+randomizado por processo e reintroduziria o mesmo bug.)
+
+### Ferramentas para as limitações conhecidas do dataset
+
+Nenhuma das duas está resolvida — mas as duas saíram de "sabemos que existe" para "dá para medir":
+
+- **`--doc-len {curto,medio,longo}`** — o documento médio ficou em 191 chars; `longo` pede 25–45
+  linhas com cabeçalho, seções, tabela, rodapé e muito ruído irrelevante, para o modelo ter de
+  *achar* o campo. ⚠️ exige `--max-seq-len 3072+`, senão trunca em silêncio e o experimento mede
+  outra coisa.
+- **`--cap-esparso`** — os 46% de extrações esparsas (contra 35% pedidos) **não** eram o prompt
+  desobedecendo: é seleção do filtro (item com menos campos tem menos chance de errar, logo
+  sobrevive mais). O teto corrige na **aceitação**, onde o viés nasce. Simulado com 55% de viés de
+  entrada: converge para 35% exatos.
+- **`colab/reproduce_extracao.py`** — a abelha inteira em ~35 min, um comando, retomável. É a defesa
+  contra o adapter efêmero que não depende de nenhuma ação manual; e só virou confiável por causa do
+  split estável acima.
 
 
 ### 🌍 Teste de idioma nas abelhas de domínio (2026-07-25) — o culpado era o *prompt*, não o treino
