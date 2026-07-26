@@ -61,6 +61,52 @@ def load_schemas(path: Path | str = SCHEMAS_FILE) -> dict:
     return {s["name"]: s for s in data["schemas"]}
 
 
+# -------------------------------------------------- prompt (fonte única também) ---
+
+def render_schema(schema: dict) -> str:
+    """O schema como texto, para ir DENTRO do pedido.
+
+    Marca explicitamente quais campos são COPIADOS do documento e quais são
+    INFERIDOS. Sem isso o modelo (e o professor, na geração) não tem como saber
+    de quais valores se cobra literalidade — e é justamente neles que o
+    validador de groundedness reprova.
+    """
+    linhas = []
+    for nome, spec in schema["fields"].items():
+        t = spec["type"]
+        if t == "enum":
+            t = "um de: " + " | ".join(spec.get("values", []))
+        obrig = "obrigatorio" if spec.get("required") else "opcional"
+        origem = "COPIAR literal do documento" if spec.get("grounded") else "inferir/normalizar"
+        linhas.append(f'- "{nome}" ({t}, {obrig}) — {origem}')
+    return "\n".join(linhas)
+
+
+def build_task_prompt(schema: dict, documento: str) -> str:
+    """O pedido EXATO que a abelha recebe — no treino, no eval e em produção.
+
+    ⚠️ Vai no turno do USUÁRIO, e a abelha NÃO tem system prompt. Isso é
+    deliberado: medimos na `coder` que um system prompt em português arrasta a
+    saída para o português mesmo mandando o contrário (inglês 0/6 com prompt PT,
+    6/6 sem prompt). Como o schema muda a cada pedido, ele tem que ir no turno do
+    usuário de qualquer forma — então não sobra motivo para ter system prompt, e
+    o confound de idioma desaparece junto.
+    """
+    return (
+        f"Extraia os campos abaixo do documento e responda SOMENTE com um objeto JSON.\n\n"
+        f"CAMPOS ({schema['name']} — {schema['description']}):\n{render_schema(schema)}\n\n"
+        "REGRAS:\n"
+        "1. Responda SO o JSON, sem texto antes ou depois, sem ```.\n"
+        "2. Copie os valores COMO ESTAO no documento. NAO invente nada.\n"
+        "3. Campo opcional que nao aparece no documento: OMITA a chave. "
+        "Nao chute, nao preencha com vazio.\n"
+        "4. Nao acrescente campos que nao estao na lista.\n"
+        "5. Datas no formato AAAA-MM-DD. Numeros sem simbolo de moeda.\n"
+        "6. Texto livre (resumo, titulo) no MESMO IDIOMA do documento.\n\n"
+        f"DOCUMENTO:\n{documento}"
+    )
+
+
 # ------------------------------------------------------------------ normalização ---
 
 def _sem_acento(s: str) -> str:
