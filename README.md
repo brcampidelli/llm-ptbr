@@ -54,6 +54,52 @@ Medida em toda rota pelo `Router` e reportada ao fim de cada execução.
 
 ## 📊 Resultados medidos
 
+### 🌍 Teste de idioma nas abelhas de domínio (2026-07-25) — o culpado era o *prompt*, não o treino
+
+Depois da `chat_ptbr` reprovar, restava a pergunta: a `agentica` (treinada ~5/6 em PT-BR) e a
+`coder` (docstrings em PT) têm o mesmo defeito? As duas estavam **ligadas em produção**. Régua:
+48 probes **de domínio** (pedido de código / pedido de ferramenta) nos 4 idiomas, tudo determinístico.
+
+**`agentica` — o melhor número do projeto.** Formato certo = JSON válido quando pede ferramenta,
+texto quando não pede:
+
+| idioma | base | ADAPTER |
+|---|---|---|
+| português | 4/6 | **6/6** |
+| inglês | 5/6 | **6/6** |
+| espanhol | 4/6 | **6/6** |
+| francês | 4/6 | **6/6** |
+| **TOTAL** | **17/24** | **24/24** |
+
+O comportamento agêntico **transferiu para três idiomas em que nunca foi treinado.** Idioma da
+resposta: 11/12 no base vs 10/12 no adapter — com n=12, −1 é ruído, não regressão.
+
+**`coder` — zero mode collapse** (24/24 produzem código nos 4 idiomas), mas a *prosa* vazava para
+o português em inglês. Três braços de investigação (n=6, só inglês):
+
+| cenário | base | ADAPTER |
+|---|---|---|
+| system prompt PT (produção) | 1/6 | 0/6 |
+| system PT + *"responda no idioma do pedido"* | 0/6 | **0/6** (pior) |
+| **sem system prompt** | **6/6** | **6/6** |
+
+**Não era o treino — era o IDIOMA do system prompt.** E mandar, *em português*, que responda no
+idioma do pedido **piora**: o conteúdo da instrução não vence o idioma em que ela está escrita.
+
+**3 correções no `bees.json`:** `coder` e `chat_ptbr` sem system prompt; `agentica` com "no mesmo
+idioma do pedido". ⚠️ A segunda é a mais importante: o prompt da `chat_ptbr` dizia *"Responda em
+português brasileiro"* — **desligar o adapter tinha consertado só metade do problema**, a rota
+default seguia forçando português sobre um backbone de 201 idiomas.
+
+⚠️ **Defeito registrado, não corrigido:** o system prompt da `agentica` no `bees.json` **não traz o
+catálogo de ferramentas**, mas o adapter foi treinado com um que traz — em produção pedimos
+tool-call sem dizer quais ferramentas existem. O 24/24 acima rodou com o system **de treino**, então
+ele *não valida* a rota como está configurada hoje.
+
+**A regra de projeto que sai disso:** abelha que ensina **comportamento** (quando usar ferramenta)
+atravessa idiomas de graça; abelha que ensina **redação** (como conversar) carrega o idioma junto,
+porque estilo e idioma são a mesma coisa. A `coder` fica no meio — código não tem idioma, prosa tem.
+
 ### 🚨 `chat_ptbr` APOSENTADA — reprovou na régua certa (2026-07-25)
 
 A abelha **default** (~40% do tráfego) e a única sem ganho comprovado foi finalmente medida com o
@@ -286,7 +332,7 @@ concluir. Por isso repetimos com 3× mais dados e n=300.)*
 | Abelha | Foco | Estado |
 |---|---|---|
 | `chat_ptbr` | chat/generalista | 🚫 **adapter APOSENTADO** — reprovou no juiz (42,2%) e na consistência de idioma (33/48 vs 48/48). Rota mantida sobre o **backbone puro** (multilíngue) |
-| `agentica` | tool-use / seguir instrução | ✅ **adapter real e VALIDADO** (1.495 ex, +28,5 pp vs base) |
+| `agentica` | tool-use / seguir instrução | ✅ **adapter real e VALIDADO** (1.495 ex, +28,5 pp vs base) · **multilíngue: 24/24 vs 17/24 do base nos 4 idiomas** |
 | `coder` | funções Python verificáveis por execução | ✅ **treinada e validada em held-out limpo**: +40 pp nas difíceis (1,7%→41,7%, 24×), −17,5 pp nas fáceis. Adapter efêmero — reproduzível em 17 min |
 | `base_forte` | fallback do raciocínio difícil | ✅ backbone base (futuro: 7–11B/nuvem) |
 | multimodal | imagem/áudio | ⏳ Fase 4 — modelo **separado ~9B** (Qwen3.5-VL) |
@@ -368,7 +414,8 @@ que o Bruno já tinha). O dataset **não é o gargalo financeiro** — com US$10
 - [ ] **Atacar o over-calling residual (8%)** na função de perda: rubrica com "Tool Appropriateness"
       (ATLAS) + rejection-sampling SFT/DPO (Collab-RAG) — ver `docs/estudo-11-papers-2026-07-24.md`
 - [x] **Avaliação de geração com juiz** para a `chat_ptbr` — feita, e **reprovou** (ver seção acima)
-- [ ] **Testar o mesmo risco multilíngue na `agentica` e na `coder`** (treinadas ~5/6 e docstrings em PT)
+- [x] **Testar o mesmo risco multilíngue na `agentica` e na `coder`** — feito: o culpado era o system prompt
+- [ ] **Montar o system da `agentica` a partir do catálogo de ferramentas** (defeito registrado acima)
 - [ ] **Fast-path alto o bastante** para a comeia ser mais barata que chamar o forte sempre
 - [ ] **Roda local**: GGUF quantizado no RTX 5070 8 GB
 - [ ] **Release**: model card + pesos + demo no HF
