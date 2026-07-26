@@ -10,12 +10,28 @@ despencou 1,273 → 0,0755 **decorando o catálogo**, não aprendendo a tarefa. 
 prompt é ainda mais pesado (o schema + o documento inteiro), então o risco seria
 maior. Em prompt/completion o TRL mascara o prompt sozinho.
 
-⚠️ 2. EMBARALHA ANTES DE SEPARAR, e o holdout é ESTRATIFICADO por idioma. O eval
-da coder saiu contaminado porque eu cortei os N primeiros de um arquivo que o
-splitter embaralha depois — ~52 dos 60 "held-out" estavam no treino, e um "+45 pp"
-virou +40 pp honesto. Aqui o holdout sai do embaralhamento e é balanceado entre
-pt/en/es/fr, senão o francês (o idioma mais difícil, 63% de erro do base) ficaria
-sub-representado justo na avaliação.
+⭐ 2. HOLDOUT ESTÁVEL POR HASH DO DOCUMENTO — e isto conserta um defeito que já
+custou um retreino. A versão anterior embaralhava o pool e cortava os primeiros N.
+Parecia correto (embaralhar antes de separar), mas tinha uma dependência
+escondida: `shuffle` sobre uma lista de 510 itens dá permutação COMPLETAMENTE
+diferente da de 513. E o gate NÃO é bit-reproduzível — a geração em lote muda o
+padding e a aritmética de ponto flutuante junto, então duas execuções deram 513 e
+510 difíceis. Resultado: um holdout regerado depois do treino nascia contaminado,
+com ~73% dele dentro do treino. Tive que retreinar.
+
+Agora a pertinência ao holdout é decidida pelo **conteúdo do documento**
+(`sha1(documento) % 1000 < corte`), não pela posição dele numa lista. Isso torna o
+split:
+  - ESTÁVEL — o mesmo documento cai sempre do mesmo lado, independente de quantos
+    itens o gate classificou como difíceis nesta execução;
+  - ROBUSTO à não-reprodutibilidade do gate — dois gates que diferem em 3 itens
+    produzem holdouts que diferem nesses 3, não em 73%;
+  - AUDITÁVEL — dá para verificar de fora se um documento é de treino ou de teste
+    sem reproduzir o pipeline todo.
+
+O holdout continua ESTRATIFICADO por idioma (o corte é aplicado por idioma), senão
+o francês — o idioma mais difícil, 62% de erro do base — ficaria sub-representado
+justo na avaliação.
 
 TRÊS SAÍDAS, e a terceira é a que pega dano colateral:
   sft_extraction.jsonl        treino (o base ERRA nestes)
@@ -33,8 +49,8 @@ Uso:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
-import random
 import sys
 from collections import Counter, defaultdict
 from pathlib import Path
@@ -49,6 +65,17 @@ IN_EASY = RAW_DIR / "extraction_easy.jsonl"
 OUT_TRAIN = PROCESSED_DIR / "sft_extraction.jsonl"
 OUT_EVAL = PROCESSED_DIR / "sft_extraction.eval.jsonl"
 OUT_EASY = PROCESSED_DIR / "sft_extraction.easy.jsonl"
+
+
+def bucket(documento: str, seed: int = 42) -> int:
+    """0..999 estável a partir do CONTEÚDO do documento.
+
+    A chave do split. `sha1` porque precisa ser estável entre processos — o `hash()`
+    do Python é randomizado por execução (PYTHONHASHSEED) e daria splits diferentes
+    a cada run, que é exatamente o problema que estamos consertando.
+    """
+    h = hashlib.sha1(f"{seed}:{documento}".encode("utf-8")).hexdigest()
+    return int(h[:8], 16) % 1000
 
 
 def to_pc(row: dict, schemas: dict) -> dict:
@@ -99,23 +126,29 @@ def main() -> int:
         print(f"ERRO: {args.in_hard} vazio. Rode o 12_filter_extraction antes.", file=sys.stderr)
         return 1
 
-    rng = random.Random(args.seed)
-    rng.shuffle(hard)              # ⚠️ EMBARALHA ANTES de separar
-    rng.shuffle(easy)
-
-    # holdout ESTRATIFICADO: mesma quantidade por idioma, ate onde der
+    # ⭐ Split por HASH DO DOCUMENTO, estratificado por idioma. Ver o docstring:
+    # a versão que embaralhava e cortava os primeiros N dependia do TAMANHO do
+    # pool, e o gate não é bit-reproduzível — isso já custou um retreino.
     por_lang: dict[str, list] = defaultdict(list)
     for r in hard:
         por_lang[r["lang"]].append(r)
-    cota = max(1, args.holdout // max(1, len(por_lang)))
+
     evalset, treino = [], []
     for lang, rows in por_lang.items():
-        evalset += rows[:cota]
-        treino += rows[cota:]
-    rng.shuffle(treino)
-    rng.shuffle(evalset)
+        cota = min(len(rows), max(1, args.holdout // max(1, len(por_lang))))
+        # corte no espaço do hash que rende ~cota itens deste idioma
+        corte = round(1000 * cota / max(1, len(rows)))
+        eval_lang = [r for r in rows if bucket(r["documento"], args.seed) < corte]
+        # ajuste fino determinístico: se o hash rendeu demais/de menos, corrige
+        # pela ORDEM DO HASH (estável), nunca por shuffle
+        eval_lang.sort(key=lambda r: bucket(r["documento"], args.seed))
+        eval_lang = eval_lang[:cota]
+        marcados = {id(r) for r in eval_lang}
+        evalset += eval_lang
+        treino += [r for r in rows if id(r) not in marcados]
 
-    easy_eval = easy[: args.easy_eval]
+    easy_eval = sorted(easy, key=lambda r: bucket(r["documento"], args.seed))[: args.easy_eval]
+    treino.sort(key=lambda r: bucket(r["documento"], args.seed + 1))   # ordem estável
 
     write_jsonl(OUT_TRAIN, (to_pc(r, schemas) for r in treino))
     write_jsonl(OUT_EVAL, (to_pc(r, schemas) for r in evalset))

@@ -60,6 +60,19 @@ IDIOMAS = {
     "fr": "frances",
 }
 
+# ⚠️ O documento medio da 1a leva ficou em 191 chars (pedi "3 a 10 linhas", vieram
+# 3-4 curtas). Documento real — nota fiscal completa, curriculo de pagina inteira —
+# e uma ordem de magnitude maior, e NAO sabemos se a abelha transfere. `--doc-len`
+# existe para gerar a 2a leva e medir isso, em vez de supor.
+TAMANHOS = {
+    "curto": "de 3 a 6 linhas, direto ao ponto",
+    "medio": "de 8 a 15 linhas, com cabecalho e alguma informacao irrelevante no meio",
+    "longo": ("de 25 a 45 linhas, como um documento REAL: cabecalho com endereco e "
+              "identificadores, secoes, linhas de tabela, rodape, termos legais, e "
+              "BASTANTE informacao irrelevante para os campos pedidos. O modelo "
+              "precisa ACHAR os campos no meio do ruido, nao ler um resumo"),
+}
+
 # Rodízio de cenário: sem isso o professor gravita para o mesmo documento
 # ("Padaria do Joao", "Maria Silva") e o dataset fica grande e redundante.
 CENARIOS = [
@@ -80,7 +93,7 @@ Cenario para se inspirar: {cenario}
 
 Para cada exemplo, produza:
   (a) um DOCUMENTO realista em {idioma} — texto corrido, e-mail, anuncio, recibo,
-      cabecalho ou mensagem, de 3 a 10 linhas. Escreva como no mundo real:
+      cabecalho ou mensagem, {tamanho}. Escreva como no mundo real:
       formatacao irregular, abreviacoes, ruido. NAO escreva o documento em forma
       de lista de campos.
   (b) a EXTRACAO desse documento, como objeto JSON, seguindo o schema abaixo.
@@ -150,9 +163,21 @@ def main() -> int:
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--langs", default="pt,en,es,fr")
     ap.add_argument("--schemas", default="", help="subconjunto separado por virgula; vazio = todos")
+    ap.add_argument("--doc-len", default="curto", choices=list(TAMANHOS),
+                    help="tamanho do documento. A 1a leva saiu com media de 191 chars "
+                         "('curto'); 'longo' gera documento de tamanho REAL para medir "
+                         "se a abelha transfere — nao sabemos ainda.")
     ap.add_argument("--frac-ausente", type=float, default=0.35,
                     help="fracao dos exemplos com campo opcional GENUINAMENTE ausente. "
                          "0 desliga — mas ai a abelha aprende a sempre preencher tudo.")
+    ap.add_argument("--cap-esparso", type=float, default=0.0,
+                    help="⭐ TETO para a fracao de itens ACEITOS com campo opcional "
+                         "ausente. A 1a leva pediu 35%% e o dataset saiu com 46%% — nao "
+                         "e o prompt desobedecendo, e EFEITO DE SELECAO DO FILTRO: item "
+                         "com menos campos tem menos chance de errar tipo ou alucinar, "
+                         "logo sobrevive mais. Pedir menos no prompt seria chute; este "
+                         "teto CORRIGE na aceitacao, que e onde o vies nasce. "
+                         "0 = desligado (mantem o comportamento da 1a leva).")
     ap.add_argument("--sim-max", type=float, default=0.6,
                     help="jaccard de 3-gramas acima disso = documento duplicado")
     ap.add_argument("--dry-run", action="store_true")
@@ -186,6 +211,7 @@ def main() -> int:
         k = round(args.per_call * args.frac_ausente)
         return PROMPT_TMPL.format(
             n=args.per_call, idioma=IDIOMAS[lang], cenario=cenario,
+            tamanho=TAMANHOS[args.doc_len],
             schema_nome=sch["name"], schema_desc=sch["description"],
             schema_campos=render_schema(sch),
             bloco_ausente=BLOCO_AUSENTE.format(k=k, n=args.per_call) if k else "")
@@ -205,7 +231,7 @@ def main() -> int:
 
     # contadores de rejeicao — saber POR QUE cai e o que mais rende no ajuste
     stats = {"gerados": 0, "sem_json": 0, "nao_conforme": 0, "alucinado": 0,
-             "duplicado": 0, "ok": 0}
+             "duplicado": 0, "cap_esparso": 0, "ok": 0, "esparsos": 0}
     motivos: dict[str, int] = {}
 
     def trabalho(i: int) -> None:
@@ -247,6 +273,16 @@ def main() -> int:
                 if any(jaccard(g, h) > args.sim_max for h in grams):
                     stats["duplicado"] += 1
                     continue
+
+                # ⭐ teto de esparsidade: corrige o vies ONDE ELE NASCE (na aceitacao)
+                opc = [k for k, v in sch["fields"].items() if not v.get("required")]
+                esparso = any(k not in ver["obj"] or ver["obj"][k] is None for k in opc)
+                if args.cap_esparso and esparso:
+                    aceitos = stats["ok"] + len(existentes)
+                    if aceitos >= 20 and stats["esparsos"] / aceitos > args.cap_esparso:
+                        stats["cap_esparso"] += 1
+                        continue
+                stats["esparsos"] += int(esparso)
                 grams.append(g)
                 stats["ok"] += 1
                 reg = {"schema": schema_nome, "lang": lang, "documento": doc,
@@ -271,6 +307,9 @@ def main() -> int:
     print(f"  ⚠️ ALUCINADO          : {stats['alucinado']}  "
           "(valor que nao existe no proprio documento que ele escreveu)")
     print(f"  duplicado            : {stats['duplicado']}")
+    if args.cap_esparso:
+        print(f"  cortado pelo teto    : {stats['cap_esparso']}  (esparsos acima de "
+              f"{args.cap_esparso:.0%})")
     print(f"  ✅ VALIDADOS          : {stats['ok']}")
     if stats["gerados"]:
         print(f"aproveitamento         : {stats['ok'] / stats['gerados']:.1%}")
