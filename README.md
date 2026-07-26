@@ -91,10 +91,35 @@ idioma do pedido". ⚠️ A segunda é a mais importante: o prompt da `chat_ptbr
 português brasileiro"* — **desligar o adapter tinha consertado só metade do problema**, a rota
 default seguia forçando português sobre um backbone de 201 idiomas.
 
-⚠️ **Defeito registrado, não corrigido:** o system prompt da `agentica` no `bees.json` **não traz o
-catálogo de ferramentas**, mas o adapter foi treinado com um que traz — em produção pedimos
-tool-call sem dizer quais ferramentas existem. O 24/24 acima rodou com o system **de treino**, então
-ele *não valida* a rota como está configurada hoje.
+#### ⚠️→✅ O defeito do catálogo: **+45,8 pp sem treinar nada**
+
+O 24/24 acima rodou com o system prompt **de treino**. A produção servia outro: o `bees.json` tinha
+uma versão resumida, escrita à mão, que **não listava ferramenta nenhuma** — e ainda assim exigia um
+tool-call. A abelha era treinada com o catálogo à vista e **servida às cegas**.
+
+Medido pela rota real (`load_registry()`, o mesmo caminho do `hive`), mesmos 24 probes:
+
+| idioma | ANTES (stub) base · adapter | DEPOIS (catálogo) base · adapter |
+|---|---|---|
+| português | 3/6 · 3/6 | 4/6 · **6/6** |
+| inglês | 3/6 · 3/6 | 5/6 · **6/6** |
+| espanhol | 3/6 · 3/6 | 4/6 · **6/6** |
+| francês | 3/6 · 4/6 | 4/6 · **6/6** |
+| **TOTAL** | 12/24 · **13/24** | 17/24 · **24/24** |
+
+**13/24 → 24/24 = +45,8 pp, zero GPU.** E o mais grave: com o stub o adapter (13/24) estava
+**empatado com o base** (12/24) — os +28,5 pp que pagamos para treinar **não existiam em produção**.
+O `3/6` uniforme é a assinatura do defeito: os 3 casos de texto passavam, os 3 de ferramenta falhavam
+sempre, porque sem catálogo não há como acertar o nome da ferramenta.
+
+**Conserto estrutural, não remendo:** `data/tool_catalog.py` vira a fonte única; treino, avaliação e
+produção importam a mesma `build_system()`. O `bees.json` declara `system_from_tool_catalog: true` em
+vez de guardar uma cópia. Verificado: produção == treino **byte a byte**, 14/14 ferramentas.
+
+⚠️ **O harness também estava errado, e isso é a lição:** `eval_lang_domain` chamava `build_system()`
+direto para a agêntica — "ajudando" o teste. Ele media o prompt de treino enquanto a produção servia
+o stub, e por isso o primeiro 24/24 não valia para a rota real. **Um harness que conserta a config em
+silêncio mede a intenção, não o sistema.** Agora passa por `load_registry()`.
 
 **A regra de projeto que sai disso:** abelha que ensina **comportamento** (quando usar ferramenta)
 atravessa idiomas de graça; abelha que ensina **redação** (como conversar) carrega o idioma junto,
