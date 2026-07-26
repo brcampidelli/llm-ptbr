@@ -185,25 +185,47 @@ def norm_data(v) -> date | None:
 
 # ------------------------------------------------------------------- conformidade ---
 
-def _tipo_ok(valor, spec: dict) -> str | None:
-    """None se o valor bate com o tipo declarado; senão a mensagem do erro."""
+def _tipo_ok(valor, spec: dict, strict: bool = False) -> str | None:
+    """None se o valor bate com o tipo declarado; senão a mensagem do erro.
+
+    `strict` separa dois usos que exigem rigores DIFERENTES, e confundi-los
+    estraga o dataset:
+
+      strict=False (AVALIAÇÃO) — tolerante ao formato. "GBP 1.295,00" conta como
+        acerto de 1295.0, porque a pergunta é "o modelo pegou o valor certo?".
+
+      strict=True (ACEITAR DADO DE TREINO) — o tipo tem que ser o tipo JSON
+        declarado. Número é número, não string com símbolo de moeda; data é ISO.
+        Sem isso, metade do treino sai `312.40` e metade `"GBP 1,295.00"`, a
+        abelha aprende a emitir JSON inconsistente, e a parte "estruturada" da
+        extração estruturada deixa de valer.
+    """
     t = spec["type"]
     if t == "string":
         return None if isinstance(valor, str) and valor.strip() else "esperava string nao-vazia"
     if t == "integer":
         if isinstance(valor, bool):
             return "esperava inteiro, veio booleano"
+        if strict and not isinstance(valor, int):
+            return f"esperava inteiro JSON, veio {type(valor).__name__}"
         n = norm_numero(valor)
         return None if n is not None and float(n).is_integer() else "esperava inteiro"
     if t == "number":
         if isinstance(valor, bool):
             return "esperava numero, veio booleano"
+        if strict and not isinstance(valor, (int, float)):
+            return f"esperava numero JSON, veio {type(valor).__name__} ({valor!r})"
         return None if norm_numero(valor) is not None else "esperava numero"
     if t == "boolean":
         return None if isinstance(valor, bool) else "esperava booleano (true/false)"
     if t == "date":
+        if strict and not (isinstance(valor, str)
+                           and re.fullmatch(r"\d{4}-\d{2}-\d{2}", valor.strip())):
+            return f"esperava data ISO AAAA-MM-DD, veio {valor!r}"
         return None if norm_data(valor) else "esperava data reconhecivel"
     if t == "enum":
+        if strict and valor not in spec.get("values", []):
+            return f"esperava enum EXATO de {spec.get('values')}, veio {valor!r}"
         vals = {norm_texto(x) for x in spec.get("values", [])}
         return None if norm_texto(valor) in vals else \
             f"fora do dominio {spec.get('values')}"
@@ -215,8 +237,8 @@ def _tipo_ok(valor, spec: dict) -> str | None:
     return f"tipo desconhecido no schema: {t}"
 
 
-def validar_conformidade(obj, schema: dict) -> list[str]:
-    """Lista de erros. Vazia = conforme."""
+def validar_conformidade(obj, schema: dict, strict: bool = False) -> list[str]:
+    """Lista de erros. Vazia = conforme. Ver `_tipo_ok` sobre `strict`."""
     erros: list[str] = []
     if not isinstance(obj, dict):
         return ["a saida nao e um objeto JSON"]
@@ -226,7 +248,7 @@ def validar_conformidade(obj, schema: dict) -> list[str]:
             if spec.get("required"):
                 erros.append(f"campo obrigatorio ausente: {nome}")
             continue
-        err = _tipo_ok(obj[nome], spec)
+        err = _tipo_ok(obj[nome], spec, strict)
         if err:
             erros.append(f"{nome}: {err}")
     for extra in set(obj) - set(campos):
@@ -292,13 +314,17 @@ def extrair_json(texto: str) -> dict | None:
     return None
 
 
-def avaliar(saida: str, schema: dict, documento: str) -> dict:
-    """Veredito completo de uma saída. É o que o filtro, o eval e o treino usam."""
+def avaliar(saida: str, schema: dict, documento: str, strict: bool = False) -> dict:
+    """Veredito completo de uma saída. É o que o filtro, o eval e o treino usam.
+
+    `strict=True` ao ACEITAR dado de treino (tipo JSON exato); `strict=False` ao
+    AVALIAR o modelo (tolerante a formato). Ver `_tipo_ok`.
+    """
     obj = extrair_json(saida)
     if obj is None:
         return {"json_ok": False, "conforme": False, "grounded": False,
                 "erros": ["nao foi possivel extrair JSON da saida"], "obj": None}
-    conf = validar_conformidade(obj, schema)
+    conf = validar_conformidade(obj, schema, strict)
     grd = validar_groundedness(obj, schema, documento) if not conf else []
     return {"json_ok": True, "conforme": not conf, "grounded": not grd,
             "erros": conf + grd, "obj": obj}

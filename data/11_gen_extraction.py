@@ -96,8 +96,12 @@ REGRAS INEGOCIAVEIS (o exemplo e DESCARTADO se quebrar alguma):
    Nao use null, nao use "" e nao invente um valor plausivel.
 4. Nao acrescente nenhum campo fora do schema.
 5. Datas no JSON em AAAA-MM-DD (no documento podem estar em qualquer formato).
-6. Numeros no JSON sem simbolo de moeda e sem separador de milhar.
-7. Valores de enum EXATAMENTE como listados.
+6. Campo "number"/"integer" e NUMERO JSON, nao string. O simbolo da moeda vai no
+   campo de moeda, nunca junto do valor:
+     CERTO : "valor_total": 1295.00,  "moeda": "GBP"
+     ERRADO: "valor_total": "GBP 1,295.00"
+     ERRADO: "valor_total": "1.295,00"
+7. Valores de enum EXATAMENTE como listados, respeitando maiuscula/minuscula.
 {bloco_ausente}
 Responda SOMENTE com um array JSON, sem texto antes ou depois:
 [{{"documento": "...", "extracao": {{...}}}}, ...]"""
@@ -208,7 +212,8 @@ def main() -> int:
         if stats["ok"] + len(existentes) >= args.target:
             return
         rng = random.Random(args.seed + i)
-        schema_nome = rng.choice(nomes_schema)
+        # rodizio determinístico: rng.choice deixou um schema com 38% do lote
+        schema_nome = nomes_schema[(i // len(langs)) % len(nomes_schema)]
         lang = langs[i % len(langs)]                 # rodizio garante equilibrio
         sch = todos[schema_nome]
         try:
@@ -222,7 +227,8 @@ def main() -> int:
 
         for item in parse_lote(raw):
             doc = item["documento"].strip()
-            ver = avaliar(json.dumps(item["extracao"], ensure_ascii=False), sch, doc)
+            ver = avaliar(json.dumps(item["extracao"], ensure_ascii=False), sch, doc,
+                          strict=True)   # dado de TREINO: tipo JSON exato
             with _lock:
                 stats["gerados"] += 1
                 if not ver["json_ok"]:
