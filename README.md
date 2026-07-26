@@ -28,10 +28,10 @@ query ──► Router (regras + complexidade) ──► escolhe a abelha
                                               │
         ┌─────────────────┬───────────────────┼──────────────────────┐
         ▼                 ▼                   ▼                      ▼
-   agentica            coder             chat_ptbr (default)   base_forte (fallback)
-   tool-use            código            chat multilíngue      raciocínio difícil
-   [adapter]           [adapter]         [backbone puro] ⚠️     [backbone base]
-    FAST                FAST              FAST                   slow
+   agentica     extracao      coder        chat_ptbr (default)  base_forte
+   tool-use     doc→JSON      código       chat multilíngue     raciocínio difícil
+   [adapter]    [adapter]     [adapter]    [backbone puro] ⚠️    [backbone base]
+    FAST         FAST          FAST         FAST                  slow
 
 ⚠️ o adapter da chat_ptbr foi APOSENTADO em 2026-07-25 (reprovou no juiz e na
    consistência de idioma). A rota continua; o modelo por trás é o backbone.
@@ -53,6 +53,58 @@ Quantas queries **evitam o modelo caro**. Alta ⇒ a comeia é econômica. Baixa
 Medida em toda rota pelo `Router` e reportada ao fim de cada execução.
 
 ## 📊 Resultados medidos
+
+### 🐝 4ª abelha: EXTRAÇÃO estruturada — **+14 a +43 pp**, alucinação **0%** (2026-07-26)
+
+Critério de escolha da abelha (a lição das três primeiras): só especializar onde há **recompensa
+verificável**. Extração tem duas, e a segunda é nova no projeto:
+
+1. **conformidade** ao schema (obrigatórios, tipos, enum, campo inventado);
+2. ⭐ **groundedness** — todo valor marcado como copiado tem que *aparecer* no documento. Isso torna
+   **alucinação detectável deterministicamente**: se o modelo escreveu `1240.0` e esse número não
+   existe no texto, ele inventou, e o código sabe.
+
+**Gate:** o base errou **510/934 = 54,6%** (limiar era 15%) → 370 itens de treino.
+
+**Holdout DIFÍCIL** (140, estratificado 35 por idioma, contaminação verificada 0/140) — itens
+*perfeitos* = conforme **+** sem alucinar **+** todos os campos certos:
+
+| idioma | base | ADAPTER | delta |
+|---|---|---|---|
+| francês | 0,0% | **42,9%** | **+42,9** |
+| inglês | 0,0% | **28,6%** | **+28,6** |
+| espanhol | 2,9% | **22,9%** | **+20,0** |
+| português | 0,0% | **14,3%** | **+14,3** |
+
+O maior ganho está no **francês** — o idioma onde o base errava mais (62%). O adapter ganha onde
+havia o que ganhar, **não** no idioma majoritário do treino. Depois da `chat_ptbr`, era esse o
+resultado a procurar.
+
+**Holdout FÁCIL** (140, o base acerta) — mede dano colateral:
+
+| | perfeitos | campos | conforme | **alucinação** | esquecidos |
+|---|---|---|---|---|---|
+| base | 98,6% | 99,9% | 99,3% | **0,0%** | 0 |
+| ADAPTER | 90,7% | 98,1% | **100,0%** | **0,0%** | 3 |
+
+**−7,9 pp de regressão**, e a decomposição mostra que é dano leve: alucinação **0% nos dois**;
+campos individuais caem só 1,8 pp (os "perfeitos" caem mais porque exigem *todos* os campos, e um
+erro derruba o item inteiro); conformidade **subiu para 100%**; sub-extração em apenas 3 de 140.
+
+Contra a `coder` (+40 pp difícil / **−17,5 pp** fácil), o dano aqui é **menos da metade** — provável
+efeito do modo `strict` no dado de treino, que manteve o formato de saída consistente.
+
+⚠️ **O dataset ficou enviesado para extrações esparsas** (46% dos documentos com campo opcional
+ausente, contra os 35% pedidos — efeito de seleção do filtro). Por isso o eval mede **campo
+esquecido** separado de alucinação: sem essa coluna, **sub-extração passaria por virtude** — um
+modelo que omite tudo nunca alucina e exibiria "0% de alucinação".
+
+⚠️ **Descoberta sobre o instrumento:** o gate **não é bit-reproduzível**. Duas execuções deram 513 e
+510 difíceis (0,3% de diferença) porque a geração em lote muda o padding e a aritmética de ponto
+flutuante junto. Consequência prática grave: `shuffle(seed=42)` sobre pools de tamanho diferente dá
+permutações totalmente distintas, então **um holdout regerado depois do treino fica contaminado**
+(~73% dele estaria no treino). Foi pego antes de reportar; o adapter foi retreinado no split atual.
+
 
 ### 🌍 Teste de idioma nas abelhas de domínio (2026-07-25) — o culpado era o *prompt*, não o treino
 
@@ -359,6 +411,7 @@ concluir. Por isso repetimos com 3× mais dados e n=300.)*
 | `chat_ptbr` | chat/generalista | 🚫 **adapter APOSENTADO** — reprovou no juiz (42,2%) e na consistência de idioma (33/48 vs 48/48). Rota mantida sobre o **backbone puro** (multilíngue) |
 | `agentica` | tool-use / seguir instrução | ✅ **adapter real e VALIDADO** (1.495 ex, +28,5 pp vs base) · **multilíngue: 24/24 vs 17/24 do base nos 4 idiomas** |
 | `coder` | funções Python verificáveis por execução | ✅ **treinada e validada em held-out limpo**: +40 pp nas difíceis (1,7%→41,7%, 24×), −17,5 pp nas fáceis. Adapter **persistido na Drive** (2026-07-25); reproduzível em 17 min de qualquer forma |
+| `extracao` | documento → JSON com schema | ✅ **adapter real e VALIDADO**: +14 a +43 pp nos difíceis, **alucinação 0%**, −7,9 pp nos fáceis |
 | `base_forte` | fallback do raciocínio difícil | ✅ backbone base (futuro: 7–11B/nuvem) |
 | multimodal | imagem/áudio | ⏳ Fase 4 — modelo **separado ~9B** (Qwen3.5-VL) |
 

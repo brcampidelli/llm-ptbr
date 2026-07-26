@@ -33,6 +33,21 @@
       ]
     },
     {
+      "name": "extracao",
+      "description": "Abelha REAL (Fase 3): extracao estruturada documento -> JSON com schema. Treinada em 370 itens que o BASE ERRA (filtro data/12: base errou 510/934 = 54,6%). Medido em holdout limpo (0/140 de contaminacao, 35 itens por idioma): DIFICEIS 0-2,9% -> 14,3-42,9% de itens PERFEITOS (conforme + sem alucinar + todos os campos certos); FACEIS 98,6% -> 90,7% (-7,9 pp de dano colateral). ⭐ ALUCINACAO 0,0% nos dois — o adapter nao passou a inventar, e o groundedness prova. Conformidade ao schema SUBIU para 100%. Maior ganho no FRANCES (+42,9), que era o idioma mais dificil para o base (62% de erro) — ganha onde havia o que ganhar, nao no idioma majoritario do treino. ⚠️ adapter ainda em /content (efemero): reproduzir com train/sft_qlora.py --data data/processed/sft_extraction.jsonl --epochs 2 (~32 min de L4) e salvar na Drive.",
+      "adapter_path": "${EXTRACAO_ADAPTER:-/content/drive/MyDrive/qwen35-4b-extracao}",
+      "priority": 15,
+      "fast_path": true,
+      "system_from_tool_catalog": false,
+      "system_prompt": null,
+      "triggers": [
+        "\\b(extraia|extrair|extraia os campos|extract|extraer|extrais|extraire)\\b",
+        "\\b(preencha|preencher|popule)\\b.{0,30}\\b(schema|json|campos|formulario|formulário)\\b",
+        "\\b(nota fiscal|fatura|invoice|curriculo|currículo|resume|cv)\\b.{0,40}\\b(json|campos|dados|estruturad)",
+        "\\b(structured output|structured extraction|extracao estruturada|extração estruturada)\\b"
+      ]
+    },
+    {
       "name": "chat_ptbr",
       "description": "⚠️ APOSENTADA (2026-07-25) — adapter DESLIGADO por medicao. O SFT-v2 (5657 ex, 100% PT-BR) foi finalmente avaliado com a regua certa (juiz de geracao + consistencia de idioma, 48 prompts held-out em pt/en/es/fr) e REPROVOU nas duas: (1) consistencia de idioma 48/48 no base vs 33/48 no adapter — em INGLES responde em portugues 10 de 12 vezes; (2) juiz aberto prefere o BASE em TODOS os 4 idiomas (26 x 19), inclusive em portugues. Nao era neutra, era prejudicial. Mantida como rota de chat, mas sobre o BACKBONE PURO (multilingue, 201 idiomas). Para reativar o adapter: defina CHAT_ADAPTER=<caminho>. ⚠️ system_prompt REMOVIDO em 2026-07-25: ele dizia 'Responda em portugues brasileiro' — ou seja, mesmo com o adapter desligado, a rota DEFAULT (~40% do trafego) continuava FORCANDO portugues em cima de um backbone de 201 idiomas. Desligar o adapter sem tirar o prompt teria consertado metade do problema.",
       "adapter_path": "${CHAT_ADAPTER:-}",
