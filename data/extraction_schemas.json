@@ -1,0 +1,109 @@
+{
+  "_doc": "Catalogo de schemas da abelha de EXTRACAO ESTRUTURADA. Fonte unica: geracao, validacao, treino, avaliacao e producao leem daqui (a licao do catalogo da agentica: duas copias divergem). Cada campo declara 'grounded': true = o valor precisa APARECER no documento (checavel por substring, detecta alucinacao); false = o valor e INFERIDO/normalizado (enum, booleano, data reformatada) e so pode ser checado por tipo/dominio.",
+  "schemas": [
+    {
+      "name": "nota_fiscal",
+      "description": "Dados de uma nota fiscal / fatura de compra",
+      "fields": {
+        "emitente": {"type": "string", "required": true, "grounded": true},
+        "documento_fiscal": {"type": "string", "required": true, "grounded": true},
+        "data_emissao": {"type": "date", "required": true, "grounded": false},
+        "valor_total": {"type": "number", "required": true, "grounded": true},
+        "moeda": {"type": "enum", "required": true, "grounded": false,
+                  "values": ["BRL", "USD", "EUR", "GBP"]},
+        "itens": {"type": "array[string]", "required": false, "grounded": true}
+      }
+    },
+    {
+      "name": "curriculo",
+      "description": "Dados de contato e experiencia de um curriculo",
+      "fields": {
+        "nome": {"type": "string", "required": true, "grounded": true},
+        "email": {"type": "string", "required": true, "grounded": true},
+        "telefone": {"type": "string", "required": false, "grounded": true},
+        "cargo_atual": {"type": "string", "required": false, "grounded": true},
+        "anos_experiencia": {"type": "integer", "required": false, "grounded": false},
+        "habilidades": {"type": "array[string]", "required": true, "grounded": true}
+      }
+    },
+    {
+      "name": "evento_agenda",
+      "description": "Compromisso descrito em um e-mail ou mensagem",
+      "fields": {
+        "titulo": {"type": "string", "required": true, "grounded": false},
+        "data": {"type": "date", "required": true, "grounded": false},
+        "hora_inicio": {"type": "string", "required": false, "grounded": true},
+        "local": {"type": "string", "required": false, "grounded": true},
+        "participantes": {"type": "array[string]", "required": false, "grounded": true},
+        "presencial": {"type": "boolean", "required": true, "grounded": false}
+      }
+    },
+    {
+      "name": "produto_ecommerce",
+      "description": "Ficha de um produto anunciado",
+      "fields": {
+        "nome": {"type": "string", "required": true, "grounded": true},
+        "marca": {"type": "string", "required": false, "grounded": true},
+        "preco": {"type": "number", "required": true, "grounded": true},
+        "moeda": {"type": "enum", "required": true, "grounded": false,
+                  "values": ["BRL", "USD", "EUR", "GBP"]},
+        "disponivel": {"type": "boolean", "required": true, "grounded": false},
+        "categorias": {"type": "array[string]", "required": false, "grounded": true}
+      }
+    },
+    {
+      "name": "ticket_suporte",
+      "description": "Chamado de suporte aberto por um cliente",
+      "fields": {
+        "cliente": {"type": "string", "required": true, "grounded": true},
+        "produto": {"type": "string", "required": true, "grounded": true},
+        "severidade": {"type": "enum", "required": true, "grounded": false,
+                       "values": ["baixa", "media", "alta", "critica"]},
+        "resumo": {"type": "string", "required": true, "grounded": false},
+        "versao_afetada": {"type": "string", "required": false, "grounded": true},
+        "passos_reproducao": {"type": "array[string]", "required": false, "grounded": false}
+      }
+    },
+    {
+      "name": "imovel_anuncio",
+      "description": "Anuncio de imovel para alugar ou comprar",
+      "fields": {
+        "tipo": {"type": "enum", "required": true, "grounded": false,
+                 "values": ["apartamento", "casa", "kitnet", "sobrado", "terreno", "sala_comercial"]},
+        "bairro": {"type": "string", "required": true, "grounded": true},
+        "quartos": {"type": "integer", "required": true, "grounded": true},
+        "area_m2": {"type": "number", "required": false, "grounded": true},
+        "preco": {"type": "number", "required": true, "grounded": true},
+        "operacao": {"type": "enum", "required": true, "grounded": false,
+                     "values": ["aluguel", "venda"]},
+        "aceita_pet": {"type": "boolean", "required": false, "grounded": false}
+      }
+    },
+    {
+      "name": "artigo_cientifico",
+      "description": "Metadados de um artigo academico a partir do cabecalho/resumo",
+      "fields": {
+        "titulo": {"type": "string", "required": true, "grounded": true},
+        "autores": {"type": "array[string]", "required": true, "grounded": true},
+        "ano": {"type": "integer", "required": true, "grounded": true},
+        "veiculo": {"type": "string", "required": false, "grounded": true},
+        "area": {"type": "string", "required": false, "grounded": false},
+        "palavras_chave": {"type": "array[string]", "required": false, "grounded": true}
+      }
+    },
+    {
+      "name": "transacao_bancaria",
+      "description": "Lancamento em extrato bancario",
+      "fields": {
+        "descricao": {"type": "string", "required": true, "grounded": true},
+        "data": {"type": "date", "required": true, "grounded": false},
+        "valor": {"type": "number", "required": true, "grounded": true},
+        "moeda": {"type": "enum", "required": true, "grounded": false,
+                  "values": ["BRL", "USD", "EUR", "GBP"]},
+        "tipo": {"type": "enum", "required": true, "grounded": false,
+                 "values": ["credito", "debito"]},
+        "contraparte": {"type": "string", "required": false, "grounded": true}
+      }
+    }
+  ]
+}
