@@ -358,7 +358,7 @@ concluir. Por isso repetimos com 3× mais dados e n=300.)*
 |---|---|---|
 | `chat_ptbr` | chat/generalista | 🚫 **adapter APOSENTADO** — reprovou no juiz (42,2%) e na consistência de idioma (33/48 vs 48/48). Rota mantida sobre o **backbone puro** (multilíngue) |
 | `agentica` | tool-use / seguir instrução | ✅ **adapter real e VALIDADO** (1.495 ex, +28,5 pp vs base) · **multilíngue: 24/24 vs 17/24 do base nos 4 idiomas** |
-| `coder` | funções Python verificáveis por execução | ✅ **treinada e validada em held-out limpo**: +40 pp nas difíceis (1,7%→41,7%, 24×), −17,5 pp nas fáceis. Adapter efêmero — reproduzível em 17 min |
+| `coder` | funções Python verificáveis por execução | ✅ **treinada e validada em held-out limpo**: +40 pp nas difíceis (1,7%→41,7%, 24×), −17,5 pp nas fáceis. Adapter **persistido na Drive** (2026-07-25); reproduzível em 17 min de qualquer forma |
 | `base_forte` | fallback do raciocínio difícil | ✅ backbone base (futuro: 7–11B/nuvem) |
 | multimodal | imagem/áudio | ⏳ Fase 4 — modelo **separado ~9B** (Qwen3.5-VL) |
 

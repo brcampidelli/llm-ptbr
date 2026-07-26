@@ -20,8 +20,8 @@
     },
     {
       "name": "coder",
-      "description": "Abelha REAL (Fase 2): funcoes Python verificaveis por execucao. Treinada em 216 tarefas que o BASE ERRA (filtro data/09). Medido em held-out limpo: dificeis 1,7%->41,7% (24x o base), faceis 100%->82,5%. Config vencedora: 2 epocas, 100% dificil (1 epoca e mistura 30% foram medidas e sao PIORES). ⚠️ adapter EFEMERO no Colab (/content morre com o runtime) — reproduza com: python colab/reproduce_coder.py --out <caminho>. ⚠️ system_prompt REMOVIDO em 2026-07-25 por medicao: o prompt em PORTUGUES fazia a abelha responder em portugues a pedidos em INGLES (adapter 0/6, base 1/6). Sem system prompt: 6/6 nos dois, e 'tem codigo' continua 6/6 — o prompt nao estava pagando o proprio custo. Instruir 'responda no idioma do pedido' EM PORTUGUES piora (0/6 nos dois): o que contamina e o IDIOMA do prompt, nao o conteudo dele.",
-      "adapter_path": "${CODER_ADAPTER:-/content/qwen35-4b-coder}",
+      "description": "Abelha REAL (Fase 2): funcoes Python verificaveis por execucao. Treinada em 216 tarefas que o BASE ERRA (filtro data/09). Medido em held-out limpo: dificeis 1,7%->41,7% (24x o base), faceis 100%->82,5%. Config vencedora: 2 epocas, 100% dificil (1 epoca e mistura 30% foram medidas e sao PIORES). ✅ adapter PERSISTIDO na Drive em 2026-07-25 (161 MB; safetensors 42,5 MB, r=16 alpha=32). Antes vivia em /content e morria com o runtime — a sessao de hoje quase o perdeu num timeout por inatividade. Reproduzivel em 17 min de qualquer forma: python colab/reproduce_coder.py --out <caminho>. ⚠️ system_prompt REMOVIDO em 2026-07-25 por medicao: o prompt em PORTUGUES fazia a abelha responder em portugues a pedidos em INGLES (adapter 0/6, base 1/6). Sem system prompt: 6/6 nos dois, e 'tem codigo' continua 6/6 — o prompt nao estava pagando o proprio custo. Instruir 'responda no idioma do pedido' EM PORTUGUES piora (0/6 nos dois): o que contamina e o IDIOMA do prompt, nao o conteudo dele.",
+      "adapter_path": "${CODER_ADAPTER:-/content/drive/MyDrive/qwen35-4b-coder}",
       "priority": 20,
       "fast_path": true,
       "system_prompt": null,
