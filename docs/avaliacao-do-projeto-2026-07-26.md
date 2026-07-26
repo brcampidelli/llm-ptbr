@@ -115,14 +115,34 @@ gate não bit-reproduzível. Cada uma custou horas e está documentada com o nú
 
 ## 5. O que fazer para melhorar — ordenado por valor/custo
 
-### 🔴 Prioridade 1 — fechar a lacuna do baseline externo *(uma tarde, ~US$2)*
+### ✅ Prioridade 1 — FECHADA no mesmo dia: o baseline externo foi medido
 
-Rodar o holdout difícil da `extracao` contra:
-- backbone + **few-shot de 3 exemplos** (isola "adapter" de "prompt melhor");
-- um **encoder pequeno** (ex.: XLM-R base fine-tunado) no mesmo schema;
-- a camada barata de um modelo grande aberto, com custo por documento.
+**Resultado (holdout difícil, 119 itens, few-shot com vazamento verificado por `assert`):**
 
-Sem isso, todo número do README é interno. **Este item muda a interpretação de todo o resto.**
+| braço | perfeitos | campos | conforme | alucinação | esquecidos |
+|---|---|---|---|---|---|
+| base 0-shot | **0,0%** | 67,7% | 89,1% | 8,5% | 53 |
+| base **3-shot** | **10,9%** | 69,4% | 95,8% | 5,3% | 60 |
+| **ADAPTER** | **26,1%** | **78,2%** | **100,0%** | **3,4%** | **10** |
+
+**ADAPTER − FEW-SHOT = +15,1 pp.** O adapter ensina algo que o prompt não alcança.
+
+E o few-shot funcionou: tirou o base de 0% para 10,9%. Ou seja, **parte do "+43 pp" que
+reportávamos era mesmo prompt fraco** — a crítica estava certa. Mas só parte: os outros 15 pp são
+especialização real, medida contra um concorrente que não escolhemos para perder.
+
+Dois achados secundários que o desenho do eval capturou:
+- **alucinação 8,5% → 5,3% → 3,4%** — melhora monotônica; o few-shot ajuda, o treino ajuda mais;
+- **campos esquecidos 53 → 60 → 10** — o few-shot *piorou* a sub-extração (viu 3 exemplos e ficou
+  mais tímido). O adapter é o único que aprendeu **quando preencher**, não só quando calar. Foi
+  exatamente para pegar isso que a coluna de "esquecido" existe separada da de alucinação.
+
+⚠️ **Ainda em aberto neste eixo:** o professor não foi medido (falta o teto prático e o custo por
+documento), e o encoder pequeno da objeção de 2026-07-25 continua não medido.
+
+### 🔴 Prioridade 1b — o mesmo teste para `agentica` e `coder` *(não feito)*
+
+O few-shot só foi medido na `extracao`. As outras duas continuam com números autorreferenciais.
 
 ### 🔴 Prioridade 2 — medir a fração de fast-path com carga que eu não escrevi
 

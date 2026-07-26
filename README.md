@@ -54,6 +54,32 @@ Medida em toda rota pelo `Router` e reportada ao fim de cada execução.
 
 ## 📊 Resultados medidos
 
+### ⭐ O TESTE EXTERNO: a `extracao` ganha do few-shot por **+15,1 pp** (2026-07-26)
+
+Até aqui **todo** número deste projeto tinha a forma *"adapter vs. o nosso próprio base, em itens
+escolhidos porque o base erra"* — circular por construção. Este é o primeiro contra um concorrente
+que não escolhemos para perder.
+
+| braço | perfeitos | campos | conforme | alucinação | esquecidos |
+|---|---|---|---|---|---|
+| base 0-shot | **0,0%** | 67,7% | 89,1% | 8,5% | 53 |
+| base **3-shot** | **10,9%** | 69,4% | 95,8% | 5,3% | 60 |
+| **ADAPTER** | **26,1%** | **78,2%** | **100,0%** | **3,4%** | **10** |
+
+**O few-shot funcionou** — tirou o base de 0% para 10,9%. Ou seja, **parte do ganho que
+reportávamos era mesmo prompt fraco.** Mas só parte: sobram **+15,1 pp** de especialização real.
+
+Dois achados que só aparecem porque o eval separa os erros:
+- **alucinação cai monotonicamente** 8,5% → 5,3% → 3,4%: o few-shot ajuda, o treino ajuda mais;
+- **campos esquecidos 53 → 60 → 10**: o few-shot *piorou* a sub-extração. O adapter é o único que
+  aprendeu **quando preencher**, não só quando calar.
+
+Reprodução verificada: `colab/reproduce_extracao.py` reconstruiu a abelha em **53,8 min** num
+runtime zerado, sem intervenção.
+
+⚠️ Falta medir: o professor (teto prático + custo por documento), um encoder pequeno, e o mesmo
+teste na `agentica` e na `coder` — que continuam com números autorreferenciais.
+
 ### 🐝 4ª abelha: EXTRAÇÃO estruturada — **+14 a +43 pp**, alucinação **0%** (2026-07-26)
 
 Critério de escolha da abelha (a lição das três primeiras): só especializar onde há **recompensa
