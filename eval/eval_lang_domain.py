@@ -98,6 +98,12 @@ def main() -> int:
     ap.add_argument("--max-new", type=int, default=320)
     ap.add_argument("--no-4bit", action="store_true")
     ap.add_argument("--tag", default=None)
+    ap.add_argument("--system", default=None,
+                    help="sobrescreve o system prompt de producao. Serve para SEPARAR "
+                         "duas causas de fuga de idioma: o system prompt em portugues "
+                         "vs o treino em portugues. Rode o mesmo idioma com um prompt "
+                         "NEUTRO — se a fuga sumir nos dois modelos, a culpa era do "
+                         "prompt; se sobrar so no adapter, a culpa e do treino.")
     args = ap.parse_args()
 
     langs = [l.strip() for l in args.langs.split(",") if l.strip()]
@@ -112,7 +118,7 @@ def main() -> int:
         print("ERRO: nenhum probe.", file=sys.stderr)
         return 1
 
-    system = system_de_producao(args.bee)
+    system = args.system if args.system is not None else system_de_producao(args.bee)
     tools = _d7.load_tools() if args.bee == "agentica" else {}
 
     import torch
