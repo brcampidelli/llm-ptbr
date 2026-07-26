@@ -15,6 +15,13 @@ editar o JSON, sem tocar no código. Campos por abelha:
     fast_path     True = abelha barata (evita o modelo caro) → conta na métrica-chave
     system_prompt system message opcional injetado antes da query
     priority      menor = avaliado antes no roteador (desempate de triggers)
+    system_from_tool_catalog
+                  True = o system prompt NÃO é escrito no JSON; é montado a partir de
+                  `data/agentic_tools.json` pela mesma função que gerou os dados de
+                  treino. Existe porque o contrário deu errado: a versão escrita à mão
+                  aqui não listava ferramenta alguma e mesmo assim exigia um tool-call —
+                  a abelha era treinada com o catálogo à vista e servida às cegas.
+                  Prompt de treino e de produção não podem ser dois textos distintos.
 
 O JSON também declara:
     backbone      modelo base (HF id) — o único carregado de fato para os adapters
@@ -88,18 +95,32 @@ def _expand(path: str | None) -> str | None:
     return os.path.expanduser(os.path.expandvars(path))
 
 
+def _system_do_catalogo() -> str:
+    """Monta o system da agêntica pela MESMA função que gerou os dados de treino.
+
+    Import tardio e local: só quem declara `system_from_tool_catalog` paga por ele,
+    e o orquestrador continua rodando sem a pasta `data/` presente.
+    """
+    import sys
+    sys.path.insert(0, str(ROOT / "data"))
+    from tool_catalog import build_system
+    return build_system()
+
+
 def load_registry(path: Path | str = DEFAULT_REGISTRY) -> Registry:
     path = Path(path)
     data = json.loads(path.read_text(encoding="utf-8-sig"))  # utf-8-sig: tolera BOM
     bees: dict[str, Bee] = {}
     for b in data["bees"]:
+        system = (_system_do_catalogo() if b.get("system_from_tool_catalog")
+                  else b.get("system_prompt"))
         bee = Bee(
             name=b["name"],
             description=b.get("description", ""),
             adapter_path=_expand(b.get("adapter_path")),
             triggers=b.get("triggers", []),
             fast_path=b.get("fast_path", True),
-            system_prompt=b.get("system_prompt"),
+            system_prompt=system,
             priority=b.get("priority", 100),
         )
         bees[bee.name] = bee

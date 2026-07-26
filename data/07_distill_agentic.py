@@ -44,47 +44,12 @@ from config import (DATA_DIR, DEFAULT_TEACHER, RAW_DIR, assert_teacher_allowed, 
 from common import read_jsonl  # noqa: E402
 from teacher_api import call_teacher  # noqa: E402
 
-TOOLS_FILE = DATA_DIR / "agentic_tools.json"
-
-
-def load_tools() -> dict:
-    """Catalogo {nome: spec}. Fonte unica da verdade para prompt E validacao."""
-    data = json.loads(TOOLS_FILE.read_text(encoding="utf-8-sig"))
-    return {t["name"]: t for t in data["tools"]}
-
-
-def tools_prompt(tools: dict) -> str:
-    """Renderiza o catalogo para dentro do system prompt."""
-    lines = []
-    for spec in tools.values():
-        req = ", ".join(spec.get("required", [])) or "(nenhum)"
-        args = ", ".join(f"{k} ({v})" for k, v in spec.get("args", {}).items())
-        lines.append(f"- {spec['name']}: {spec['description']}\n"
-                     f"    args: {args}\n    obrigatorios: {req}")
-    return "\n".join(lines)
-
-
-def build_system(tools: dict) -> str:
-    return (
-        "Você é um assistente AGÊNTICO. Você tem acesso às ferramentas abaixo.\n\n"
-        f"FERRAMENTAS DISPONÍVEIS:\n{tools_prompt(tools)}\n\n"
-        "REGRAS (siga à risca):\n"
-        "1. Se o pedido EXIGE uma ferramenta, responda SOMENTE com um JSON, sem texto "
-        'antes ou depois, no formato: {"tool": "nome_da_ferramenta", "args": {...}}\n'
-        "2. Use APENAS ferramentas da lista. Use APENAS os args documentados. "
-        "Inclua todos os args obrigatórios.\n"
-        "3. Se o pedido NÃO precisa de ferramenta (conversa, conhecimento geral, opinião, "
-        "explicação), responda direto em texto natural, SEM JSON.\n"
-        "3b. ARITMÉTICA: só faça de cabeça contas com números de 1 ou 2 dígitos "
-        "(ex: 2+2, 15% de 200). QUALQUER conta com número de 3 dígitos ou mais "
-        "(multiplicação, divisão, raiz, potência) DEVE usar a ferramenta calculator. "
-        "Não arrisque errar uma conta que a ferramenta faz exata.\n"
-        "4. Se o pedido for AMBÍGUO ou faltar informação obrigatória, responda em texto "
-        "pedindo exatamente o que falta. NÃO invente valores.\n"
-        "5. Ação irreversível (enviar e-mail) só com pedido explícito e dados completos.\n"
-        "6. Se a tarefa exigir várias etapas, chame APENAS a PRIMEIRA ferramenta.\n"
-        "7. Texto em português brasileiro, exceto se o usuário escrever em outro idioma."
-    )
+# Catalogo + system prompt vivem em tool_catalog.py: TREINO, AVALIACAO e PRODUCAO
+# (orchestrator/registry.py) importam a MESMA funcao. Antes o bees.json tinha uma
+# copia resumida A MAO que nao listava ferramenta nenhuma — a abelha era treinada
+# com o catalogo a vista e servida as cegas. Reexportado para nao quebrar os evals,
+# que importam `build_system`/`load_tools` deste modulo via importlib.
+from tool_catalog import TOOLS_FILE, build_system, load_tools, tools_prompt  # noqa: F401,E402
 
 
 # ---------------------------------------------------------------- validação ---

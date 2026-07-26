@@ -65,16 +65,19 @@ NOMES = {"pt": "português", "en": "inglês", "es": "espanhol", "fr": "francês"
 
 
 def system_de_producao(bee: str) -> str:
-    """O system prompt que a abelha REALMENTE recebe na comeia (bees.json).
+    """O system prompt que a abelha REALMENTE recebe na comeia.
 
-    Para a agentica, o catálogo de ferramentas é anexado: sem ele o modelo não
-    tem como nomear ferramenta nenhuma, e o teste mediria só a nossa omissão.
+    ⚠️ Passa pelo `load_registry()`, o MESMO caminho que o `hive` usa — não por
+    uma leitura própria do JSON. A versão anterior desta função chamava
+    `build_system()` direto quando a abelha era a agêntica, "ajudando" o teste:
+    ela media o prompt de TREINO enquanto a produção servia um stub sem
+    ferramenta nenhuma, e o 24/24 resultante não valia para a rota real. Um
+    harness que conserta a config em silêncio mede a intenção, não o sistema.
     """
-    reg = json.loads(BEES.read_text(encoding="utf-8"))
-    sp = next((b.get("system_prompt") for b in reg["bees"] if b["name"] == bee), None)
-    if bee == "agentica":
-        return _d7.build_system(_d7.load_tools())
-    return sp or ""
+    import sys as _sys
+    _sys.path.insert(0, str(ROOT / "orchestrator"))
+    from registry import load_registry
+    return load_registry().get(bee).system_prompt or ""
 
 
 def tem_codigo(t: str) -> bool:

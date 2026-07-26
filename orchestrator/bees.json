@@ -5,11 +5,12 @@
   "bees": [
     {
       "name": "agentica",
-      "description": "Abelha REAL (Fase 1): tool-use / seguir-instrucao. Adapter treinado em 1495 exemplos (886 tool_call + 609 texto), 2 epocas, loss mascarada no prompt. train_loss 0,4848 | token acc 93,2% | entropia 0,2765. ⚠️ DEFEITO CONHECIDO NAO CORRIGIDO (2026-07-25): este system_prompt NAO traz o CATALOGO DE FERRAMENTAS, mas o adapter foi TREINADO com um system que traz (data/07_distill_agentic.py build_system). Ou seja, em producao pedimos JSON de tool-call sem dizer quais ferramentas existem. O teste multilingue (24/24 de formato) rodou com o system DE TREINO, entao ele NAO valida esta rota como ela esta configurada. Conserto: o hive deve montar o system da agentica a partir do catalogo. Medir antes de declarar resolvido.",
+      "description": "Abelha REAL (Fase 1): tool-use / seguir-instrucao. Adapter treinado em 1495 exemplos (886 tool_call + 609 texto), 2 epocas, loss mascarada no prompt. train_loss 0,4848 | token acc 93,2% | entropia 0,2765. ⚠️ CORRIGIDO em 2026-07-25: o system_prompt escrito a mao aqui NAO listava as ferramentas, mas o adapter foi TREINADO com um que lista — pediamos tool-call sem dizer quais ferramentas existem. Agora `system_from_tool_catalog` monta o prompt pela MESMA funcao do treino (data/tool_catalog.py build_system), a partir de data/agentic_tools.json. Treino, avaliacao e producao passam a ler a mesma fonte.",
       "adapter_path": "${AGENTICA_ADAPTER:-/content/drive/MyDrive/qwen35-4b-agentica}",
       "priority": 10,
       "fast_path": true,
-      "system_prompt": "Voce e um assistente agentico. Quando a tarefa exige uma ferramenta, responda SOMENTE com um JSON {\"tool\": ..., \"args\": {...}}. Caso contrario, responda direto, no MESMO IDIOMA do pedido.",
+      "system_from_tool_catalog": true,
+      "system_prompt": null,
       "triggers": [
         "\\btool[_ ]?call",
         "\\b(chame|chamar|use|usar|execute|executar|invoque)\\b.{0,30}\\b(ferramenta|funcao|função|api|tool|endpoint)\\b",
