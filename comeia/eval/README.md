@@ -4,7 +4,7 @@ Regra de ouro: **medir antes de treinar.** Sem baseline não há como saber se e
 Esta fase custa ~US$0 de treino e valida a stack antes de qualquer gasto com GPU.
 
 ## Objetivo
-1. Instalar o `lm-evaluation-harness` (EleutherAI) com as tasks PT-BR (ver `setup/`).
+1. Instalar o `lm-evaluation-harness` (EleutherAI) com as tasks PT-BR (ver `comeia/setup/`).
 2. Rodar a **Qwen3-4B crua** (local, nesta máquina) → registrar o **baseline** (o número a bater).
    O 8B fica para a fase de cloud; o baseline do 8B roda lá quando escalarmos.
 3. Fixar o conjunto qualitativo PT-BR (prompts próprios de instrução/segurança).
@@ -41,7 +41,7 @@ lm_eval `
   --tasks enem_challenge,bluex,assin2_rte,assin2_sts `
   --num_fewshot 3 `
   --batch_size auto `
-  --output_path eval/results/qwen3-4b-baseline.json
+  --output_path comeia/eval/results/qwen3-4b-baseline.json
 ```
 > Se os 8 GB estourarem no eval, quantizar (carregar em 4-bit) ou reduzir `--batch_size` para 1.
 
@@ -49,13 +49,13 @@ lm_eval `
 > comunidade (ex.: `eduagarcia/lm-evaluation-harness-pt`). Confirmar na Fase 0 e travar as versões.
 
 ## Registrar o resultado
-- Salvar o JSON em `eval/results/` e anotar o número por benchmark na tabela de metas do `README.md`.
+- Salvar o JSON em `comeia/eval/results/` e anotar o número por benchmark na tabela de metas do `README.md`.
 - Esse baseline é o alvo. Cada fase de treino (SFT→DPO→RL) precisa mostrar ganho vs. ele **sem
   regredir** em MMLU-PT/GSM8K-PT.
 
 ## Checklist da Fase 1
 - [ ] Ambiente + harness instalados.
 - [ ] Tasks PT-BR resolvidas e versões travadas.
-- [ ] Baseline Qwen3-8B rodado e salvo em `eval/results/`.
+- [ ] Baseline Qwen3-8B rodado e salvo em `comeia/eval/results/`.
 - [ ] Números copiados para a tabela de metas do README.
 - [ ] Conjunto qualitativo PT-BR (20–50 prompts próprios) definido em `eval/qualitativo-ptbr.md`.

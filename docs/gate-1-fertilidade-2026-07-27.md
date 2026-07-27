@@ -40,7 +40,7 @@ A primeira versão do script montava `hold_pt`/`hold_en` a partir dos primeiros 
 treino lia **os mesmos shards, do início**. O holdout estava **dentro** do treino: o Bee teria visto o
 texto de teste e os rivais (Qwen, SmolLM2) não. O gate mediria a nosso favor.
 
-Corrigido com a mesma técnica de `data/13_build_extraction_splits.py`: balde estável por
+Corrigido com a mesma técnica de `comeia/data/13_build_extraction_splits.py`: balde estável por
 `sha1(documento) % 100`, 2% no holdout, disjunto por construção. Testado: **interseção 0** em 5.000
 documentos, 1,9% real, estável entre chamadas. (commit `c756b18`)
 
@@ -71,7 +71,7 @@ falha só apareceria como "o modelo não sabe código" depois do treino.
 
 ## Consequência
 
-- ✅ **A aposta do nicho tem base empírica.** Seguir para a arquitetura (`model/config_bee.py`).
+- ✅ **A aposta do nicho tem base empírica.** Seguir para a arquitetura (`bee/config.py`).
 - 🔴 **Bloqueante para o treino, não para o gate:** consertar a fonte de código e recoletar. Os
   1,84 GB servem ao tokenizador; 3B tokens a ~1,42 tokens/palavra pedem **~12 GB** de texto.
 - O tokenizador ficará **estável** a partir daqui: trocá-lo depois invalida qualquer checkpoint.
@@ -80,12 +80,13 @@ falha só apareceria como "o modelo não sabe código" depois do treino.
 
 ## Artefatos
 
-`bee-tokenizer-v1.zip` (403 KB) + `MANIFEST.json` (procedência e licença por shard) + `gate1.log`,
-em `/content/bee-artefatos` no Colab. ⚠️ **Não persistidos** — a Drive segue bloqueada no OAuth.
+✅ **Persistidos na Drive** (2026-07-27, md5 conferido contra o original): o tokenizador em
+`MyDrive/BEE/tokenizer-v1/` (`tokenizer.json` md5 `64a3559a6bb57e7010330b4622cf8bb2`), junto do
+`MANIFEST.json` (procedência e licença por shard), do `gate_fertilidade.json` e do `gate1.log`.
 Reproduzir custa ~4 min de CPU **dado o corpus**; o corpus custa ~1 h de coleta.
 
 Reprodução:
 
 ```
-python tokenizer/train_bee_tokenizer.py --corpus <corpus> --vocab 32000
+python bee/train_tokenizer.py --corpus <corpus> --vocab 32000
 ```

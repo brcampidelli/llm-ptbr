@@ -9,13 +9,13 @@ Escala para Qwen3-8B em cloud alugada só depois que o benchmark provar ganho.
 .\.venv\Scripts\Activate.ps1
 
 # validar a config sem treinar
-python train/sft_qlora.py --data data/processed/sft_ptbr.jsonl --dry-run
+python comeia/train/sft_qlora.py --data comeia/data/processed/sft_ptbr.jsonl --dry-run
 
 # treinar
-python train/sft_qlora.py --data data/processed/sft_ptbr.jsonl
+python comeia/train/sft_qlora.py --data comeia/data/processed/sft_ptbr.jsonl
 
 # se estourar VRAM
-python train/sft_qlora.py --data data/processed/sft_ptbr.jsonl --max-seq-len 1024
+python comeia/train/sft_qlora.py --data comeia/data/processed/sft_ptbr.jsonl --max-seq-len 1024
 ```
 
 ### Por que estes números (calibrado para 8 GB)
@@ -41,7 +41,7 @@ Não cabe em 8 GB — só ao escalar.
 
 ## Convenção de rodadas
 Cada treino grava em `models/<nome>/` com `training_args.json` (config exata usada).
-Sempre avaliar contra o **baseline** (`eval/`) antes de aceitar um checkpoint como melhoria.
+Sempre avaliar contra o **baseline** (`comeia/eval/`) antes de aceitar um checkpoint como melhoria.
 
 ## Regra
 **Iterar dados > iterar hiperparâmetros.** Se o resultado não melhorar, o problema quase sempre está

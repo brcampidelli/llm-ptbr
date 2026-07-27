@@ -37,7 +37,7 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT / "data"))
+sys.path.insert(0, str(ROOT / "comeia" / "data"))   # detect_lang vive na camada COMEIA
 from common import detect_lang  # noqa: E402
 
 # ---------------------------------------------------------------- receita ---
@@ -146,7 +146,7 @@ def main() -> int:
             pass
 
     ap = argparse.ArgumentParser()
-    ap.add_argument("--out", type=Path, default=ROOT / "data" / "corpus")
+    ap.add_argument("--out", type=Path, default=ROOT / "bee" / "corpus")
     ap.add_argument("--target-gb", type=float, default=2.0,
                     help="tamanho-alvo em GB de texto. 2 GB basta para o tokenizador; "
                          "o treino de 3B tokens pede ~12 GB")

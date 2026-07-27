@@ -180,11 +180,11 @@ def main() -> int:
     ap.add_argument("--timeout", type=int, default=8)
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--temperature", type=float, default=1.0,
-                    help="mais alta = mais diversidade (30% das candidatas saiam duplicadas)")
+                    help="mais alta = mais diversidade (30%% das candidatas saiam duplicadas)")
     ap.add_argument("--no-exclusions", action="store_true",
                     help="desliga a lista de nomes proibidos (anti-duplicata)")
     ap.add_argument("--no-hard-hint", action="store_true",
-                    help="desliga a pressao por dificuldade (so 20,3% passavam no filtro)")
+                    help="desliga a pressao por dificuldade (so 20,3%% passavam no filtro)")
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
 

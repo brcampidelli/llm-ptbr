@@ -29,7 +29,7 @@ Não há quant oficial do 4B — fazemos o nosso.
 
 **⚠️ CORREÇÃO (juízo crítico):** o agente afirmou que `AutoModelForCausalLM` "não funciona" no
 Qwen3.5 (só `Qwen3_5ForConditionalGeneration`). **Isso está errado para o nosso caso** — e temos
-prova empírica: nosso `train/sft_qlora.py` usa `AutoModelForCausalLM.from_pretrained("Qwen/Qwen3.5-4B")`
+prova empírica: nosso `comeia/train/sft_qlora.py` usa `AutoModelForCausalLM.from_pretrained("Qwen/Qwen3.5-4B")`
 e **está treinando agora mesmo na L4**. No transformers 5.x, o auto-mapping resolve
 `qwen3_5 → Qwen3_5ForCausalLM` (o backbone de texto). Ou seja: carregar como CausalLM **já pega só
 a parte de texto** e ignora a torre de visão — a recomendação "congele a visão" é atendida
@@ -138,12 +138,12 @@ O SOTA do Google (serviço de destilação) faz além do que fazemos hoje:
 
 ## Mudanças concretas propostas nos nossos arquivos (para depois do SFT atual)
 
-1. `data/01_distill_teacher.py`: system prompt do teacher pedindo **CoT explícito**; opção `--k-candidates`
+1. `comeia/data/01_distill_teacher.py`: system prompt do teacher pedindo **CoT explícito**; opção `--k-candidates`
    para amostrar k respostas e ranquear.
-2. `data/`: adicionar um **holdout com ground-truth** (~200-300 pares de referência PT-BR, curados)
+2. `comeia/data/`: adicionar um **holdout com ground-truth** (~200-300 pares de referência PT-BR, curados)
    separado do holdout destilado, para seleção de checkpoint.
-3. `eval/`: adicionar um **gate QuantiBias-style** (geração aberta PT-BR, fp16 vs GGUF) antes de publicar.
-4. `train/dpo_qlora.py` (a criar): DPO sobre o adapter SFT; `percentile_clipping=5` se houver spikes.
+3. `comeia/eval/`: adicionar um **gate QuantiBias-style** (geração aberta PT-BR, fp16 vs GGUF) antes de publicar.
+4. `comeia/train/dpo_qlora.py` (a criar): DPO sobre o adapter SFT; `percentile_clipping=5` se houver spikes.
 5. Deploy: **gate de qualidade >5%** ao quantizar; benchmark de edge (comparar com a régua do Gemma E2B INT4).
 
 ## Fontes que não abriram (pendências)

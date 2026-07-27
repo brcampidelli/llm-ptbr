@@ -5,11 +5,25 @@ models/
 *.bin
 *.pt
 
-# dados gerados / intermediários
-data/raw/
-data/processed/
+# ⭐ BEE — corpus e artefatos do pré-treino
+# o corpus de treino passa de 12 GB; os shards e os checkpoints NUNCA entram no git.
+# O que se versiona é o MANIFEST (procedência + licença) e o resultado dos gates.
+# ⚠️ os padrões abaixo usam `dir/**` e não `dir/` de propósito: com `dir/` o git nem desce no
+# diretório, e aí as exceções `!...` abaixo não teriam efeito nenhum (armadilha clássica).
+bee/corpus/**
+bee/tokenizer/**
+bee/checkpoints/**
+*.jsonl.zst
+!bee/corpus/MANIFEST.json
+!bee/tokenizer/gate_fertilidade.json
+!bee/tokenizer/tokenizer_config.json
+!bee/tokenizer/chat_template.jinja
+
+# dados gerados / intermediários (camada COMEIA)
+comeia/data/raw/
+comeia/data/processed/
 *.jsonl
-eval/results/
+comeia/eval/results/
 
 # ambiente
 .venv/

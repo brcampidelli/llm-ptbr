@@ -16,21 +16,21 @@ se alguém tentar.
 $env:OPENROUTER_API_KEY = "<sua chave>"
 
 # 1) Destilar de professor aberto a partir das sementes PT-BR
-python data/01_distill_teacher.py --seeds data/seeds_ptbr.txt --teacher Qwen/Qwen3-235B-A22B --dry-run
-python data/01_distill_teacher.py --seeds data/seeds_ptbr.txt --teacher Qwen/Qwen3-235B-A22B
+python comeia/data/01_distill_teacher.py --seeds comeia/data/seeds_ptbr.txt --teacher Qwen/Qwen3-235B-A22B --dry-run
+python comeia/data/01_distill_teacher.py --seeds comeia/data/seeds_ptbr.txt --teacher Qwen/Qwen3-235B-A22B
 
 # 2) Traduzir datasets EN de alta qualidade, com QC
-python data/02_translate_qc.py --dataset allenai/tulu-3-sft-mixture --limit 500
+python comeia/data/02_translate_qc.py --dataset allenai/tulu-3-sft-mixture --limit 500
 
 # 3) Filtro de qualidade + dedup (exato e aproximado)
-python data/03_filter_dedup.py --report-only     # inspecionar antes
-python data/03_filter_dedup.py
+python comeia/data/03_filter_dedup.py --report-only     # inspecionar antes
+python comeia/data/03_filter_dedup.py
 
 # 4) Decontaminação vs. os benchmarks de teste  ← etapa que torna a avaliação honesta
-python data/04_decontaminate.py --benchmarks "eval/benchmarks/*.jsonl"
+python comeia/data/04_decontaminate.py --benchmarks "comeia/eval/benchmarks/*.jsonl"
 
 # 5) Splits finais (formato chat p/ TRL/Unsloth)
-python data/05_build_splits.py --holdout 500
+python comeia/data/05_build_splits.py --holdout 500
 ```
 
 ## Arquivos
@@ -60,9 +60,9 @@ separados. `05_build_splits.py --cot` embute o raciocínio como `<think>…</thi
 
 ```powershell
 # destilar COM raciocínio (use um --tag distinto do run sem-CoT!)
-python data/01_distill_teacher.py --seeds data/seeds_ptbr_expanded.txt --teacher deepseek/deepseek-v4-flash --tag deepseek-cot --cot --workers 20
+python comeia/data/01_distill_teacher.py --seeds comeia/data/seeds_ptbr_expanded.txt --teacher deepseek/deepseek-v4-flash --tag deepseek-cot --cot --workers 20
 # ...03, 04 iguais...
-python data/05_build_splits.py --cot --holdout 300   # inclui o raciocínio no alvo
+python comeia/data/05_build_splits.py --cot --holdout 300   # inclui o raciocínio no alvo
 ```
 
 **Validado (2026-07-24):** o canal nativo dá separação limpa (resposta sem duplicar o raciocínio).
@@ -74,16 +74,16 @@ resposta melhor, mais seguro).
 
 ## Fase 4 (dados) — Preferências para DPO: `06_build_preferences.py`
 
-Gera pares `{prompt, chosen, rejected}` para o `train/dpo_qlora.py`. **chosen** = professor
+Gera pares `{prompt, chosen, rejected}` para o `comeia/train/dpo_qlora.py`. **chosen** = professor
 forte; **rejected** = modelo fraco (`weak`), o próprio aluno pós-SFT (`student` = error
 bootstrapping), ou resposta degradada (`degraded`). Um **juiz aberto valida cada par**: mantém,
 inverte se o rejected for na verdade melhor, ou descarta empates (DPO não pode ver ruído).
 
 ```powershell
 # modo weak (roda agora, sem GPU): chosen=deepseek-v4-pro, rejected=mistral-nemo, juiz=qwen3.5-9b
-python data/06_build_preferences.py --seeds data/seeds_ptbr_expanded.txt --workers 20
+python comeia/data/06_build_preferences.py --seeds comeia/data/seeds_ptbr_expanded.txt --workers 20
 # error bootstrapping (depois do SFT): rejected = respostas do proprio aluno
-python data/06_build_preferences.py --seeds ... --rejected-mode student --student-file data/raw/student.jsonl
+python comeia/data/06_build_preferences.py --seeds ... --rejected-mode student --student-file comeia/data/raw/student.jsonl
 ```
 
 **Validado (2026-07-24):** juiz `qwen3.5-9b` raciocina — precisa de `max_tokens` folgado (512) e

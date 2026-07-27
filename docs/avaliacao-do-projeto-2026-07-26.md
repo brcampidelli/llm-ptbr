@@ -9,7 +9,7 @@
 
 | Fase do plano | Status | Evidência |
 |---|---|---|
-| **Fase 0** — MVP: roteador + hot-swap | ✅ feita | `orchestrator/` 926 linhas; backbone 2,98 GB medido; hot-swap 10/10 |
+| **Fase 0** — MVP: roteador + hot-swap | ✅ feita | `comeia/orchestrator/` 926 linhas; backbone 2,98 GB medido; hot-swap 10/10 |
 | **Fase 1** — abelha agêntica | ✅ feita e validada | 24/24 formato certo nos 4 idiomas (base 17/24) |
 | **Fase 2** — abelha de código | ✅ feita e validada | +40 pp difícil / −17,5 pp fácil, held-out limpo |
 | *(extra, fora do plano)* — abelha de extração | ✅ feita e validada | +14 a +43 pp, **alucinação 0%** |

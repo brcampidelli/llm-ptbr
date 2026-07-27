@@ -14,7 +14,7 @@
 
 Nossa abelha agêntica estava em **loss 0,0755 / token acc 98,2%** — numericamente colada no modelo
 que se revelou **ruim na tarefa real**. Isso é confirmação independente de que **loss e entropia não
-medem competência**. Foi o que nos levou a: (a) tratar `eval/eval_agentic.py` (acurácia + JSON
+medem competência**. Foi o que nos levou a: (a) tratar `comeia/eval/eval_agentic.py` (acurácia + JSON
 inválido + over-calling) como o único gate de release de adapter; (b) investigar e achar o bug de
 mascaramento (93,8% da nossa loss caía em prompt repetido — ver commit `4b15145`).
 

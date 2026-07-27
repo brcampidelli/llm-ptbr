@@ -32,7 +32,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-OUT_DEFAULT = ROOT / "tokenizer" / "bee-tokenizer"
+OUT_DEFAULT = ROOT / "bee" / "tokenizer"
 
 # ChatML desde o início: o SFT com TRL depois funciona sem adaptação de template.
 ESPECIAIS = ["<|endoftext|>", "<|im_start|>", "<|im_end|>", "<|pad|>"]
@@ -118,12 +118,12 @@ def main() -> int:
             pass
 
     ap = argparse.ArgumentParser()
-    ap.add_argument("--corpus", type=Path, default=ROOT / "data" / "corpus")
+    ap.add_argument("--corpus", type=Path, default=ROOT / "bee" / "corpus")
     ap.add_argument("--out", type=Path, default=OUT_DEFAULT)
     ap.add_argument("--vocab", type=int, default=32000,
                     help="32k é o trade-off escolhido: vocab maior corta tokens/palavra "
-                         "mas engorda o embedding — 32k × 576 = 18,4M params, ~12% de um "
-                         "modelo de 150M")
+                         "mas engorda o embedding — 32k × 576 = 18,4M params, ~12%% de um "
+                         "modelo de 150M")   # %% porque o argparse faz %-formatting no help
     ap.add_argument("--train-bytes", type=int, default=2 * 1024 ** 3)
     ap.add_argument("--holdout-docs", type=int, default=400)
     ap.add_argument("--so-gate", "--só-gate", dest="so_gate", action="store_true",

@@ -25,7 +25,7 @@ Ambiente de pé em `.venv/` (5,1 GB). Versões travadas e testadas nesta máquin
 
 **Notas:**
 - `triton not found` — aviso benigno (só afeta contagem de FLOPs). **Unsloth não foi instalado**
-  (precisa de triton, problemático no Windows) — e não é necessário: `train/sft_qlora.py` usa
+  (precisa de triton, problemático no Windows) — e não é necessário: `comeia/train/sft_qlora.py` usa
   transformers+peft+trl direto.
 - Symlinks do cache HF desativados (Windows sem Developer Mode) → usa mais disco, funciona igual.
 - Recomendado: `huggingface-cli login` para downloads mais rápidos e sem rate limit.
@@ -80,4 +80,4 @@ huggingface-cli login   # colar o token (o Bruno gera em huggingface.co/settings
 - Se estourar VRAM: reduzir `max_seq_len`, batch=1, ativar gradient checkpointing, fechar Chrome/apps de GPU.
 
 ## Próximo
-Depois do setup: `eval/README.md` → rodar o **baseline do Qwen3-4B** (o número a bater).
+Depois do setup: `comeia/eval/README.md` → rodar o **baseline do Qwen3-4B** (o número a bater).

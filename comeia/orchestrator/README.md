@@ -35,18 +35,18 @@ query ──► Router (regras + complexidade) ──► escolhe a abelha
 
 **Testar o roteador SEM GPU** (valida rota + métrica de graça, roda em qualquer lugar):
 ```bash
-python orchestrator/run.py --route-only --sample
-python orchestrator/run.py --route-only --batch prompts.txt
+python comeia/orchestrator/run.py --route-only --sample
+python comeia/orchestrator/run.py --route-only --batch prompts.txt
 ```
 
 **A comeia de verdade** (precisa de GPU + o adapter da abelha chat):
 ```bash
 # Colab L4 (o adapter SFT-v2 está no Drive):
-python orchestrator/run.py --batch prompts.txt --max-new 256
-python orchestrator/run.py                    # chat interativo
+python comeia/orchestrator/run.py --batch prompts.txt --max-new 256
+python comeia/orchestrator/run.py                    # chat interativo
 
 # Local: aponte o adapter para onde ele estiver
-python orchestrator/run.py --chat-adapter models/qwen3.5-4b-ptbr-sft
+python comeia/orchestrator/run.py --chat-adapter models/qwen3.5-4b-ptbr-sft
 ```
 
 ## A métrica que decide tudo
@@ -58,7 +58,7 @@ O `Router` reporta a **fração de fast-path** — quantas queries evitam o mode
   nas abelhas baratas; só o raciocínio difícil no fallback).
 - ✅ `chat_ptbr` = adapter SFT-v2 real (a 1ª abelha).
 - 🔜 `agentica` (Fase 1) e `coder` (Fase 2): gatilhos já ativos, mas **sem adapter próprio ainda** →
-  hoje caem no backbone base. Fabricar o adapter = rodar `data/` + `train/sft_qlora.py` e ajustar
+  hoje caem no backbone base. Fabricar o adapter = rodar `comeia/data/` + `comeia/train/sft_qlora.py` e ajustar
   o `adapter_path` no `bees.json`.
 - 🔜 abelha multimodal (Fase 4): modelo separado ~9B (Qwen3.5-VL-9B), fora do "1 backbone + N adapters".
 
