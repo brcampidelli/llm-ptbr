@@ -69,20 +69,33 @@ FONTES = [
     # O `github-code-clean` resolve os tres: conteudo inline, aberto, e — o que decide —
     # tem coluna `license`, entao pegamos SO configs permissivas em vez de confiar que
     # "alguem ja filtrou". Coerente com a regra de procedencia do projeto.
-    {"nome": "code-mit", "peso": 0.05, "lang": "?", "licenca": "MIT (por arquivo)",
-     "hf": ("codeparrot/github-code-clean", "all-mit"), "campo": "code",
-     "filtro_campo": ("language", None),          # None = usa LINGUAGENS_OK
-     "nota": "codigo; licenca permissiva por arquivo; detect_lang nao se aplica"},
-    {"nome": "code-apache", "peso": 0.05, "lang": "?", "licenca": "Apache-2.0 (por arquivo)",
-     "hf": ("codeparrot/github-code-clean", "all-apache-2.0"), "campo": "code",
-     "filtro_campo": ("language", None),
-     "nota": "codigo; licenca permissiva por arquivo"},
+    # ⚠️ TERCEIRA fonte de código tentada. As duas primeiras falharam por motivos
+    # DIFERENTES, e cada uma ensinou uma checagem que eu não fazia:
+    #   1. `smollm-corpus/python-edu` → só ponteiro (blob_id/path), campo `text` vazio.
+    #      Aprendi a checar: o dataset guarda o TEXTO ou só a referência?
+    #   2. `codeparrot/github-code-clean` → "Dataset scripts are no longer supported".
+    #      Usa script de carregamento, removido nas versões atuais do `datasets`.
+    #      Aprendi a checar: carrega na versão que EU tenho instalada?
+    #   3. `the-stack-dedup`/`-smol`/`the-stack` → GATED, exigem aceite manual.
+    # O `the-stack-smol-xl` passa nas quatro: conteúdo inline (`content`), aberto,
+    # parquet/json nativo, e traz `lang` + `max_stars_repo_licenses` por arquivo.
+    # ⚠️ LIMITE CONHECIDO: são 1,7 GB para 87 linguagens. Filtrando as nossas, sobra
+    # bem menos que a cota de 10% — medido, não estimado, no relatório do fim.
+    {"nome": "code-stack", "peso": 0.10, "lang": "?",
+     "licenca": "permissivas (the-stack v1.1 filtrou 193 licencas)",
+     "hf": ("bigcode/the-stack-smol-xl", None), "campo": "content",
+     "filtro_campo": ("lang", None),              # None = usa LINGUAGENS_OK
+     "nota": "codigo; 87 linguagens, filtramos as de logica; detect_lang nao se aplica"},
 ]
 
-# So logica. Fora: HTML/Markdown/CSS/TeX — sao markup, ja temos texto de sobra, e o
-# `github-code-clean` esta cheio de HTML de javadoc GERADO (verificado no preview).
-LINGUAGENS_OK = {"Python", "JavaScript", "TypeScript", "Java", "C", "C++", "C#",
-                 "Go", "Rust", "Ruby", "PHP", "Shell", "SQL"}
+# ⚠️ minúsculo e com hífen: é assim que o `the-stack` nomeia (`c-sharp`, não `C#`).
+# Um nome escrito no padrão errado vira filtro que rejeita 100% em silêncio — o mesmo
+# sintoma da fonte vazia, com causa boba. Só LÓGICA: fora HTML/CSS/Markdown/TeX, que
+# são markup (já temos texto de sobra) e no the-stack vêm cheios de arquivo GERADO.
+LINGUAGENS_OK = {"python", "javascript", "typescript", "java", "c", "c++", "c-sharp",
+                 "go", "rust", "ruby", "php", "shell", "sql", "kotlin", "swift",
+                 "scala", "haskell", "lua", "perl", "r", "julia", "dart", "elixir",
+                 "clojure", "erlang", "ocaml", "fortran", "cuda", "assembly"}
 
 # ------------------------------------------------------------- qualidade ---
 _REPETIDO = re.compile(r"(.)\1{9,}")          # 10+ do mesmo caractere seguido
@@ -444,6 +457,7 @@ def main() -> int:
     idiomas_reais: Counter = Counter()
     fontes_vazias: list[str] = []
     fontes_interrompidas: list[str] = []
+    fontes_ausentes: list[str] = []
     escritos = manifesto["bytes"]
     shard_i = len(manifesto["shards"])
 
@@ -488,6 +502,15 @@ def main() -> int:
             print(f"  ⚠️ FALHOU ao abrir ({type(e).__name__}: {e}). Pulando — o MANIFEST "
                   f"vai registrar a ausência, e a mistura real sairá desviada.", file=sys.stderr)
             stats[fonte["nome"]]["erro_abrir"] += 1
+            # ⭐ SEM ESTA LINHA o corpus era APROVADO sem a fonte (2026-07-27). Eu tinha
+            # guard para fonte VAZIA (leu e rejeitou tudo) e para fonte INTERROMPIDA
+            # (morreu no meio) — mas nenhum para fonte que nem ABRIU. As duas de código
+            # caíram exatamente nesse buraco, e o veredito imprimiu "✅ corpus aprovado"
+            # sobre um corpus com 0% de código. Pior: o PT passou no teste de mistura
+            # justamente PORQUE os 10% sumiram e a proporção se reajustou sozinha.
+            # Lição: um checklist de aprovação precisa cobrir TODAS as formas de a fonte
+            # não entrar, não as duas que eu lembrei de imaginar.
+            fontes_ausentes.append(fonte["nome"])
             continue
 
         # código e prosa têm filtros DIFERENTES — ver `qualidade_codigo_ok`
@@ -643,6 +666,9 @@ def main() -> int:
     # 30 linhas de relatório — fácil de ler como "deu certo". Um corpus com a mistura
     # errada é caro: são 22 h de GPU treinando a proporção errada de idioma.
     problemas = []
+    if fontes_ausentes:
+        problemas.append(f"fonte(s) que NAO ABRIRAM: {', '.join(fontes_ausentes)} — "
+                         f"a fatia inteira delas ficou de fora")
     if fontes_vazias:
         problemas.append(f"fonte(s) vazia(s): {', '.join(fontes_vazias)}")
     if fontes_interrompidas:
@@ -652,6 +678,20 @@ def main() -> int:
         pt_real = idiomas_reais.get("pt", 0) / sum(idiomas_reais.values())
         if abs(pt_real - 0.65) > 0.10:
             problemas.append(f"português em {pt_real:.0%} (alvo 65% ±10 pp)")
+    # ⭐ Checagem por CATEGORIA, não por fonte. O corpus de 2026-07-27 passou no teste de
+    # português justamente porque as duas fontes de código sumiram e a proporção se
+    # reajustou — o teste media a razão entre o que sobrou, não se o que foi PEDIDO
+    # chegou. Agora cada categoria da receita é verificada contra a própria cota.
+    total_real = max(1, manifesto["bytes"])
+    for rotulo, filtro in (("código", lambda f: f["lang"] == "?"),
+                           ("inglês", lambda f: f["lang"] == "en"),
+                           ("português", lambda f: f["lang"] == "pt")):
+        pedido = sum(f["peso"] for f in FONTES if filtro(f))
+        obtido = sum(manifesto["fontes"].get(f["nome"], {}).get("bytes", 0)
+                     for f in FONTES if filtro(f)) / total_real
+        if pedido and obtido < pedido * 0.5:
+            problemas.append(f"{rotulo}: pedido {pedido:.0%}, obtido {obtido:.0%} "
+                             f"(menos da METADE da cota)")
     if problemas:
         print("\n🔴 CORPUS REPROVADO — não usar para treino:", file=sys.stderr)
         for p in problemas:
