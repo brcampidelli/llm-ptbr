@@ -25,10 +25,10 @@ Uso:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import sys
-import unicodedata
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -50,8 +50,26 @@ def conta_palavras(texto: str) -> int:
     return len(_PALAVRA.findall(texto))
 
 
-def ler_corpus(pasta: Path, max_bytes: int, so_fontes: set[str] | None = None):
-    """Gera linhas de texto dos shards `.jsonl.zst`, com teto de bytes.
+HOLDOUT_PCT = 2          # 2% dos documentos ficam FORA do treino do tokenizador
+
+
+def bucket(texto: str) -> int:
+    """Balde estável 0-99 do documento. Mesma técnica de data/13: `sha1`, não shuffle.
+
+    ⭐ POR QUE HASH E NÃO "os primeiros N docs": o holdout precisa ser o MESMO
+    conjunto nas duas leituras (treino e avaliação) e precisa ser DISJUNTO do
+    treino. Com fatia por posição, o holdout cai dentro do treino — o Bee veria o
+    texto de teste e os rivais não, o que inflaria o nosso resultado no gate.
+    """
+    return int(hashlib.sha1(texto.encode("utf-8")).hexdigest()[:8], 16) % 100
+
+
+def ler_corpus(pasta: Path, max_bytes: int, so_fontes: set[str] | None = None,
+               parte: str = "treino"):
+    """Gera textos dos shards `.jsonl.zst`, com teto de bytes.
+
+    `parte`: "treino" (bucket >= HOLDOUT_PCT) · "holdout" (bucket < HOLDOUT_PCT) ·
+    "tudo". Treino e holdout são disjuntos por construção.
 
     ⚠️ Amostra BALANCEADA, não a web crua: treinar o tokenizador só em web enche o
     vocab de lixo de HTML e de fragmentos de URL, que depois custam tokens em todo
@@ -72,6 +90,10 @@ def ler_corpus(pasta: Path, max_bytes: int, so_fontes: set[str] | None = None):
             if so_fontes and reg.get("fonte") not in so_fontes:
                 continue
             texto = reg.get("text", "")
+            if parte != "tudo":
+                no_hold = bucket(texto) < HOLDOUT_PCT
+                if (parte == "holdout") != no_hold:
+                    continue
             lidos += len(texto.encode("utf-8"))
             yield texto
             if lidos >= max_bytes:
@@ -117,9 +139,12 @@ def main() -> int:
     # Vem das fontes PT e EN separadamente, para medir os dois idiomas.
     FONTES_PT = {"fineweb2-por", "portuguese-pd", "wikipedia-pt", "legal-pt"}
     FONTES_EN = {"fineweb-edu-en", "cosmopedia-en"}
-    hold_pt = [t for t in ler_corpus(args.corpus, 8 * 1024 ** 2, FONTES_PT)][: args.holdout_docs]
-    hold_en = [t for t in ler_corpus(args.corpus, 8 * 1024 ** 2, FONTES_EN)][: args.holdout_docs]
-    print(f"holdout: {len(hold_pt)} docs PT · {len(hold_en)} docs EN")
+    hold_pt = [t for t in ler_corpus(args.corpus, 8 * 1024 ** 2, FONTES_PT, "holdout")
+               ][: args.holdout_docs]
+    hold_en = [t for t in ler_corpus(args.corpus, 8 * 1024 ** 2, FONTES_EN, "holdout")
+               ][: args.holdout_docs]
+    print(f"holdout: {len(hold_pt)} docs PT · {len(hold_en)} docs EN  "
+          f"(buckets < {HOLDOUT_PCT}, disjuntos do treino)")
     if len(hold_pt) < 50:
         print("⚠️ holdout PT pequeno demais para o gate ser confiável. Colete mais corpus.",
               file=sys.stderr)
@@ -139,7 +164,8 @@ def main() -> int:
             vocab_size=args.vocab, special_tokens=ESPECIAIS,
             min_frequency=2, show_progress=True,
             initial_alphabet=pre_tokenizers.ByteLevel.alphabet())
-        tok.train_from_iterator(ler_corpus(args.corpus, args.train_bytes), trainer=treinador)
+        tok.train_from_iterator(ler_corpus(args.corpus, args.train_bytes, None, "treino"),
+                                trainer=treinador)
 
         args.out.mkdir(parents=True, exist_ok=True)
         tok.save(str(args.out / "tokenizer.json"))
