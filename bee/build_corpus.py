@@ -571,6 +571,14 @@ def main() -> int:
                                         "docs": len(buf)})
             shard_i += 1
             escritos += buf_bytes
+            # ⚠️ este print faltava: o shard de FECHAMENTO de fonte era gravado em
+            # silêncio, e o log pulava um número (0024 → 0026). Nenhum dado se perdia,
+            # mas o rastro mentia por omissão — e um log que pula arquivo faz o leitor
+            # concluir que houve falha onde não houve. Observabilidade também é correção.
+            print(f"  shard {p.name} ({buf_bytes/1024**2:.0f} MB) · "
+                  f"total {escritos/1024**3:.2f} GB  [fecha {fonte['nome']}]", flush=True)
+            if vistos:
+                vistos.flush()
 
         # ⭐ GUARD DA FONTE VAZIA — a lição do `python-edu` (2026-07-27).
         # Ele voltou 0% e o script seguiu em silêncio; o defeito só apareceu na auditoria
