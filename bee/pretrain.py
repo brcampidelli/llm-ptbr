@@ -102,6 +102,10 @@ def main() -> int:
     ap.add_argument("--tokenizer", type=Path, default=ROOT / "bee" / "tokenizer")
     ap.add_argument("--out", type=Path, default=Path("/content/drive/MyDrive/BEE/bee-150m"))
     ap.add_argument("--tokens-alvo", type=float, default=3e9)
+    ap.add_argument("--epocas", type=float, default=0.0,
+                    help="se >0, IGNORA --tokens-alvo e deriva do tamanho REAL do train.bin. "
+                         "1.0 = ve cada token exatamente uma vez. Mais robusto que estimar: "
+                         "o numero sai do arquivo, nao de uma conta minha com bytes/palavra.")
     ap.add_argument("--micro-batch", type=int, default=8)
     ap.add_argument("--grad-accum", type=int, default=32,
                     help="batch efetivo = micro-batch * grad_accum * seq_len tokens")
@@ -135,7 +139,11 @@ def main() -> int:
     val = np.memmap(args.dados / "val.bin", dtype=np.uint16, mode="r")
 
     tokens_por_passo = args.micro_batch * args.grad_accum * cfg.seq_len
-    passos = args.passos or int(args.tokens_alvo / tokens_por_passo)
+    # ⭐ `--epocas` deriva o alvo do arquivo REAL. Estimar tokens a partir de GB de texto
+    # depende de "bytes por palavra" e da fertilidade — duas aproximações minhas que
+    # erram fácil. O `len(treino)` não erra: é o número de tokens que existe no disco.
+    alvo = args.epocas * len(treino) if args.epocas else args.tokens_alvo
+    passos = args.passos or int(alvo / tokens_por_passo)
     warmup = max(10, int(passos * args.warmup_frac))
 
     print("=" * 76)
