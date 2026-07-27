@@ -63,3 +63,31 @@ mv A B_backup_$(date +%s)     # renomear em vez de apagar: reversível
 
 A regra já existia no projeto na forma "antes de deletar ou sobrescrever, olhe o alvo". O que faltou
 foi aplicá-la a um comando encadeado, onde o alvo mudou entre a decisão e a execução.
+
+---
+
+## Adendo — dois erros de INSTRUMENTO no mesmo dia (2026-07-27)
+
+Acompanhando a coleta ao vivo, quase concluí "travou" duas vezes. As duas vezes o defeito era o
+meu instrumento, não o processo. Fica registrado porque um diagnóstico errado custa mais que
+nenhum: leva a matar e relançar trabalho que estava indo bem.
+
+**1. Medir um campo que não se move.** Montei um monitor lendo `lidos` do `MANIFEST.json` para
+acompanhar a fonte de código. Mas `lidos` só é gravado **quando um shard fecha** — antes disso fica
+em 0 para sempre. O monitor não media progresso, media "já gravou shard?". Quatro leituras
+consecutivas de `lidos 0` não significavam nada.
+
+**2. Medir o processo errado.** Troquei para `ps`/`/proc`, e li `cpu=0.0%`, `1 MB lido` — sinal
+clássico de processo morto. Mas `pgrep -f build_corpus.py | head -1` devolve o **`bash -c` pai**,
+que de fato fica parado esperando o filho. O `python3` real estava com 7,6% de CPU, 1 GB de RAM,
+**5,2 GB lidos** e 14 conexões abertas.
+
+**A regra:** antes de concluir que algo travou, confirmar que o instrumento aponta para o objeto
+certo e que o campo lido realmente muda quando há progresso. Um número parado pode ser um processo
+parado — ou um medidor parado.
+
+Monitor correto para este caso:
+```bash
+P=$(pgrep -f 'python3 bee/build_corpus.py' | head -1)   # o python, nao o bash pai
+awk '/rchar/{print $2}' /proc/$P/io                      # bytes lidos: sobe de verdade
+```
