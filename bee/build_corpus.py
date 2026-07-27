@@ -174,8 +174,73 @@ def minhash(texto: str, n_perm: int = 64) -> tuple[int, ...]:
     return tuple(min(h ^ (i * 0x9E3779B97F4A7C15) for h in hashes) for i in range(n_perm))
 
 
+def sha_doc(texto: str) -> int:
+    """Impressão digital EXATA do documento, em 8 bytes.
+
+    ⭐ POR QUE ISTO EXISTE (bug achado em 2026-07-27, acompanhando a coleta ao vivo):
+    o `Dedup` MinHash vive só em MEMÓRIA e morre com o processo. Na retomada, o
+    streaming do HF não tem "seek": o script relê a fonte DESDE O INÍCIO e, com o
+    dedup nascido vazio, **aceita de novo** documentos que já estão nos shards
+    gravados. O corpus acumulava duplicatas a cada queda — e houve três.
+
+    Isso não é cosmético num pré-treino: duplicata é memorização e FLOPs pagos duas
+    vezes pelo mesmo texto (Lee et al., *Deduplicating Training Data Makes Language
+    Models Better*). O MinHash continua pegando quase-duplicatas DENTRO de uma
+    execução; este sha pega as EXATAS ATRAVÉS de execuções, que é o caso da retomada.
+
+    8 bytes por documento: 1,5 M de docs ≈ 12 MB de RAM. Cabe folgado, e é barato de
+    persistir em disco entre execuções.
+    """
+    return int(hashlib.sha1(texto.encode("utf-8")).hexdigest()[:16], 16)
+
+
+class VistosPersistente:
+    """Conjunto de sha_doc que SOBREVIVE ao processo — grava incremental em disco."""
+
+    def __init__(self, caminho: Path):
+        self.caminho = caminho
+        self.vistos: set[int] = set()
+        self._fh = None
+        if caminho.exists():
+            with open(caminho, "r", encoding="utf-8") as fh:
+                for linha in fh:
+                    linha = linha.strip()
+                    if linha:
+                        try:
+                            self.vistos.add(int(linha, 16))
+                        except ValueError:
+                            continue
+
+    def _abre(self):
+        if self._fh is None:
+            self._fh = open(self.caminho, "a", encoding="utf-8")
+        return self._fh
+
+    def duplicado_exato(self, texto: str) -> bool:
+        h = sha_doc(texto)
+        if h in self.vistos:
+            return True
+        self.vistos.add(h)
+        self._abre().write(f"{h:016x}\n")
+        return False
+
+    def flush(self):
+        if self._fh is not None:
+            self._fh.flush()
+
+    def fecha(self):
+        self.flush()
+        if self._fh is not None:
+            self._fh.close()
+            self._fh = None
+
+
 class Dedup:
-    """LSH por bandas sobre a assinatura MinHash. Aproximado e streaming."""
+    """LSH por bandas sobre a assinatura MinHash. Aproximado e streaming.
+
+    ⚠️ In-memory de propósito (pega quase-duplicata, que exige as bandas em RAM). A
+    duplicata EXATA entre execuções é responsabilidade da `VistosPersistente`.
+    """
 
     def __init__(self, bandas: int = 16, n_perm: int = 64):
         self.bandas, self.n_perm = bandas, n_perm
@@ -213,6 +278,10 @@ def main() -> int:
     ap.add_argument("--no-dedup", action="store_true")
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--dry-run", action="store_true", help="mostra a receita e sai")
+    ap.add_argument("--purgar-duplicatas", dest="purgar", action="store_true",
+                    help="reescreve os shards SEM as duplicatas exatas. Rode depois de "
+                         "`--reconciliar` acusar duplicata. Grava em .novo e so troca no "
+                         "fim, para uma queda no meio nao destruir o corpus.")
     ap.add_argument("--reconciliar", action="store_true",
                     help="reconstroi o MANIFEST a partir dos shards que existem em disco. "
                          "Use quando uma queda deixou shards orfaos (gravados mas fora do "
@@ -248,6 +317,50 @@ def main() -> int:
 
     import zstandard as zstd
 
+    if args.purgar:
+        # Reescreve cada shard sem os documentos repetidos. ⚠️ Escreve em `.novo` e só
+        # substitui no fim de cada arquivo: uma queda no meio deixa o shard original
+        # intacto em vez de um corpus meio-reescrito, que seria pior que a duplicata.
+        print("\n⭐ PURGANDO duplicatas exatas dos shards…")
+        dctx, cctx = zstd.ZstdDecompressor(), zstd.ZstdCompressor(level=3)
+        sha_vistos: set[int] = set()
+        rem_docs = rem_bytes = mantidos = 0
+        for p in sorted(args.out.glob("bee_corpus_*.jsonl.zst")):
+            try:
+                dados = dctx.decompress(p.read_bytes()).decode("utf-8")
+            except Exception as e:
+                print(f"  🔴 {p.name}: ILEGÍVEL ({type(e).__name__}) — deixando como está",
+                      file=sys.stderr)
+                continue
+            saida, tirados = [], 0
+            for linha in dados.splitlines():
+                if not linha.strip():
+                    continue
+                try:
+                    reg = json.loads(linha)
+                except Exception:
+                    continue
+                h = sha_doc(reg.get("text", ""))
+                if h in sha_vistos:
+                    tirados += 1
+                    rem_bytes += len(reg.get("text", "").encode("utf-8"))
+                    continue
+                sha_vistos.add(h)
+                saida.append(linha)
+            rem_docs += tirados
+            mantidos += len(saida)
+            if tirados:
+                tmp = p.with_suffix(".zst.novo")
+                tmp.write_bytes(cctx.compress(("\n".join(saida) + "\n").encode("utf-8")))
+                tmp.replace(p)                      # troca atômica
+                print(f"  {p.name}: -{tirados} docs duplicados")
+        (args.out / "vistos_sha.txt").write_text(
+            "".join(f"{h:016x}\n" for h in sha_vistos), encoding="utf-8")
+        print(f"\nremovidos {rem_docs} docs ({rem_bytes/1024**2:.0f} MB) · "
+              f"mantidos {mantidos} docs únicos")
+        print("✅ purgado. Rode `--reconciliar` para o manifesto refletir os novos tamanhos.")
+        return 0
+
     if args.reconciliar:
         # ⭐ Lê os shards REAIS e reconstrói o manifesto a partir deles. Além de recuperar
         # shards órfãos, é uma verificação de integridade: shard corrompido aparece aqui,
@@ -256,6 +369,11 @@ def main() -> int:
         print("\n⭐ RECONCILIANDO o manifesto com os shards em disco…")
         dctx = zstd.ZstdDecompressor()
         shards, por_fonte, total, docs_tot = [], Counter(), 0, 0
+        # ⭐ Reconstrói TAMBÉM o registro de vistos, e mede quanta duplicata exata já
+        # entrou (o bug do dedup in-memory: cada retomada relia a fonte do zero).
+        sha_vistos: set[int] = set()
+        dup_bytes = dup_docs = 0
+        dup_por_fonte: Counter = Counter()
         for p in sorted(args.out.glob("bee_corpus_*.jsonl.zst")):
             try:
                 dados = dctx.decompress(p.read_bytes()).decode("utf-8")
@@ -263,7 +381,7 @@ def main() -> int:
                 print(f"  🔴 {p.name}: ILEGÍVEL ({type(e).__name__}) — descartando",
                       file=sys.stderr)
                 continue
-            b = d = 0
+            b = d = dup_aqui = 0
             for linha in dados.splitlines():
                 if not linha.strip():
                     continue
@@ -271,12 +389,34 @@ def main() -> int:
                     reg = json.loads(linha)
                 except Exception:
                     continue
-                n = len(reg.get("text", "").encode("utf-8"))
+                txt = reg.get("text", "")
+                n = len(txt.encode("utf-8"))
+                h = sha_doc(txt)
+                if h in sha_vistos:
+                    dup_bytes += n; dup_docs += 1; dup_aqui += 1
+                    dup_por_fonte[reg.get("fonte", "?")] += n
+                else:
+                    sha_vistos.add(h)
                 por_fonte[reg.get("fonte", "?")] += n
                 b += len(linha.encode("utf-8")); d += 1
             shards.append({"arquivo": p.name, "bytes": b, "docs": d})
             total += b; docs_tot += d
-            print(f"  {p.name}  {b/1024**2:>6.0f} MB  {d:>7} docs")
+            marca = f"  ⚠️ {dup_aqui} dup" if dup_aqui else ""
+            print(f"  {p.name}  {b/1024**2:>6.0f} MB  {d:>7} docs{marca}")
+        # persiste o registro para que a PRÓXIMA retomada não duplique nada
+        (args.out / "vistos_sha.txt").write_text(
+            "".join(f"{h:016x}\n" for h in sha_vistos), encoding="utf-8")
+        print(f"\n[dedup] registro de vistos gravado: {len(sha_vistos)} documentos únicos")
+        if dup_docs:
+            print(f"⚠️ DUPLICATA EXATA JÁ NO CORPUS: {dup_docs} docs · "
+                  f"{dup_bytes/1024**2:.0f} MB ({dup_bytes/max(1,sum(por_fonte.values())):.1%})")
+            for nome, n in dup_por_fonte.most_common():
+                print(f"     {nome:<18} {n/1024**2:>7.0f} MB duplicados")
+            print("     Causa: o dedup MinHash era só em memória e cada retomada relia a")
+            print("     fonte do zero. Corrigido — mas estes já entraram. Use "
+                  "`--purgar-duplicatas` para reescrever os shards sem eles.")
+        else:
+            print("✅ nenhuma duplicata exata entre os shards")
         antes = manifesto["bytes"]
         manifesto["shards"] = shards
         manifesto["bytes"] = total
@@ -296,6 +436,10 @@ def main() -> int:
     from datasets import load_dataset
 
     dedup = None if args.no_dedup else Dedup()
+    vistos = None if args.no_dedup else VistosPersistente(args.out / "vistos_sha.txt")
+    if vistos and vistos.vistos:
+        print(f"[dedup] {len(vistos.vistos)} documentos já vistos carregados do disco "
+              f"— a retomada não vai duplicá-los")
     stats: dict[str, Counter] = defaultdict(Counter)
     idiomas_reais: Counter = Counter()
     fontes_vazias: list[str] = []
@@ -373,6 +517,10 @@ def main() -> int:
                 if motivo:
                     stats[fonte["nome"]][motivo] += 1
                     continue
+                # exato PRIMEIRO: é O(1) e é o que resolve a duplicata da retomada
+                if vistos is not None and vistos.duplicado_exato(texto):
+                    stats[fonte["nome"]]["dup_exata"] += 1
+                    continue
                 if dedup and dedup.duplicado(texto):
                     stats[fonte["nome"]]["duplicado"] += 1
                     continue
@@ -399,6 +547,8 @@ def main() -> int:
                          "aceitos": stats[fonte["nome"]]["ok"], "lidos": vistos_fonte,
                          "parcial": True})
                     salva_manifesto()
+                    if vistos:
+                        vistos.flush()      # o registro de vistos acompanha os shards
                     print(f"  shard {p.name} ({buf_bytes/1024**2:.0f} MB) · "
                           f"total {escritos/1024**3:.2f} GB", flush=True)
                     buf, buf_bytes = [], 0
