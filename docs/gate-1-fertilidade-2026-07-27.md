@@ -1,4 +1,14 @@
-# GATE 1 — fertilidade do tokenizador Bee (2026-07-27) · ✅ APROVADO
+# GATE 1 v1 — fertilidade do tokenizador Bee (2026-07-27) · ⚠️ SUPERADO
+
+> ⚠️ **ESTE DOCUMENTO FOI SUPERADO** por [gate-1-v2-tokenizador-2026-07-27.md](gate-1-v2-tokenizador-2026-07-27.md).
+> Os números aqui foram medidos de verdade, mas **dois deles mudam de leitura**:
+> 1. O **"−5,4% vs. o melhor rival"** era contra um páreo mais fraco (só Qwen e SmolLM2). Com o
+>    **tiktoken o200k** incluído — a mesma família de algoritmo que a nossa — a margem real é
+>    **−3,9%**. A vantagem existe, mas é menor do que celebramos aqui.
+> 2. Este tokenizador foi treinado num corpus com **0% de código** e **sem normalizer**. O v2 tem
+>    10% de código e NFC.
+>
+> Mantido como registro do que foi medido na época.
 
 > O primeiro gate do Bee, e o mais barato do projeto: ~4 min de CPU. A aposta inteira do Bee é o
 > nicho português. Se o nosso tokenizador não fosse mais eficiente em PT que os rivais, a aposta
