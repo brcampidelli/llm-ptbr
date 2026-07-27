@@ -213,6 +213,10 @@ def main() -> int:
     ap.add_argument("--no-dedup", action="store_true")
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--dry-run", action="store_true", help="mostra a receita e sai")
+    ap.add_argument("--reconciliar", action="store_true",
+                    help="reconstroi o MANIFEST a partir dos shards que existem em disco. "
+                         "Use quando uma queda deixou shards orfaos (gravados mas fora do "
+                         "manifesto) — sem isso a retomada os SOBRESCREVE em silencio.")
     args = ap.parse_args()
 
     alvo_bytes = int(args.target_gb * 1024 ** 3)
@@ -243,14 +247,74 @@ def main() -> int:
               f"{len(manifesto['shards'])} shards")
 
     import zstandard as zstd
+
+    if args.reconciliar:
+        # ⭐ Lê os shards REAIS e reconstrói o manifesto a partir deles. Além de recuperar
+        # shards órfãos, é uma verificação de integridade: shard corrompido aparece aqui,
+        # não no meio do pré-treino. Conta bytes por FONTE usando o campo `fonte` de cada
+        # registro — então a cota por fonte sai exata, não estimada.
+        print("\n⭐ RECONCILIANDO o manifesto com os shards em disco…")
+        dctx = zstd.ZstdDecompressor()
+        shards, por_fonte, total, docs_tot = [], Counter(), 0, 0
+        for p in sorted(args.out.glob("bee_corpus_*.jsonl.zst")):
+            try:
+                dados = dctx.decompress(p.read_bytes()).decode("utf-8")
+            except Exception as e:
+                print(f"  🔴 {p.name}: ILEGÍVEL ({type(e).__name__}) — descartando",
+                      file=sys.stderr)
+                continue
+            b = d = 0
+            for linha in dados.splitlines():
+                if not linha.strip():
+                    continue
+                try:
+                    reg = json.loads(linha)
+                except Exception:
+                    continue
+                n = len(reg.get("text", "").encode("utf-8"))
+                por_fonte[reg.get("fonte", "?")] += n
+                b += len(linha.encode("utf-8")); d += 1
+            shards.append({"arquivo": p.name, "bytes": b, "docs": d})
+            total += b; docs_tot += d
+            print(f"  {p.name}  {b/1024**2:>6.0f} MB  {d:>7} docs")
+        antes = manifesto["bytes"]
+        manifesto["shards"] = shards
+        manifesto["bytes"] = total
+        for nome, n in por_fonte.items():
+            manifesto["fontes"].setdefault(nome, {})["bytes"] = n
+            manifesto["fontes"][nome].pop("parcial", None)
+        manifesto_path.write_text(json.dumps(manifesto, indent=2, ensure_ascii=False),
+                                  encoding="utf-8")
+        print(f"\nmanifesto: {antes/1024**3:.2f} GB → {total/1024**3:.2f} GB "
+              f"em {len(shards)} shards · {docs_tot} docs")
+        print("bytes por fonte:")
+        for nome, n in sorted(por_fonte.items(), key=lambda kv: -kv[1]):
+            print(f"  {nome:<18} {n/1024**2:>7.0f} MB")
+        print("\n✅ reconciliado. Rode de novo SEM --reconciliar para continuar a coleta.")
+        return 0
+
     from datasets import load_dataset
 
     dedup = None if args.no_dedup else Dedup()
     stats: dict[str, Counter] = defaultdict(Counter)
     idiomas_reais: Counter = Counter()
     fontes_vazias: list[str] = []
+    fontes_interrompidas: list[str] = []
     escritos = manifesto["bytes"]
     shard_i = len(manifesto["shards"])
+
+    def salva_manifesto():
+        """⭐ Chamada a CADA shard, não a cada fonte.
+
+        A versão anterior gravava o MANIFEST só no fim de cada fonte. Quando o
+        `Portuguese-PD` estourou no meio (2026-07-27), 6 shards já escritos em disco
+        (~1,5 GB) tinham ficado FORA do manifesto — a retomada os sobrescreveria, e a
+        perda seria silenciosa. Persistir por shard custa um write de alguns KB e
+        transforma qualquer queda em "perde o shard corrente", não "perde a fonte".
+        """
+        manifesto["bytes"] = escritos
+        manifesto_path.write_text(json.dumps(manifesto, indent=2, ensure_ascii=False),
+                                  encoding="utf-8")
 
     for fonte in FONTES:
         cota = int(alvo_bytes * fonte["peso"])
@@ -262,7 +326,20 @@ def main() -> int:
         print(f"\n[{fonte['nome']}] alvo {cota/1024**2:.0f} MB · {repo}"
               f"{'/' + cfg if cfg else ''}", flush=True)
         try:
-            ds = load_dataset(repo, cfg, split="train", streaming=True)
+            # ⭐ `columns=[campo]` quando dá: o Portuguese-PD tem PARQUETS COM SCHEMAS
+            # DIFERENTES entre si (uns com 6 colunas, outros com 9: language,
+            # language_code, character_count). O streaming infere o schema pelo
+            # primeiro arquivo e o `datasets` estoura com CastError no quinto. Pedir só
+            # a coluna que interessa faz o cast ignorar os metadados divergentes — que
+            # é o defeito real, já que nunca usamos essas colunas.
+            campos = [fonte["campo"]] + (
+                [fonte["filtro_campo"][0]] if fonte.get("filtro_campo") else [])
+            try:
+                ds = load_dataset(repo, cfg, split="train", streaming=True, columns=campos)
+            except Exception:
+                ds = load_dataset(repo, cfg, split="train", streaming=True)
+                print("  (sem projeção de colunas — schema heterogêneo pode falhar)",
+                      file=sys.stderr)
         except Exception as e:
             print(f"  ⚠️ FALHOU ao abrir ({type(e).__name__}: {e}). Pulando — o MANIFEST "
                   f"vai registrar a ausência, e a mistura real sairá desviada.", file=sys.stderr)
@@ -278,40 +355,62 @@ def main() -> int:
 
         buf, buf_bytes, desta_fonte = [], 0, ja
         vistos_fonte = 0
-        for row in ds:
-            if desta_fonte >= cota:
-                break
-            vistos_fonte += 1
-            if campo_filtro and row.get(campo_filtro) not in valores_ok:
-                stats[fonte["nome"]]["fora_do_filtro"] += 1
-                continue
-            texto = (row.get(fonte["campo"]) or "").strip()
-            motivo = filtra(texto, args.min_chars)
-            if motivo:
-                stats[fonte["nome"]][motivo] += 1
-                continue
-            if dedup and dedup.duplicado(texto):
-                stats[fonte["nome"]]["duplicado"] += 1
-                continue
-            stats[fonte["nome"]]["ok"] += 1
-            if fonte["lang"] != "?" and stats[fonte["nome"]]["ok"] % 50 == 0:
-                idiomas_reais[detect_lang(texto[:2000])] += 1   # auditoria amostrada
-            reg = json.dumps({"text": texto, "fonte": fonte["nome"]}, ensure_ascii=False)
-            buf.append(reg)
-            buf_bytes += len(reg.encode("utf-8"))
-            desta_fonte += len(texto.encode("utf-8"))
-            if buf_bytes >= args.shard_mb * 1024 ** 2:
-                p = args.out / f"bee_corpus_{shard_i:04d}.jsonl.zst"
-                with open(p, "wb") as fh:
-                    fh.write(zstd.ZstdCompressor(level=3).compress(
-                        ("\n".join(buf) + "\n").encode("utf-8")))
-                manifesto["shards"].append({"arquivo": p.name, "bytes": buf_bytes,
-                                            "docs": len(buf)})
-                shard_i += 1
-                escritos += buf_bytes
-                print(f"  shard {p.name} ({buf_bytes/1024**2:.0f} MB) · "
-                      f"total {escritos/1024**3:.2f} GB", flush=True)
-                buf, buf_bytes = [], 0
+        # ⭐ O `try` cobre a ITERAÇÃO, não só o `load_dataset`. Foi essa a lição de
+        # 2026-07-27: o `Portuguese-PD` estourou um CastError no 5º parquet e derrubou a
+        # coleta INTEIRA — as 6 fontes seguintes nem foram tentadas. Uma fonte que morre
+        # no meio agora só perde a própria cota; o corpus continua e a auditoria de
+        # mistura no fim reporta o desvio, que é o comportamento certo.
+        try:
+            for row in ds:
+                if desta_fonte >= cota:
+                    break
+                vistos_fonte += 1
+                if campo_filtro and row.get(campo_filtro) not in valores_ok:
+                    stats[fonte["nome"]]["fora_do_filtro"] += 1
+                    continue
+                texto = (row.get(fonte["campo"]) or "").strip()
+                motivo = filtra(texto, args.min_chars)
+                if motivo:
+                    stats[fonte["nome"]][motivo] += 1
+                    continue
+                if dedup and dedup.duplicado(texto):
+                    stats[fonte["nome"]]["duplicado"] += 1
+                    continue
+                stats[fonte["nome"]]["ok"] += 1
+                if fonte["lang"] != "?" and stats[fonte["nome"]]["ok"] % 50 == 0:
+                    idiomas_reais[detect_lang(texto[:2000])] += 1   # auditoria amostrada
+                reg = json.dumps({"text": texto, "fonte": fonte["nome"]}, ensure_ascii=False)
+                buf.append(reg)
+                buf_bytes += len(reg.encode("utf-8"))
+                desta_fonte += len(texto.encode("utf-8"))
+                if buf_bytes >= args.shard_mb * 1024 ** 2:
+                    p = args.out / f"bee_corpus_{shard_i:04d}.jsonl.zst"
+                    with open(p, "wb") as fh:
+                        fh.write(zstd.ZstdCompressor(level=3).compress(
+                            ("\n".join(buf) + "\n").encode("utf-8")))
+                    manifesto["shards"].append({"arquivo": p.name, "bytes": buf_bytes,
+                                                "docs": len(buf)})
+                    shard_i += 1
+                    escritos += buf_bytes
+                    # registra a cota parcial ANTES de salvar, senão a retomada relê tudo
+                    manifesto["fontes"].setdefault(fonte["nome"], {}).update(
+                        {"repo": repo, "config": cfg, "licenca": fonte["licenca"],
+                         "peso_alvo": fonte["peso"], "bytes": desta_fonte,
+                         "aceitos": stats[fonte["nome"]]["ok"], "lidos": vistos_fonte,
+                         "parcial": True})
+                    salva_manifesto()
+                    print(f"  shard {p.name} ({buf_bytes/1024**2:.0f} MB) · "
+                          f"total {escritos/1024**3:.2f} GB", flush=True)
+                    buf, buf_bytes = [], 0
+        except Exception as e:
+            print(f"  ⚠️ FONTE INTERROMPIDA no meio ({type(e).__name__}): "
+                  f"{str(e)[:180]}", file=sys.stderr)
+            print(f"     Coletado desta fonte antes de morrer: "
+                  f"{desta_fonte/1024**2:.0f} MB de {cota/1024**2:.0f} MB. "
+                  f"Seguindo para a próxima — o desvio aparece na auditoria do fim.",
+                  file=sys.stderr)
+            stats[fonte["nome"]]["erro_iterando"] += 1
+            fontes_interrompidas.append(fonte["nome"])
 
         if buf:
             p = args.out / f"bee_corpus_{shard_i:04d}.jsonl.zst"
@@ -332,8 +431,9 @@ def main() -> int:
             top = stats[fonte["nome"]].most_common(3)
             print(f"  🔴 FONTE VAZIA: {vistos_fonte} linhas lidas, 0 aceitas. "
                   f"Motivos: {top}", file=sys.stderr)
+            chaves = sorted(row.keys())[:8] if "row" in dir() else "(nenhuma linha lida)"
             print(f"     Campo pedido: '{fonte['campo']}'. Chaves que a fonte devolve: "
-                  f"{sorted(row.keys())[:8]}", file=sys.stderr)
+                  f"{chaves}", file=sys.stderr)
             print("     Causa mais comum: o dataset guarda PONTEIRO (blob_id/path) em vez "
                   "do texto. Confira o schema antes de gastar mais tempo.", file=sys.stderr)
             fontes_vazias.append(fonte["nome"])
@@ -346,11 +446,10 @@ def main() -> int:
             "repo": repo, "config": cfg, "licenca": fonte["licenca"],
             "peso_alvo": fonte["peso"], "bytes": desta_fonte,
             "aceitos": aceitos, "lidos": vistos_fonte,
+            "interrompida": fonte["nome"] in fontes_interrompidas,
             "rejeitados": {k: v for k, v in stats[fonte["nome"]].items() if k != "ok"},
         }
-        manifesto["bytes"] = escritos
-        manifesto_path.write_text(json.dumps(manifesto, indent=2, ensure_ascii=False),
-                                  encoding="utf-8")
+        salva_manifesto()
 
     # ---------------- relatório: a mistura REAL, não a pedida ----------------
     print("\n" + "=" * 78)
@@ -388,6 +487,9 @@ def main() -> int:
     problemas = []
     if fontes_vazias:
         problemas.append(f"fonte(s) vazia(s): {', '.join(fontes_vazias)}")
+    if fontes_interrompidas:
+        problemas.append(f"fonte(s) interrompida(s) no meio: "
+                         f"{', '.join(fontes_interrompidas)} — cota incompleta")
     if idiomas_reais:
         pt_real = idiomas_reais.get("pt", 0) / sum(idiomas_reais.values())
         if abs(pt_real - 0.65) > 0.10:
