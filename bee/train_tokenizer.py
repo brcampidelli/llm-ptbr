@@ -37,11 +37,15 @@ OUT_DEFAULT = ROOT / "bee" / "tokenizer"
 # ChatML desde o início: o SFT com TRL depois funciona sem adaptação de template.
 ESPECIAIS = ["<|endoftext|>", "<|im_start|>", "<|im_end|>", "<|pad|>"]
 
-# Concorrentes do gate. Ambos abertos e baixáveis; são a régua externa.
+# Concorrentes do gate — a régua externa. Todos abertos e baixáveis.
+# ⭐ `tiktoken` (GPT-4o) entrou depois do estudo de 2026-07-27: é a MESMA família do nosso
+# algoritmo (ByteLevel BPE), então é o baseline mais honesto que existe para nós. Bater
+# um tokenizador de outra família seria fácil e pouco informativo.
 RIVAIS = {
     "Qwen3.5-4B": "Qwen/Qwen3.5-4B",
     "SmolLM2-135M": "HuggingFaceTB/SmolLM2-135M",
 }
+RIVAL_TIKTOKEN = "o200k_base"      # GPT-4o; carregado à parte, API diferente
 
 _PALAVRA = re.compile(r"\w+", re.UNICODE)
 
@@ -128,6 +132,13 @@ def main() -> int:
     ap.add_argument("--holdout-docs", type=int, default=400)
     ap.add_argument("--so-gate", "--só-gate", dest="so_gate", action="store_true",
                     help="não treina; só roda o gate contra os rivais")
+    ap.add_argument("--normalizar", choices=["nenhum", "nfc", "nfkc"], default="nfc",
+                    help="NFC unifica acento precomposto/decomposto (o problema do PT) sem "
+                         "perder informacao. NFKC tambem converte ①→1 e ﬁ→fi, o que NAO e "
+                         "reversivel. 'nenhum' e o que o tiktoken/GPT-2 fazem.")
+    ap.add_argument("--varrer-vocab", type=str, default="",
+                    help="treina varios vocabs e compara (ex: 32000,48000,64000). Cada um "
+                         "custa ~4 min de CPU; o trade-off e fertilidade x tamanho do embedding")
     args = ap.parse_args()
 
     if not args.corpus.exists() or not list(args.corpus.glob("bee_corpus_*.jsonl.zst")):
@@ -136,27 +147,51 @@ def main() -> int:
         return 1
 
     # ---- holdout: docs que NÃO vão para o treino do tokenizador ----
-    # Vem das fontes PT e EN separadamente, para medir os dois idiomas.
+    # ⭐ TRÊS domínios, não dois. A v1 media só PT e EN — mas o corpus v1 tinha 0% de
+    # código, então não havia o que medir. Agora que 10% é código, medir só PT/EN
+    # esconderia exatamente a regressão que este retreino existe para evitar: um
+    # tokenizador que melhora em prosa e piora em `def`/`};`/indentação.
     FONTES_PT = {"fineweb2-por", "portuguese-pd", "wikipedia-pt", "legal-pt"}
     FONTES_EN = {"fineweb-edu-en", "cosmopedia-en"}
+    FONTES_CODE = {"code-stack", "code-mit", "code-apache"}
     hold_pt = [t for t in ler_corpus(args.corpus, 8 * 1024 ** 2, FONTES_PT, "holdout")
                ][: args.holdout_docs]
     hold_en = [t for t in ler_corpus(args.corpus, 8 * 1024 ** 2, FONTES_EN, "holdout")
                ][: args.holdout_docs]
-    print(f"holdout: {len(hold_pt)} docs PT · {len(hold_en)} docs EN  "
+    hold_code = [t for t in ler_corpus(args.corpus, 8 * 1024 ** 2, FONTES_CODE, "holdout")
+                 ][: args.holdout_docs]
+    print(f"holdout: {len(hold_pt)} docs PT · {len(hold_en)} EN · {len(hold_code)} código  "
           f"(buckets < {HOLDOUT_PCT}, disjuntos do treino)")
     if len(hold_pt) < 50:
         print("⚠️ holdout PT pequeno demais para o gate ser confiável. Colete mais corpus.",
               file=sys.stderr)
         return 1
+    if len(hold_code) < 20:
+        print(f"⚠️ holdout de código com {len(hold_code)} docs — a coluna CODE do gate "
+              f"não é confiável. O corpus tem fonte de código?", file=sys.stderr)
 
     if not args.so_gate:
-        from tokenizers import Tokenizer, decoders, pre_tokenizers, processors, trainers
+        from tokenizers import Tokenizer, decoders, normalizers, pre_tokenizers, processors, trainers
         from tokenizers.models import BPE
 
-        print(f"\ntreinando BPE ByteLevel · vocab {args.vocab} · até "
-              f"{args.train_bytes/1024**3:.1f} GB de texto")
+        print(f"\ntreinando BPE ByteLevel · vocab {args.vocab} · normalizer "
+              f"{args.normalizar} · até {args.train_bytes/1024**3:.1f} GB de texto")
         tok = Tokenizer(BPE(unk_token=None))     # ByteLevel nunca produz <unk>
+        # ⭐ NORMALIZER — o gap do v1, que não tinha nenhum (achado no estudo de 2026-07-27).
+        # Em PORTUGUÊS isto não é detalhe: "ã" pode vir como U+00E3 (precomposto/NFC) ou como
+        # "a"+U+0303 (combinando/NFD). São BYTES diferentes, e num BPE ByteLevel viram TOKENS
+        # diferentes — o vocabulário gasta entradas com o mesmo caractere. Nosso corpus mistura
+        # web, Wikipédia e livros digitalizados, que chegam nas duas formas.
+        #
+        # ⚠️ NFC e não NFKC de propósito. NFKC é *compatibilidade*: converte ①→1, ﬁ→fi, ½→1⁄2.
+        # Isso NÃO é reversível, e reversibilidade é justamente a propriedade que o paper do
+        # SentencePiece defende e que o tiktoken/GPT-2 preserva não normalizando nada.
+        # NFC unifica as formas de acento (o problema real do PT) sem destruir informação.
+        # As três opções ficam mensuráveis em vez de escolhidas por dogma.
+        if args.normalizar == "nfc":
+            tok.normalizer = normalizers.NFC()
+        elif args.normalizar == "nfkc":
+            tok.normalizer = normalizers.NFKC()
         tok.pre_tokenizer = pre_tokenizers.ByteLevel(add_prefix_space=False)
         tok.decoder = decoders.ByteLevel()
         tok.post_processor = processors.ByteLevel(trim_offsets=False)
@@ -193,19 +228,35 @@ def main() -> int:
         except Exception as e:
             print(f"⚠️ não consegui baixar {nome} ({type(e).__name__}) — o gate fica "
                   f"incompleto e NÃO deve ser lido como aprovado.", file=sys.stderr)
+    # ⭐ tiktoken entra à parte: API diferente (`.encode`, sem `vocab_size`), e é a MESMA
+    # família do nosso algoritmo (ByteLevel BPE). É o baseline mais duro que temos — bater
+    # tokenizador de outra família seria fácil e diria pouco.
+    try:
+        import tiktoken
+        enc = tiktoken.get_encoding(RIVAL_TIKTOKEN)
 
-    print("\n" + "=" * 72)
+        class _TikWrap:
+            vocab_size = enc.n_vocab
+            def __call__(self, t):     # a `fertilidade()` aceita este formato
+                return {"input_ids": enc.encode(t, disallowed_special=())}
+        resultados[f"tiktoken {RIVAL_TIKTOKEN}"] = _TikWrap()
+    except Exception as e:
+        print(f"(tiktoken indisponível: {type(e).__name__} — gate segue sem ele)",
+              file=sys.stderr)
+
+    print("\n" + "=" * 78)
     print("⭐ GATE 1 — FERTILIDADE (tokens por palavra · MENOR é melhor)")
-    print("=" * 72)
-    print(f"{'tokenizador':<16} {'vocab':>7} {'PT':>9} {'EN':>9}   leitura")
-    print("-" * 72)
+    print("=" * 78)
+    print(f"{'tokenizador':<22} {'vocab':>7} {'PT':>9} {'EN':>9} {'CODE':>9}")
+    print("-" * 78)
     tab = {}
     for nome, tk in resultados.items():
         f_pt, _, _ = fertilidade(tk, hold_pt)
         f_en, _, _ = fertilidade(tk, hold_en) if hold_en else (float("nan"), 0, 0)
-        tab[nome] = (f_pt, f_en)
-        print(f"{nome:<16} {tk.vocab_size:>7} {f_pt:>9.3f} {f_en:>9.3f}")
-    print("-" * 72)
+        f_cd, _, _ = fertilidade(tk, hold_code) if hold_code else (float("nan"), 0, 0)
+        tab[nome] = (f_pt, f_en, f_cd)
+        print(f"{nome:<22} {tk.vocab_size:>7} {f_pt:>9.3f} {f_en:>9.3f} {f_cd:>9.3f}")
+    print("-" * 78)
 
     nosso_pt = tab["Bee (nosso)"][0]
     rivais_pt = {k: v[0] for k, v in tab.items() if k != "Bee (nosso)"}
@@ -228,15 +279,23 @@ def main() -> int:
         print("   A aposta do nicho falhou na etapa mais barata. NÃO seguir para o treino:")
         print("   revisar corpus (PT de fato dominante?) e vocab antes de qualquer GPU.")
 
-    # o inglês não pode ser destruído — 25% do corpus é EN
-    nosso_en, rival_en = tab["Bee (nosso)"][1], tab[melhor_rival][1]
-    if nosso_en > rival_en * 1.25:
-        print(f"\n⚠️ ATENÇÃO: em inglês somos {nosso_en/rival_en-1:+.0%} PIORES que o rival.")
-        print("   25% do corpus é EN — perder tanto assim encarece um quarto do treino.")
+    # ⭐ Os outros domínios não podem ser destruídos — 25% do corpus é EN e 10% é código.
+    # Vigiar só o PT deixaria passar o pior desfecho possível deste retreino: ganhar em
+    # português à custa de ficar péssimo em código, que é exatamente o que muda no corpus.
+    for i, (rotulo, fatia) in enumerate([("inglês", 0.25), ("código", 0.10)], start=1):
+        nosso_x, rival_x = tab["Bee (nosso)"][i], tab[melhor_rival][i]
+        if rival_x and rival_x == rival_x and nosso_x > rival_x * 1.25:   # != NaN
+            print(f"\n⚠️ ATENÇÃO: em {rotulo} somos {nosso_x/rival_x-1:+.0%} PIORES que o "
+                  f"{melhor_rival}. {fatia:.0%} do corpus é {rotulo} — perder tanto assim "
+                  f"encarece essa fatia inteira do treino.")
 
     (args.out / "gate_fertilidade.json").write_text(
-        json.dumps({"fertilidade": {k: {"pt": v[0], "en": v[1]} for k, v in tab.items()},
-                    "ganho_pt_vs_melhor_rival": ganho, "melhor_rival": melhor_rival},
+        json.dumps({"fertilidade": {k: {"pt": v[0], "en": v[1], "code": v[2]}
+                                    for k, v in tab.items()},
+                    "ganho_pt_vs_melhor_rival": ganho, "melhor_rival": melhor_rival,
+                    "vocab": args.vocab, "normalizer": args.normalizar,
+                    "holdout": {"pt": len(hold_pt), "en": len(hold_en),
+                                "code": len(hold_code)}},
                    indent=2, ensure_ascii=False), encoding="utf-8")
     return 0 if ganho > 0 else 1
 
