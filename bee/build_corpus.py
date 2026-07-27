@@ -85,13 +85,16 @@ FONTES = [
      "licenca": "permissivas (the-stack v1.1 filtrou 193 licencas)",
      "hf": ("bigcode/the-stack-smol-xl", None), "campo": "content",
      "filtro_campo": ("lang", None),              # None = usa LINGUAGENS_OK
+     "embaralhar": True,       # ⚠️ vem ORDENADO por linguagem — ver o comentario no main
      "nota": "codigo; 87 linguagens, filtramos as de logica; detect_lang nao se aplica"},
 ]
 
-# ⚠️ minúsculo e com hífen: é assim que o `the-stack` nomeia (`c-sharp`, não `C#`).
-# Um nome escrito no padrão errado vira filtro que rejeita 100% em silêncio — o mesmo
-# sintoma da fonte vazia, com causa boba. Só LÓGICA: fora HTML/CSS/Markdown/TeX, que
-# são markup (já temos texto de sobra) e no the-stack vêm cheios de arquivo GERADO.
+# ⚠️ COMPARAÇÃO EM minúsculo, sempre — o valor da fonte é normalizado antes.
+# Escrevi este filtro em minúsculo achando que o the-stack usava minúsculo; ele usa
+# **Capitalizado** ("Ada", "Python"). Resultado: 786.387 linhas lidas, 0 aceitas.
+# Normalizar os dois lados custa uma chamada e remove a classe inteira do bug.
+# Só LÓGICA: fora HTML/CSS/Markdown/TeX, que são markup (já temos texto de sobra) e
+# no the-stack vêm cheios de arquivo GERADO.
 LINGUAGENS_OK = {"python", "javascript", "typescript", "java", "c", "c++", "c-sharp",
                  "go", "rust", "ruby", "php", "shell", "sql", "kotlin", "swift",
                  "scala", "haskell", "lua", "perl", "r", "julia", "dart", "elixir",
@@ -498,6 +501,15 @@ def main() -> int:
                 ds = load_dataset(repo, cfg, split="train", streaming=True)
                 print("  (sem projeção de colunas — schema heterogêneo pode falhar)",
                       file=sys.stderr)
+            if fonte.get("embaralhar"):
+                # ⭐ O the-stack vem ORDENADO POR LINGUAGEM, em blocos: as primeiras
+                # ~10 mil linhas são todas "Ada", depois "Agda", "Alloy"… Sem embaralhar,
+                # o coletor lê dezenas de milhares de arquivos das linguagens iniciais do
+                # alfabeto e **nunca alcança** Python/Java/Go antes de esgotar a leitura.
+                # Foi o que aconteceu: 786.387 linhas, todas fora do filtro.
+                # É a mesma classe do `--limit 60` que contaminou a `coder`: tratar uma
+                # fatia do COMEÇO como se fosse amostra representativa de um dado ordenado.
+                ds = ds.shuffle(seed=args.seed, buffer_size=50_000)
         except Exception as e:
             print(f"  ⚠️ FALHOU ao abrir ({type(e).__name__}: {e}). Pulando — o MANIFEST "
                   f"vai registrar a ausência, e a mistura real sairá desviada.", file=sys.stderr)
@@ -532,7 +544,7 @@ def main() -> int:
                 if desta_fonte >= cota:
                     break
                 vistos_fonte += 1
-                if campo_filtro and row.get(campo_filtro) not in valores_ok:
+                if campo_filtro and str(row.get(campo_filtro, "")).lower() not in valores_ok:
                     stats[fonte["nome"]]["fora_do_filtro"] += 1
                     continue
                 texto = (row.get(fonte["campo"]) or "").strip()
