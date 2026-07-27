@@ -97,7 +97,11 @@ def main() -> int:
         if lim and stats["train"]["bytes"] >= lim and parte == "train":
             continue
         dados = dctx.decompress(shard.read_bytes()).decode("utf-8")
-        buf: list[int] = []
+        # ⭐ EM LOTE, não um documento por vez. O `tokenizers` é Rust e paraleliza
+        # internamente quando recebe uma LISTA — chamado texto a texto, paga overhead de
+        # travessia Python↔Rust por documento e usa um núcleo só. Medido nesta sessão:
+        # um-a-um levava ~12 min por 0,6 GB, o que daria ~4 h no corpus inteiro.
+        textos, fontes = [], []
         for linha in dados.splitlines():
             if not linha.strip():
                 continue
@@ -105,16 +109,22 @@ def main() -> int:
                 reg = json.loads(linha)
             except Exception:
                 continue
-            texto = reg.get("text", "")
-            if not texto:
-                continue
-            ids = tok(texto, add_special_tokens=False)["input_ids"]
-            buf.extend(ids)
-            buf.append(eos)              # fronteira de documento
-            stats[parte]["docs"] += 1
-            stats[parte]["bytes"] += len(texto.encode("utf-8"))
-            f = reg.get("fonte", "?")
-            stats["por_fonte"][f] = stats["por_fonte"].get(f, 0) + len(ids) + 1
+            t = reg.get("text", "")
+            if t:
+                textos.append(t)
+                fontes.append(reg.get("fonte", "?"))
+        buf: list[int] = []
+        LOTE = 1000
+        for i0 in range(0, len(textos), LOTE):
+            pedaco = textos[i0:i0 + LOTE]
+            enc = tok(pedaco, add_special_tokens=False)["input_ids"]
+            for j, ids in enumerate(enc):
+                buf.extend(ids)
+                buf.append(eos)          # fronteira de documento
+                f = fontes[i0 + j]
+                stats["por_fonte"][f] = stats["por_fonte"].get(f, 0) + len(ids) + 1
+        stats[parte]["docs"] += len(textos)
+        stats[parte]["bytes"] += sum(len(t.encode("utf-8")) for t in textos)
         arr = np.array(buf, dtype=np.uint16)
         arr.tofile(saidas[parte])
         stats[parte]["tokens"] += len(arr)
