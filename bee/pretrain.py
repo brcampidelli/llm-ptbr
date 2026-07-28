@@ -106,9 +106,21 @@ def main() -> int:
                     help="se >0, IGNORA --tokens-alvo e deriva do tamanho REAL do train.bin. "
                          "1.0 = ve cada token exatamente uma vez. Mais robusto que estimar: "
                          "o numero sai do arquivo, nao de uma conta minha com bytes/palavra.")
-    ap.add_argument("--micro-batch", type=int, default=8)
-    ap.add_argument("--grad-accum", type=int, default=32,
-                    help="batch efetivo = micro-batch * grad_accum * seq_len tokens")
+    ap.add_argument("--micro-batch", type=int, default=4,
+                    help="⚠️ 8 ESTOURA a VRAM da L4: a matriz de logits e "
+                         "mb x 2048 x 32000 em fp32 = 2 GB, e o cross_entropy precisa de "
+                         "outra copia pro softmax. O termo que domina escala com o VOCAB, "
+                         "nao com os parametros — e num modelo de 150M o vocab e enorme "
+                         "em relacao ao resto.")
+    ap.add_argument("--grad-accum", type=int, default=64,
+                    help="batch efetivo = micro-batch * grad_accum * seq_len tokens. "
+                         "4x64 da os MESMOS 524k tokens/passo que 8x32 — o batch efetivo "
+                         "nao muda, so o pico de memoria")
+    ap.add_argument("--sem-checkpointing", action="store_true",
+                    help="desliga o gradient checkpointing (mais rapido, muito mais VRAM)")
+    ap.add_argument("--auto-batch", action="store_true", default=True,
+                    help="ao dar OOM, reduz o micro-batch pela metade e dobra o accum, "
+                         "preservando o batch efetivo. Melhor que morrer no passo 3000")
     ap.add_argument("--lr", type=float, default=3e-3,
                     help="3e-3: modelos pequenos toleram LR alto; 2e-4 seria desperdicio")
     ap.add_argument("--warmup-frac", type=float, default=0.02)
@@ -167,6 +179,13 @@ def main() -> int:
         return 1
 
     modelo = LlamaForCausalLM(para_llama_config(cfg))
+    # ⭐ GRADIENT CHECKPOINTING: não guarda as ativações intermediárias do forward;
+    # recomputa-as no backward. Troca ~30% de tempo por uma queda grande de VRAM.
+    # Num treino de 31 h, 30% mais lento é muito melhor que um OOM no passo 3.000 —
+    # e o OOM ACONTECEU no dry-run com micro-batch 8.
+    if not args.sem_checkpointing:
+        modelo.gradient_checkpointing_enable()
+        modelo.config.use_cache = False        # incompatível com checkpointing
     std_res, n_esc = init_pesos(modelo, cfg.n_camadas)
     print(f"\n  init          normal(0, 0.02); {n_esc} projeções residuais com std="
           f"{std_res:.5f} (=0.02/sqrt(2*{cfg.n_camadas}))")
@@ -242,12 +261,31 @@ def main() -> int:
         opt.zero_grad(set_to_none=True)
         perda_acc = 0.0
         for _ in range(args.grad_accum):
-            x, y = lote(treino, args.micro_batch, cfg.seq_len, dev, g)
-            with torch.autocast(device_type=dev.type, dtype=torch.bfloat16,
-                                enabled=dev.type == "cuda"):
-                perda = modelo(input_ids=x, labels=y).loss / args.grad_accum
-            perda.backward()
-            perda_acc += perda.item()
+            # ⭐ AUTO-RECUPERAÇÃO DE OOM. A VRAM disponível no Colab varia entre sessões
+            # (outro processo, fragmentação, o próprio driver). Um treino de 31 h que
+            # morre no passo 3.000 por 100 MB a menos perde tudo desde o último
+            # checkpoint. Aqui reduzimos o micro-batch pela metade e DOBRAMOS o accum —
+            # o batch efetivo fica idêntico, então o treino continua estatisticamente
+            # igual, só com pico de memória menor.
+            try:
+                x, y = lote(treino, args.micro_batch, cfg.seq_len, dev, g)
+                with torch.autocast(device_type=dev.type, dtype=torch.bfloat16,
+                                    enabled=dev.type == "cuda"):
+                    perda = modelo(input_ids=x, labels=y).loss / args.grad_accum
+                perda.backward()
+                perda_acc += perda.item()
+            except torch.OutOfMemoryError:
+                if not args.auto_batch or args.micro_batch <= 1:
+                    raise
+                torch.cuda.empty_cache()
+                args.micro_batch //= 2
+                args.grad_accum *= 2
+                print(f"  ⚠️ OOM no passo {passo} — micro-batch → {args.micro_batch}, "
+                      f"accum → {args.grad_accum} (batch efetivo INALTERADO). Retomando.",
+                      file=sys.stderr, flush=True)
+                opt.zero_grad(set_to_none=True)
+                perda_acc = 0.0
+                break                      # refaz o passo inteiro com o novo tamanho
         # clip global: o gradiente dispara ANTES de a loss explodir — é o alarme precoce
         gnorm = torch.nn.utils.clip_grad_norm_(modelo.parameters(), 1.0).item()
         opt.step()
