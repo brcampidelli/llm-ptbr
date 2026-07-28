@@ -257,7 +257,12 @@ def main() -> int:
         opt.load_state_dict(ck["opt"])
         inicio = ck["passo"] + 1
         if "gerador" in ck:
-            g.set_state(ck["gerador"])
+            # ⭐ `map_location=dev` move TODOS os tensores do checkpoint para a GPU —
+            # inclusive o estado do gerador aleatório, que `torch.Generator.set_state()`
+            # exige que seja SEMPRE um ByteTensor de CPU. Sem forçar `.cpu()` aqui, a
+            # retomada quebra com "RNG state must be a torch.ByteTensor" assim que o
+            # runtime recicla (achado ao vivo na 1ª retomada real desta sessão).
+            g.set_state(ck["gerador"].cpu())
         print(f"\n♻️  RETOMANDO do passo {inicio}/{passos} "
               f"(loss {ck.get('loss', float('nan')):.4f})")
 
