@@ -118,6 +118,10 @@ def main() -> int:
                          "nao muda, so o pico de memoria")
     ap.add_argument("--sem-checkpointing", action="store_true",
                     help="desliga o gradient checkpointing (mais rapido, muito mais VRAM)")
+    ap.add_argument("--compilar", action="store_true", default=True,
+                    help="torch.compile: funde kernels, ataca o overhead de lancamento "
+                         "que e o nosso gargalo real (rodavamos a 26%% do teto da L4)")
+    ap.add_argument("--sem-compilar", dest="compilar", action="store_false")
     ap.add_argument("--auto-batch", action="store_true", default=True,
                     help="ao dar OOM, reduz o micro-batch pela metade e dobra o accum, "
                          "preservando o batch efetivo. Melhor que morrer no passo 3000")
@@ -187,9 +191,24 @@ def main() -> int:
         modelo.gradient_checkpointing_enable()
         modelo.config.use_cache = False        # incompatível com checkpointing
     std_res, n_esc = init_pesos(modelo, cfg.n_camadas)
+    # ⭐ torch.compile: funde kernels e elimina overhead de lançamento — que é
+    # exatamente o nosso gargalo. Medido em 2026-07-27: rodávamos a 26% do teto da L4
+    # (17,5k de 66k tok/s teóricos) porque cada micro-batch de 2×2048 = 4.096 tokens é
+    # pequeno demais para saturar a GPU; ela passava mais tempo lançando kernels do que
+    # calculando. ⚠️ A primeira chamada compila (1-3 min) e só depois acelera.
+    if args.compilar:
+        print("  compilando   torch.compile (1-3 min na primeira chamada)…", flush=True)
+        modelo = torch.compile(modelo)
     print(f"\n  init          normal(0, 0.02); {n_esc} projeções residuais com std="
           f"{std_res:.5f} (=0.02/sqrt(2*{cfg.n_camadas}))")
     modelo.to(dev)
+
+    def cru(m):
+        """Desembrulha o `torch.compile`. Sem isto o state_dict sai com prefixo
+        `_orig_mod.` e o `save_pretrained` não existe — o treino rodaria 20 h e
+        quebraria exatamente na hora de salvar."""
+        return getattr(m, "_orig_mod", m)
+
     real = sum(p.numel() for p in modelo.parameters())
     print(f"  conferido     {real/1e6:.1f}M params instanciados")
 
@@ -212,7 +231,7 @@ def main() -> int:
         # momentos zeram e o treino leva centenas de passos para se recuperar — o que
         # numa sessão com 4 quedas significaria nunca convergir.
         ck = torch.load(ckpt_p, map_location=dev, weights_only=False)
-        modelo.load_state_dict(ck["modelo"])
+        cru(modelo).load_state_dict(ck["modelo"])
         opt.load_state_dict(ck["opt"])
         inicio = ck["passo"] + 1
         if "gerador" in ck:
@@ -312,7 +331,7 @@ def main() -> int:
             print(f"  💬 amostra: {amostra()!r}", flush=True)
 
         if passo and passo % args.ckpt_cada == 0:
-            torch.save({"modelo": modelo.state_dict(), "opt": opt.state_dict(),
+            torch.save({"modelo": cru(modelo).state_dict(), "opt": opt.state_dict(),
                         "passo": passo, "loss": perda_acc, "gerador": g.get_state(),
                         "cfg": args.tamanho}, ckpt_p)
             (args.out / "historico.json").write_text(json.dumps(hist, indent=1),
@@ -325,7 +344,7 @@ def main() -> int:
     print(f"✅ TREINO CONCLUÍDO em {(time.time()-t0)/3600:.2f} h")
     print(f"   validação final: loss {lv:.4f} · perplexidade {ppl:.1f}")
     print(f"   amostra: {amostra()!r}")
-    modelo.save_pretrained(str(args.out / "modelo"))
+    cru(modelo).save_pretrained(str(args.out / "modelo"))
     tok.save_pretrained(str(args.out / "modelo"))
     (args.out / "historico.json").write_text(json.dumps(hist, indent=1), encoding="utf-8")
     print(f"   modelo salvo em {args.out / 'modelo'}")
