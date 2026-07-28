@@ -35,20 +35,42 @@ sys.path.insert(0, str(ROOT / "bee"))
 
 
 def lote(dados, batch, seq_len, device, gerador):
-    """Amostra `batch` janelas de `seq_len+1` do memmap. x = [:-1], y = [1:].
+    """Amostra `batch` janelas de `seq_len+1`. x = [:-1], y = [1:].
 
     ⚠️ Amostragem ALEATÓRIA e não sequencial: com dado ordenado por fonte (o nosso é —
     as fontes foram coletadas uma após a outra), ler em ordem faria o modelo ver 4 GB de
     web, depois 1,8 GB de livros, depois código. Isso é currículo acidental, não
     escolhido: o modelo esqueceria a primeira fonte ao chegar na última.
+
+    Vetorizado: um `take` com índices pré-computados em vez de list comprehension.
+    2× mais rápido que a versão anterior — mas ⚠️ **isto NÃO era o gargalo**, e vale
+    registrar para ninguém repetir a caçada:
+
+    O treino ficou travado em 16–18k tok/s (~26% do teto da L4) em QUATRO configurações
+    diferentes. Testei três hipóteses, e as três falharam:
+      1. gradient checkpointing → desligar deu +32%, não o 13× que eu esperava;
+      2. I/O da Drive por FUSE → copiar os 7,5 GB para o SSD local **piorou** (16,0k
+         contra 17,9k);
+      3. laço Python no carregador → medido: 0,14 ms/lote = 56M tok/s equivalentes,
+         **0,03% do tempo de passo**. Irrelevante.
+
+    O que sobra é a explicação estrutural: a arquitetura **fundo-e-fina** (30 camadas
+    para apenas 576 de largura) é ótima em qualidade por parâmetro e ruim em eficiência
+    de GPU — 30 camadas são 30× mais lançamentos de kernel, cada um com GEMMs pequenas
+    que não saturam os tensor cores. O `torch.compile` deveria atacar exatamente isso e
+    rendeu só +2%. **16k tok/s provavelmente é o que esta arquitetura roda nesta GPU**,
+    e a conclusão certa é ajustar o ORÇAMENTO DE TOKENS, não continuar otimizando.
     """
     import numpy as np
     import torch
-    ix = torch.randint(len(dados) - seq_len - 1, (batch,), generator=gerador)
-    x = torch.stack([torch.from_numpy(dados[i:i + seq_len].astype(np.int64)) for i in ix])
-    y = torch.stack([torch.from_numpy(dados[i + 1:i + 1 + seq_len].astype(np.int64)) for i in ix])
+    ix = torch.randint(len(dados) - seq_len - 1, (batch,), generator=gerador).numpy()
+    # offsets[i, j] = ix[i] + j  →  todas as janelas de uma vez, sem laço Python
+    idx = ix[:, None] + np.arange(seq_len + 1)[None, :]
+    janelas = torch.from_numpy(dados[idx].astype(np.int64))     # (batch, seq_len+1)
+    x, y = janelas[:, :-1], janelas[:, 1:]
     if device.type == "cuda":
-        return x.pin_memory().to(device, non_blocking=True), y.pin_memory().to(device, non_blocking=True)
+        return (x.pin_memory().to(device, non_blocking=True),
+                y.pin_memory().to(device, non_blocking=True))
     return x.to(device), y.to(device)
 
 
