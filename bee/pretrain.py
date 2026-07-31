@@ -144,6 +144,12 @@ def main() -> int:
                     help="torch.compile: funde kernels, ataca o overhead de lancamento "
                          "que e o nosso gargalo real (rodavamos a 26%% do teto da L4)")
     ap.add_argument("--sem-compilar", dest="compilar", action="store_false")
+    ap.add_argument("--liger", action="store_true", default=True,
+                    help="Liger Kernel: fused linear cross-entropy. NAO materializa a "
+                         "matriz de logits (mb x 2048 x 32000 fp32 = 2 GB por micro-batch), "
+                         "que e o gargalo de VRAM da L4 e escala com o VOCAB, nao com os "
+                         "parametros. Libera micro-batch grande => throughput perto do pico.")
+    ap.add_argument("--sem-liger", dest="liger", action="store_false")
     ap.add_argument("--auto-batch", action="store_true", default=True,
                     help="ao dar OOM, reduz o micro-batch pela metade e dobra o accum, "
                          "preservando o batch efetivo. Melhor que morrer no passo 3000")
@@ -204,6 +210,23 @@ def main() -> int:
               f"retokenize ou troque o config.", file=sys.stderr)
         return 1
 
+    # ⭐ LIGER KERNEL — fused linear cross-entropy. O pico de VRAM neste modelo e a matriz
+    # de logits (mb x 2048 x 32000 fp32 = 2 GB por unidade de micro-batch), que escala com o
+    # VOCAB, nao com os parametros. O Liger funde a projecao final + o cross_entropy num
+    # kernel que NUNCA materializa os logits inteiros — corta o pico drasticamente e libera
+    # micro-batch grande, que era o que segurava a L4 em ~26%% de utilizacao. Aplica-se ANTES
+    # de instanciar o modelo (faz monkey-patch da classe Llama). O loop passa `labels=` ao
+    # forward (linha ~320), entao o fused CE entra sozinho.
+    if args.liger:
+        try:
+            from liger_kernel.transformers import apply_liger_kernel_to_llama
+            apply_liger_kernel_to_llama(
+                fused_linear_cross_entropy=True, cross_entropy=False,
+                rms_norm=True, rope=True, swiglu=True)
+            print("  liger        fused linear CE + RMSNorm/RoPE/SwiGLU (logits nao materializados)")
+        except Exception as e:
+            print(f"  liger        indisponivel ({type(e).__name__}: {e}) — seguindo sem. "
+                  f"pip install liger-kernel", file=sys.stderr)
     modelo = LlamaForCausalLM(para_llama_config(cfg))
     # ⭐ GRADIENT CHECKPOINTING: não guarda as ativações intermediárias do forward;
     # recomputa-as no backward. Troca ~30% de tempo por uma queda grande de VRAM.
