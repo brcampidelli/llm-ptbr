@@ -40,6 +40,38 @@ gerações) antes de gastar orçamento. Não confie no marketing multilíngue.
 
 ---
 
+## 🟢 ATUALIZAÇÃO 2026-08-02 — NVIDIA build (build.nvidia.com): teacher FREE, e o ToS PERMITE destilar
+
+O Bruno tem conta no **build.nvidia.com**. Ele hospeda **inferência grátis** (API OpenAI-compatible,
+`integrate.api.nvidia.com/v1`, é só gerar a key) dos teachers que já validamos: **DeepSeek-V4-Pro**
+(2T MoE, MIT), **GLM-5.2** (MIT) e **Nemotron-3-Ultra-550B** (NVIDIA-open, feito para geração de dados
+sintéticos). A aba "GPUs" leva ao **Brev** (nuvem de GPU da NVIDIA, agrega 19 provedores — 3ª opção de treino).
+
+**Li o ToS oficial (NVIDIA Technology Access TOU, © 2024, 10 páginas — PDF do rodapé). Veredito:
+🟢 VERDE — ao contrário da Qwen, NÃO proíbe destilar.**
+- **Não há cláusula anti-distillation** nem "não criar modelo concorrente" contra o usuário. A Qwen tinha
+  as duas (II.2(c)+(e)); a NVIDIA não tem nenhuma.
+- **Você mantém direito sobre o que gera** (§4: a NVIDIA reserva os direitos "except for... your User
+  Content"). As restrições do §5 miram a *Technology* da NVIDIA (software/modelos/servidores), não as saídas.
+- **§7 (Trials) contempla explicitamente** usar o resultado depois: em certos trials você pode "download
+  your results for further use post-trial".
+- A licença do **modelo** subjacente continua valendo (§17): DeepSeek-V4 MIT ✅, GLM-5.2 MIT ✅, Nemotron
+  NVIDIA-open ✅.
+
+**Condições (respeitar):**
+1. **Não burlar limite/quota** — §5(n) proíbe usar a Technology para "avoid incurring fees or exceeding use
+   limits". O free tier é rate-limited → serve pro **piloto** (200-500) à vontade; pra **volume**, usar os
+   *paid partner endpoints*, não espremer o trial.
+2. **Não usar como raspagem** de conteúdo dos servidores NVIDIA (§6) — chamada de API licenciada gerando
+   conteúdo próprio é o uso pretendido; manter volume dentro da quota.
+3. As-is, cap de responsabilidade US$50, arbitragem (§§12,13,18) — padrão, não bloqueia.
+
+**Consequência pro plano:** o gate jurídico da destilação está **VERDE**. O teacher primário (DeepSeek-V4)
+fica **grátis** pro piloto e barato pra escalar — melhor que a Qwen (proibida) e mais barato que pagar a API
+da DeepSeek. Falta só o **piloto de PT-BR** (qualidade, inalterado — nenhum documenta PT).
+
+---
+
 ## Tabela comparativa
 
 | modelo | real? | total / ativos | pesos | licença | white-box? | API saída /1M | PT declarado |
@@ -147,6 +179,8 @@ buraco de volume do pré-treino.
 ## Ações concretas (checklist)
 - [ ] Fechar Gate 2 do Bee-150M-v2 (em curso).
 - [x] ~~Ler o ToS da Qwen~~ — **FEITO (2026-08-01): proíbe destilar** (II.2(c)+(e)). Qwen fora.
+- [x] ~~Ler o ToS do NVIDIA build~~ — **FEITO (2026-08-02): PERMITE destilar** (sem cláusula anti-distill;
+      §4 mantém direito sobre User Content; §7 permite uso pós-trial). Teacher FREE via `integrate.api.nvidia.com/v1`.
 - [ ] Piloto PT-BR: 200-500 gerações via DeepSeek-V4-Flash → medir fluência/gramática.
 - [ ] Guardar cópia dos LICENSE (DeepSeek MIT, GLM MIT, Kimi Mod-MIT) + creditar origem dos
       dados sintéticos no MANIFEST — procedência auditável, requisito de investimento.
