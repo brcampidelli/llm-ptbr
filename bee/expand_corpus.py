@@ -163,6 +163,12 @@ def main() -> int:
     ap.add_argument("--min-chars", type=int, default=200)
     ap.add_argument("--skip-files", type=int, default=0,
                     help="pula os N primeiros parquets (região já consumida pelo streaming)")
+    ap.add_argument("--minhash", action="store_true",
+                    help="liga o dedup MinHash de quase-duplicata (LENTO). Desligado por "
+                         "padrão: o fineweb-2 JÁ vem MinHash-deduplicado globalmente pela equipe "
+                         "FineWeb, então essa passada é redundante e custa ~4-5x o tempo. O dedup "
+                         "EXATO (vistos_sha) fica sempre ligado — é ele que impede re-adicionar o "
+                         "que já está no corpus.")
     ap.add_argument("--fonte", default="fineweb2-por")
     ap.add_argument("--tmp", type=Path, default=Path("/content/pqtmp"),
                     help="dir temporário p/ baixar cada parquet (apagado após processar)")
@@ -194,8 +200,9 @@ def main() -> int:
     feitos = set(feitos_path.read_text(encoding="utf-8").split()) if feitos_path.exists() else set()
 
     vistos = VistosPersistente(args.out / "vistos_sha.txt")
-    dedup = Dedup()
-    print(f"[dedup] {len(vistos.vistos)} docs já vistos carregados do disco")
+    dedup = Dedup() if args.minhash else None
+    print(f"[dedup] {len(vistos.vistos)} docs já vistos (exato) carregados do disco · "
+          f"MinHash {'LIGADO' if dedup else 'desligado (fineweb-2 já vem deduplicado)'}")
 
     existentes = sorted(args.out.glob("bee_corpus_*.jsonl.zst"))
     shard_i = max((int(p.name.split("_")[-1].split(".")[0]) for p in existentes), default=-1) + 1
@@ -255,7 +262,7 @@ def main() -> int:
                     if vistos.duplicado_exato(texto):
                         dups += 1
                         continue
-                    if dedup.duplicado(texto):
+                    if dedup is not None and dedup.duplicado(texto):
                         dups += 1
                         continue
                     aceitos += 1
