@@ -45,10 +45,10 @@ gerações) antes de gastar orçamento. Não confie no marketing multilíngue.
 | modelo | real? | total / ativos | pesos | licença | white-box? | API saída /1M | PT declarado |
 |---|:---:|---|:---:|---|:---:|---:|---|
 | **DeepSeek-V4-Flash-0731** | ✅ | ~284B / ~13B MoE | ✅ 167 GB FP8 | **MIT** (s/ anti-distill) | ❌ tamanho | **US$0,18** | não doc. |
-| **Qwen3.7-Flash** | ✅ | não divulgado (é **VL**) | ❌ API-only | **ToS API** (risco) | **US$0,13** | não conf. |
 | **GLM-5.2** | ✅ | 753B / ~40B MoE | ✅ 1,5 TB BF16 | **MIT** (s/ anti-distill) | ❌ tamanho | US$1,32 | EN/ZH-first (PT fraco) |
 | **Kimi-K3** | ✅ | ~2,8T / ~104B MoE | ✅ 1,56 TB MXFP4 | **Mod-MIT** (trava só >US$20M/ano) | ❌ tamanho | API (a definir) | não doc. |
-| **Qwen3.7-Max** | ✅ | não divulgado | ❌ API-only | **ToS API** (risco) | US$4,42 | não conf. |
+| **Qwen3.7-Flash** | ✅ | não divulgado (é **VL**) | ❌ API-only | 🔴 **ToS PROÍBE destilar** | US$0,13 | não conf. |
+| **Qwen3.7-Max** | ✅ | não divulgado | ❌ API-only | 🔴 **ToS PROÍBE destilar** | US$4,42 | não conf. |
 
 > ⚠️ Números vindos de páginas lidas por WebFetch + cross-check; o MCP do HF pendurou e foi
 > abortado, então params exatos de Kimi/GLM são **ordem de grandeza, não auditados**. Benchmarks
@@ -68,14 +68,21 @@ gerações) antes de gastar orçamento. Não confie no marketing multilíngue.
 - **Veredito:** teacher **primário** para SFT sintético em PT — MIT limpo, barato, texto puro.
   Único porém: PT não documentado → **piloto obrigatório**.
 
-### 🟡 Qwen3.7-Flash — **o mais barato, mas com 2 asteriscos**
-- **US$0,13 out/1M** (o mais barato de todos) — 1B tokens ≈ US$130.
-- **MAS:** (1) é **API-only** (Alibaba fechou os flagships em 2026, quebrando o Apache-2.0 da
-  linha aberta); (2) o **ToS da API não foi confirmado** — risco alto de proibir treinar
-  concorrente (padrão do setor, ver caso DeepSeek×OpenAI); (3) é um modelo **visão-linguagem**,
-  não texto puro clássico.
-- **Veredito:** só depois de **ler o ToS da Alibaba na íntegra**. Se liberar, é o teacher mais
-  barato pra volume. Se proibir, cai fora inteiro.
+### 🔴 Qwen3.7-Flash / Max — **FORA: o ToS proíbe destilar (confirmado)**
+- Seriam baratos (Flash US$0,13 out/1M), **MAS** o ToS oficial (qwen.ai/termsservice,
+  atualizado 19/mai/2026) **proíbe destilação por nome** — confirmado lendo o documento:
+  - **Seção II.2(c):** proíbe "mine, or **distil**... the Outputs... using... distillation
+    techniques".
+  - **Seção II.2(e):** proíbe usar Outputs para "develop or improve any products or services
+    (including... any models) that **compete with or are similar in functionality**".
+- Ambos são **API-only** (Alibaba fechou os flagships em 2026, quebrando o Apache-2.0 da linha
+  aberta), então não há como escapar do ToS via pesos abertos. O Flash ainda é **visão-linguagem**.
+- ⚠️ Um resumo superficial (que olhava só a *Usage Policy* — infra crítica/campanha política)
+  disse "não há proibição". **Está errado:** a proibição está na seção "What You Cannot Do",
+  não na Usage Policy.
+- **Veredito:** **descartar os dois.** Usar a saída deles pra treinar o Bee viola o ToS →
+  Bee impublicável/não-investível. (Nota: os modelos Qwen **open-weight** de gerações passadas,
+  Apache-2.0, seriam OK — mas 3.7-Flash/Max não são open-weight.)
 
 ### 🟡 GLM-5.2 — **teacher secundário, de nicho (código/raciocínio)**
 - **MoE 753B/40B**, contexto 1M, **MIT** (sem anti-distill). Pesos abertos (1,5 TB BF16).
@@ -113,7 +120,7 @@ buraco de volume do pré-treino.
 
 ### PRÓXIMO DEGRAU — pós-treino do Bee (350M→1B), a fase onde o teacher entra
 2. **Piloto de PT-BR (gate barato, US$ poucos):** gerar ~200-500 respostas em PT via
-   **DeepSeek-V4-Flash** (e, se o ToS liberar, **Qwen3.7-Flash**). Medir fluência/gramática/
+   **DeepSeek-V4-Flash** (teacher primário; Qwen está fora por ToS). Medir fluência/gramática/
    ausência de traducionês. **Só investir no teacher que passar.** Nenhum documenta PT — isto
    não é opcional.
 3. **SFT sintético (teacher primário = DeepSeek-V4-Flash):** gerar corpus PT-BR de instrução+
@@ -131,15 +138,16 @@ buraco de volume do pré-treino.
 
 ### DESCARTAR
 - **White-box (logit distillation)** de qualquer um deles — tamanho + tokenizador próprio matam.
-- **Qwen3.7-Max** — 34× o custo do Flash sem ganho que justifique.
-- **Qualquer teacher antes de ler o ToS** (Qwen) ou **antes do piloto PT** (todos).
+- **Qwen3.7-Flash e Max** — o ToS oficial **proíbe destilar/treinar modelo similar** (confirmado,
+  seção II.2(c)+(e)). Fora, independente do preço.
+- **Qualquer teacher antes do piloto PT** (todos — nenhum documenta PT).
 
 ---
 
 ## Ações concretas (checklist)
 - [ ] Fechar Gate 2 do Bee-150M-v2 (em curso).
-- [ ] **Ler o ToS da API Alibaba Cloud Model Studio** na íntegra — decide se Qwen-Flash entra.
-- [ ] Piloto PT-BR: 200-500 gerações via DeepSeek-V4-Flash (e Qwen-Flash se liberado) → medir.
+- [x] ~~Ler o ToS da Qwen~~ — **FEITO (2026-08-01): proíbe destilar** (II.2(c)+(e)). Qwen fora.
+- [ ] Piloto PT-BR: 200-500 gerações via DeepSeek-V4-Flash → medir fluência/gramática.
 - [ ] Guardar cópia dos LICENSE (DeepSeek MIT, GLM MIT, Kimi Mod-MIT) + creditar origem dos
       dados sintéticos no MANIFEST — procedência auditável, requisito de investimento.
 - [ ] Definir volume-alvo do corpus SFT sintético (começar pequeno: ~dezenas de milhares de
@@ -151,5 +159,5 @@ buraco de volume do pré-treino.
 - **PT-BR de nenhum teacher foi medido** — tudo é inferência a partir de "multilíngue". O piloto
   é o que decide.
 - Params exatos de Kimi/GLM não auditados (MCP HF caiu); benchmarks de fronteira são marketing.
-- ToS da Qwen não recuperado → status jurídico do black-box com Qwen **desconhecido**.
+- ~~ToS da Qwen~~ **resolvido:** o ToS oficial proíbe destilar (II.2(c)+(e)) → Qwen fora.
 - Custo de API do Kimi-K3 não cotado (só pesos abertos + inference providers genéricos).
