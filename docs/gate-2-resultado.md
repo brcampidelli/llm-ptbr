@@ -8,6 +8,57 @@
 
 ---
 
+## ⚡ ATUALIZAÇÃO 2026-08-02 — v2 (3 épocas) testado: NÃO fechou a lacuna (na verdade, piorou)
+
+**O experimento:** re-treinar o mesmo Bee-150M por **3 épocas** (11,22B tokens vistos, mesmo
+corpus de 3,74B) na A100 + Liger, pra testar a hipótese "falta token". Re-rodamos o Gate 2 nos
+mesmos shards {7,23,41}. **Runtime:** Colab A100 · treino 7,63h · perplexidade de treino 72→60,3.
+
+**Resultado — bits por byte (holdout PT limpo, menor = melhor):**
+
+| | PT bpb (agregado) | gap vs SmolLM2 | EN bpb |
+|---|---:|---:|---:|
+| **v1** (1 época, 3,74B tok) | **3,460** | −72,2% | 3,688 |
+| **v2** (3 épocas, 11,22B tok) | **3,530** | **−75,7%** | 3,723 |
+| SmolLM2-135M (referência) | 2,010 | — | 0,846 |
+
+**v2 × v1, decomposto por fonte:**
+
+| fonte | idioma | v2 | v1 | vencedor |
+|---|---|---:|---:|:---:|
+| fineweb2-por (web) | pt | **2,202** | 2,207 | **v2** ⭐ (+0,005) |
+| portuguese-pd (livros) | pt | 4,261 | **4,150** | v1 (v2 −0,112) |
+| fineweb-edu-en | en | 3,723 | **3,688** | v1 |
+| **AGREGADO PT** | | 3,530 | **3,460** | **v1 (−2,0%)** |
+
+### 🔴 Veredito: mais épocas ≠ mais tokens. As 3 épocas OVERFITARAM.
+
+O v2 ficou **2,0% PIOR que o v1 no holdout limpo** em PT, **apesar** da perplexidade de treino
+ter caído de 72→60. Isso é a assinatura clássica de **overfitting**: repetir os mesmos 3,74B
+tokens 3× fez o modelo **memorizar** melhor o treino (perplexidade de treino cai) mas
+**generalizar pior** no texto nunca visto (bpb do holdout sobe).
+
+O padrão por fonte é a prova: no source **grande e diverso** (`fineweb2-por`, 35% do corpus, web),
+o v2 melhorou um tiquinho ⭐ — ali ainda havia sinal novo a extrair. No source **pequeno**
+(`portuguese-pd`, 15%, livros), o v2 piorou nitidamente — 3 passagens sobre pouca diversidade =
+memorização. A média fica negativa.
+
+**A lição que reformula o degrau de escalonamento:** o diagnóstico "falta token" continua
+correto, **mas o remédio NÃO é mais épocas — é mais tokens ÚNICOS.** O SmolLM2 venceu porque viu
+~535× mais tokens **distintos**, não porque repetiu os mesmos. Reprocessar o 3,74B não fecha nada;
+**expandir o corpus** (fineweb-2 `por` tem >1T tokens disponíveis) é o caminho. Épocas ≈ 1 é o
+certo pra esta escala; ir a 3 já cobra overfitting no corpus atual.
+
+> Nota honesta: o delta é pequeno (2%) e parte pode ser ruído de 400 docs — mas a **direção é
+> consistente** nas duas comparações (v2 perde do SmolLM2 por mais que v1; v2 perde do próprio v1)
+> e o padrão fonte-grande-melhora / fonte-pequena-piora é coerente com overfitting, não com acaso.
+> O que NÃO aconteceu, com certeza: as 3 épocas **não** aproximaram o Bee do SmolLM2.
+
+**Arquivos:** `gate2_v2_vs_smol.json` e `gate2_v2_vs_v1.json` no Drive (`/MyDrive/BEE/`).
+v1 preservado intacto em `bee-150m/`; v2 em `bee-150m-v2/`.
+
+---
+
 ## Método (por que estes números valem)
 
 | decisão | por quê |
