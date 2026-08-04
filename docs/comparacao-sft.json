@@ -1,0 +1,143 @@
+{
+  "bee-150m-v3-sft": {
+    "holdouts": {
+      "ptbr_antigo": {
+        "nll": 3.5669,
+        "acuracia": 0.3158
+      },
+      "bncc_novo": {
+        "nll": 3.8275,
+        "acuracia": 0.2523
+      }
+    },
+    "sondas": [
+      {
+        "pergunta": "O que e o Brasil?",
+        "resposta": "o\nO Brasil"
+      },
+      {
+        "pergunta": "Explique o que e fotossintese.",
+        "resposta": ".\n\n,"
+      },
+      {
+        "pergunta": "Escreva uma frase sobre o mar.",
+        "resposta": "! <> \n<"
+      },
+      {
+        "pergunta": "Qual a capital de Minas Gerais?",
+        "resposta": "A capital de Minas Gerais propriamente foi denominada\n\nM Gerais\n\n\nA capital de Minas Gerais foi chamada"
+      },
+      {
+        "pergunta": "Liste tres frutas brasileiras.",
+        "resposta": "T\n\nF."
+      },
+      {
+        "pergunta": "Como se faz um bolo de cenoura?",
+        "resposta": "Como se um bolo de cenoura de cenoura fosse uma salada de ceninhas de cen.\n é uma salada de ceninhas cenas cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen"
+      },
+      {
+        "pergunta": "Traduza para o ingles: bom dia.",
+        "resposta": ""
+      },
+      {
+        "pergunta": "Quem foi Machado de Assis?",
+        "resposta": "Foi seu mestre o mestre de seus mestres?\nEu me não conheço mas é um mestre\n do mesmo mestre que você\n.\n..\n\nM de Machado de Assis \n\n.."
+      }
+    ],
+    "sondas_vazias": 2
+  },
+  "bee-v3-sft-A": {
+    "holdouts": {
+      "ptbr_antigo": {
+        "nll": 3.7795,
+        "acuracia": 0.2863
+      },
+      "bncc_novo": {
+        "nll": 3.8998,
+        "acuracia": 0.2491
+      }
+    },
+    "sondas": [
+      {
+        "pergunta": "O que e o Brasil?",
+        "resposta": "o brasilbrasil"
+      },
+      {
+        "pergunta": "Explique o que e fotossintese.",
+        "resposta": ".\n\n,\n\n\n."
+      },
+      {
+        "pergunta": "Escreva uma frase sobre o mar.",
+        "resposta": ""
+      },
+      {
+        "pergunta": "Qual a capital de Minas Gerais?",
+        "resposta": ":"
+      },
+      {
+        "pergunta": "Liste tres frutas brasileiras.",
+        "resposta": "conuus."
+      },
+      {
+        "pergunta": "Como se faz um bolo de cenoura?",
+        "resposta": "Como faz um bolo de cenoura?\n\n \n \n\n\nBoeos"
+      },
+      {
+        "pergunta": "Traduza para o ingles: bom dia.",
+        "resposta": "dia.\n\n:\n(\n  \n      :"
+      },
+      {
+        "pergunta": "Quem foi Machado de Assis?",
+        "resposta": "Bgrafia\n\n Machado de Assis \n \n\n \n\n\n\niblio\n\n:\n Machado de   Assis,                     \n \n       \n\n\n\n\niblio\n:"
+      }
+    ],
+    "sondas_vazias": 2
+  },
+  "bee-v3-sft-B": {
+    "holdouts": {
+      "ptbr_antigo": {
+        "nll": 2.4638,
+        "acuracia": 0.4965
+      },
+      "bncc_novo": {
+        "nll": 3.0023,
+        "acuracia": 0.3625
+      }
+    },
+    "sondas": [
+      {
+        "pergunta": "O que e o Brasil?",
+        "resposta": "O Brasil é o maior país do mundo, com mais de **9.,. de população** e mais de **8., de população**. O país está situado na região do Oceano Atlântico, na zona continental da América do Sul, e é o maior centro industrial e de serviços do continente. Além disso, o Brasil é o"
+      },
+      {
+        "pergunta": "Explique o que e fotossintese.",
+        "resposta": "Você precisa explicar como a fotosintese é feita e como funciona.\n\n**O que é uma fotossntese?**  \nA fotossntese é a reação de converter energia em energia. Ela é um processo de que se faz a energia.  \n\nA fotossntese é composta por dois componentes"
+      },
+      {
+        "pergunta": "Escreva uma frase sobre o mar.",
+        "resposta": "Claro! Aqui está uma frase sobre o mar, que é um das mais importantes para a comunicação e a comunicação entre os seres vivos.\n\n**Explicação:**\n\n- **Maneta**: Água, água doce, sal, oxigênio e oxigênio livre.\n- **Maneta**: Água, água doce, água doce"
+      },
+      {
+        "pergunta": "Qual a capital de Minas Gerais?",
+        "resposta": "A capital do Minas é Belo Horizonte. Se você puder me ajudar, posso encontrar uma cidade próxima para você.\n\n**Localização (cidade):**\n- **Lital:"
+      },
+      {
+        "pergunta": "Liste tres frutas brasileiras.",
+        "resposta": "Aqui estão as três frutas brasileiras mais populares, mas ainda pouco conhecidas:\n\n1. **Pera-do----------------------------------------------"
+      },
+      {
+        "pergunta": "Como se faz um bolo de cenoura?",
+        "resposta": "Aqui está um passo a passo prático e rápido para fazer um bolo de cenoura:\n\n### 1. Prepare o recheio (foquinha)\n- **Corte o cenoura em pedaços finos e grossos.** Corte o cenoura em pedaços pequenos,\n   - Corte a cenoura em fatias finas (fóas) e"
+      },
+      {
+        "pergunta": "Traduza para o ingles: bom dia.",
+        "resposta": "Olá, bemvindo ao nosso blog. O meu nome **Sami** como é conhecido, sou **Sami** e estou em **cominaração**. Tenho o meu diploma de bacharel em engenharia civil, e **meenho** a **estestto** (vino) em engenharia civil, e a"
+      },
+      {
+        "pergunta": "Quem foi Machado de Assis?",
+        "resposta": "Machrado de Assis nasceu na cidade de São Paulo em 1712. Filho de uma família rica, seus pais eram ricos. Bacharel em Direito pela Faculdade de Coimbra, estudou em Roma, e em Roma se interesuu por Direito e Direito Público. Após a sua formatura, foi nomeado juiz de direito, e em 18, já juiz de"
+      }
+    ],
+    "sondas_vazias": 0
+  }
+}
