@@ -34,3 +34,7 @@ __pycache__/
 # harness clonado
 lm-evaluation-harness/
 artigos para estudos/
+
+models/bee-150m-v3-base/
+models/bee-150m-v3-sft/
+docs/sft-run.log

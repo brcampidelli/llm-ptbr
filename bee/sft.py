@@ -44,8 +44,14 @@ def parse_args() -> argparse.Namespace:
                     help="3 epocas em 5,6k exemplos — SFT tolera mais repeticao que pre-treino")
     ap.add_argument("--lr", type=float, default=2e-5,
                     help="full FT pede LR MUITO menor que o pre-treino (3e-3)")
-    ap.add_argument("--batch", type=int, default=8, help="por dispositivo")
-    ap.add_argument("--grad-accum", type=int, default=4, help="batch efetivo = batch * grad_accum")
+    # ⚠️ micro-batch 2 nao e timidez, e o teto fisico dos 8 GB. Medido na RTX 5070
+    # (2026-08-04) com sequencia cheia de 1024: bs2 = 5,8 GB e 6,5 amostras/s;
+    # bs4 = 10,7 GB — nao cabe, vaza pra RAM do host e despenca pra 1,0; bs8 leva
+    # 510 s/passo. O vilao e o tensor de logits (bs x 1024 x 32000, + upcast fp32
+    # da cross-entropy). O Liger resolveria fundindo linear+CE, mas nao instala
+    # com transformers 5.x. Manter o batch EFETIVO em 32 via grad_accum.
+    ap.add_argument("--batch", type=int, default=2, help="por dispositivo (teto de VRAM)")
+    ap.add_argument("--grad-accum", type=int, default=16, help="batch efetivo = batch * grad_accum")
     ap.add_argument("--save-steps", type=int, default=200)
     ap.add_argument("--max-steps", type=int, default=-1, help="limita passos (smoke test)")
     ap.add_argument("--dry-run", action="store_true")
@@ -130,6 +136,19 @@ def main() -> int:
         tok.pad_token = tok.eos_token
     modelo = AutoModelForCausalLM.from_pretrained(args.modelo, dtype=torch.bfloat16)
     modelo.config.use_cache = False
+
+    # O pre-treino deixou eos = <|endoftext|>, mas o chat_template fecha o turno com
+    # <|im_end|>. Sem isto o modelo pos-SFT gera a resposta e NAO para — emenda um
+    # turno de usuario atras do outro. Aceitar os dois como fim de geracao.
+    fim_turno = tok.convert_tokens_to_ids("<|im_end|>")
+    if fim_turno is not None and fim_turno >= 0:
+        ids_eos = sorted({modelo.generation_config.eos_token_id, fim_turno}
+                         if isinstance(modelo.generation_config.eos_token_id, int)
+                         else {*modelo.generation_config.eos_token_id, fim_turno})
+        modelo.generation_config.eos_token_id = ids_eos
+        print(f"  eos de geracao: {ids_eos} (inclui <|im_end|>={fim_turno})")
+    else:
+        print("  AVISO: <|im_end|> nao existe no tokenizer — o modelo nao vai saber parar.")
     n_par = sum(p.numel() for p in modelo.parameters())
     print(f"  parametros treinaveis: {n_par/1e6:.1f}M (100% — full fine-tune)")
 

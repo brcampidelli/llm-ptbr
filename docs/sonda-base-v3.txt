@@ -1,0 +1,130 @@
+carregando models/bee-150m-v3-base...
+pronto (cuda) · chat_template: sim
+
+[1] voce> O que e o Brasil?
+    bee > que em tem de
+- do que o
+ o
+
+[2] voce> Explique o que e fotossintese.
+    bee > ique
+
+
+ também
+
+
+
+
+
+
+
+
+
+ também
+
+
+ também
+
+ também
+ também
+
+
+
+
+
+ também
+ também
+
+ também
+ também
+
+
+
+ também
+
+
+ também
+ também
+
+
+ também
+
+[3] voce> Escreva uma frase sobre o mar.
+    bee > reva frase o.
+reveresc
+reveresc
+esc sobre.esc
+reva o
+esc sobreescescreva
+ sobreescesc
+ sobreesc
+escesc
+ sobreescescescescescescescescescescescescescescescescescescescescescescescesc
+
+[4] voce> Qual a capital de Minas Gerais?
+    bee > a de
+ a
+
+
+ também
+
+ também
+ de
+
+ também
+
+
+ também
+
+ também
+ também
+
+ também
+ também
+
+
+
+
+ também
+
+
+ também
+
+ também
+
+
+
+
+
+ também
+ também
+
+
+
+
+ também
+
+[5] voce> Liste tres frutas brasileiras.
+    bee > .V
+
+ também o da, da,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+
+[6] voce> Como se faz um bolo de cenoura?
+    bee > fazer bolo cenoura respet
+ fazer cenoura
+ cenoura cenoura
+ de
+ de cenoura cenoura
+ cenoura
+ cenoura cenoura cenoura cen cen cenoura cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen cen
+
+[7] voce> Traduza para o ingles: bom dia.
+    bee > du
+
+[8] voce> Quem foi Machado de Assis?
+    bee > foi escritor
+ista
+
+iblio
+Leratura Brasil
+

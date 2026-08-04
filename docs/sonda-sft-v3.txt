@@ -1,0 +1,40 @@
+carregando C:\Users\brcam\Desktop\Desenvolvendo Projetos\Desenvolvendo LLM\models\bee-150m-v3-sft...
+pronto (cuda) · chat_template: sim
+
+[1] voce> O que e o Brasil?
+    bee > -
+
+[2] voce> Explique o que e fotossintese.
+    bee > É o que diz o título do livro de Michael.
+-
+
+[3] voce> Escreva uma frase sobre o mar.
+    bee > Se uma frase for frase, a frase será escrita
+
+[4] voce> Qual a capital de Minas Gerais?
+    bee > Para o município de Montesaros,
+ um município pequeno de um de
+icíp:, uma cidade de
+                            um
+
+[5] voce> Liste tres frutas brasileiras.
+    bee > 
+
+[6] voce> Como se faz um bolo de cenoura?
+    bee > 
+
+[7] voce> Traduza para o ingles: bom dia.
+    bee > O dia é bom, e boa noite.
+
+[8] voce> Quem foi Machado de Assis?
+    bee > M 
+
+( 
+
+ 
+(
+
+M 
+( 
+(
+
