@@ -1,14 +1,13 @@
 # 🐝 BEE — uma LLM em português, treinada do zero
 
-**O que é:** um modelo de linguagem sendo construído **do zero** — tokenizador nosso, arquitetura
-nossa, corpus montado por nós, pesos inicializados aleatoriamente e treinados por nós. A aposta é o
+**O que é:** um modelo de linguagem construído **do zero** — tokenizador nosso, arquitetura nossa,
+corpus montado por nós, pesos inicializados aleatoriamente e treinados por nós. A aposta é o
 **português**: é o único lugar onde um modelo pequeno nosso pode ganhar de alguém.
 
-**O que ainda NÃO é:** não existe modelo Bee treinado. Hoje temos o **tokenizador** (medido e
-aprovado) e o **coletor de corpus**. O pré-treino ainda não rodou. Qualquer número neste README que
-diga respeito a um modelo funcionando é da **camada COMEIA sobre o Qwen3.5-4B** (Alibaba) — veja
-[docs/comeia-sobre-qwen.md](docs/comeia-sobre-qwen.md). Isso está separado de propósito: misturar as
-duas coisas seria vender um modelo emprestado como se fosse nosso.
+**Onde estamos:** o Bee **existe e roda**. Três pré-treinos completos (v1, v2, v3), Gate 2 medido,
+SFT feito. E o resultado central é honesto e desconfortável: **o Gate 2 não passou** — o Bee-150M
+perde do SmolLM2-135M em português por larga margem. O que aprendemos investigando esse fracasso
+vale mais que o modelo, e está tudo abaixo.
 
 > **Por que o projeto mudou.** Ele nasceu como "construir uma LLM do zero". Em 2026-07-26 a pergunta
 > foi feita direto — *estamos fazendo isso?* — e a resposta honesta era **não**: o que existia era o
@@ -31,97 +30,124 @@ Fertilidade = tokens por palavra. **Menor é melhor.** Holdout de 400 docs PT + 
 | SmolLM2-135M | 49.152 | 2,241 | 1,344 |
 
 **−5,4% de tokens/palavra em PT contra o Qwen; −36,8% contra o SmolLM2** — com um vocab **7,8×
-menor**. Isso importa duplamente num modelo de 150M: 32k × 576 = **18,4M** de embedding, contra 143M
-se usássemos o vocab do Qwen (que sozinho já seria ~95% do orçamento de parâmetros).
+menor**. Custo do gate: **4 minutos de CPU**. Confirmado depois no Gate 2 sobre texto real:
+0,3114 tokens/byte contra 0,3938 do SmolLM2. **O tokenizador é a parte que funcionou.**
 
-Custo do gate: **4 minutos de CPU**. Era o teste mais barato do projeto e o primeiro que podia matar
-a aposta inteira. Detalhes: [docs/gate-1-fertilidade-2026-07-27.md](docs/gate-1-fertilidade-2026-07-27.md).
+### 🔴 GATE 2 — o Bee bate o SmolLM2 em português? **NÃO** (2026-08-03)
 
-**O que o gate NÃO diz** — três ressalvas que ficam registradas:
-1. **Em inglês somos 8,7% piores** que o Qwen. É o preço explícito de concentrar 32k em PT.
-2. **O corpus tem 0% de código** — a fonte falhou (abaixo). Tokenizador sem código gasta mais tokens
-   em código, e isso **não foi medido**.
-3. Fertilidade mede **eficiência de representação**, não qualidade do modelo. Condição necessária
-   para a aposta, não suficiente.
+bits-por-byte em holdout PT nunca visto (shards 7/23, mantidos fora do treino por
+`prepare_data.py`). **Menor é melhor.** bpb é comparável entre tokenizadores diferentes —
+perplexidade não seria.
 
-### Corpus v0 — 1,84 GB, e a auditoria pegou uma falha
+| | tokens únicos | épocas | **bpb PT** | vs SmolLM2 |
+|---|---:|---:|---:|---:|
+| Bee v1 | 3,74B | 1 | 3,460 | −72,2% |
+| Bee v2 | 3,74B | 3 | 3,530 | −75,7% |
+| **Bee v3** | **9,87B** | 1 | **3,457** | **−72,0%** |
+| SmolLM2-135M | ~2T | — | **2,010** | — |
 
-| fonte | licença | pedido | obtido | aproveitamento |
-|---|---|---:|---:|---:|
-| `fineweb-2` cfg `por` | ODC-By | 35% | 38% | 98% |
-| `PleIAs/Portuguese-PD` | domínio público | 15% | 16% | 64% |
-| `wikimedia/wikipedia` pt | CC BY-SA | 10% | 11% | 90% |
-| jurisprudência PT | Apache-2.0 | 5% | 5% | 39% |
-| `fineweb-edu-dedup` | ODC-By | 15% | 16% | 99% |
-| `cosmopedia-v2` | ODC-By | 10% | 11% | 91% |
-| **`python-edu`** | ODC-By | 10% | **0%** | **0%** |
+**Triplicar o corpus moveu o bpb em 0,1%.** O v3 bate o v2 (mais tokens únicos > mais épocas), mas
+o ganho absoluto contra o v1 é nulo. Custo do v3: 18.816 passos, **21,76 h de A100-80GB (~US$ 34)**,
+perplexidade de validação 77,4 → 63,0.
 
-Idioma real: **PT 79% · EN 20% · código 0%.** Alvo era 65% ±10 pp → **fora**.
+### ⭐ O que a investigação do fracasso descobriu (2026-08-04)
 
-**Causa raiz:** o subset `python-edu` do `smollm-corpus` **não traz o texto** — só `blob_id`/`path`;
-o conteúdo vem do S3 do Software Heritage. O coletor achou o campo vazio em 100% dos registros e
-descartou tudo; a fatia de 10% foi redistribuída e empurrou o PT para 79%. O mesmo vale para
-`the-stack-v2`, que também é só ponteiro.
+Esta é a parte que importa. Três hipóteses foram testadas contra fonte primária; **duas caíram.**
 
-Foi a **auditoria de mistura** que pegou — `detect_lang` sobre a amostra, comparando o obtido com o
-pedido. Sem ela, isso só apareceria depois do treino, como "o modelo não sabe código".
+**A leitura correta do Gate 2.** Sob `L(D)=E+A·D^-0,28`, ir de 3,74B → 9,87B deveria cortar **23,8%**
+da loss redutível. Observamos 0,1% — **200× abaixo**. Não é "mais token não resolve": é que **o Bee
+não está na curva de scaling**. Algo o satura antes de o dado virar gargalo.
 
-⚠️ Os 1,84 GB servem ao tokenizador, **não ao treino**: 3B tokens a ~1,42 tokens/palavra pedem
-**~12 GB** de texto.
+**Geometria — REFUTADA.** Os `config.json` do `SmolLM2-135M` e do `MobileLLM-125M` são **idênticos**
+ao do Bee: 30 camadas · d_model 576 · 9q/3kv · vocab 32k · seq 2048. O modelo que faz bpb 2,010 tem
+exatamente a nossa geometria. A suspeita de que a razão d_model/camadas estava errada veio de
+modelos 10–100× maiores e não vale nesta escala.
+
+**LR de pré-treino — REFUTADO.** Step Law (~3.700 modelos ajustados):
+`η* = 1,79·N^-0,713·D^0,307` → para N=151M, D=9,87B dá **3,09e-3**. Usamos 3e-3. Erro de 3%.
+
+**O par honesto: [Tucano-160m](https://huggingface.co/TucanoBR)** — 162M params, PT nativo,
+Apache-2.0, treinado em **200B tokens**. Mesma escala, mesma língua. A distância para o Bee é
+**20× em token, não em arquitetura.**
+
+**O medidor foi auditado e está sadio.** `carregar_holdout` trunca em 4.000 chars de propósito, para
+caber em 2048 tokens nos dois tokenizadores, então o corte por `seq_len` não dispara nem enviesa a
+comparação. Os shards de validação ficam inteiros fora do treino. **O gap é real.**
+
+→ A hipótese viva é **qualidade/composição do corpus**. Magnitude compatível: o FineWeb-Edu
+descartou **91%** do corpus e subiu MMLU 33→37% e ARC 46→57%, igualando um baseline com 10× menos
+tokens. **Corpus menor e melhor, não maior.**
+
+### SFT — o gate de FORMA passou, o de CONTEÚDO não
+
+| | dados | LR | nll na resposta | acurácia de token | sondas vazias |
+|---|---:|---:|---:|---:|---:|
+| base (sem SFT) | — | — | — | 6,4% | — |
+| v3-sft | 5.657 | 2e-5 | 3,567 | 31,6% | 2 |
+| A | 7.333 | 2e-5 | 3,780 | 28,6% | 2 |
+| **B** | 7.333 | **1e-4** | **2,464** | **49,6%** | **0** |
+
+**O dado sozinho não ajudou; o LR mudou tudo.** O A, com 30% mais exemplos e o mesmo LR, ficou igual
+ou pior. Trocar o LR por 5× cortou 31% do nll e dobrou a acurácia — e o ganho aparece também no
+holdout da BNCC (3,002 contra 3,828), que veio de habilidades que nenhum treino viu.
+
+⚠️ **E o B ficou mais fluente e mais perigoso na mesma medida.** Ele acerta "a capital de Minas é
+Belo Horizonte" e monta um passo a passo de bolo de cenoura — e na frase seguinte afirma que Machado
+de Assis nasceu em São Paulo em 1712. Forma autoritativa sobre conteúdo aleatório é o modo de falha
+esperado quando o base tem bpb 3,457. **Nenhum SFT conserta base.**
 
 ---
 
-## A escada — de 150M a onde o dinheiro levar
+## Fonte de currículo: a BNCC (e por que não os livros)
 
-O código é **o mesmo em todos os degraus**; muda o arquivo de config e a fatura.
+Um estudo multiagente de 2026-08-04 avaliou 91 PDFs de livros didáticos (2,9 GB) como fonte de
+ensino. **Veredito: os livros não; o currículo sim — e ele é público.**
+Ver [docs/estudo-curriculo/00-CONSOLIDADO.md](docs/estudo-curriculo/00-CONSOLIDADO.md).
 
-**Parede 1 — VRAM.** Pré-treino completo custa ~12–16 bytes/parâmetro (pesos + gradientes + estado
-do Adam em fp32):
+**A base legal, com artigo:**
+- **Lei 9.610/98, art. 8º, IV** — não são protegidos *"leis, decretos, regulamentos… e demais atos
+  oficiais"*. A **BNCC é o Anexo da Resolução CNE/CP nº 2/2017**, cujo art. 1º declara o Anexo parte
+  do ato normativo. Logo: **fora do regime autoral**, não é questão de licença permissiva.
+- **art. 8º, I** — *"conceitos matemáticos como tais"* não são protegidos.
+- **art. 7º, §3º** — *"no domínio das ciências, a proteção recairá sobre a forma literária, não
+  abrangendo o conteúdo científico"*. É a base legal de **reescrever é legal, copiar não**.
 
-| modelo | VRAM | cabe na L4 (22 GB)? |
-|---|---:|---|
-| Bee-150M | ~2,4 GB | ✅ |
-| Bee-500M | ~8 GB | ✅ |
-| Bee-1B | ~16 GB | ⚠️ apertado |
-| Bee-4B | ~64 GB | ❌ |
-| Bee-10B | ~160 GB | ❌ |
+⚠️ **Armadilhas verificadas:** o rodapé de todo site gov.br declara **CC BY-ND** — não afeta a BNCC
+(rodapé não recria proteção que a lei exclui), mas **afeta os itens de prova do ENEM**. E os
+**microdados do ENEM não são CC-BY**: a Política de Dados Abertos do INEP lista isso como ação
+pendente. Status: não confirmado.
 
-**Parede 2 — tempo** (FLOPs ≈ 6ND; L4 ≈ 3×10¹³ FLOP/s efetivos):
+**O que foi construído:** 1.484 habilidades extraídas dos PDFs oficiais (o `pdftotext` devolve zero;
+só o PyMuPDF lê), 1.202 elegíveis após cortar Educação Física, Arte e Ensino Religioso.
+`bee/gerar_bncc.py` usa a habilidade como **semente** — a BNCC vale 100% como índice e 0% como prosa
+(não há nela um parágrafo que explique o que é mitose). Gerados **1.676 exemplos**, 93,6% de
+aproveitamento, zero vazamento residual.
 
-| alvo | tempo na L4 |
-|---|---|
-| 150M @ 3B tokens | **22 h** ✅ |
-| 500M @ 10B | ~12 dias ✅ |
-| 1B @ 20B | ~46 dias ⚠️ |
-| 4B @ 80B | ~2 anos ❌ |
-| 4B @ 4T (paridade Qwen) | **~101 anos** ❌ |
+---
 
-**Custo de cada degrau** (8×H100 ≈ US$ 20/h):
+## Regras duras do projeto
 
-| degrau | onde | custo |
-|---|---|---|
-| **Bee-150M** | Colab L4 | grátis · 22 h |
-| Bee-350M / 500M | Colab L4 | grátis · dias |
-| Bee-1B | 8×H100 | ~US$ 200–400 |
-| Bee-4B (poucos tokens) | 8×H100 · 7 dias | ~US$ 3.400 |
-| Bee-4B (paridade Qwen) | 64×H100 · 43 dias | ~US$ 1,3 M |
-| 10B de fronteira | 512×H100 | ~US$ 5 M+ |
-| 1T+ MoE (classe Kimi K2.7) | milhares de GPUs | US$ 10–100 M |
-
-⭐ **A escada é `tokens × parâmetros = dinheiro`.** O 150M não é brinquedo: é a esteira que roda em
-qualquer escala. Por isso doação ou investimento se converte diretamente em capacidade, sem
-reescrever o projeto.
-
-**Atalho honesto para depois:** *upcycling* — continuar o pré-treino de um modelo aberto no nosso
-corpus, ou converter denso em MoE. É como equipes pequenas chegam a contagens altas de parâmetros.
-⚠️ Deixa de ser "do zero" — opção consciente para mais adiante, não o plano padrão.
+- ⛔ **Procedência dos dados é requisito de negócio, não escrúpulo.** Cada shard carrega fonte e
+  licença no `MANIFEST.json`.
+  - **Scribd está fora** — estar logado dá acesso para *ler*, não licença para *treinar e publicar*.
+  - **GitHub raspado direto está fora** — só datasets já filtrados por licença.
+  - ⚠️ **Rótulo de licença não é prova.** Achamos uma cadeia quebrada: brWaC declara *"solely for
+    academic research"* → CrawlPT não declara nada → GigaVerbo aparece como CC BY 4.0. Usar só o
+    subconjunto `monoHPLT-PT` (CC0). **Ler a licença na origem, sempre.**
+- ⛔ **Nunca** treinar com saídas de GPT/Claude/Gemini. Destilação só de professores abertos —
+  `assert_teacher_allowed()` falha alto e cedo. (Ele já nos barrou uma vez, e estava certo.)
+- **Holdout por hash, nunca por posição.** `sha1(doc) % N`.
+- **Auditar a mistura, não assumir.** Foi assim que o `python-edu` = 0% apareceu.
+- **Medir antes de acreditar — inclusive em si mesmo.** Duas hipóteses nossas sobre o Gate 2 caíram
+  ao ler `config.json` de verdade em vez de teorizar.
+- **Dificuldade se mede, não se presume.**
 
 ---
 
 ## Arquitetura do Bee-150M
 
-Llama-style via `LlamaConfig`, **sem código de modelagem custom** — decisão deliberada: tudo que já
-construímos (PEFT, TRL, vLLM, nossos evals) funciona sem uma linha de adaptação.
+Llama-style via `LlamaConfig`, **sem código de modelagem custom** — tudo que já construímos (PEFT,
+TRL, vLLM, nossos evals) funciona sem uma linha de adaptação.
 
 ```
 vocab 32.000 · tied embeddings
@@ -131,50 +157,30 @@ RoPE (theta 10000) · RMSNorm · seq_len 2048
 ≈ 151M params  (132M nas camadas + 18,4M no embedding)
 ```
 
-**Fundo-e-fino** (30 camadas para 576 de largura): é a forma que o SmolLM2 encontrou nessa escala —
-profundidade compra composição melhor que largura em modelos pequenos. Não é chute, é copiar um
-recipe publicado. **GQA** (3 KV heads em vez de 9) corta o KV-cache em 3× na inferência, que é o que
-decide se roda local.
+✅ **Esta geometria está validada por comparação:** é byte a byte a mesma do SmolLM2-135M e do
+MobileLLM-125M. Não é onde está o problema.
 
 ---
 
-## Regras duras do projeto
+## Notas de hardware que custaram tempo
 
-- ⛔ **Procedência dos dados é requisito de negócio, não escrúpulo.** A primeira coisa que qualquer
-  investidor audita é de onde veio o corpus. Cada shard carrega fonte e licença no `MANIFEST.json`.
-  - **Scribd está fora** — conteúdo protegido atrás de paywall. Estar logado dá acesso para *ler*,
-    não licença para *treinar e publicar*. Um Bee treinado com isso é impublicável e não-investível.
-  - **GitHub raspado direto está fora** — licença varia por repositório. Só datasets já filtrados.
-- ⛔ **Nunca** treinar com saídas de GPT/Claude/Gemini (ToS proíbem + contaminam a licença aberta).
-  Destilação só de professores abertos — `assert_teacher_allowed()` falha alto e cedo.
-- **Holdout por hash, nunca por posição.** `sha1(doc) % N` — a lição mais cara do projeto, aprendida
-  duas vezes (ver COMEIA) e agora aplicada desde o primeiro dia do Bee.
-- **Auditar a mistura, não assumir.** Foi assim que o `python-edu` = 0% apareceu.
-- **Dificuldade se mede, não se presume.**
-- **Testar > confiar no design.**
+**Pré-treino: RunPod A100-80GB** ($1,50/h) — 21,76 h sem uma única interrupção. O Colab reciclou 2×
+no mesmo treino e depois esgotou a cota de A100. Três pegadinhas: `transformers` **não** vem na
+imagem "RunPod PyTorch 2.8.0"; `/workspace` é network-fs (~70k tok/s contra 85k do Colab);
+`gdown --folder` em pasta grande bate rate-limit do Drive.
 
----
+**SFT local: RTX 5070 Laptop 8 GB.** O micro-batch tem teto **rígido em 2**, e o vilão não são os
+pesos (151M em bf16 + AdamW ≈ 2,5 GB, folgado) — é o **tensor de logits** `batch × 1024 × 32000`
+mais o upcast fp32 da cross-entropy:
 
-## A camada COMEIA — o método, que sobrevive à troca de backbone
+| micro-batch | tempo/passo | VRAM |
+|---:|---:|---:|
+| **2** | **0,31 s** | 5,78 GB ✅ |
+| 4 | 4,02 s | 10,67 GB — vaza pra RAM do host |
+| 8 | **510 s** | estouro total |
 
-A COMEIA é um orquestrador em código que roteia cada pedido para uma **abelha** (adapter LoRA
-especializado) sobre **um backbone carregado uma vez**. Foi construída e validada sobre o Qwen3.5-4B,
-com 3 abelhas treinadas e medidas. **Ela é agnóstica ao backbone por construção** — é o que será
-reaplicado sobre o Bee quando ele existir.
-
-| peça | por que serve ao Bee |
-|---|---|
-| filtro **"o base erra"** | funciona sobre qualquer base |
-| `schema_check.py` | conformidade + **groundedness** (alucinação decidível por código) |
-| split estável por `sha1` | independe de modelo |
-| harness de avaliação | 5 métricas + few-shot com guard de vazamento |
-| `sft_qlora.py` · `orchestrator/` | rodam em qualquer modelo Llama-arch — e o Bee é Llama-arch |
-| **o método** (gate → filtro → holdout duplo) | acertou a previsão 4× (1 fracasso, 3 sucessos) |
-
-⚠️ **O que não transfere:** os três adapters atuais estão atados ao Qwen. A COMEIA-sobre-Qwen segue
-sendo o sistema *capaz*; o Bee é o *nosso*.
-
-📄 Resultados medidos, erros cometidos e lições: **[docs/comeia-sobre-qwen.md](docs/comeia-sobre-qwen.md)**
+⚠️ **O sintoma de estouro não é OOM, é lentidão silenciosa.** O Liger (fused linear+CE, usado no
+pré-treino) resolveria, mas não instala com transformers 5.x.
 
 ---
 
@@ -183,50 +189,63 @@ sendo o sistema *capaz*; o Bee é o *nosso*.
 ```
 ├── bee/                    ⭐ O MODELO NOSSO, do zero
 │   ├── build_corpus.py     #  coleta com manifesto de procedência + auditoria de mistura
+│   ├── expand_corpus.py    #  expansão para 9,87B tokens (v3)
 │   ├── train_tokenizer.py  #  BPE ByteLevel 32k + ⭐ GATE 1 (fertilidade vs. rivais)
-│   ├── config.py           #  (a fazer) arquitetura — o mesmo arquivo em toda a escada
-│   ├── pretrain.py         #  (a fazer) pesos aleatórios → modelo
-│   └── eval_bee.py         #  (a fazer) perplexidade, idioma, e ⭐ o GATE 2 vs. SmolLM2
+│   ├── prepare_data.py     #  tokenização → train.bin/val.bin (shards 7/23/41 fora do treino)
+│   ├── config.py           #  arquitetura — o mesmo arquivo em toda a escada
+│   ├── pretrain.py         #  pesos aleatórios → modelo (retoma de checkpoint sozinho)
+│   ├── eval_gate2.py       #  ⭐ GATE 2 — bits-por-byte vs. SmolLM2
+│   ├── sft.py              #  full fine-tune (sem LoRA — em 151M o full cabe e é melhor)
+│   ├── gerar_bncc.py       #  BNCC → material didático PT-BR via professor aberto
+│   ├── comparar_sft.py     #  A/B de modelos pós-SFT: 2 holdouts + sondas
+│   └── chat.py             #  conversa e sondagem (`--sonda`)
 │
 ├── comeia/                 O MÉTODO de especialização (hoje sobre Qwen, amanhã sobre o Bee)
 │   ├── orchestrator/       #  registry, hot-swap de LoRA, router, verificador
-│   ├── data/               #  pipelines de destilação, filtro "o base erra", schema_check
-│   ├── train/              #  SFT e DPO via QLoRA
-│   ├── eval/               #  harness com holdout duplo e baseline externo
-│   └── colab/              #  receitas reproduzíveis de uma linha
+│   ├── data/               #  destilação, filtro "o base erra", schema_check, teacher_api
+│   ├── train/  eval/       #  SFT/DPO via QLoRA · harness com holdout duplo
 │
-└── docs/                   estudos, avaliações e o histórico da COMEIA
+└── docs/                   estudos, avaliações e o histórico
+    ├── gate-2-resultado.md
+    ├── sft-resultado.md
+    └── estudo-curriculo/   ⭐ 12 documentos: 91 PDFs + papers + web 2026
 ```
 
 ---
 
 ## Como rodar
 
-**O tokenizador e o Gate 1** (CPU, ~4 min dado o corpus):
 ```bash
-python bee/build_corpus.py --target-gb 2 --out bee/corpus
+# Tokenizador + Gate 1 (CPU, ~4 min) — sai com código 1 se o tokenizador não ganhar em PT
 python bee/train_tokenizer.py --corpus bee/corpus --vocab 32000
-```
-O gate sai com código 1 se o tokenizador **não** for melhor em PT que os rivais.
 
-**A COMEIA sem GPU** (valida rota e métrica de graça, em qualquer máquina):
-```bash
-python comeia/orchestrator/run.py --route-only --sample
+# Gate 2 — bits-por-byte contra o SmolLM2
+python bee/eval_gate2.py --bee <modelo> --rival HuggingFaceTB/SmolLM2-135M
+
+# SFT local (RTX 5070 8 GB, ~30 min) — micro-batch 2 é teto de VRAM, não timidez
+python bee/sft.py --modelo <base> --dados comeia/data/processed/sft_combinado.jsonl --lr 1e-4
+
+# Conversar com o resultado
+python bee/chat.py --sonda
 ```
 
 ---
 
-## Próximos gates (a ordem importa: do mais barato ao mais caro)
+## Próximos gates (do mais barato ao mais caro)
 
-- [x] ⭐ **Gate 1 — tokenizador** mais eficiente em PT que Qwen e SmolLM2 · **4 min** · ✅ +5,4%
-- [ ] **Corpus de treino** ~12 GB, mistura auditada dentro de 65% ±10 pp, com código de verdade
-- [ ] **Gate 1.5 — retomada** por checkpoint testada matando o processo de propósito (o runtime
-      *vai* cair; o plano assume isso em vez de torcer contra)
-- [ ] **Pré-treino do Bee-150M** — 3B tokens, ~22 h de L4, perplexidade caindo em PT **e** EN
-      separados (misturar esconde regressão num idioma)
-- [ ] ⭐ **Gate 2 — o Bee-150M bate o SmolLM2-135M em português?** Mesma régua, contaminação
-      verificada. É a única comparação externa que decide se a aposta do nicho valeu.
-- [ ] **SFT + COMEIA sobre o Bee** — o pipeline inteiro roda mudando só `--model`
+- [x] ⭐ **Gate 1 — tokenizador** mais eficiente em PT que Qwen e SmolLM2 · 4 min · ✅ +5,4%
+- [x] **Corpus de treino** — 9,87B tokens únicos, mistura auditada
+- [x] **Pré-treino do Bee-150M** — v1, v2 e v3 completos
+- [x] 🔴 **Gate 2 vs. SmolLM2-135M** — **não passou** (3,457 × 2,010), e a investigação refutou
+      geometria e LR como causa
+- [x] **SFT** — gate de forma ✅, gate de conteúdo ❌
+- [ ] **Medir tokens EFETIVOS vs nominais** (dedup MinHash) · horas de CPU, zero GPU
+- [ ] **Gate pareado barato antes de todo run longo** (~5% do GPU-hora) — teria matado o v3 por
+      ~R$ 50 em vez de US$ 34 e 22 h
+- [ ] ⭐ **Replicar o FineWeb-Edu em português** — a hipótese viva. Corpus menor e melhor
+- [ ] **Midtraining a partir da BNCC** — 1.583 habilidades ≈ 320M tokens com licença limpa
+- [ ] **ENEM como eval set** — ~3.750 itens públicos com gabarito e parâmetros de TRI, que permitem
+      ordenar currículo por dificuldade *medida*
 - [ ] **Release**: model card honesto + pesos + demo no HF
 
 ---
@@ -234,6 +253,6 @@ python comeia/orchestrator/run.py --route-only --sample
 ## Hardware
 
 - Local: **RTX 5070 Laptop 8 GB** (Blackwell sm_120 — exige PyTorch cu128) · Ultra 9 275HX · 31 GB RAM
-- Treino/avaliação: **Colab Pro+ (L4, 22 GB)**
+- Pré-treino: **RunPod A100-80GB** ($1,50/h)
 
-Última atualização: 2026-07-27.
+Última atualização: 2026-08-04.

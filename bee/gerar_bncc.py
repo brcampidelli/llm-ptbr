@@ -129,6 +129,15 @@ META = re.compile(r"\bBNCC\b|essa habilidade|esta habilidade|nesta habilidade|"
                   r"o professor prop|nesta atividade|nesta etapa de ensino", re.I)
 # Vazamento de raciocinio de modelo reasoning (o texto vem em ingles, na 1a pessoa).
 RACIOCINIO = re.compile(r"^\s*(We need|Let me|The user|I should|First,|Okay,|Alright)", re.I)
+# ⚠️ MARKDOWN — medido em 2026-08-04, NAO filtrar aqui:
+#   sft_bncc (gerado por este script) : 2% das respostas tem markdown
+#   sft_ptbr (dataset antigo)         : 88%
+# O "**negrito**" e o "### titulo" que o modelo B cuspiu nas sondas vieram do
+# dataset ANTIGO, nao daqui. Filtrar neste ponto descartaria dado limpo sem
+# tocar na causa. A decisao certa e' normalizar o sft_ptbr — e e' decisao de
+# composicao de dados, nao de geracao: marcacao consome capacidade que um 151M
+# nao tem de sobra, mas retira-la muda o alvo de estilo do modelo inteiro.
+MARKDOWN = re.compile(r"\*\*|^#{1,6} |^\s*[-*] |^\s*\d+\.\s", re.M)
 
 
 def limpo(texto: str) -> bool:
