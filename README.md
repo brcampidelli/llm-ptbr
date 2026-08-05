@@ -74,9 +74,25 @@ Apache-2.0, treinado em **200B tokens**. Mesma escala, mesma língua. A distânc
 caber em 2048 tokens nos dois tokenizadores, então o corte por `seq_len` não dispara nem enviesa a
 comparação. Os shards de validação ficam inteiros fora do treino. **O gap é real.**
 
-→ A hipótese viva é **qualidade/composição do corpus**. Magnitude compatível: o FineWeb-Edu
-descartou **91%** do corpus e subiu MMLU 33→37% e ARC 46→57%, igualando um baseline com 10× menos
-tokens. **Corpus menor e melhor, não maior.**
+**Duplicata — ELIMINADA como explicação** (medido em 2026-08-04, `bee/medir_dedup.py`).
+O `expand_corpus.py` tem um buraco real: o `vistos_sha` persiste em disco e pega duplicata **exata**
+entre o corpus v1 e a expansão, mas o `Dedup` (MinHash LSH) **nasce vazio a cada execução** — então
+quase-duplicata *cruzando* essa fronteira nunca foi verificada. Medimos a taxa na fonte
+(`fineweb-2 por_Latn`, dois parquets distintos, mesmos filtros e mesmo MinHash do coletor):
+
+| | taxa |
+|---|---:|
+| duplicata exata (dentro e entre lados) | **0,00%** |
+| quase-duplicata dentro de um lote (o MinHash pega) | 0,53–0,73% |
+| quase-duplicata cruzando a fronteira (**não** pega) | **0,90%** |
+
+Dos 9,87B tokens nominais restam **~9,78B efetivos** — perda de 0,09B. O buraco existe e vale
+fechar, mas **não explica um déficit de 200×**. ⚠️ Estimativa por amostra (4.000+4.000 docs), não
+censo do corpus.
+
+→ A hipótese viva, agora sozinha, é **qualidade/composição do corpus**. Magnitude compatível: o
+FineWeb-Edu descartou **91%** do corpus e subiu MMLU 33→37% e ARC 46→57%, igualando um baseline com
+10× menos tokens. **Corpus menor e melhor, não maior.**
 
 ### SFT — o gate de FORMA passou, o de CONTEÚDO não
 
@@ -267,7 +283,10 @@ python bee/chat.py --sonda
 - [x] 🔴 **Gate 2 vs. SmolLM2-135M** — **não passou** (3,457 × 2,010), e a investigação refutou
       geometria e LR como causa
 - [x] **SFT** — gate de forma ✅, gate de conteúdo ❌ · varredura de LR fechada (ótimo 1e-3)
-- [ ] **Medir tokens EFETIVOS vs nominais** (dedup MinHash) · horas de CPU, zero GPU
+- [x] **Medir tokens EFETIVOS vs nominais** — 0,90% de quase-duplicata cruza a fronteira;
+      **duplicata não é a explicação**. Sobra 1 hipótese viva
+- [ ] **Fechar o buraco do dedup** — persistir as bandas do LSH entre execuções, como já
+      é feito com o `vistos_sha` (barato, e evita que a taxa cresça em expansões futuras)
 - [ ] **Gate pareado barato antes de todo run longo** (~5% do GPU-hora) — teria matado o v3 por
       ~R$ 50 em vez de US$ 34 e 22 h
 - [ ] ⭐ **Replicar o FineWeb-Edu em português** — a hipótese viva. Corpus menor e melhor
