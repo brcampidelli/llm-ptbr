@@ -44,3 +44,4 @@ bee/edu/*.joblib
 docs/anotar-edu.log
 bee/gate/
 docs/gate-*.log
+bee/edu/
