@@ -300,7 +300,13 @@ python bee/chat.py --sonda
       experimento que o revelou (21/4000 → 36/4000)
 - [ ] **Gate pareado barato antes de todo run longo** (~5% do GPU-hora) — teria matado o v3 por
       ~R$ 50 em vez de US$ 34 e 22 h
-- [ ] ⭐ **Replicar o FineWeb-Edu em português** — a hipótese viva. Corpus menor e melhor
+- [x] ⭐ **Replicar o FineWeb-Edu em português** — as 3 etapas feitas; o classificador SEPARA
+      (Pearson 0,705 · F1 0,723). Curva de retenção medida: a 10% mantidos, **91% do que sobra
+      tem nota ≥3**. Ver [docs/fineweb-edu-pt.md](docs/fineweb-edu-pt.md)
+- [ ] ⭐ **Coletar pool bruto ~100B e filtrar a 10%** — filtrar sozinho NÃO resolve: os 9,87B do
+      v3 virariam ~1B, e o Tucano-160m treinou em 200B. Filtrar não substitui coletar, multiplica
+- [ ] **Anotar em escala com professor GRATUITO** (`ling-3.0-flash` ou `nemotron-3-super`:
+      63% de concordância com o v3.2, custo zero)
 - [ ] **Midtraining a partir da BNCC** — 1.583 habilidades ≈ 320M tokens com licença limpa
 - [ ] **ENEM como eval set** — ~3.750 itens públicos com gabarito e parâmetros de TRI, que permitem
       ordenar currículo por dificuldade *medida*
