@@ -221,9 +221,17 @@ def avaliar(args) -> int:
             bits, byts = 0.0, 0
             with torch.no_grad():
                 for t in textos:
-                    nb = len(t.encode("utf-8"))
                     ids = tok(t, add_special_tokens=False,
                               return_tensors="pt")["input_ids"][:, :args.seq_len].cuda()
+                    # ⚠️ Contar os bytes do TRECHO PONTUADO, nao do documento inteiro.
+                    # Somar bits de 512 tokens e dividir pelos bytes de 4.000 chars
+                    # subestima o bpb em ~1,7x. E' o mesmo defeito que existe latente
+                    # no eval_gate2.py (la defendido por max_chars=4000 caber em 2048
+                    # tokens); aqui seq_len=512 e o corte DISPARA. Reintroduzi o bug
+                    # num script novo depois de documenta-lo — por isso a checagem de
+                    # ordem de grandeza contra um numero conhecido (bpb do v3 = 3,457)
+                    # vale mais que a revisao do codigo.
+                    nb = len(tok.decode(ids[0], skip_special_tokens=True).encode("utf-8"))
                     if ids.shape[1] < 2:
                         continue
                     lg = m(ids).logits
