@@ -86,9 +86,20 @@ quase-duplicata *cruzando* essa fronteira nunca foi verificada. Medimos a taxa n
 | quase-duplicata dentro de um lote (o MinHash pega) | 0,53–0,73% |
 | quase-duplicata cruzando a fronteira (**não** pega) | **0,90%** |
 
-Dos 9,87B tokens nominais restam **~9,78B efetivos** — perda de 0,09B. O buraco existe e vale
-fechar, mas **não explica um déficit de 200×**. ⚠️ Estimativa por amostra (4.000+4.000 docs), não
-censo do corpus.
+Dos 9,87B tokens nominais restam **~9,78B efetivos** — perda de 0,09B. **Não explica um déficit de
+200×.** ⚠️ Estimativa por amostra (4.000+4.000 docs), não censo do corpus.
+
+✅ **O buraco foi fechado** (`bee/dedup_persistente.py`): o LSH agora grava as bandas em disco e
+recarrega na execução seguinte. Medido no mesmo experimento — antes pegava 21/4000 (só as internas),
+depois pega **36/4000, os 0,90% que vazavam**. Duas armadilhas que tornaram o conserto não-trivial:
+`hash()` de tupla é **randomizado por processo**, então a chave persistida nunca casaria na execução
+seguinte — falha silenciosa, a pior espécie; e 10M docs × 16 bandas em `set` de int passariam de
+10 GB, daí Bloom filter (~300 MB, falso positivo medido em 0,0000%).
+
+⚠️ E o `--minhash` do `expand_corpus.py` estava **desligado por padrão**, com a justificativa de que
+"o fineweb-2 já vem MinHash-deduplicado, essa passada é redundante". A medição mostra 0,53–0,73% de
+quase-duplicata **dentro de um único parquet** do fineweb-2 — a premissa estava errada, e o texto de
+ajuda foi corrigido com o número.
 
 → A hipótese viva, agora sozinha, é **qualidade/composição do corpus**. Magnitude compatível: o
 FineWeb-Edu descartou **91%** do corpus e subiu MMLU 33→37% e ARC 46→57%, igualando um baseline com
@@ -285,8 +296,8 @@ python bee/chat.py --sonda
 - [x] **SFT** — gate de forma ✅, gate de conteúdo ❌ · varredura de LR fechada (ótimo 1e-3)
 - [x] **Medir tokens EFETIVOS vs nominais** — 0,90% de quase-duplicata cruza a fronteira;
       **duplicata não é a explicação**. Sobra 1 hipótese viva
-- [ ] **Fechar o buraco do dedup** — persistir as bandas do LSH entre execuções, como já
-      é feito com o `vistos_sha` (barato, e evita que a taxa cresça em expansões futuras)
+- [x] **Fechar o buraco do dedup** — LSH persistido em Bloom filter; validado no mesmo
+      experimento que o revelou (21/4000 → 36/4000)
 - [ ] **Gate pareado barato antes de todo run longo** (~5% do GPU-hora) — teria matado o v3 por
       ~R$ 50 em vez de US$ 34 e 22 h
 - [ ] ⭐ **Replicar o FineWeb-Edu em português** — a hipótese viva. Corpus menor e melhor

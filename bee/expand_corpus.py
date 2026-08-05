@@ -33,6 +33,9 @@ import sys
 import unicodedata
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from dedup_persistente import DedupPersistente  # noqa: E402
+
 ROOT = Path(__file__).resolve().parent.parent
 
 REPO = "HuggingFaceFW/fineweb-2"
@@ -164,11 +167,12 @@ def main() -> int:
     ap.add_argument("--skip-files", type=int, default=0,
                     help="pula os N primeiros parquets (região já consumida pelo streaming)")
     ap.add_argument("--minhash", action="store_true",
-                    help="liga o dedup MinHash de quase-duplicata (LENTO). Desligado por "
-                         "padrão: o fineweb-2 JÁ vem MinHash-deduplicado globalmente pela equipe "
-                         "FineWeb, então essa passada é redundante e custa ~4-5x o tempo. O dedup "
-                         "EXATO (vistos_sha) fica sempre ligado — é ele que impede re-adicionar o "
-                         "que já está no corpus.")
+                    help="liga o dedup MinHash de quase-duplicata (LENTO, ~4-5x o tempo). "
+                         "⚠️ MEDIDO em 2026-08-04 (bee/medir_dedup.py): a justificativa antiga "
+                         "('o fineweb-2 já vem MinHash-deduplicado, essa passada é redundante') "
+                         "está ERRADA — há 0,53-0,73%% de quase-duplicata DENTRO de um único "
+                         "parquet do fineweb-2, e 0,90%% cruzando a fronteira entre o corpus já "
+                         "coletado e a expansão. O dedup EXATO (vistos_sha) fica sempre ligado.")
     ap.add_argument("--fonte", default="fineweb2-por")
     ap.add_argument("--tmp", type=Path, default=Path("/content/pqtmp"),
                     help="dir temporário p/ baixar cada parquet (apagado após processar)")
@@ -200,9 +204,13 @@ def main() -> int:
     feitos = set(feitos_path.read_text(encoding="utf-8").split()) if feitos_path.exists() else set()
 
     vistos = VistosPersistente(args.out / "vistos_sha.txt")
-    dedup = Dedup() if args.minhash else None
+    # ⭐ DedupPersistente, não Dedup: o Dedup em memória nascia VAZIO a cada execução,
+    # então quase-duplicata entre o corpus já coletado e a expansão nunca era pega
+    # (0,90% medido). O persistente recarrega as bandas do LSH do disco — é o mesmo
+    # conserto que o `vistos_sha` fez para duplicata EXATA em 2026-07-27.
+    dedup = DedupPersistente(args.out / "lsh_bandas.bin") if args.minhash else None
     print(f"[dedup] {len(vistos.vistos)} docs já vistos (exato) carregados do disco · "
-          f"MinHash {'LIGADO' if dedup else 'desligado (fineweb-2 já vem deduplicado)'}")
+          f"MinHash {'LIGADO (persistente)' if dedup else 'DESLIGADO'}")
 
     existentes = sorted(args.out.glob("bee_corpus_*.jsonl.zst"))
     shard_i = max((int(p.name.split("_")[-1].split(".")[0]) for p in existentes), default=-1) + 1
@@ -289,6 +297,11 @@ def main() -> int:
 
     flush_shard()          # fecha o buffer pendente
     vistos.fecha()
+    if dedup is not None:
+        dedup.fechar()     # sem isto o LSH aprendido nesta execução se perde
+        print(f"[dedup] LSH gravado: {dedup.itens:,} chaves · "
+              f"{dedup.descartados} quase-duplicatas descartadas · "
+              f"fp estimado {dedup.fp_atual():.3%}")
 
     print("\n" + "=" * 72)
     print(f"✅ EXPANSÃO: +{novo_bytes/1024**3:.2f} GB de texto novo · "

@@ -36,6 +36,9 @@ import unicodedata
 from collections import Counter, defaultdict
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from dedup_persistente import DedupPersistente  # noqa: E402
+
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "comeia" / "data"))   # detect_lang vive na camada COMEIA
 from common import detect_lang  # noqa: E402
@@ -451,7 +454,11 @@ def main() -> int:
 
     from datasets import load_dataset
 
-    dedup = None if args.no_dedup else Dedup()
+    # ⭐ DedupPersistente, não Dedup: o Dedup em memória nascia VAZIO a cada execução,
+    # então quase-duplicata entre o que já estava no corpus e a coleta nova nunca era
+    # pega (0,90% medido em 2026-08-04, bee/medir_dedup.py). É o mesmo conserto que o
+    # `vistos_sha` fez para duplicata EXATA em 2026-07-27.
+    dedup = None if args.no_dedup else DedupPersistente(args.out / "lsh_bandas.bin")
     vistos = None if args.no_dedup else VistosPersistente(args.out / "vistos_sha.txt")
     if vistos and vistos.vistos:
         print(f"[dedup] {len(vistos.vistos)} documentos já vistos carregados do disco "
@@ -643,6 +650,12 @@ def main() -> int:
             "rejeitados": {k: v for k, v in stats[fonte["nome"]].items() if k != "ok"},
         }
         salva_manifesto()
+
+    if dedup is not None:
+        dedup.fechar()     # sem isto o LSH aprendido nesta execução se perde
+        print(f"\n[dedup] LSH gravado: {dedup.itens:,} chaves · "
+              f"{dedup.descartados} quase-duplicatas descartadas · "
+              f"fp estimado {dedup.fp_atual():.3%}")
 
     # ---------------- relatório: a mistura REAL, não a pedida ----------------
     print("\n" + "=" * 78)
