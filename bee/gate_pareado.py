@@ -194,6 +194,14 @@ def treinar_um(nome: str, args) -> dict:
         if passo % 20 == 0 or passo == passos - 1:
             print(f"  passo {passo:>4}/{passos} · perda {perda_acc:.3f} · "
                   f"{(time.time()-t0)/60:.1f} min", flush=True)
+        # ⭐ Checkpoints intermediarios: a pergunta nao e' "quanto da no fim", e'
+        # **o ganho cresce com escala ou satura?**. Quatro pontos respondem isso;
+        # um ponto no fim, nao. E se saturar cedo, da para parar e economizar.
+        if args.ckpts and (passo + 1) in {int(passos * f) for f in (0.25, 0.5, 0.75)}:
+            d = BASE / f"modelo_{nome}_p{passo+1}"
+            modelo.save_pretrained(d)
+            AutoTokenizer.from_pretrained(TOKENIZER).save_pretrained(d)
+            print(f"  [ckpt] {d.name}", flush=True)
     modelo.save_pretrained(BASE / f"modelo_{nome}")
     AutoTokenizer.from_pretrained(TOKENIZER).save_pretrained(BASE / f"modelo_{nome}")
     return {"params": n_par, "perda_final": perda_acc, "min": (time.time()-t0)/60}
@@ -286,6 +294,8 @@ def main() -> int:
     ap.add_argument("--passos", type=int, default=400)
     ap.add_argument("--lr", type=float, default=3e-3)
     ap.add_argument("--seed", type=int, default=42)
+    ap.add_argument("--ckpts", action="store_true",
+                    help="salva checkpoints em 25/50/75% para medir a TENDENCIA do ganho")
     args = ap.parse_args()
 
     if args.preparar:
