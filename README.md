@@ -80,21 +80,49 @@ tokens. **Corpus menor e melhor, não maior.**
 
 ### SFT — o gate de FORMA passou, o de CONTEÚDO não
 
-| | dados | LR | nll na resposta | acurácia de token | sondas vazias |
-|---|---:|---:|---:|---:|---:|
-| base (sem SFT) | — | — | — | 6,4% | — |
-| v3-sft | 5.657 | 2e-5 | 3,567 | 31,6% | 2 |
-| A | 7.333 | 2e-5 | 3,780 | 28,6% | 2 |
-| **B** | 7.333 | **1e-4** | **2,464** | **49,6%** | **0** |
+| | dados | LR | nll (holdout antigo) | nll (holdout BNCC) | acurácia | sondas vazias |
+|---|---:|---:|---:|---:|---:|---:|
+| base (sem SFT) | — | — | — | — | 6,4% | — |
+| v3-sft | 5.657 | 2e-5 | 3,567 | 3,828 | 31,6% | 2 |
+| A | 7.333 | 2e-5 | 3,780 | 3,900 | 28,6% | 2 |
+| B | 7.333 | 1e-4 | 2,464 | 3,002 | 49,6% | 0 |
+| **C** | 7.333 | **1e-3** | **2,006** | **2,715** | **57,4%** | **0** |
 
 **O dado sozinho não ajudou; o LR mudou tudo.** O A, com 30% mais exemplos e o mesmo LR, ficou igual
-ou pior. Trocar o LR por 5× cortou 31% do nll e dobrou a acurácia — e o ganho aparece também no
-holdout da BNCC (3,002 contra 3,828), que veio de habilidades que nenhum treino viu.
+ou pior. O C melhora **44%** sobre o de manhã, e o ganho aparece nos dois holdouts — inclusive no da
+BNCC, feito de habilidades que nenhum treino viu. E treinou em **19 min** contra 47 do A: LR alto
+converge mais rápido.
 
-⚠️ **E o B ficou mais fluente e mais perigoso na mesma medida.** Ele acerta "a capital de Minas é
-Belo Horizonte" e monta um passo a passo de bolo de cenoura — e na frase seguinte afirma que Machado
-de Assis nasceu em São Paulo em 1712. Forma autoritativa sobre conteúdo aleatório é o modo de falha
-esperado quando o base tem bpb 3,457. **Nenhum SFT conserta base.**
+**A varredura de LR (1 época por ponto, 6 pontos):**
+
+| LR | 5e-5 | 1e-4 | 3e-4 | 6e-4 | **1e-3** | 2e-3 |
+|---|---:|---:|---:|---:|---:|---:|
+| eval_loss | 3,011 | 2,590 | 2,220 | 2,079 | **2,047** | 2,110 |
+| acurácia | 41,5% | 47,7% | 53,4% | 55,6% | **56,1%** | 55,5% |
+
+⭐ **O ótimo é 1e-3 — 50× o LR inicial.** Não foi erro de calibração fina, foi conceitual: a receita
+veio do QLoRA sobre Qwen-4B, onde 2e-5 é razoável, e a intuição "modelo pequeno, passo pequeno" é
+exatamente invertida. O pré-treino do próprio Bee já rodava a 3e-3.
+
+⚠️ **A primeira varredura (4 pontos até 6e-4) descia até o limite** — não tinha achado o joelho, só
+provado que a faixa estava mal escolhida. Foi a extensão até 2e-3, que **piorou**, que fechou a curva.
+Parar nos 4 pontos teria promovido 6e-4 como "vencedor" sem saber onde ficava o teto.
+
+⚠️ **E a fluência subiu sem levar o fato junto.** O modelo de manhã respondia *"foi seu mestre o
+mestre de seus mestres"*. O B acertava "a capital de Minas é Belo Horizonte" — e afirmava que Machado
+de Assis nasceu em São Paulo em 1712. O C, o melhor de todos em métrica, **deixa de responder a
+pergunta**:
+
+> *"A capital de Minas Gerais é a capital do estado de Minas Gerais, localizada no estado de Minas
+> Gerais. Ela é a maior em extensão territorial do país e possui aproximadamente 560.662 km²…"*
+
+Tautologia gramaticalmente perfeita seguida de geografia inventada com número de quatro casas. Forma
+autoritativa sobre conteúdo aleatório é o modo de falha esperado quando o base tem bpb 3,457.
+
+⭐ **Isto é o resultado mais importante do dia, e é negativo:** extraímos quase tudo que havia no
+pós-treino — 50× no LR, 30% mais dado, 6 pontos de varredura, dois holdouts — o eval_loss caiu 44%,
+e o Machado de Assis continua sem ter nascido no Rio em 1839. **O pós-treino chegou ao teto, e o teto
+é o pré-treino.** É a conclusão do Gate 2 demonstrada pelo outro lado.
 
 ---
 
@@ -222,8 +250,8 @@ python bee/train_tokenizer.py --corpus bee/corpus --vocab 32000
 # Gate 2 — bits-por-byte contra o SmolLM2
 python bee/eval_gate2.py --bee <modelo> --rival HuggingFaceTB/SmolLM2-135M
 
-# SFT local (RTX 5070 8 GB, ~30 min) — micro-batch 2 é teto de VRAM, não timidez
-python bee/sft.py --modelo <base> --dados comeia/data/processed/sft_combinado.jsonl --lr 1e-4
+# SFT local (RTX 5070 8 GB, ~19 min) — LR 1e-3 é o ótimo medido; micro-batch 2 é teto de VRAM
+python bee/sft.py --modelo <base> --dados comeia/data/processed/sft_combinado.jsonl --lr 1e-3
 
 # Conversar com o resultado
 python bee/chat.py --sonda
@@ -238,7 +266,7 @@ python bee/chat.py --sonda
 - [x] **Pré-treino do Bee-150M** — v1, v2 e v3 completos
 - [x] 🔴 **Gate 2 vs. SmolLM2-135M** — **não passou** (3,457 × 2,010), e a investigação refutou
       geometria e LR como causa
-- [x] **SFT** — gate de forma ✅, gate de conteúdo ❌
+- [x] **SFT** — gate de forma ✅, gate de conteúdo ❌ · varredura de LR fechada (ótimo 1e-3)
 - [ ] **Medir tokens EFETIVOS vs nominais** (dedup MinHash) · horas de CPU, zero GPU
 - [ ] **Gate pareado barato antes de todo run longo** (~5% do GPU-hora) — teria matado o v3 por
       ~R$ 50 em vez de US$ 34 e 22 h
