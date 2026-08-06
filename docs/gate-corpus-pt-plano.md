@@ -57,7 +57,21 @@ já existem os números de referência:
 | Tucano-160m (~200B PT) | 1,739 ⚠️ contaminado | 2,204 |
 | SmolLM2-135M (~2T EN) | 2,010 | 2,257 |
 
-### 🔴 CONTAMINAÇÃO CONFIRMADA na linha `fineweb2-por` — e o conserto
+### ✅ CONTAMINAÇÃO INVESTIGADA E DESCARTADA — o holdout `[7,23]` serve
+
+**Medido em 2026-08-06 com `bee/holdout_limpo.py`.** Montei um holdout de web PT no parquet
+40 (`002_00012`), série do crawl que nenhuma coleta do Bee tocou, e remedi os três modelos:
+os bpb reproduzem os do `[7,23]` **dentro de ~1%** (Tucano 0,884 vs 0,896 · SmolLM2 1,551 vs
+1,560 · Bee 2,228 vs 2,203). Se houvesse contaminação relevante, o holdout suspeito daria
+número melhor — não dá.
+
+⭐ **Decisão: usar o holdout do parquet 40 no gate mesmo assim.** É limpo por construção, e
+agora validado contra o antigo. Não custa nada e remove a dúvida de vez.
+
+<details>
+<summary>O raciocínio que me levou a declarar contaminação (a preocupação era legítima; a conclusão, não)</summary>
+
+### ⚠️ risco de contaminação na linha `fineweb2-por`
 
 Não é hipótese. O `bee/expand_corpus.py` registra que a expansão do v3 rodou com
 `--skip-files 8`, e explica por quê: **os parquets 0-7 já tinham sido consumidos pela coleta
@@ -86,7 +100,9 @@ deixaria o holdout velho suspeito.
 
 **Enquanto o holdout limpo não existe, a linha decisiva é `portuguese-pd`** (livros de
 domínio público do PleIAs, fora do fineweb-2 por construção) — imune a qualquer sobreposição
-de parquet. É a mesma linha que já foi decisiva para desmontar o número agregado do Tucano.
+de parquet.
+
+</details>
 
 ## Critério de decisão, declarado ANTES de medir
 
@@ -102,9 +118,9 @@ Sobre o braço 1 (antigo), em `portuguese-pd`:
 ## Ordem de execução
 
 1. `bee/juntar_pt.py --faixas ABC` e `--faixas A` → dois `train.bin`
-2. ⭐ **Construir o holdout limpo** de um parquet de índice alto nunca tocado (ex.: 40) e
-   remedir as referências (Bee v3, Tucano, SmolLM2) nele — sem isso a linha `fineweb2-por`
-   do gate não vale
+2. ✅ **Holdout limpo construído e as referências remedidas** (`bee/holdout_limpo.py`,
+   parquet 40) — Tucano 0,884 · SmolLM2 1,551 · Bee-150M v3 **2,228**. É contra esses
+   números que os braços serão comparados
 3. Subir os `.bin` (HF Hub, conta já autenticada) → pod RunPod
 4. Três `pretrain.py` a 3B tokens, mesma config do ponto de 3B da escada (batch global
    524k, seq 2048, LR 3e-3 cosine → 3e-4, 1 época)
