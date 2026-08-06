@@ -47,6 +47,8 @@ def main() -> int:
     ap.add_argument("--val-frac", type=float, default=0.01,
                     help="fracao da CAUDA DE CADA SHARD reservada para validacao")
     ap.add_argument("--pedaco-mb", type=int, default=256)
+    ap.add_argument("--incompleto-ok", action="store_true",
+                    help="permite juntar com a coleta em andamento (⚠️ corpus TRUNCADO)")
     args = ap.parse_args()
 
     import numpy as np
@@ -57,10 +59,41 @@ def main() -> int:
         return 1
     args.saida.mkdir(parents=True, exist_ok=True)
 
-    shards = sorted(p for f in faixas for p in args.entrada.glob(f"pt_{f}_*.bin"))
-    if not shards:
-        print(f"ERRO: nenhum shard pt_[{args.faixas}]_*.bin em {args.entrada}", file=sys.stderr)
+    # ⚠️ GUARDA CONTRA TRUNCAMENTO SILENCIOSO — o defeito que este script tinha e que so
+    # apareceu ao testa-lo com a coleta rodando: `glob` pega TAMBEM os .bin dos parquets
+    # ainda em escrita, e ignora os que nem comecaram. O resultado e um train.bin de
+    # aparencia perfeitamente normal, com metade do corpus, e nenhum aviso. So entram aqui
+    # os shards de parquets que o coletor declarou CONCLUIDOS no estado.json.
+    estado_p = args.entrada / "estado.json"
+    if not estado_p.exists():
+        print(f"ERRO: {estado_p} nao existe — nao da para saber quais shards estao "
+              f"completos. Rode a coleta primeiro.", file=sys.stderr)
         return 1
+    est = json.loads(estado_p.read_text(encoding="utf-8"))
+    prontos = sorted(est.get("concluidos") or [])
+    todos = sorted({int(p.stem.rsplit("_", 1)[1])
+                    for f in faixas for p in args.entrada.glob(f"pt_{f}_*.bin")})
+    em_curso = [i for i in todos if i not in prontos]
+    if em_curso and not args.incompleto_ok:
+        for linha in (
+            "ERRO: a coleta ainda esta em andamento.",
+            f"  parquets concluidos: {prontos}",
+            f"  ainda escrevendo   : {em_curso}",
+            "  Juntar agora produziria um corpus TRUNCADO com aparencia normal.",
+            "  Espere terminar, ou use --incompleto-ok se e' mesmo o que voce quer.",
+        ):
+            print(linha, file=sys.stderr)
+        return 1
+    if em_curso:
+        print(f"  ⚠️ --incompleto-ok: IGNORANDO {len(em_curso)} parquets em escrita {em_curso}\n")
+
+    shards = sorted(p for f in faixas for i in prontos
+                    for p in args.entrada.glob(f"pt_{f}_{i:03d}.bin"))
+    if not shards:
+        print(f"ERRO: nenhum shard concluido de pt_[{args.faixas}]_* em {args.entrada}",
+              file=sys.stderr)
+        return 1
+    print(f"  parquets concluidos: {len(prontos)} {prontos}")
 
     total_bytes = sum(p.stat().st_size for p in shards)
     print("=" * 70)
@@ -96,6 +129,7 @@ def main() -> int:
             print(f"  {p.name:<18} {n/1e6:8.1f}M tokens", flush=True)
 
     meta = {"faixas": faixas, "shards": [p.name for p in shards],
+            "parquets_concluidos": prontos, "parquets_ignorados": em_curso,
             "tokens_treino": n_tr, "tokens_val": n_val,
             "val_frac": args.val_frac, "fonte": "fineweb-2 por_Latn (ODC-By)",
             "idioma": "100% pt"}
