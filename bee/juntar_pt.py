@@ -47,6 +47,8 @@ def main() -> int:
     ap.add_argument("--val-frac", type=float, default=0.01,
                     help="fracao da CAUDA DE CADA SHARD reservada para validacao")
     ap.add_argument("--pedaco-mb", type=int, default=256)
+    ap.add_argument("--tokenizer", type=Path, default=ROOT / "models" / "bee-150m-v3-base",
+                    help="so' para ler vocab e eos e gravar no meta.json")
     ap.add_argument("--max-tokens", type=float, default=0,
                     help="0 = corpus inteiro. >0 amostra PROPORCIONALMENTE de cada shard "
                          "ate esse total — nao corta o inicio, que pegaria so os primeiros "
@@ -142,11 +144,19 @@ def main() -> int:
                     lido = fim
             print(f"  {p.name:<18} {n/1e6:8.1f}M tokens", flush=True)
 
-    meta = {"faixas": faixas, "shards": [p.name for p in shards],
+    # ⚠️ O meta.json tem que satisfazer o CONTRATO do pretrain.py, que le vocab/eos e
+    # ABORTA sem eles. Na primeira tentativa gravei um meta com esquema proprio, subi so
+    # os .bin, e os dois bracos do gate morreram no pod em 1 minuto com "meta.json nao
+    # existe". Barato porque falhou alto — mas evitavel lendo o contrato antes.
+    from transformers import AutoTokenizer
+    tok = AutoTokenizer.from_pretrained(args.tokenizer)
+    eos = tok.convert_tokens_to_ids("<|endoftext|>")
+    meta = {"tokens_treino": n_tr, "tokens_val": n_val,
+            "vocab": tok.vocab_size, "eos": eos, "dtype": "uint16",
+            "faixas": faixas, "shards": [p.name for p in shards],
             "parquets_concluidos": prontos, "parquets_ignorados": em_curso,
-            "tokens_treino": n_tr, "tokens_val": n_val,
             "val_frac": args.val_frac, "fonte": "fineweb-2 por_Latn (ODC-By)",
-            "idioma": "100% pt"}
+            "idioma": "100% pt", "tokenizer": str(args.tokenizer)}
     (args.saida / "meta.json").write_text(json.dumps(meta, indent=2), encoding="utf-8")
 
     print("\n" + "=" * 70)
