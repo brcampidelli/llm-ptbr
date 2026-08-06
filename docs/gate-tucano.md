@@ -26,6 +26,41 @@ grandeza (o GigaVerbo inteiro, ~1 época), não um número exato.
 (contra o Tucano e contra o SmolLM2), reproduzindo exatamente o valor medido em 2026-08-03 numa
 GPU diferente (A100 → RTX A4000). O aparato está correto.
 
+## 🔴 RETRATAÇÃO (mesmo dia, algumas horas depois)
+
+**A seção abaixo afirmava que o número do Tucano estava contaminado e que "dá para provar".
+Não estava provado, e a conclusão caiu.** Ver [`holdout-limpo.json`](holdout-limpo.json).
+
+Construí um holdout de web PT em outra série do crawl (`002_00012`, parquet 40) — região que
+nenhuma coleta do Bee jamais tocou — e remedi os três modelos. Os números **se reproduzem
+dentro de ~1%**:
+
+| modelo | bpb no holdout limpo | bpb em `[7,23]` | diferença |
+|---|---:|---:|---:|
+| Tucano-160m | **0,884** | 0,896 | +1,3% |
+| SmolLM2-135M | **1,551** | 1,560 | +0,6% |
+| Bee-150M-v3 | **2,228** | 2,203 | −1,1% |
+
+O padrão que eu usei como prova (vantagem grande em web, quase nula em livros) é real, mas
+tem **outra explicação que serve igualmente bem**: o Tucano é *especialista em web PT
+moderna* (200B tokens de GigaVerbo, majoritariamente web), e livros de ortografia arcaica com
+ruído de OCR são fora de distribuição **para ele também** — enquanto o SmolLM2, com 2T tokens
+muito mais diversos, generaliza melhor para texto estranho. É **deslocamento de domínio**,
+não memorização. Eu tinha duas hipóteses compatíveis com o mesmo padrão e chamei uma de
+provada.
+
+⚠️ **Alcance do teste, para não repetir o erro na direção oposta:** o parquet 40 é limpo em
+relação ao **Bee**, não ao Tucano — `fineweb-2` e GigaVerbo derivam os dois do Common Crawl.
+Eu **não provei que o Tucano está limpo**; provei que o meu argumento de que estava sujo não
+se sustenta. Separar de vez exigiria texto PT posterior ao treino dos dois (2025-2026).
+
+**Consequência para o Bee: piora.** Na régua limpa a distância é **2,52×**, não os 1,88× de
+`portuguese-pd`. E o holdout `[7,23]` fica **reabilitado** — reproduz o limpo, logo não estava
+viciado.
+
+<details>
+<summary>Texto original da seção, preservado (a inferência está errada; o padrão medido não)</summary>
+
 ## ⚠️ O número agregado do Tucano está contaminado — e dá para provar
 
 `0,896 bpb` num modelo de 162M é bom demais. A prova é comparar a vantagem do Tucano sobre o
@@ -43,31 +78,48 @@ memorizou. Isso é assinatura de contaminação, não de capacidade.
 **Consequência metodológica:** contra o SmolLM2 (modelo inglês, corpus inglês) o agregado servia.
 Contra um modelo PT treinado em web PT, **a linha de `portuguese-pd` é a única régua limpa.**
 
-## ⭐ O veredito, na régua limpa
+</details>
 
-Em `portuguese-pd`, onde ninguém memorizou nada:
+## ⭐ O veredito, nas duas réguas
+
+**Web PT limpa** (parquet 40, `002_00012` — série do crawl que nenhuma coleta do Bee tocou):
+
+| | bpb | vs Bee | fertilidade |
+|---|---:|---:|---:|
+| Tucano-160m | **0,884** | **2,52× melhor** | 0,2074 |
+| SmolLM2-135M | 1,551 | 1,44× melhor | 0,3576 |
+| **Bee-150M v3** | **2,228** | — | 0,2183 |
+
+**Livros de domínio público** (`portuguese-pd`, holdout `[7,23]`):
 
 | | bpb | vs Bee |
 |---|---:|---:|
-| **Bee-150M** | **4,148** | — |
 | Tucano-160m | 2,204 | **1,88× melhor** |
 | SmolLM2-135M | 2,257 | 1,84× melhor |
+| **Bee-150M** | **4,148** | — |
 
-**O Bee perde para os dois pares, por quase o dobro, em texto que nenhum deles viu.** A
-contaminação do Tucano não salva o Bee — só corrige o tamanho da derrota (de 98,8% para 88%).
+**O Bee perde para os dois pares nas duas réguas.** Em web moderna, que é o caso de uso real,
+por **2,52×**.
 
-E um detalhe que precisa ser dito: **o tokenizador do Tucano é melhor que o nosso** (0,2907 contra
-0,3114 tokens/byte, 7% mais enxuto). O nosso passou o gate contra o SmolLM2 (0,3938), mas contra o
-par certo ele perde. A "primeira coisa genuinamente nossa" não é a melhor disponível em PT.
+⭐ **A diferença entre as duas tabelas é informação, não ruído.** O Tucano abre 2,52× em web e
+só 1,88× em livros; o SmolLM2 faz o inverso relativo (1,44× em web, 1,84× em livros). Isso
+desenha os dois perfis com clareza: o Tucano é **especialista em web PT**, o SmolLM2 é
+**generalista** que aguenta texto estranho. Nenhum dos dois é "melhor" em abstrato — e o Bee
+está atrás dos dois em ambos.
+
+E um detalhe que precisa ser dito: **o tokenizador do Tucano é melhor que o nosso** — 0,2074
+contra 0,2183 tok/byte em web PT limpa (5% mais enxuto). O nosso passou o gate contra o
+SmolLM2 (0,3576 na mesma régua), mas contra o par certo perde. A "primeira coisa genuinamente
+nossa" não é a melhor disponível em PT.
 
 ## 🔴 O que este resultado FAZ COM A ESCADA DE SCALING — correção
 
 A escada (medida horas antes, mesmo dia) concluiu: *"o gargalo é o tamanho do modelo, não a
 quantidade de dado; 10× mais token compraria 8% de perplexidade; o piso é ~57"*.
 
-**O Tucano contradiz isso.** Mesmo tamanho de modelo, 20× mais token, e é **1,88× melhor em bpb**
-em texto limpo. Se o piso fosse mesmo intransponível para 150M, o Tucano estaria empatado conosco.
-Não está.
+**O Tucano contradiz isso.** Mesmo tamanho de modelo, 20× mais token, e é **2,52× melhor em bpb**
+em web PT limpa. Se o piso fosse mesmo intransponível para 150M, o Tucano estaria empatado
+conosco. Não está — e não está por uma margem grande.
 
 Onde a escada errou:
 
@@ -87,7 +139,7 @@ Onde a escada errou:
 
 | # | causa | evidência |
 |---|---|---|
-| 1 | **poucos tokens de português** (~6,9B contra ~200B) | Tucano, mesmo tamanho, 1,88× melhor |
+| 1 | **poucos tokens de português** (~6,9B contra ~200B) | Tucano, mesmo tamanho, **2,52× melhor em web PT limpa** |
 | 2 | **30% da capacidade gasta em EN + código** que nunca avaliamos | mistura 70/20/10 por design |
 | 3 | qualidade/diversidade do corpus | escada satura em ~10B na nossa mistura |
 | 4 | tamanho do modelo | terceiro fator, não o primeiro |
@@ -103,7 +155,9 @@ escala existe na fonte, e é **download, não aluguel**. É exatamente para isso
 FineWeb-Edu-PT foi construído.
 
 **Ordem revisada:**
-1. Coletar PT em volume (fineweb-2 `por_Latn`) e filtrar em ~10% → alvo de 30-50B tokens **100% PT**
+1. Coletar PT em volume (fineweb-2 `por_Latn`) — ⚠️ **filtrar em ~10% NÃO**: o gate pareado
+   mediu que filtrar dá +1,6% e não cresce com escala, enquanto volume dá +88%. Coletar em
+   faixas de qualidade e decidir o corte no treino (ver `bee/coletar_pt_volume.py`)
 2. Retreinar o Bee-150M **nesse** corpus — mesmo tamanho, mesmo custo (~$42 a 9,87B, ou mais se
    subir o volume). Isola a variável "dado" sem pagar por "tamanho".
 3. Só então decidir o Bee-500M, com a curva de dado já corrigida

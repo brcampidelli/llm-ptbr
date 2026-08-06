@@ -1,0 +1,26 @@
+{
+  "parquet_idx": 40,
+  "parquet": "data/por_Latn/train/002_00012.parquet",
+  "n_docs": 400,
+  "bytes": 833610,
+  "max_chars": 4000,
+  "seq_len": 2048,
+  "resultados": {
+    "Bee-150M-v3": {
+      "bpb": 2.2283815962972517,
+      "fertilidade": 0.2183373863776961,
+      "modelo": "C:\\Users\\brcam\\Desktop\\Desenvolvendo Projetos\\Desenvolvendo LLM\\models\\bee-150m-v3-base"
+    },
+    "Tucano-160m": {
+      "bpb": 0.8838092229260112,
+      "fertilidade": 0.20739442359086785,
+      "modelo": "TucanoBR/Tucano-160m"
+    },
+    "SmolLM2-135M": {
+      "bpb": 1.551039615624047,
+      "fertilidade": 0.3576370043017289,
+      "modelo": "HuggingFaceTB/SmolLM2-135M"
+    }
+  },
+  "aviso": "bpb deste holdout NAO e comparavel em absoluto com o do holdout [7,23] — texto diferente. Comparar ranking e razoes entre modelos."
+}
