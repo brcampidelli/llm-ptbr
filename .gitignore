@@ -45,3 +45,6 @@ docs/anotar-edu.log
 bee/gate/
 docs/gate-*.log
 bee/edu/
+
+# corpus PT em volume (dezenas de GB — nao versionar)
+corpus_pt/
