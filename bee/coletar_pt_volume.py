@@ -59,6 +59,16 @@ import sys
 import time
 from pathlib import Path
 
+# ⚠️ TEM QUE VIR ANTES DE QUALQUER import de numpy/sklearn — inclusive nos processos
+# filhos, que reimportam este modulo no spawn. MEDIDO em 2026-08-06: sem isto, cada um
+# dos 13 processos abre seu proprio pool OpenMP/BLAS do tamanho da maquina; 13 x ~24
+# threads em 24 nucleos afoga tudo. O sintoma NAO foi erro nem lentidao obvia de CPU —
+# foi o DOWNLOAD cair de 5,5 MB/s para 0,1 MB/s, porque sobrou CPU zero para a pilha de
+# rede. Passei um bom tempo achando que era limite de taxa do HF Hub. Nao era.
+for _v in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS",
+           "NUMEXPR_NUM_THREADS", "TOKENIZERS_PARALLELISM"):
+    os.environ.setdefault(_v, "false" if _v == "TOKENIZERS_PARALLELISM" else "1")
+
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "bee"))
 
@@ -92,13 +102,16 @@ def _iniciar_worker(tokenizer: str, classificador: str, sem) -> None:
 def _baixar_com_limite(arq: str, destino: Path) -> Path:
     """Baixa UM parquet respeitando o limite global de downloads simultaneos.
 
-    ⚠️ MEDIDO EM 2026-08-06, e custou uma rodada: com 13 downloads simultaneos e SEM
-    token, o HF Hub estrangula ate ZERO — 4 parquets terminaram e os outros 9 ficaram
-    parados em 1 MB indefinidamente (0 bytes em 75 s). Nao ha erro, nao ha timeout: as
-    conexoes simplesmente nao andam, e o job parece vivo enquanto nao faz nada.
+    Processar um parquet leva ~2,9 h e baixar ~15 min, entao 2 por vez sobra para
+    manter 13 trabalhadores ocupados, e evita 13 conexoes disputando a mesma banda.
 
-    O limite resolve sem credencial nenhuma: processar um parquet leva ~2,9 h e baixar
-    ~10 min, entao 2 downloads por vez sobra para manter 13 trabalhadores ocupados.
+    ⚠️ DIAGNOSTICO ERRADO QUE EU FIZ AQUI, registrado para nao se repetir: quando os
+    downloads travaram (0 bytes em 75 s, sem erro e sem timeout), escrevi neste lugar
+    que era rate-limit do HF Hub por falta de token. NAO ERA. Com o coletor parado o
+    mesmo arquivo baixava a 5,5 MB/s; com ele rodando, 0,1 MB/s — 55x. A causa era
+    oversubscription de threads OpenMP/BLAS (ver o bloco os.environ no topo do modulo),
+    que nao deixava CPU para a pilha de rede. O sintoma apontava para a rede e o
+    culpado estava no numpy. Lição: quando A parece culpar B, medir B sozinho.
     """
     from huggingface_hub import hf_hub_download
     ultimo = None
