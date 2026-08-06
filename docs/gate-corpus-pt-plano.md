@@ -57,12 +57,36 @@ já existem os números de referência:
 | Tucano-160m (~200B PT) | 1,739 ⚠️ contaminado | 2,204 |
 | SmolLM2-135M (~2T EN) | 2,010 | 2,257 |
 
-⚠️ O holdout `[7,23]` vem do **corpus antigo**, e a fonte `fineweb2-por` dele sai do mesmo
-`fineweb-2 por_Latn` que alimenta o corpus novo. **Há risco de contaminação do braço novo.**
-Duas defesas: (a) os shards `[7,23]` foram excluídos do treino do v3, mas **não da coleta
-nova** — conferir com `bee/medir_dedup.py` antes de confiar no número; (b) a linha de
-`portuguese-pd` é imune (livros de domínio público, fora do fineweb-2) e por isso é a
-decisiva, exatamente como foi contra o Tucano.
+### 🔴 CONTAMINAÇÃO CONFIRMADA na linha `fineweb2-por` — e o conserto
+
+Não é hipótese. O `bee/expand_corpus.py` registra que a expansão do v3 rodou com
+`--skip-files 8`, e explica por quê: **os parquets 0-7 já tinham sido consumidos pela coleta
+original em streaming** (a do v1). Logo:
+
+| parquets | quem consumiu |
+|---|---|
+| 0-7 | coleta original em streaming → corpus v1 |
+| 8+ | `expand_corpus.py` → expansão do v3 |
+| **0-12** | **a coleta nova (esta)** — atravessa as duas |
+
+Os shards de holdout `[7,23]` saem desse mesmo material. Então os braços treinados no corpus
+novo veriam **parte do próprio holdout de avaliação**, e a linha `fineweb2-por` sairia
+inflada a favor deles.
+
+⚠️ Cheguei a concluir o oposto — que os parquets 0-7 estariam limpos — lendo `--skip-files 8`
+sem ler o motivo documentado logo acima. O `skip` existia justamente porque aquela região
+**já tinha sido consumida**, não porque estivesse livre.
+
+⭐ **O conserto não é restringir o treino, é construir um holdout limpo.** Baixar UM parquet
+de índice alto e nunca tocado (ex.: 40), extrair ~400 documentos e usá-lo como fonte nova de
+avaliação. Custa ~10 min de download e conserta a medição **para todos os modelos de uma vez**
+— Bee antigo, Bee novo, Tucano e SmolLM2 passam a ter uma linha de web PT em que nenhum deles
+pôde ter treinado. Restringir o corpus de treino, ao contrário, jogaria fora dado bom e ainda
+deixaria o holdout velho suspeito.
+
+**Enquanto o holdout limpo não existe, a linha decisiva é `portuguese-pd`** (livros de
+domínio público do PleIAs, fora do fineweb-2 por construção) — imune a qualquer sobreposição
+de parquet. É a mesma linha que já foi decisiva para desmontar o número agregado do Tucano.
 
 ## Critério de decisão, declarado ANTES de medir
 
@@ -78,7 +102,9 @@ Sobre o braço 1 (antigo), em `portuguese-pd`:
 ## Ordem de execução
 
 1. `bee/juntar_pt.py --faixas ABC` e `--faixas A` → dois `train.bin`
-2. Checar contaminação do holdout `[7,23]` contra o corpus novo
+2. ⭐ **Construir o holdout limpo** de um parquet de índice alto nunca tocado (ex.: 40) e
+   remedir as referências (Bee v3, Tucano, SmolLM2) nele — sem isso a linha `fineweb2-por`
+   do gate não vale
 3. Subir os `.bin` (HF Hub, conta já autenticada) → pod RunPod
 4. Três `pretrain.py` a 3B tokens, mesma config do ponto de 3B da escada (batch global
    524k, seq 2048, LR 3e-3 cosine → 3e-4, 1 época)
