@@ -1,5 +1,14 @@
 # Escada de scaling do Bee-150M — FECHADA (2026-08-06)
 
+> 🔴 **CORREÇÃO no mesmo dia — leia [`gate-tucano.md`](gate-tucano.md) antes de agir por este
+> documento.** A medição contra o **Tucano-160m** (mesmo tamanho, ~200B tokens PT) derrubou a
+> extrapolação daqui: ele é **1,88× melhor em bpb** em texto limpo. O "piso de perplexidade ~57"
+> era **artefato de um ajuste de 3 parâmetros em 3 pontos** (zero graus de liberdade), cobrindo
+> uma única década de tokens. **O que a escada realmente mediu foi a saturação da NOSSA mistura de
+> corpus, não um limite de modelos de 150M.** A conclusão "o gargalo é o tamanho" está **revogada**;
+> o gargalo nº 1 é volume de português (temos ~6,9B PT contra ~200B do Tucano). O que continua
+> válido abaixo: os três pontos medidos, a comparabilidade das configs, e os custos de hardware.
+
 Mede **quanto de perplexidade cada 10x de token compra**, para decidir se o run
 grande (~100B tokens) se justifica. Custo da escada: **~$17** pelos dois pontos
 novos, contra os ~$430 que ela decide.
