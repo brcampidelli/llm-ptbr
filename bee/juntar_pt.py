@@ -47,6 +47,10 @@ def main() -> int:
     ap.add_argument("--val-frac", type=float, default=0.01,
                     help="fracao da CAUDA DE CADA SHARD reservada para validacao")
     ap.add_argument("--pedaco-mb", type=int, default=256)
+    ap.add_argument("--max-tokens", type=float, default=0,
+                    help="0 = corpus inteiro. >0 amostra PROPORCIONALMENTE de cada shard "
+                         "ate esse total — nao corta o inicio, que pegaria so os primeiros "
+                         "parquets e testaria uma fatia estreita do crawl em vez do corpus")
     ap.add_argument("--incompleto-ok", action="store_true",
                     help="permite juntar com a coleta em andamento (⚠️ corpus TRUNCADO)")
     args = ap.parse_args()
@@ -102,11 +106,21 @@ def main() -> int:
     print(f"  entrada: {total_bytes/1e9:.1f} GB = {total_bytes/2/1e9:.2f}B tokens")
     print(f"  val    : cauda de {args.val_frac:.1%} de CADA shard\n")
 
+    # ⚠️ Amostragem proporcional, nao prefixo. Um corte nos primeiros N tokens do arquivo
+    # concatenado pegaria so os 2 primeiros parquets de 13 — o braco do gate mediria
+    # "os dois primeiros dumps", nao o corpus. Aqui cada shard cede a mesma FRACAO.
+    fracao = 1.0
+    if args.max_tokens:
+        disponivel = total_bytes / 2
+        fracao = min(1.0, args.max_tokens / disponivel)
+        print(f"  amostra: {fracao:.1%} de CADA shard -> alvo "
+              f"{args.max_tokens/1e9:.2f}B tokens\n")
+
     n_tr = n_val = 0
     pedaco = args.pedaco_mb * 1_000_000 // 2          # em tokens (uint16)
     with open(args.saida / "train.bin", "wb") as ftr, open(args.saida / "val.bin", "wb") as fva:
         for p in shards:
-            n = p.stat().st_size // 2
+            n = int((p.stat().st_size // 2) * fracao)
             corte = int(n * (1 - args.val_frac))
             # ⚠️ Ler em pedacos: um shard tem varios GB e np.fromfile inteiro estoura a RAM
             # quando ha 39 deles. O corte cai no meio de um pedaco, entao dividimos ali.
