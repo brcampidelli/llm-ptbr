@@ -84,6 +84,55 @@ FAIXAS = ("A", "B", "C")            # A = melhor
 
 _G: dict = {}                       # estado por processo trabalhador
 
+# Custo de memoria por worker, MEDIDO em 2026-08-07 no RunPod: cada um mantem o parquet
+# de 4,85 GB em page cache (pyarrow le por lotes mas o cache conta no cgroup), o set de
+# ~3,5M hashes (~350 MB), o tokenizador e o vetorizador TF-IDF. Arredondado para cima.
+GB_POR_WORKER = 6.0
+
+
+def memoria_disponivel_gb() -> float | None:
+    """Memoria que ESTE processo pode usar — o limite do cgroup, nao o da maquina.
+
+    ⚠️ ESTE E' O ERRO QUE CUSTOU UMA COLETA DE 3 HORAS (2026-08-07).
+      Num pod RunPod, `free -g` mostra os 247 GB do HOST; o container tinha teto de
+      61 GB em /sys/fs/cgroup/memory.max. Li os 247 GB, concluí que 13 workers cabiam
+      com folga, subi de 8 para 13 — e o OOM killer do cgroup matou 4 workers no meio
+      do parquet (`memory.events: oom_kill 10`). O pai ficou bloqueado para sempre no
+      `imap_unordered` esperando resultados que nunca chegariam: nao houve erro, nao
+      houve traceback, o processo simplesmente parou de progredir com 9/13 pronto.
+
+      Regra: dentro de container, o numero da MAQUINA nao vale para nada. Ler o cgroup.
+
+    Devolve None se nao der para determinar (a' vontade do chamador decidir).
+    """
+    valores = []
+    for lim, uso in ((        # cgroup v2                     e o v1, para pods antigos
+        "/sys/fs/cgroup/memory.max", "/sys/fs/cgroup/memory.current"), (
+        "/sys/fs/cgroup/memory/memory.limit_in_bytes",
+        "/sys/fs/cgroup/memory/memory.usage_in_bytes")):
+        try:
+            with open(lim) as f:
+                bruto = f.read().strip()
+            if bruto == "max":                 # sem limite: cai para a memoria da maquina
+                continue
+            teto = int(bruto)
+            if teto > (1 << 50):               # v1 sem limite usa um numero absurdo
+                continue
+            with open(uso) as f:
+                atual = int(f.read().strip())
+            # page cache conta no uso mas o kernel o devolve sob pressao — o que
+            # realmente limita e' o teto, entao e' ele que dimensiona os workers.
+            valores.append(teto / (1 << 30))
+            del atual
+        except (OSError, ValueError):
+            pass
+    if valores:
+        return min(valores)
+    try:                                       # fora de container: a memoria da maquina
+        return os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES") / (1 << 30)
+    except (OSError, ValueError, AttributeError):
+        return None
+
 
 def humano(n: float) -> str:
     return f"{n/1e9:.2f}B" if n >= 1e9 else f"{n/1e6:.1f}M"
@@ -249,6 +298,10 @@ def main() -> int:
     tmp.mkdir(exist_ok=True)
     estado_p = args.out / "estado.json"
     n_proc = args.processos or max(1, (os.cpu_count() or 8) - 4)
+    n_pedido, ram_gb, teto_ram = n_proc, memoria_disponivel_gb(), None
+    if ram_gb is not None:
+        teto_ram = max(1, int(ram_gb // GB_POR_WORKER))
+        n_proc = min(n_proc, teto_ram)
 
     arqs = listar_parquets()[:args.parquets]
     mod = joblib.load(args.classificador)
@@ -258,6 +311,12 @@ def main() -> int:
     print("=" * 74)
     print(f"  parquets     : {len(arqs)} de 66 (~2,4B tokens de saida cada)")
     print(f"  processos    : {n_proc} (de {os.cpu_count()} nucleos)")
+    if ram_gb is not None:
+        print(f"  memoria      : {ram_gb:.0f} GB para o processo · "
+              f"teto {teto_ram} workers a {GB_POR_WORKER} GB cada")
+        if n_proc < n_pedido:
+            print(f"  ⚠️ REDUZIDO de {n_pedido} para {n_proc}: {n_pedido} workers nao cabem "
+                  f"em {ram_gb:.0f} GB e o OOM killer mata no meio do parquet.")
     print(f"  classificador: F1 {mod['f1']:.3f} · correlacao {mod['correlacao']:.3f}")
     print(f"  dedup        : hash EXATO por parquet (MinHash custaria 2x o tempo por ~1%)")
 
