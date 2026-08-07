@@ -34,8 +34,54 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "bee"))
 
 
+def conferir_convencao_de_rotulos(modelo, x, dev) -> None:
+    """🔴 GUARDA CONTRA DESLOCAMENTO DUPLO DE ROTULOS — o bug que custou o projeto inteiro.
+
+    `LlamaForCausalLM.forward(labels=L)` JA desloca internamente:
+        loss = CE(logits[..., :-1, :], L[..., 1:])
+    Entao o rotulo correto e' o PROPRIO input (`labels=x`). Passar um `y` ja deslocado
+    (`y = janela[1:]`) desloca DUAS vezes, e o modelo passa a ser treinado para prever
+    **t+2** em vez de t+1.
+
+    ⚠️ O QUE ISSO CUSTOU (2026-07-24 a 2026-08-07): treinou o Bee v1, o v3 e os tres
+    pontos da escada de scaling. E NAO DA ERRO NENHUM — a loss cai, a perplexidade de
+    validacao cai (77->63), o treino parece saudavel do inicio ao fim, porque a validacao
+    usava a MESMA convencao errada. So aparece quando se mede o modelo com a convencao
+    certa, e ai ele parece simplesmente ruim. Medido no v3:
+        prever t+1 (correto) : ppl 898,2
+        prever t+2 (o bug)   : ppl 130,2   <- e' aqui que o modelo esta
+    Diagnosticos errados que este bug gerou e que foram publicados como conclusao:
+    "mais token nao resolve", "o corpus saturou", "o gargalo e o tamanho do modelo",
+    "trocar para 100% PT rende 0,37%". Nenhum deles era verdade.
+
+    Esta funcao roda UMA vez, antes do passo 1, e custa um forward. Compara a loss que o
+    modelo reporta com a loss calculada a mao na convencao t+1. Se divergirem, aborta.
+    """
+    import torch.nn.functional as F
+    modelo.eval()
+    with torch.no_grad():
+        saida = modelo(input_ids=x[:1], labels=x[:1])
+        lg = saida.logits
+        manual = F.cross_entropy(lg[0, :-1].float(), x[0, 1:]).item()
+    modelo.train()
+    dif = abs(saida.loss.item() - manual)
+    print(f"  convencao    loss do modelo {saida.loss.item():.4f} · t+1 na mao "
+          f"{manual:.4f} · dif {dif:.5f}")
+    if dif > 0.01:
+        raise SystemExit("\n".join((
+            "",
+            f"🔴 ABORTADO: convencao de rotulos errada. O modelo reporta "
+            f"{saida.loss.item():.4f} e a tarefa t+1 calculada a mao da {manual:.4f}.",
+            "   Isso significa que o treino NAO esta otimizando 'prever o proximo token'.",
+            "   Confira a chamada `modelo(input_ids=..., labels=...)`: o rotulo tem de ser",
+            "   o PROPRIO input, porque o Llama ja desloca por dentro.")))
+
+
 def lote(dados, batch, seq_len, device, gerador):
     """Amostra `batch` janelas de `seq_len+1`. x = [:-1], y = [1:].
+
+    ⚠️ `y` existe por razoes historicas e NAO deve ser passado como `labels` — ver
+    conferir_convencao_de_rotulos(). Use `labels=x`.
 
     ⚠️ Amostragem ALEATÓRIA e não sequencial: com dado ordenado por fonte (o nosso é —
     as fontes foram coletadas uma após a outra), ler em ordem faria o modelo ver 4 GB de
@@ -304,7 +350,7 @@ def main() -> int:
             x, y = lote(dados_, args.micro_batch, cfg.seq_len, dev, gv)
             with torch.autocast(device_type=dev.type, dtype=torch.bfloat16,
                                 enabled=dev.type == "cuda"):
-                perdas.append(modelo(input_ids=x, labels=y).loss.item())
+                perdas.append(modelo(input_ids=x, labels=x).loss.item())
         modelo.train()
         m = sum(perdas) / len(perdas)
         return m, math.exp(min(20, m))
@@ -317,6 +363,14 @@ def main() -> int:
                               top_k=50, pad_token_id=meta["eos"])
         modelo.train()
         return tok.decode(out[0], skip_special_tokens=True)
+
+    # 🔴 Guarda de convencao de rotulos — roda ANTES do passo 1 e aborta se o treino nao
+    # estiver otimizando "prever o proximo token". Custa um forward. Ver a docstring de
+    # conferir_convencao_de_rotulos() para o que a ausencia dele custou a este projeto.
+    _x_teste, _ = lote(treino, min(2, args.micro_batch), cfg.seq_len, dev,
+                       torch.Generator().manual_seed(7))
+    conferir_convencao_de_rotulos(modelo, _x_teste, dev)
+    del _x_teste
 
     print("\n" + "-" * 76)
     modelo.train()
@@ -340,7 +394,7 @@ def main() -> int:
                 x, y = lote(treino, args.micro_batch, cfg.seq_len, dev, g)
                 with torch.autocast(device_type=dev.type, dtype=torch.bfloat16,
                                     enabled=dev.type == "cuda"):
-                    perda = modelo(input_ids=x, labels=y).loss / args.grad_accum
+                    perda = modelo(input_ids=x, labels=x).loss / args.grad_accum
                 perda.backward()
                 perda_acc += perda.item()
             except torch.OutOfMemoryError:
