@@ -57,6 +57,7 @@ def conferir_convencao_de_rotulos(modelo, x, dev) -> None:
     Esta funcao roda UMA vez, antes do passo 1, e custa um forward. Compara a loss que o
     modelo reporta com a loss calculada a mao na convencao t+1. Se divergirem, aborta.
     """
+    import torch
     import torch.nn.functional as F
     modelo.eval()
     with torch.no_grad():
@@ -75,6 +76,58 @@ def conferir_convencao_de_rotulos(modelo, x, dev) -> None:
             "   Isso significa que o treino NAO esta otimizando 'prever o proximo token'.",
             "   Confira a chamada `modelo(input_ids=..., labels=...)`: o rotulo tem de ser",
             "   o PROPRIO input, porque o Llama ja desloca por dentro.")))
+
+
+class AmostradorPermutado:
+    """Percorre blocos NAO SOBREPOSTOS em ordem aleatoria — cobertura de 100% por epoca.
+
+    🟠 POR QUE ISTO SUBSTITUIU `torch.randint` (medido em 2026-08-07)
+      A versao anterior sorteava offsets COM REPOSICAO em todo o `train.bin`. Com 1 epoca
+      nominal, cada token tem probabilidade `(1-1/n)^n -> 1/e` de nunca ser sorteado:
+
+          --epocas 1.0 -> cobertura real 63,5%   (teorico 1-1/e = 63,2%)
+          --epocas 2.0 -> 86,5%      --epocas 3.0 -> 94,9%
+
+      Dos 9,87B tokens do v3, **~3,6B nunca entraram no treino**, enquanto outros foram
+      repetidos. O log dizia "1.00 epocas" e o relatorio dizia "9,87B tokens"; os dois
+      eram falsos, e nada no treino denunciava.
+
+    ⚠️ A aleatoriedade CONTINUA necessaria, e pelo motivo documentado abaixo: o
+      `train.bin` esta ordenado por fonte (web, depois livros, depois codigo), entao ler
+      em ordem seria um curriculo acidental. A solucao nao e' voltar a ler sequencial —
+      e' embaralhar a ORDEM DOS BLOCOS e percorrer a permutacao ate o fim.
+    """
+
+    def __init__(self, dados, seq_len: int, gerador):
+        import torch
+        self.dados, self.seq_len, self.g = dados, seq_len, gerador
+        self.n_blocos = (len(dados) - 1) // seq_len
+        if self.n_blocos < 1:
+            raise ValueError(f"dados curtos demais: {len(dados)} tokens para seq_len {seq_len}")
+        self.ordem = torch.randperm(self.n_blocos, generator=gerador).numpy()
+        self.pos = 0
+        self.epocas = 0
+
+    def __call__(self, batch: int, device):
+        import numpy as np
+        import torch
+        escolhidos = np.empty(batch, dtype=np.int64)
+        n = 0
+        while n < batch:
+            if self.pos >= self.n_blocos:            # fim da epoca: nova permutacao
+                self.ordem = torch.randperm(self.n_blocos, generator=self.g).numpy()
+                self.pos, self.epocas = 0, self.epocas + 1
+            k = min(batch - n, self.n_blocos - self.pos)
+            escolhidos[n:n + k] = self.ordem[self.pos:self.pos + k]
+            self.pos += k
+            n += k
+        ini = escolhidos * self.seq_len
+        idx = ini[:, None] + np.arange(self.seq_len + 1)[None, :]
+        janelas = torch.from_numpy(self.dados[idx].astype(np.int64))
+        x = janelas[:, :-1]
+        if device.type == "cuda":
+            return x.pin_memory().to(device, non_blocking=True)
+        return x.to(device)
 
 
 def lote(dados, batch, seq_len, device, gerador):
@@ -347,7 +400,7 @@ def main() -> int:
         perdas = []
         gv = torch.Generator().manual_seed(1234)          # fixo: comparável entre passos
         for _ in range(n_lotes):
-            x, y = lote(dados_, args.micro_batch, cfg.seq_len, dev, gv)
+            x, _ = lote(dados_, args.micro_batch, cfg.seq_len, dev, gv)
             with torch.autocast(device_type=dev.type, dtype=torch.bfloat16,
                                 enabled=dev.type == "cuda"):
                 perdas.append(modelo(input_ids=x, labels=x).loss.item())
@@ -364,11 +417,17 @@ def main() -> int:
         modelo.train()
         return tok.decode(out[0], skip_special_tokens=True)
 
+    # Amostrador com cobertura de 100% por epoca (ver AmostradorPermutado).
+    amostrador = AmostradorPermutado(treino, cfg.seq_len, g)
+    print(f"  amostragem   {amostrador.n_blocos:,} blocos de {cfg.seq_len} tokens · "
+          f"permutacao percorrida ate o fim (cobertura 100%/epoca)")
+
     # 🔴 Guarda de convencao de rotulos — roda ANTES do passo 1 e aborta se o treino nao
     # estiver otimizando "prever o proximo token". Custa um forward. Ver a docstring de
     # conferir_convencao_de_rotulos() para o que a ausencia dele custou a este projeto.
-    _x_teste, _ = lote(treino, min(2, args.micro_batch), cfg.seq_len, dev,
-                       torch.Generator().manual_seed(7))
+    # ⚠️ Usa dado de TREINO real: com tokens aleatorios a diferenca cai para ~0,007 e o
+    # guarda nao dispara — sem estrutura no texto o modelo nao distingue t+1 de t+2.
+    _x_teste = amostrador(min(2, args.micro_batch), dev)
     conferir_convencao_de_rotulos(modelo, _x_teste, dev)
     del _x_teste
 
@@ -391,7 +450,7 @@ def main() -> int:
             # o batch efetivo fica idêntico, então o treino continua estatisticamente
             # igual, só com pico de memória menor.
             try:
-                x, y = lote(treino, args.micro_batch, cfg.seq_len, dev, g)
+                x = amostrador(args.micro_batch, dev)
                 with torch.autocast(device_type=dev.type, dtype=torch.bfloat16,
                                     enabled=dev.type == "cuda"):
                     perda = modelo(input_ids=x, labels=x).loss / args.grad_accum
