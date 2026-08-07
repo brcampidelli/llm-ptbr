@@ -1,0 +1,85 @@
+==============================================================
+Gerador BNCC -> material didatico PT-BR
+==============================================================
+  habilidades elegiveis : 1202 (de 1484)
+  sorteadas             : 600
+  formatos              : ['explicacao', 'qa', 'distrator']
+  itens a gerar         : 1800
+  professor             : deepseek/deepseek-v3.2
+  componentes           : {'LP': 209, 'MA': 120, 'HI': 72, 'GE': 59, 'CI': 53, 'LI': 35, 'CNT': 15, 'MAT': 14, 'CHS': 13, 'LGG': 10}
+
+gerando 1800 itens com 12 threads...
+
+  25/1800 · ok 21 · descartado 4 · falha 0
+  50/1800 · ok 45 · descartado 5 · falha 0
+  75/1800 · ok 70 · descartado 5 · falha 0
+  100/1800 · ok 95 · descartado 5 · falha 0
+  125/1800 · ok 118 · descartado 7 · falha 0
+  150/1800 · ok 141 · descartado 9 · falha 0
+  175/1800 · ok 162 · descartado 13 · falha 0
+  200/1800 · ok 187 · descartado 13 · falha 0
+  225/1800 · ok 211 · descartado 14 · falha 0
+  250/1800 · ok 232 · descartado 18 · falha 0
+  275/1800 · ok 255 · descartado 20 · falha 0
+  300/1800 · ok 279 · descartado 21 · falha 0
+  325/1800 · ok 304 · descartado 21 · falha 0
+  350/1800 · ok 329 · descartado 21 · falha 0
+  375/1800 · ok 350 · descartado 25 · falha 0
+  400/1800 · ok 373 · descartado 27 · falha 0
+  425/1800 · ok 396 · descartado 29 · falha 0
+  450/1800 · ok 421 · descartado 29 · falha 0
+  475/1800 · ok 444 · descartado 31 · falha 0
+  500/1800 · ok 467 · descartado 33 · falha 0
+  525/1800 · ok 492 · descartado 33 · falha 0
+  550/1800 · ok 514 · descartado 36 · falha 0
+  575/1800 · ok 539 · descartado 36 · falha 0
+  600/1800 · ok 563 · descartado 37 · falha 0
+  625/1800 · ok 586 · descartado 39 · falha 0
+  650/1800 · ok 610 · descartado 40 · falha 0
+  675/1800 · ok 635 · descartado 40 · falha 0
+  700/1800 · ok 659 · descartado 41 · falha 0
+  725/1800 · ok 684 · descartado 41 · falha 0
+  750/1800 · ok 709 · descartado 41 · falha 0
+  775/1800 · ok 733 · descartado 42 · falha 0
+  800/1800 · ok 758 · descartado 42 · falha 0
+  825/1800 · ok 781 · descartado 44 · falha 0
+  850/1800 · ok 805 · descartado 45 · falha 0
+  875/1800 · ok 830 · descartado 45 · falha 0
+  falha (EF08HI07/qa): <urlopen error [WinError 10054] Foi forçado o cancelamento de uma conexão existente pelo host remoto>
+  falha (EF03LP27/distrator): <urlopen error [WinError 10054] Foi forçado o cancelamento de uma conexão existente pelo host remoto>
+  falha (EF01LP10/qa): <urlopen error [WinError 10054] Foi forçado o cancelamento de uma conexão existente pelo host remoto>
+  950/1800 · ok 892 · descartado 50 · falha 8
+  975/1800 · ok 917 · descartado 50 · falha 8
+  1000/1800 · ok 941 · descartado 51 · falha 8
+  1050/1800 · ok 985 · descartado 57 · falha 8
+  1075/1800 · ok 1009 · descartado 58 · falha 8
+  1100/1800 · ok 1033 · descartado 59 · falha 8
+  1150/1800 · ok 1080 · descartado 62 · falha 8
+  1175/1800 · ok 1103 · descartado 64 · falha 8
+  1200/1800 · ok 1127 · descartado 65 · falha 8
+  1225/1800 · ok 1149 · descartado 68 · falha 8
+  1250/1800 · ok 1170 · descartado 72 · falha 8
+  1275/1800 · ok 1195 · descartado 72 · falha 8
+  1300/1800 · ok 1219 · descartado 73 · falha 8
+  1325/1800 · ok 1242 · descartado 75 · falha 8
+  1350/1800 · ok 1265 · descartado 77 · falha 8
+  1375/1800 · ok 1290 · descartado 77 · falha 8
+  1400/1800 · ok 1314 · descartado 78 · falha 8
+  1450/1800 · ok 1361 · descartado 81 · falha 8
+  1475/1800 · ok 1385 · descartado 82 · falha 8
+  1500/1800 · ok 1407 · descartado 85 · falha 8
+  1525/1800 · ok 1429 · descartado 88 · falha 8
+  1550/1800 · ok 1450 · descartado 92 · falha 8
+  1575/1800 · ok 1470 · descartado 97 · falha 8
+  1600/1800 · ok 1493 · descartado 99 · falha 8
+  1625/1800 · ok 1515 · descartado 102 · falha 8
+  1650/1800 · ok 1539 · descartado 103 · falha 8
+  1675/1800 · ok 1563 · descartado 104 · falha 8
+  1700/1800 · ok 1583 · descartado 109 · falha 8
+  1725/1800 · ok 1608 · descartado 109 · falha 8
+  1750/1800 · ok 1630 · descartado 112 · falha 8
+  1775/1800 · ok 1653 · descartado 114 · falha 8
+  1800/1800 · ok 1676 · descartado 116 · falha 8
+
+[OK] 1676 exemplos em C:\Users\brcam\Desktop\Desenvolvendo Projetos\Desenvolvendo LLM\comeia\data\processed\sft_bncc.jsonl
+     descartados no controle de qualidade: 116 · falhas de API: 8

@@ -1,0 +1,28 @@
+==============================================================
+Gerador BNCC -> material didatico PT-BR
+==============================================================
+  habilidades elegiveis : 1202 (de 1484)
+  sorteadas             : 120 (pulando as 600 primeiras)
+  formatos              : ['explicacao', 'qa', 'distrator']
+  itens a gerar         : 360
+  professor             : deepseek/deepseek-v3.2
+  componentes           : {'LP': 42, 'MA': 19, 'GE': 15, 'CI': 14, 'HI': 13, 'LI': 7, 'MAT': 4, 'CHS': 3, 'CNT': 2, 'LGG': 1}
+
+gerando 360 itens com 10 threads...
+
+  25/360 · ok 25 · descartado 0 · falha 0
+  50/360 · ok 48 · descartado 2 · falha 0
+  100/360 · ok 94 · descartado 6 · falha 0
+  125/360 · ok 114 · descartado 11 · falha 0
+  150/360 · ok 137 · descartado 13 · falha 0
+  175/360 · ok 161 · descartado 14 · falha 0
+  200/360 · ok 184 · descartado 16 · falha 0
+  225/360 · ok 208 · descartado 17 · falha 0
+  250/360 · ok 230 · descartado 20 · falha 0
+  275/360 · ok 253 · descartado 22 · falha 0
+  300/360 · ok 277 · descartado 23 · falha 0
+  325/360 · ok 302 · descartado 23 · falha 0
+  350/360 · ok 327 · descartado 23 · falha 0
+
+[OK] 337 exemplos em comeia\data\processed\sft_bncc.eval.jsonl
+     descartados no controle de qualidade: 23 · falhas de API: 0

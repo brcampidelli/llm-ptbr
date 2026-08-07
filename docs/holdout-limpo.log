@@ -1,0 +1,36 @@
+==========================================================================
+HOLDOUT LIMPO — web PT de um parquet que nenhum Bee viu
+==========================================================================
+  parquet    : [40] data/por_Latn/train/002_00012.parquet
+  dispositivo: cuda
+  ⚠️ bpb daqui NAO se compara em absoluto com o do holdout [7,23] — outro texto.
+     Compara-se o ranking e as razoes ENTRE modelos, medidos neste mesmo texto.
+
+  baixando o parquet...
+  holdout: 400 docs · 0.83 MB · de 2,000 lidos
+
+  medindo Bee-150M-v3...
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+Loading weights:   0%|          | 0/272 [00:00<?, ?it/s]Loading weights:  23%|██▎       | 62/272 [00:00<00:00, 613.52it/s]Loading weights:  72%|███████▏  | 196/272 [00:00<00:00, 1033.23it/s]Loading weights: 100%|██████████| 272/272 [00:00<00:00, 1031.08it/s]
+  medindo Tucano-160m...
+C:\Users\brcam\Desktop\Desenvolvendo Projetos\Desenvolvendo LLM\.venv\Lib\site-packages\huggingface_hub\file_download.py:139: UserWarning: `huggingface_hub` cache-system uses symlinks by default to efficiently store duplicated files but your machine does not support them in C:\Users\brcam\.cache\huggingface\hub\models--TucanoBR--Tucano-160m. Caching files will still work but in a degraded version that might require more space on your disk. This warning can be disabled by setting the `HF_HUB_DISABLE_SYMLINKS_WARNING` environment variable. For more details, see https://huggingface.co/docs/huggingface_hub/how-to-cache#limitations.
+To support symlinks on Windows, you either need to activate Developer Mode or to run Python as an administrator. In order to activate developer mode, see this article: https://docs.microsoft.com/en-us/windows/apps/get-started/enable-your-device-for-development
+  warnings.warn(message)
+Loading weights:   0%|          | 0/111 [00:00<?, ?it/s]Loading weights: 100%|██████████| 111/111 [00:00<00:00, 4331.02it/s]
+  medindo SmolLM2-135M...
+C:\Users\brcam\Desktop\Desenvolvendo Projetos\Desenvolvendo LLM\.venv\Lib\site-packages\huggingface_hub\file_download.py:139: UserWarning: `huggingface_hub` cache-system uses symlinks by default to efficiently store duplicated files but your machine does not support them in C:\Users\brcam\.cache\huggingface\hub\models--HuggingFaceTB--SmolLM2-135M. Caching files will still work but in a degraded version that might require more space on your disk. This warning can be disabled by setting the `HF_HUB_DISABLE_SYMLINKS_WARNING` environment variable. For more details, see https://huggingface.co/docs/huggingface_hub/how-to-cache#limitations.
+To support symlinks on Windows, you either need to activate Developer Mode or to run Python as an administrator. In order to activate developer mode, see this article: https://docs.microsoft.com/en-us/windows/apps/get-started/enable-your-device-for-development
+  warnings.warn(message)
+Loading weights:   0%|          | 0/272 [00:00<?, ?it/s]Loading weights: 100%|██████████| 272/272 [00:00<00:00, 3850.89it/s]
+
+==========================================================================
+RESULTADO — bpb em web PT LIMPA (parquet 40), menor = melhor
+==========================================================================
+  modelo                bpb  vs melhor  fertilidade
+  --------------------------------------------------
+  Tucano-160m         0.884      1.00x       0.2074
+  SmolLM2-135M        1.551      1.75x       0.3576
+  Bee-150M-v3         2.228      2.52x       0.2183
+
+  salvo em C:\Users\brcam\Desktop\Desenvolvendo Projetos\Desenvolvendo LLM\docs\holdout-limpo.json
+  parquet apagado (4,8 GB liberados)

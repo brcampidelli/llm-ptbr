@@ -1,5 +1,28 @@
 # Bee-150M × Tucano-160m — o par honesto (2026-08-06)
 
+> # 🔴 DOCUMENTO INVÁLIDO — 2026-08-07
+>
+> **Todos os números abaixo foram produzidos por um modelo treinado com o objetivo errado.**
+>
+> `bee/pretrain.py` passava `labels=y` com `y` já deslocado, e o `LlamaForCausalLM` desloca
+> de novo por dentro. O Bee foi treinado para prever **t+2**, não o próximo token — e foi
+> medido prevendo **t+1**, uma tarefa que nunca aprendeu. Medido no `bee-150m-v3-base`:
+>
+> | alvo | Bee-150M-v3 | SmolLM2-135M (controle) |
+> |---|---:|---:|
+> | t+1 (correto) | ppl 898,2 | ppl **16,7** ✅ |
+> | t+2 | ppl **130,2** ✅ | ppl 15.388,9 |
+>
+> O mínimo do Bee está em t+2. Corrigido em `196ed5b`, com guarda que aborta o treino se
+> a convenção estiver errada. Some-se a isso que a amostragem descartava 37% do corpus
+> (corrigido em `a4aed0e`).
+>
+> **Nada aqui deve ser usado para decidir nada.** Preservado porque a mecânica do erro
+> vale mais que os números — e porque o sinal estava no repositório: o `gate_pareado.py`,
+> com o código correto e **75× menos dado**, media bpb 40% melhor.
+
+
+
 O Gate 2 comparou o Bee com o **SmolLM2-135M**, um modelo *inglês*. Comparação injusta nos dois
 sentidos: ele tem 200× mais token, mas não foi feito para português. O par de verdade é o
 **Tucano-160m** — mesmo tamanho, mesma língua, feito no Brasil.

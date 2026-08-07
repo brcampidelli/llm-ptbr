@@ -1,0 +1,426 @@
+
+==================================================================
+BRACO: cru
+==================================================================
+  151.2M params · 130.0M tokens · 4000 passos · 131.1M tokens vistos
+  passo    0/4000 · perda 10.505 · 0.1 min
+  passo   20/4000 · perda 7.959 · 1.4 min
+  passo   40/4000 · perda 7.758 · 2.8 min
+  passo   60/4000 · perda 7.734 · 4.3 min
+  passo   80/4000 · perda 7.539 · 5.9 min
+  passo  100/4000 · perda 7.451 · 7.5 min
+  passo  120/4000 · perda 7.087 · 9.0 min
+  passo  140/4000 · perda 6.984 · 10.5 min
+  passo  160/4000 · perda 6.774 · 12.1 min
+  passo  180/4000 · perda 6.580 · 13.7 min
+  passo  200/4000 · perda 6.370 · 15.2 min
+  passo  220/4000 · perda 6.294 · 16.8 min
+  passo  240/4000 · perda 6.240 · 18.4 min
+  passo  260/4000 · perda 6.212 · 20.0 min
+  passo  280/4000 · perda 6.133 · 21.6 min
+  passo  300/4000 · perda 6.084 · 23.2 min
+  passo  320/4000 · perda 5.933 · 24.7 min
+  passo  340/4000 · perda 5.945 · 26.3 min
+  passo  360/4000 · perda 5.813 · 27.9 min
+  passo  380/4000 · perda 5.892 · 29.5 min
+  passo  400/4000 · perda 5.743 · 31.1 min
+  passo  420/4000 · perda 5.727 · 32.7 min
+  passo  440/4000 · perda 5.710 · 34.2 min
+  passo  460/4000 · perda 5.683 · 35.8 min
+  passo  480/4000 · perda 5.599 · 37.4 min
+  passo  500/4000 · perda 5.675 · 39.0 min
+  passo  520/4000 · perda 5.583 · 40.6 min
+  passo  540/4000 · perda 5.508 · 42.2 min
+  passo  560/4000 · perda 5.489 · 43.7 min
+  passo  580/4000 · perda 5.419 · 45.3 min
+  passo  600/4000 · perda 5.394 · 46.9 min
+  passo  620/4000 · perda 5.365 · 48.5 min
+  passo  640/4000 · perda 5.371 · 50.1 min
+  passo  660/4000 · perda 5.301 · 51.6 min
+  passo  680/4000 · perda 5.311 · 53.2 min
+  passo  700/4000 · perda 5.272 · 54.8 min
+  passo  720/4000 · perda 5.314 · 56.4 min
+  passo  740/4000 · perda 5.220 · 58.0 min
+  passo  760/4000 · perda 5.171 · 59.5 min
+  passo  780/4000 · perda 5.128 · 61.1 min
+  passo  800/4000 · perda 5.216 · 62.7 min
+  passo  820/4000 · perda 5.112 · 64.3 min
+  passo  840/4000 · perda 5.111 · 65.8 min
+  passo  860/4000 · perda 5.168 · 67.4 min
+  passo  880/4000 · perda 5.082 · 69.0 min
+  passo  900/4000 · perda 5.079 · 70.5 min
+  passo  920/4000 · perda 4.999 · 72.1 min
+  passo  940/4000 · perda 5.032 · 73.7 min
+  passo  960/4000 · perda 5.038 · 75.2 min
+  passo  980/4000 · perda 5.040 · 76.8 min
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|##########| 1/1 [00:00<00:00,  2.59it/s]Writing model shards: 100%|##########| 1/1 [00:00<00:00,  2.59it/s]
+  [ckpt] modelo_cru_p1000
+  passo 1000/4000 · perda 4.980 · 78.4 min
+  passo 1020/4000 · perda 5.002 · 80.0 min
+  passo 1040/4000 · perda 5.000 · 81.5 min
+  passo 1060/4000 · perda 5.017 · 83.1 min
+  passo 1080/4000 · perda 4.901 · 84.7 min
+  passo 1100/4000 · perda 4.890 · 86.2 min
+  passo 1120/4000 · perda 4.869 · 87.8 min
+  passo 1140/4000 · perda 4.896 · 89.4 min
+  passo 1160/4000 · perda 4.834 · 90.9 min
+  passo 1180/4000 · perda 4.826 · 92.5 min
+  passo 1200/4000 · perda 4.815 · 94.0 min
+  passo 1220/4000 · perda 4.747 · 95.6 min
+  passo 1240/4000 · perda 4.796 · 97.2 min
+  passo 1260/4000 · perda 4.740 · 98.7 min
+  passo 1280/4000 · perda 4.686 · 100.3 min
+  passo 1300/4000 · perda 4.695 · 101.9 min
+  passo 1320/4000 · perda 4.692 · 103.4 min
+  passo 1340/4000 · perda 4.680 · 105.0 min
+  passo 1360/4000 · perda 4.691 · 106.6 min
+  passo 1380/4000 · perda 4.628 · 108.2 min
+  passo 1400/4000 · perda 4.698 · 109.7 min
+  passo 1420/4000 · perda 4.565 · 111.3 min
+  passo 1440/4000 · perda 4.620 · 112.9 min
+  passo 1460/4000 · perda 4.604 · 114.5 min
+  passo 1480/4000 · perda 4.637 · 116.0 min
+  passo 1500/4000 · perda 4.627 · 117.6 min
+  passo 1520/4000 · perda 4.546 · 119.2 min
+  passo 1540/4000 · perda 4.601 · 120.7 min
+  passo 1560/4000 · perda 4.549 · 122.3 min
+  passo 1580/4000 · perda 4.470 · 123.9 min
+  passo 1600/4000 · perda 4.519 · 125.5 min
+  passo 1620/4000 · perda 4.496 · 127.0 min
+  passo 1640/4000 · perda 4.444 · 128.6 min
+  passo 1660/4000 · perda 4.547 · 130.2 min
+  passo 1680/4000 · perda 4.431 · 131.7 min
+  passo 1700/4000 · perda 4.486 · 133.3 min
+  passo 1720/4000 · perda 4.415 · 134.9 min
+  passo 1740/4000 · perda 4.414 · 136.5 min
+  passo 1760/4000 · perda 4.516 · 138.1 min
+  passo 1780/4000 · perda 4.447 · 139.6 min
+  passo 1800/4000 · perda 4.391 · 141.2 min
+  passo 1820/4000 · perda 4.437 · 142.8 min
+  passo 1840/4000 · perda 4.424 · 144.3 min
+  passo 1860/4000 · perda 4.396 · 145.9 min
+  passo 1880/4000 · perda 4.307 · 147.5 min
+  passo 1900/4000 · perda 4.376 · 149.1 min
+  passo 1920/4000 · perda 4.352 · 150.6 min
+  passo 1940/4000 · perda 4.388 · 152.2 min
+  passo 1960/4000 · perda 4.383 · 153.8 min
+  passo 1980/4000 · perda 4.296 · 155.4 min
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|##########| 1/1 [00:01<00:00,  1.06s/it]Writing model shards: 100%|##########| 1/1 [00:01<00:00,  1.06s/it]
+  [ckpt] modelo_cru_p2000
+  passo 2000/4000 · perda 4.333 · 157.0 min
+  passo 2020/4000 · perda 4.312 · 158.6 min
+  passo 2040/4000 · perda 4.291 · 160.1 min
+  passo 2060/4000 · perda 4.261 · 161.7 min
+  passo 2080/4000 · perda 4.299 · 163.3 min
+  passo 2100/4000 · perda 4.242 · 164.9 min
+  passo 2120/4000 · perda 4.227 · 166.4 min
+  passo 2140/4000 · perda 4.271 · 168.0 min
+  passo 2160/4000 · perda 4.297 · 169.6 min
+  passo 2180/4000 · perda 4.239 · 171.1 min
+  passo 2200/4000 · perda 4.239 · 172.7 min
+  passo 2220/4000 · perda 4.223 · 174.3 min
+  passo 2240/4000 · perda 4.206 · 175.9 min
+  passo 2260/4000 · perda 4.220 · 177.4 min
+  passo 2280/4000 · perda 4.231 · 179.0 min
+  passo 2300/4000 · perda 4.262 · 180.6 min
+  passo 2320/4000 · perda 4.189 · 182.2 min
+  passo 2340/4000 · perda 4.228 · 183.7 min
+  passo 2360/4000 · perda 4.214 · 185.3 min
+  passo 2380/4000 · perda 4.293 · 186.9 min
+  passo 2400/4000 · perda 4.162 · 188.4 min
+  passo 2420/4000 · perda 4.167 · 190.0 min
+  passo 2440/4000 · perda 4.164 · 191.6 min
+  passo 2460/4000 · perda 4.158 · 193.2 min
+  passo 2480/4000 · perda 4.261 · 194.7 min
+  passo 2500/4000 · perda 4.032 · 196.3 min
+  passo 2520/4000 · perda 4.172 · 197.9 min
+  passo 2540/4000 · perda 4.109 · 199.4 min
+  passo 2560/4000 · perda 4.072 · 201.0 min
+  passo 2580/4000 · perda 4.211 · 202.6 min
+  passo 2600/4000 · perda 4.148 · 204.2 min
+  passo 2620/4000 · perda 4.109 · 205.7 min
+  passo 2640/4000 · perda 4.159 · 207.3 min
+  passo 2660/4000 · perda 4.077 · 208.9 min
+  passo 2680/4000 · perda 4.163 · 210.5 min
+  passo 2700/4000 · perda 4.082 · 212.0 min
+  passo 2720/4000 · perda 4.055 · 213.6 min
+  passo 2740/4000 · perda 4.070 · 215.2 min
+  passo 2760/4000 · perda 4.112 · 216.7 min
+  passo 2780/4000 · perda 4.030 · 218.3 min
+  passo 2800/4000 · perda 4.032 · 219.9 min
+  passo 2820/4000 · perda 3.957 · 221.4 min
+  passo 2840/4000 · perda 4.013 · 223.0 min
+  passo 2860/4000 · perda 4.041 · 224.6 min
+  passo 2880/4000 · perda 4.028 · 226.2 min
+  passo 2900/4000 · perda 4.037 · 227.7 min
+  passo 2920/4000 · perda 4.011 · 229.3 min
+  passo 2940/4000 · perda 4.048 · 230.9 min
+  passo 2960/4000 · perda 4.023 · 232.4 min
+  passo 2980/4000 · perda 3.992 · 234.0 min
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|##########| 1/1 [00:00<00:00,  2.39it/s]Writing model shards: 100%|##########| 1/1 [00:00<00:00,  2.39it/s]
+  [ckpt] modelo_cru_p3000
+  passo 3000/4000 · perda 3.990 · 235.6 min
+  passo 3020/4000 · perda 3.997 · 237.1 min
+  passo 3040/4000 · perda 3.999 · 238.7 min
+  passo 3060/4000 · perda 4.051 · 240.3 min
+  passo 3080/4000 · perda 3.939 · 241.8 min
+  passo 3100/4000 · perda 3.940 · 243.4 min
+  passo 3120/4000 · perda 3.980 · 245.0 min
+  passo 3140/4000 · perda 4.003 · 246.6 min
+  passo 3160/4000 · perda 4.012 · 248.1 min
+  passo 3180/4000 · perda 3.918 · 249.7 min
+  passo 3200/4000 · perda 3.990 · 251.3 min
+  passo 3220/4000 · perda 3.929 · 252.8 min
+  passo 3240/4000 · perda 3.937 · 254.4 min
+  passo 3260/4000 · perda 3.945 · 256.0 min
+  passo 3280/4000 · perda 3.882 · 257.5 min
+  passo 3300/4000 · perda 3.909 · 259.1 min
+  passo 3320/4000 · perda 3.955 · 260.7 min
+  passo 3340/4000 · perda 3.952 · 262.3 min
+  passo 3360/4000 · perda 3.797 · 263.8 min
+  passo 3380/4000 · perda 3.975 · 265.4 min
+  passo 3400/4000 · perda 3.994 · 267.0 min
+  passo 3420/4000 · perda 3.958 · 268.5 min
+  passo 3440/4000 · perda 3.886 · 270.1 min
+  passo 3460/4000 · perda 3.927 · 271.7 min
+  passo 3480/4000 · perda 3.902 · 273.2 min
+  passo 3500/4000 · perda 3.969 · 274.8 min
+  passo 3520/4000 · perda 3.917 · 276.4 min
+  passo 3540/4000 · perda 3.927 · 277.9 min
+  passo 3560/4000 · perda 3.900 · 279.5 min
+  passo 3580/4000 · perda 3.990 · 281.0 min
+  passo 3600/4000 · perda 3.986 · 282.6 min
+  passo 3620/4000 · perda 3.900 · 284.2 min
+  passo 3640/4000 · perda 3.896 · 285.7 min
+  passo 3660/4000 · perda 3.894 · 287.3 min
+  passo 3680/4000 · perda 3.900 · 288.9 min
+  passo 3700/4000 · perda 3.895 · 290.4 min
+  passo 3720/4000 · perda 3.895 · 292.0 min
+  passo 3740/4000 · perda 3.986 · 293.5 min
+  passo 3760/4000 · perda 3.927 · 295.1 min
+  passo 3780/4000 · perda 3.900 · 296.7 min
+  passo 3800/4000 · perda 3.949 · 298.2 min
+  passo 3820/4000 · perda 3.887 · 299.8 min
+  passo 3840/4000 · perda 3.849 · 301.3 min
+  passo 3860/4000 · perda 3.904 · 302.9 min
+  passo 3880/4000 · perda 3.922 · 304.4 min
+  passo 3900/4000 · perda 3.919 · 306.0 min
+  passo 3920/4000 · perda 3.929 · 307.5 min
+  passo 3940/4000 · perda 3.832 · 309.1 min
+  passo 3960/4000 · perda 3.934 · 310.6 min
+  passo 3980/4000 · perda 3.938 · 312.2 min
+  passo 3999/4000 · perda 3.869 · 313.7 min
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|##########| 1/1 [00:00<00:00,  2.37it/s]Writing model shards: 100%|##########| 1/1 [00:00<00:00,  2.37it/s]
+
+==================================================================
+BRACO: filtrado
+==================================================================
+  151.2M params · 130.0M tokens · 4000 passos · 131.1M tokens vistos
+  passo    0/4000 · perda 10.487 · 0.1 min
+  passo   20/4000 · perda 7.914 · 1.6 min
+  passo   40/4000 · perda 7.727 · 3.2 min
+  passo   60/4000 · perda 7.533 · 4.7 min
+  passo   80/4000 · perda 7.349 · 6.3 min
+  passo  100/4000 · perda 7.169 · 7.8 min
+  passo  120/4000 · perda 6.888 · 9.4 min
+  passo  140/4000 · perda 6.730 · 10.9 min
+  passo  160/4000 · perda 6.513 · 12.5 min
+  passo  180/4000 · perda 6.448 · 14.0 min
+  passo  200/4000 · perda 6.306 · 15.6 min
+  passo  220/4000 · perda 6.097 · 17.1 min
+  passo  240/4000 · perda 6.013 · 18.7 min
+  passo  260/4000 · perda 5.949 · 20.2 min
+  passo  280/4000 · perda 5.822 · 21.8 min
+  passo  300/4000 · perda 5.746 · 23.3 min
+  passo  320/4000 · perda 5.775 · 24.9 min
+  passo  340/4000 · perda 5.695 · 26.4 min
+  passo  360/4000 · perda 5.586 · 28.0 min
+  passo  380/4000 · perda 5.495 · 29.5 min
+  passo  400/4000 · perda 5.479 · 31.0 min
+  passo  420/4000 · perda 5.458 · 32.6 min
+  passo  440/4000 · perda 5.339 · 34.1 min
+  passo  460/4000 · perda 5.512 · 35.7 min
+  passo  480/4000 · perda 5.367 · 37.2 min
+  passo  500/4000 · perda 5.372 · 38.8 min
+  passo  520/4000 · perda 5.205 · 40.3 min
+  passo  540/4000 · perda 5.167 · 41.9 min
+  passo  560/4000 · perda 5.157 · 43.4 min
+  passo  580/4000 · perda 5.192 · 45.0 min
+  passo  600/4000 · perda 5.087 · 46.5 min
+  passo  620/4000 · perda 5.065 · 48.1 min
+  passo  640/4000 · perda 5.006 · 49.6 min
+  passo  660/4000 · perda 4.984 · 51.2 min
+  passo  680/4000 · perda 4.945 · 52.7 min
+  passo  700/4000 · perda 4.959 · 54.3 min
+  passo  720/4000 · perda 4.969 · 55.8 min
+  passo  740/4000 · perda 4.953 · 57.4 min
+  passo  760/4000 · perda 4.851 · 58.9 min
+  passo  780/4000 · perda 4.958 · 60.4 min
+  passo  800/4000 · perda 4.871 · 62.0 min
+  passo  820/4000 · perda 4.896 · 63.5 min
+  passo  840/4000 · perda 4.880 · 65.1 min
+  passo  860/4000 · perda 4.855 · 79.6 min
+  passo  880/4000 · perda 4.885 · 80.8 min
+  passo  900/4000 · perda 4.688 · 82.0 min
+  passo  920/4000 · perda 4.817 · 83.2 min
+  passo  940/4000 · perda 4.687 · 84.4 min
+  passo  960/4000 · perda 4.702 · 85.7 min
+  passo  980/4000 · perda 4.802 · 86.9 min
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|##########| 1/1 [00:00<00:00,  2.82it/s]Writing model shards: 100%|##########| 1/1 [00:00<00:00,  2.82it/s]
+  [ckpt] modelo_filtrado_p1000
+  passo 1000/4000 · perda 4.758 · 88.1 min
+  passo 1020/4000 · perda 4.713 · 89.4 min
+  passo 1040/4000 · perda 4.609 · 90.6 min
+  passo 1060/4000 · perda 4.616 · 91.9 min
+  passo 1080/4000 · perda 4.646 · 93.1 min
+  passo 1100/4000 · perda 4.587 · 94.4 min
+  passo 1120/4000 · perda 4.499 · 95.6 min
+  passo 1140/4000 · perda 4.604 · 96.8 min
+  passo 1160/4000 · perda 4.600 · 98.1 min
+  passo 1180/4000 · perda 4.466 · 99.4 min
+  passo 1200/4000 · perda 4.500 · 100.7 min
+  passo 1220/4000 · perda 4.493 · 101.9 min
+  passo 1240/4000 · perda 4.519 · 103.3 min
+  passo 1260/4000 · perda 4.521 · 104.6 min
+  passo 1280/4000 · perda 4.501 · 105.9 min
+  passo 1300/4000 · perda 4.439 · 107.3 min
+  passo 1320/4000 · perda 4.483 · 108.6 min
+  passo 1340/4000 · perda 4.478 · 109.9 min
+  passo 1360/4000 · perda 4.493 · 111.3 min
+  passo 1380/4000 · perda 4.406 · 112.6 min
+  passo 1400/4000 · perda 4.406 · 114.0 min
+  passo 1420/4000 · perda 4.386 · 115.3 min
+  passo 1440/4000 · perda 4.502 · 116.6 min
+  passo 1460/4000 · perda 4.451 · 117.9 min
+  passo 1480/4000 · perda 4.443 · 119.1 min
+  passo 1500/4000 · perda 4.301 · 120.4 min
+  passo 1520/4000 · perda 4.381 · 121.7 min
+  passo 1540/4000 · perda 4.375 · 122.9 min
+  passo 1560/4000 · perda 4.237 · 124.2 min
+  passo 1580/4000 · perda 4.252 · 125.5 min
+  passo 1600/4000 · perda 4.309 · 126.7 min
+  passo 1620/4000 · perda 4.350 · 128.0 min
+  passo 1640/4000 · perda 4.221 · 129.3 min
+  passo 1660/4000 · perda 4.254 · 130.7 min
+  passo 1680/4000 · perda 4.292 · 132.0 min
+  passo 1700/4000 · perda 4.203 · 133.3 min
+  passo 1720/4000 · perda 4.274 · 134.6 min
+  passo 1740/4000 · perda 4.191 · 135.9 min
+  passo 1760/4000 · perda 4.230 · 137.2 min
+  passo 1780/4000 · perda 4.277 · 138.4 min
+  passo 1800/4000 · perda 4.146 · 139.7 min
+  passo 1820/4000 · perda 4.163 · 141.0 min
+  passo 1840/4000 · perda 4.107 · 142.3 min
+  passo 1860/4000 · perda 4.128 · 143.7 min
+  passo 1880/4000 · perda 4.160 · 145.0 min
+  passo 1900/4000 · perda 4.156 · 146.3 min
+  passo 1920/4000 · perda 4.119 · 147.7 min
+  passo 1940/4000 · perda 4.109 · 149.0 min
+  passo 1960/4000 · perda 4.084 · 150.3 min
+  passo 1980/4000 · perda 4.167 · 151.7 min
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|##########| 1/1 [00:00<00:00,  2.06it/s]Writing model shards: 100%|##########| 1/1 [00:00<00:00,  2.06it/s]
+  [ckpt] modelo_filtrado_p2000
+  passo 2000/4000 · perda 4.071 · 153.1 min
+  passo 2020/4000 · perda 4.025 · 154.4 min
+  passo 2040/4000 · perda 4.111 · 155.8 min
+  passo 2060/4000 · perda 4.059 · 157.2 min
+  passo 2080/4000 · perda 4.104 · 158.6 min
+  passo 2100/4000 · perda 4.069 · 160.0 min
+  passo 2120/4000 · perda 3.938 · 161.3 min
+  passo 2140/4000 · perda 4.012 · 162.7 min
+  passo 2160/4000 · perda 4.038 · 164.1 min
+  passo 2180/4000 · perda 3.990 · 165.6 min
+  passo 2200/4000 · perda 3.979 · 167.0 min
+  passo 2220/4000 · perda 3.987 · 168.5 min
+  passo 2240/4000 · perda 4.023 · 170.1 min
+  passo 2260/4000 · perda 4.008 · 171.5 min
+  passo 2280/4000 · perda 3.962 · 172.9 min
+  passo 2300/4000 · perda 4.040 · 174.3 min
+  passo 2320/4000 · perda 3.983 · 175.7 min
+  passo 2340/4000 · perda 4.007 · 177.0 min
+  passo 2360/4000 · perda 3.931 · 178.4 min
+  passo 2380/4000 · perda 3.846 · 179.8 min
+  passo 2400/4000 · perda 3.916 · 181.2 min
+  passo 2420/4000 · perda 3.852 · 182.5 min
+  passo 2440/4000 · perda 3.901 · 183.9 min
+  passo 2460/4000 · perda 3.898 · 185.2 min
+  passo 2480/4000 · perda 3.906 · 186.6 min
+  passo 2500/4000 · perda 3.916 · 187.9 min
+  passo 2520/4000 · perda 3.840 · 189.3 min
+  passo 2540/4000 · perda 3.847 · 190.7 min
+  passo 2560/4000 · perda 3.849 · 192.0 min
+  passo 2580/4000 · perda 3.901 · 193.4 min
+  passo 2600/4000 · perda 3.848 · 194.8 min
+  passo 2620/4000 · perda 3.829 · 196.1 min
+  passo 2640/4000 · perda 3.892 · 197.5 min
+  passo 2660/4000 · perda 3.889 · 198.8 min
+  passo 2680/4000 · perda 3.772 · 200.1 min
+  passo 2700/4000 · perda 3.837 · 201.4 min
+  passo 2720/4000 · perda 3.810 · 202.8 min
+  passo 2740/4000 · perda 3.873 · 204.1 min
+  passo 2760/4000 · perda 3.852 · 205.4 min
+  passo 2780/4000 · perda 3.805 · 206.8 min
+  passo 2800/4000 · perda 3.839 · 208.1 min
+  passo 2820/4000 · perda 3.789 · 209.4 min
+  passo 2840/4000 · perda 3.708 · 210.7 min
+  passo 2860/4000 · perda 3.759 · 212.0 min
+  passo 2880/4000 · perda 3.801 · 213.4 min
+  passo 2900/4000 · perda 3.823 · 214.7 min
+  passo 2920/4000 · perda 3.702 · 216.1 min
+  passo 2940/4000 · perda 3.884 · 217.4 min
+  passo 2960/4000 · perda 3.826 · 218.7 min
+  passo 2980/4000 · perda 3.740 · 220.1 min
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|##########| 1/1 [00:00<00:00,  1.43it/s]Writing model shards: 100%|##########| 1/1 [00:00<00:00,  1.43it/s]
+  [ckpt] modelo_filtrado_p3000
+  passo 3000/4000 · perda 3.773 · 221.4 min
+  passo 3020/4000 · perda 3.755 · 222.7 min
+  passo 3040/4000 · perda 3.705 · 224.0 min
+  passo 3060/4000 · perda 3.777 · 225.4 min
+  passo 3080/4000 · perda 3.699 · 226.7 min
+  passo 3100/4000 · perda 3.680 · 228.0 min
+  passo 3120/4000 · perda 3.751 · 229.3 min
+  passo 3140/4000 · perda 3.714 · 230.6 min
+  passo 3160/4000 · perda 3.667 · 231.9 min
+  passo 3180/4000 · perda 3.742 · 233.2 min
+  passo 3200/4000 · perda 3.793 · 234.5 min
+  passo 3220/4000 · perda 3.701 · 235.9 min
+  passo 3240/4000 · perda 3.699 · 237.2 min
+  passo 3260/4000 · perda 3.773 · 238.5 min
+  passo 3280/4000 · perda 3.709 · 239.8 min
+  passo 3300/4000 · perda 3.649 · 241.1 min
+  passo 3320/4000 · perda 3.702 · 242.4 min
+  passo 3340/4000 · perda 3.688 · 243.7 min
+  passo 3360/4000 · perda 3.696 · 245.0 min
+  passo 3380/4000 · perda 3.693 · 246.3 min
+  passo 3400/4000 · perda 3.711 · 247.6 min
+  passo 3420/4000 · perda 3.649 · 248.9 min
+  passo 3440/4000 · perda 3.710 · 250.2 min
+  passo 3460/4000 · perda 3.667 · 251.5 min
+  passo 3480/4000 · perda 3.648 · 252.8 min
+  passo 3500/4000 · perda 3.673 · 254.1 min
+  passo 3520/4000 · perda 3.645 · 255.4 min
+  passo 3540/4000 · perda 3.670 · 256.7 min
+  passo 3560/4000 · perda 3.618 · 258.0 min
+  passo 3580/4000 · perda 3.744 · 259.3 min
+  passo 3600/4000 · perda 3.668 · 260.6 min
+  passo 3620/4000 · perda 3.660 · 261.9 min
+  passo 3640/4000 · perda 3.664 · 263.2 min
+  passo 3660/4000 · perda 3.739 · 264.5 min
+  passo 3680/4000 · perda 3.744 · 265.8 min
+  passo 3700/4000 · perda 3.700 · 267.0 min
+  passo 3720/4000 · perda 3.656 · 268.3 min
+  passo 3740/4000 · perda 3.618 · 269.6 min
+  passo 3760/4000 · perda 3.649 · 270.9 min
+  passo 3780/4000 · perda 3.684 · 272.2 min
+  passo 3800/4000 · perda 3.727 · 273.5 min
+  passo 3820/4000 · perda 3.658 · 274.8 min
+  passo 3840/4000 · perda 3.606 · 276.1 min
+  passo 3860/4000 · perda 3.765 · 277.4 min
+  passo 3880/4000 · perda 3.743 · 278.7 min
+  passo 3900/4000 · perda 3.647 · 280.0 min
+  passo 3920/4000 · perda 3.657 · 281.3 min
+  passo 3940/4000 · perda 3.597 · 282.6 min
+  passo 3960/4000 · perda 3.642 · 283.8 min
+  passo 3980/4000 · perda 3.680 · 285.1 min
+  passo 3999/4000 · perda 3.716 · 286.4 min
+Writing model shards:   0%|          | 0/1 [00:00<?, ?it/s]Writing model shards: 100%|##########| 1/1 [00:00<00:00,  2.28it/s]Writing model shards: 100%|##########| 1/1 [00:00<00:00,  2.28it/s]

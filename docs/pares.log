@@ -1,0 +1,16 @@
+
+=== p1000 · 300 docs ===
+              wikipedia (neutro)     fineweb cru
+       cru                1.6427          1.7050
+  filtrado                1.6161          1.7131
+
+ganho no holdout NEUTRO : +1.62%
+ganho no holdout cru     : -0.48%  (favorece o cru, de proposito)
+
+=== p2000 · 300 docs ===
+              wikipedia (neutro)     fineweb cru
+       cru                1.4142          1.5095
+  filtrado                1.4038          1.5174
+
+ganho no holdout NEUTRO : +0.73%
+ganho no holdout cru     : -0.53%  (favorece o cru, de proposito)
