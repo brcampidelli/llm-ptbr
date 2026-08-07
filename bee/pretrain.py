@@ -256,6 +256,13 @@ def main() -> int:
                     help="3e-3: modelos pequenos toleram LR alto; 2e-4 seria desperdicio")
     ap.add_argument("--warmup-frac", type=float, default=0.02)
     ap.add_argument("--ckpt-cada", type=int, default=250)
+    ap.add_argument("--marcos", default="",
+                    help="⭐ INSTRUMENTACAO. Lista de marcos em BILHOES de tokens "
+                         "(ex.: 1,3,6,10,15,22). Em cada marco salva um SNAPSHOT completo "
+                         "do modelo em <out>/marco_<N>B/. Isso transforma UM run numa "
+                         "escada de scaling inteira: avaliar bpb nos snapshots depois "
+                         "custa centavos e da N pontos de curva pelo preco de um treino. "
+                         "⚠️ Sem isto o ckpt e' sobrescrito e so sobra o ponto final.")
     ap.add_argument("--aval-cada", type=int, default=250)
     ap.add_argument("--amostra-cada", type=int, default=500)
     ap.add_argument("--passos", type=int, default=0, help="0 = derivado de --tokens-alvo")
@@ -417,6 +424,19 @@ def main() -> int:
         modelo.train()
         return tok.decode(out[0], skip_special_tokens=True)
 
+    # ⭐ Marcos convertidos de bilhoes-de-tokens para numero de passo.
+    marcos_passo = []
+    if args.marcos:
+        for b in args.marcos.split(","):
+            b = b.strip()
+            if not b:
+                continue
+            n = int(float(b) * 1e9 / tokens_por_passo)
+            if 0 < n <= passos:
+                marcos_passo.append((n, f"{b}B"))
+        marcos_passo.sort()
+        print(f"  marcos        " + " · ".join(f"{r} (passo {n:,})" for n, r in marcos_passo))
+
     # Amostrador com cobertura de 100% por epoca (ver AmostradorPermutado).
     amostrador = AmostradorPermutado(treino, cfg.seq_len, g)
     print(f"  amostragem   {amostrador.n_blocos:,} blocos de {cfg.seq_len} tokens · "
@@ -492,6 +512,19 @@ def main() -> int:
 
         if passo and passo % args.amostra_cada == 0:
             print(f"  💬 amostra: {amostra()!r}", flush=True)
+
+        # ⭐ Marcos de instrumentacao: snapshot permanente do modelo, para a escada.
+        if marcos_passo and passo >= marcos_passo[0][0]:
+            n_passo, rotulo = marcos_passo.pop(0)
+            destino = args.out / f"marco_{rotulo}"
+            cru(modelo).save_pretrained(destino)
+            tok.save_pretrained(destino)
+            lm_, ppl_ = perplexidade(val, n_lotes=20)
+            (destino / "marco.json").write_text(json.dumps(
+                {"tokens": passo * tokens_por_passo, "passo": passo,
+                 "val_loss": lm_, "val_ppl": ppl_}, indent=1), encoding="utf-8")
+            print(f"  ⭐ MARCO {rotulo}: {passo*tokens_por_passo/1e9:.2f}B tokens · "
+                  f"val loss {lm_:.4f} · ppl {ppl_:.1f} → {destino}", flush=True)
 
         if passo and passo % args.ckpt_cada == 0:
             torch.save({"modelo": cru(modelo).state_dict(), "opt": opt.state_dict(),
