@@ -4,15 +4,59 @@
 corpus montado por nós, pesos inicializados aleatoriamente e treinados por nós. A aposta é o
 **português**: é o único lugar onde um modelo pequeno nosso pode ganhar de alguém.
 
-**Onde estamos:** o Bee **existe e roda**. Três pré-treinos completos (v1, v2, v3), Gate 2 medido,
-SFT feito. E o resultado central é honesto e desconfortável: **o Gate 2 não passou** — o Bee-150M
-perde do SmolLM2-135M em português por larga margem. O que aprendemos investigando esse fracasso
-vale mais que o modelo, e está tudo abaixo.
+**Onde estamos (2026-08-08):** o Bee **existe, roda e passou no Gate 2**. Com **3 bilhões dos 21,7
+bilhões de tokens** do run atual, ele mede **0,947 bpb** em português — bate o SmolLM2-135M (1,551)
+por 39% e está a 7% do Tucano-160m (0,884), que treinou com **200 bilhões de tokens**.
+
+> ## 🔴 Leia isto antes de qualquer coisa: **[docs/licoes-pretreino.md](docs/licoes-pretreino.md)**
+>
+> Por duas semanas este README dizia que o Gate 2 tinha falhado. A causa não era o corpus, nem a
+> arquitetura, nem a escala — era **uma linha**:
+>
+> ```python
+> x, y = janelas[:, :-1], janelas[:, 1:]      # y JÁ deslocado
+> perda = modelo(input_ids=x, labels=y).loss   # e o Llama desloca DE NOVO
+> ```
+>
+> `LlamaForCausalLM(labels=L)` desloca por dentro. O Bee foi treinado para prever **t+2** e medido
+> prevendo **t+1** — uma tarefa que nunca aprendeu. **O bug não dá erro:** a loss cai, a perplexidade
+> de validação cai, tudo parece saudável, porque a validação usa a mesma convenção errada.
+>
+> Corrigido (`labels=x`), com **10× menos dados**, o bpb foi de **2,218 → 1,021**.
 
 > **Por que o projeto mudou.** Ele nasceu como "construir uma LLM do zero". Em 2026-07-26 a pergunta
 > foi feita direto — *estamos fazendo isso?* — e a resposta honesta era **não**: o que existia era o
 > Qwen4B + ~130 MB de adapters nossos. Método real e validado, mas o modelo era de outra pessoa.
 > A decisão foi pré-treinar de verdade, e reaplicar sobre o Bee o método que já funcionou 4×.
+
+---
+
+## ⭐ GATE 2 — o Bee bate o SmolLM2 em português? **SIM** (2026-08-08)
+
+bits-por-byte em holdout PT limpo (parquet 40 do `fineweb-2 por_Latn`, região que nenhuma coleta do
+Bee tocou). **Menor é melhor.** bpb é comparável entre tokenizadores diferentes — perplexidade não
+seria.
+
+| modelo | tokens de treino | **bpb PT** | fertilidade |
+|---|---:|---:|---:|
+| Tucano-160m (PT nativo) | ~200B | **0,884** | 0,2074 |
+| **Bee-150M @ 3B tokens** | **3B** | **0,947** | **0,2183** |
+| **Bee-150M @ 1B tokens** | **1B** | **1,021** | **0,2183** |
+| SmolLM2-135M | ~2T (inglês) | 1,551 | 0,3576 |
+| 🔴 Bee-150M-v3 (com o bug) | 9,87B | 2,218 | 0,2183 |
+
+**O run de 21,75B tokens 100% PT está em andamento** (RTX 5090, ~96 h, ~US$ 97). Marcos de scaling
+em 1B, 3B, 6B, 10B, 15B e 21B — a curva vira medição, não extrapolação.
+
+**A prova qualitativa.** Mesmo código, mesma arquitetura, menos dados:
+
+| | amostra gerada |
+|---|---|
+| 🔴 v3 (bugado) | *"O Brasil étas inda deco decoúrbiohão lentamente lentamenteembro influ influ Bastos petiscos recomendam Pão podia próximas52ând regimes histór…"* |
+| ✅ @ 3B tokens | *"O Brasil é o maior produtor de petróleo da América do Sul e tem grande parte das áreas produtivas da agricultura familiar…"* |
+
+Primeiro a forma da língua, depois os fatos — e os fatos começaram a entrar (a afirmação sobre
+petróleo é verdadeira). Números ainda erram por ordens de grandeza, o que é esperado em 150M params.
 
 ---
 
@@ -33,7 +77,12 @@ Fertilidade = tokens por palavra. **Menor é melhor.** Holdout de 400 docs PT + 
 menor**. Custo do gate: **4 minutos de CPU**. Confirmado depois no Gate 2 sobre texto real:
 0,3114 tokens/byte contra 0,3938 do SmolLM2. **O tokenizador é a parte que funcionou.**
 
-### 🔴 GATE 2 — o Bee bate o SmolLM2 em português? **NÃO** (2026-08-03)
+### 🔴 HISTÓRICO — Gate 2 de 2026-08-03: **os números abaixo estão INVÁLIDOS**
+
+> Tudo nesta seção e na seguinte foi produzido por um modelo treinado com o objetivo errado
+> (deslocamento duplo de rótulos, ver o topo). **Preservado porque a mecânica do erro vale mais que
+> os números** — e porque mostra como cinco hipóteses rigorosas podem ser construídas sobre um
+> artefato. Ver [docs/licoes-pretreino.md](docs/licoes-pretreino.md).
 
 bits-por-byte em holdout PT nunca visto (shards 7/23, mantidos fora do treino por
 `prepare_data.py`). **Menor é melhor.** bpb é comparável entre tokenizadores diferentes —
@@ -50,13 +99,19 @@ perplexidade não seria.
 o ganho absoluto contra o v1 é nulo. Custo do v3: 18.816 passos, **21,76 h de A100-80GB (~US$ 34)**,
 perplexidade de validação 77,4 → 63,0.
 
-### ⭐ O que a investigação do fracasso descobriu (2026-08-04)
+### 🔴 HISTÓRICO — a investigação do "fracasso" (2026-08-04)
 
-Esta é a parte que importa. Três hipóteses foram testadas contra fonte primária; **duas caíram.**
+> ⚠️ **A conclusão desta seção estava errada, mas as refutações estavam certas.** Geometria e LR
+> foram corretamente descartados; o que ninguém encontrou foi o bug de rótulos, e por isso a
+> "hipótese viva" (qualidade do corpus) herdou uma culpa que não era dela. Vale a leitura como
+> exemplo de investigação metódica que aponta para o lugar errado por não questionar o aparato.
+
+Três hipóteses foram testadas contra fonte primária; **duas caíram.**
 
 **A leitura correta do Gate 2.** Sob `L(D)=E+A·D^-0,28`, ir de 3,74B → 9,87B deveria cortar **23,8%**
 da loss redutível. Observamos 0,1% — **200× abaixo**. Não é "mais token não resolve": é que **o Bee
 não está na curva de scaling**. Algo o satura antes de o dado virar gargalo.
+*(A causa real: o modelo estava otimizando t+2 enquanto o medidor cobrava t+1.)*
 
 **Geometria — REFUTADA.** Os `config.json` do `SmolLM2-135M` e do `MobileLLM-125M` são **idênticos**
 ao do Bee: 30 camadas · d_model 576 · 9q/3kv · vocab 32k · seq 2048. O modelo que faz bpb 2,010 tem
@@ -213,7 +268,9 @@ RoPE (theta 10000) · RMSNorm · seq_len 2048
 ```
 
 ✅ **Esta geometria está validada por comparação:** é byte a byte a mesma do SmolLM2-135M e do
-MobileLLM-125M. Não é onde está o problema.
+MobileLLM-125M. Não é onde está o problema — e **a correção de 2026-08-08 confirmou isso**: o mesmo
+config, sem uma linha alterada, saiu de 2,218 para 1,021 bpb só corrigindo o pipeline de treino.
+**A arquitetura estava certa desde o primeiro dia.**
 
 ---
 
@@ -291,8 +348,13 @@ python bee/chat.py --sonda
 - [x] ⭐ **Gate 1 — tokenizador** mais eficiente em PT que Qwen e SmolLM2 · 4 min · ✅ +5,4%
 - [x] **Corpus de treino** — 9,87B tokens únicos, mistura auditada
 - [x] **Pré-treino do Bee-150M** — v1, v2 e v3 completos
-- [x] 🔴 **Gate 2 vs. SmolLM2-135M** — **não passou** (3,457 × 2,010), e a investigação refutou
-      geometria e LR como causa
+- [x] 🔴 **Gate 2 vs. SmolLM2-135M (1ª tentativa)** — não passou (3,457 × 2,010) · **causa achada em
+      2026-08-08: deslocamento duplo de rótulos, não o corpus**
+- [x] ⭐ **Corrigir o pipeline de treino** — `labels=x`, amostragem sem reposição, guarda que aborta
+      antes do passo 1 · ver [docs/licoes-pretreino.md](docs/licoes-pretreino.md)
+- [x] ⭐ **Corpus de 21,75B tokens 100% PT** — 45,5M docs do `fineweb-2 por_Latn` (ODC-By),
+      reproduzido byte a byte por hash em 3 máquinas diferentes
+- [x] ⭐ **Gate 2 REFEITO** — **passou**: 0,947 bpb @ 3B tokens contra 1,551 do SmolLM2
 - [x] **SFT** — gate de forma ✅, gate de conteúdo ❌ · varredura de LR fechada (ótimo 1e-3)
 - [x] **Medir tokens EFETIVOS vs nominais** — 0,90% de quase-duplicata cruza a fronteira;
       **duplicata não é a explicação**. Sobra 1 hipótese viva
@@ -317,6 +379,19 @@ python bee/chat.py --sonda
 ## Hardware
 
 - Local: **RTX 5070 Laptop 8 GB** (Blackwell sm_120 — exige PyTorch cu128) · Ultra 9 275HX · 31 GB RAM
-- Pré-treino: **RunPod A100-80GB** ($1,50/h)
+- Pré-treino atual: **RunPod RTX 5090** ($0,99/h)
 
-Última atualização: 2026-08-04.
+⭐ **Escolher GPU por `$/bilhão de tokens` medido, nunca por `$/hora`.** Mesmo modelo, mesmo corpus:
+
+| GPU | TDP | tok/s | $/h | **$/B tokens** |
+|---|---:|---:|---:|---:|
+| **RTX 5090** | 600 W | **62,9k** | 0,99 | **4,37** |
+| RTX PRO 4500 | 200 W | 42,1k | 0,74 | 4,88 |
+| A100 SXM | 400 W | 70k | 1,59 | 6,31 |
+
+O preditor é o **TDP**, não o preço nem a VRAM. A PRO 4500 tem a mesma VRAM da 5090, custa 25% menos
+por hora e sai **36% mais cara por token** — rodava a 99% de utilização usando 12 GB de 32, cravada
+em 200,0 W: saturada eletricamente. Nesse regime, batch maior é *pior*, Liger rende **0%** e
+`torch.compile` rende **+17%**.
+
+Última atualização: 2026-08-08.
