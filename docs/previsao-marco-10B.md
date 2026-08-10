@@ -92,3 +92,52 @@ Referência: **Tucano-160m = 0,884** (~200B tokens).
 ⚠️ **A projeção do fim do run (0,8764) fica ABAIXO do Tucano.** Isso ainda é extrapolação — o
 último ponto medido é 10B e o fim é 21,7B, mais que o dobro. O marco de 15B testa isso com o mesmo
 critério de aceite de antes (≤0,005 valida; 0,005–0,015 reajusta; >0,015 descarta a curva).
+
+---
+
+# Marco de 15B — a previsão FALHOU o critério
+
+Medido em **2026-08-10 22:43 UTC**.
+
+| | valor |
+|---|---:|
+| previsto (registrado antes) | 0,8861 |
+| **medido** | **0,8700** |
+| erro | **0,0161** |
+| faixa | **> 0,015 — a de descarte** |
+
+## Veredito: as projeções da curva estão descartadas
+
+O critério escrito antes da medição dizia, literalmente: *"erro > 0,015 → o ajuste é artefato de
+zero graus de liberdade. Descartar as projeções e reportar só os pontos medidos, sem curva."*
+
+O erro foi 0,0161. **Descartado**: a projeção de 0,8764 para o fim do run e o "piso 0,8143" não
+valem mais nada.
+
+⚠️ **O erro foi na direção favorável (o modelo está melhor que o previsto), e isso não muda o
+veredito.** Um critério pré-registrado que ganha exceções depois de ver o resultado não serve para
+nada — a função dele é justamente impedir a racionalização a posteriori. Foi por não ter esse tipo
+de trava que o "piso de perplexidade 57" chegou a ser publicado.
+
+**Hipótese para a falha (NÃO verificada):** `L(D) = E + A·D^-α` modela a melhora como função só do
+volume de dados. Mas o LR está em decaimento cosseno, e o ganho acelera no fim do schedule por um
+motivo que não é D. Uma curva em D sozinha não pode capturar isso. Testar exigiria runs com
+schedules diferentes — caro, e não é a pergunta do projeto agora.
+
+**Consequência prática:** o ponto final (21,7B) será **medido, não previsto**.
+
+## O que os pontos medidos dizem, sem curva nenhuma
+
+| modelo | tokens | bpb |
+|---|---:|---:|
+| **Bee-150M @ 15B** | **15B** | **0,870** ★ |
+| Tucano-160m | ~200B | 0,884 |
+| Bee-150M @ 10B | 10B | 0,897 |
+| Bee-150M @ 6B | 6B | 0,920 |
+| Bee-150M @ 3B | 3B | 0,947 |
+| Bee-150M @ 1B | 1B | 1,021 |
+| SmolLM2-135M | ~2T | 1,551 |
+| Bee-150M-v3 (bug) | 9,87B | 2,218 |
+
+⭐ **O Bee passou o Tucano-160m com 13× menos tokens.** Mesma classe de tamanho, mesma língua,
+mesmo holdout, mesmo procedimento de medição. Não é projeção.
