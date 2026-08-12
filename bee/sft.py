@@ -63,6 +63,12 @@ def parse_args() -> argparse.Namespace:
     ap.add_argument("--max-steps", type=int, default=-1, help="limita passos (smoke test)")
     ap.add_argument("--permitir-descarte", action="store_true",
                     help="segue mesmo com >1%% do dataset descartado por truncamento")
+    # ⚠️ 2026-08-12: sem isto, seq 2048 + batch 8 estoura os 8 GB da RTX 5070 (rodava na
+    # 5090 de 31 GB). Checkpointing recomputa ativacoes no backward: ~30% mais lento, mas
+    # cabe. Preferivel a baixar seq_len, que descartaria exemplos e — pior — mudaria a
+    # configuracao entre variantes, confundindo o efeito medido com o do comprimento.
+    ap.add_argument("--grad-checkpoint", action="store_true",
+                    help="recomputa ativacoes: cabe em GPU pequena, ~30%% mais lento")
     ap.add_argument("--dry-run", action="store_true")
     return ap.parse_args()
 
@@ -170,7 +176,7 @@ def main() -> int:
         max_steps=args.max_steps,
         per_device_train_batch_size=args.batch,
         gradient_accumulation_steps=args.grad_accum,
-        gradient_checkpointing=False,   # 150M nao precisa; checkpointing so custaria tempo
+        gradient_checkpointing=args.grad_checkpoint,
         learning_rate=args.lr,
         lr_scheduler_type="cosine",
         warmup_ratio=0.03,
