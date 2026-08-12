@@ -242,15 +242,21 @@ def main() -> int:
         print("=" * 72)
         print(f"pass@1  (media das {args.k} amostras)  {p1:6.1%}")
         print(f"pass@{args.k} (>=1 amostra correta)     {pk:6.1%}")
-        print(f"CAUDA APROVEITAVEL: {pk - p1:+.1f} pp" if False else
-              f"folga pass@{args.k} - pass@1        {(pk - p1) * 100:+5.1f} pp")
+        print(f"folga pass@{args.k} - pass@1        {(pk - p1) * 100:+5.1f} pp")
+        # ⚠️ O criterio de decisao e a folga ABSOLUTA e a fracao do espaco restante que a
+        # cauda captura — nunca uma razao pk/p1. A v1 usava `pk > p1 * 1.5` e declarou
+        # "sem cauda" para p1=52,3% / pk=72,9%: com p1 alto, exigir 1,5x equivale a exigir
+        # 78%, quase o teto. Criterio multiplicativo pune justamente o modelo que ja e bom.
+        captura = (pk - p1) / (1 - p1) if p1 < 1 else 0.0
+        print(f"do espaco que faltava, a cauda captura {captura:5.1%}")
         print()
-        if pk > p1 * 1.5 and pk - p1 > 0.05:
-            print("VEREDITO: ha cauda. Rejection sampling / STaR e VIAVEL neste modelo —")
-            print("          existem trajetorias corretas que um verificador barato reconhece.")
+        if (pk - p1) >= 0.05 and captura >= 0.15:
+            print("VEREDITO: HA CAUDA. Rejection sampling / STaR e VIAVEL neste modelo —")
+            print(f"          {round((pk - p1) * n_tool)} exemplos tem solucao correta que a geracao")
+            print("          gulosa nao acha, e um verificador deterministico as reconhece.")
         else:
-            print("VEREDITO: NAO ha cauda util. Amostrar nao produz acerto que o greedy nao ache.")
-            print("          Autoaprendizado por rejection sampling esta FECHADO aqui.")
+            print("VEREDITO: cauda insuficiente. Amostrar quase nao acrescenta ao greedy;")
+            print("          rejection sampling teria pouco o que colher.")
         resultado.update({"pass_1": round(p1, 4), f"pass_{args.k}": round(pk, 4)})
 
     duros = {k: v for k, v in por_ferramenta.items() if len(v) >= 4}

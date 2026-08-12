@@ -117,7 +117,62 @@ se sustentou. Os rótulos estão melhores do que supus.
 
 ---
 
-## 5. Como reproduzir
+## 5. ⭐ `pass@k` — autoaprendizado é viável neste modelo
+
+A pergunta "o Bee pode aprender sozinho?" tem uma medição que a decide, e não é o tamanho do
+modelo: **existe cauda?** Rejection sampling / STaR não exige que o modelo seja bom em média —
+exige que, amostrando várias vezes, apareçam trajetórias corretas que um verificador barato
+saiba reconhecer. Essas viram dado de treino.
+
+k=16, temperatura 0,8, mesmo holdout, correção decidida por execução:
+
+| | |
+|---|---:|
+| greedy (k=1) | 57,6% |
+| pass@1 (média das 16 amostras) | 52,3% |
+| **pass@16 (≥1 amostra correta)** | **72,9%** |
+| folga sobre pass@1 | **+20,6 pp** |
+| folga sobre o greedy | +15,3 pp |
+| fração do espaço restante capturada pela cauda | **43,2%** |
+
+Em exemplos concretos: **o greedy resolve 49/85; amostrando 16× resolve 62/85.** São
+**13 exemplos** com solução correta que a geração gulosa nunca encontra — e o executor
+determinístico as reconhece sem ambiguidade.
+
+**Veredito: há cauda, e é farta. O caminho de autoaprendizado offline está ABERTO** para este
+modelo nesta tarefa. Não por otimismo: 43,2% de tudo o que faltava está ao alcance de
+amostragem + verificação.
+
+E o padrão por ferramenta fica ainda mais nítido sob amostragem:
+
+| estruturado (cauda quase perfeita) | | texto livre (cauda pobre) | |
+|---|---:|---|---:|
+| get_stock_price | 9/9 = 100% | web_search | 2/13 = 15% |
+| list_dir | 10/10 = 100% | http_get | 1/4 = 25% |
+| send_email | 5/5 = 100% | calculator | 3/6 = 50% |
+| summarize_url | 7/7 = 100% | translate_text | 2/4 = 50% |
+| get_weather | 10/11 = 91% | | |
+| read_file | 9/10 = 90% | | |
+
+Isso diz onde colher: **as ferramentas de argumento estruturado estão praticamente resolvidas
+por amostragem** — é ali que o rejection sampling gera dado limpo quase de graça. As de texto
+livre continuam sendo o gargalo, e para elas a cauda não resolve.
+
+### 🔴 O veredito automático saiu errado na primeira vez, e o erro era do critério
+
+O script imprimiu **"NÃO há cauda útil"** com esses mesmos números. A condição que escrevi era
+`pass@k > pass@1 × 1,5` — critério **multiplicativo**, que é inadequado quando `pass@1` já é
+alto: com 52,3%, exigir 1,5× equivale a exigir 78,6%, quase o teto absoluto. Ele pune
+justamente o modelo que já vai bem.
+
+Corrigido para folga **absoluta** (≥5 pp) somada à **fração do espaço restante** capturada
+(≥15%) — que é o que de fato importa para saber se vale amostrar. Registrado aqui porque, se
+eu tivesse repassado a linha impressa sem conferir contra os números, teria fechado uma porta
+que está aberta.
+
+---
+
+## 6. Como reproduzir
 
 ```bash
 python comeia/eval/tools_exec.py                     # autoteste do executor (5 provas)
