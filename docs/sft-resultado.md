@@ -158,8 +158,10 @@ python bee/eval_sft.py --modelo /workspace/misto \
 
 | arquivo | bytes | sha256 | conteúdo |
 |---|---:|---|---|
-| `bee-150m-pt-final.tar.gz` | 560.900.848 | `9561458f…af5c4d86` | a **base** de 21,7B tokens (fp32) |
-| `bee-150m-pt-sft.tar.gz` | 239.678.970 | `d6805118…1488e0c7` | o **SFT final** = `v2_misto` (bf16) |
+| `bee-150m-pt-base.tar.gz` | 560.901.746 | `c575ea152cd9a9208f1f87895ecb85b4ef5b2dad3974762ba4f5ae9d583c23c6` | a **base** de 21,7B tokens (fp32) |
+| `bee-150m-pt-sft.tar.gz` | 239.679.300 | `65ee48a8975e3d2ac88b194b2b0732f652429afe97c157d871cf43d4f4e8364a` | o **SFT final** = `v2_misto` (bf16) |
+
+Ambos já com o model card (`README.md`) dentro, prontos para publicação.
 
 Config do SFT final: `--lr 6e-4 --epocas 2 --max-seq-len 2048 --batch 8 --grad-accum 4`
 (batch efetivo 32), sobre `sft_misto.jsonl` = `sft_ptbr` + `sft_agentic`, 7.152 exemplos.
