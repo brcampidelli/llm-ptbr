@@ -4,6 +4,13 @@
 corpus montado por nós, pesos inicializados aleatoriamente e treinados por nós. A aposta é o
 **português**: é o único lugar onde um modelo pequeno nosso pode ganhar de alguém.
 
+> ## 🤗 Baixe e use
+> **[`BrCamp/bee-150m-pt-base`](https://huggingface.co/BrCamp/bee-150m-pt-base)** — o modelo base (21,7B tokens, 0,844 bpb)
+> **[`BrCamp/bee-150m-pt-sft`](https://huggingface.co/BrCamp/bee-150m-pt-sft)** — ajustado por instruções, formato ChatML
+>
+> ⚠️ Leia a seção de limitações do card antes de usar: ele escreve português muito bem e
+> **inventa fatos com confiança**. Use onde o conhecimento vem no contexto.
+
 **Onde estamos (2026-08-12):** o pré-treino **terminou**. 21,7 bilhões de tokens 100% PT em 96,5 h
 de RTX 5090 (~US$ 97). O Bee mede **0,844 bpb** em português e **passa o Tucano-160m** (0,884) —
 que treinou com **9× mais tokens** — e o SmolLM2-135M (1,551) por 46%. Mesma arquitetura de sempre:

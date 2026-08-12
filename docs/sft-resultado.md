@@ -161,7 +161,23 @@ python bee/eval_sft.py --modelo /workspace/misto \
 | `bee-150m-pt-base.tar.gz` | 560.901.746 | `c575ea152cd9a9208f1f87895ecb85b4ef5b2dad3974762ba4f5ae9d583c23c6` | a **base** de 21,7B tokens (fp32) |
 | `bee-150m-pt-sft.tar.gz` | 239.679.300 | `65ee48a8975e3d2ac88b194b2b0732f652429afe97c157d871cf43d4f4e8364a` | o **SFT final** = `v2_misto` (bf16) |
 
-Ambos já com o model card (`README.md`) dentro, prontos para publicação.
+Ambos já com o model card (`README.md`) dentro.
+
+### Publicados (2026-08-12)
+
+- <https://huggingface.co/BrCamp/bee-150m-pt-base> — 604.740.496 B
+- <https://huggingface.co/BrCamp/bee-150m-pt-sft> — 302.385.584 B
+
+Verificado do Hub após subir: arquitetura `llama` 30×576, vocab 32.000, 3 KV heads,
+`chat_template` presente, e — o que decide se o modelo é usável — `eos_token_id` do SFT é
+**`[0, 2]`**, incluindo `<|im_end|>`. Sem isso ele geraria a resposta e emendaria um turno de
+usuário atrás do outro.
+
+⚠️ **`HF_HUB_DISABLE_XET=1` é obrigatório em container pequeno.** O `huggingface_hub` 1.x usa
+Xet por padrão, que deduplica em chunks **na RAM**. No pod CPU (512 MB de cgroup, enquanto
+`free` anunciava 755 GB do host) o upload rodava a 874 kB/s e foi **morto pelo OOM killer** aos
+149 MB. Com o Xet desligado: **28–34 MB/s** e nenhum problema — 32× mais rápido. A lentidão
+era sintoma do mesmo problema, não coincidência.
 
 Config do SFT final: `--lr 6e-4 --epocas 2 --max-seq-len 2048 --batch 8 --grad-accum 4`
 (batch efetivo 32), sobre `sft_misto.jsonl` = `sft_ptbr` + `sft_agentic`, 7.152 exemplos.
