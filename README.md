@@ -4,9 +4,10 @@
 corpus montado por nós, pesos inicializados aleatoriamente e treinados por nós. A aposta é o
 **português**: é o único lugar onde um modelo pequeno nosso pode ganhar de alguém.
 
-**Onde estamos (2026-08-08):** o Bee **existe, roda e passou no Gate 2**. Com **3 bilhões dos 21,7
-bilhões de tokens** do run atual, ele mede **0,947 bpb** em português — bate o SmolLM2-135M (1,551)
-por 39% e está a 7% do Tucano-160m (0,884), que treinou com **200 bilhões de tokens**.
+**Onde estamos (2026-08-12):** o pré-treino **terminou**. 21,7 bilhões de tokens 100% PT em 96,5 h
+de RTX 5090 (~US$ 97). O Bee mede **0,844 bpb** em português e **passa o Tucano-160m** (0,884) —
+que treinou com **9× mais tokens** — e o SmolLM2-135M (1,551) por 46%. Mesma arquitetura de sempre:
+o ganho veio inteiro de consertar o pipeline.
 
 > ## 🔴 Leia isto antes de qualquer coisa: **[docs/licoes-pretreino.md](docs/licoes-pretreino.md)**
 >
@@ -31,7 +32,7 @@ por 39% e está a 7% do Tucano-160m (0,884), que treinou com **200 bilhões de t
 
 ---
 
-## ⭐ GATE 2 — o Bee bate o SmolLM2 em português? **SIM** (2026-08-08)
+## ⭐ GATE 2 — o Bee bate o SmolLM2 em português? **SIM, e o Tucano também** (2026-08-12)
 
 bits-por-byte em holdout PT limpo (parquet 40 do `fineweb-2 por_Latn`, região que nenhuma coleta do
 Bee tocou). **Menor é melhor.** bpb é comparável entre tokenizadores diferentes — perplexidade não
@@ -39,14 +40,23 @@ seria.
 
 | modelo | tokens de treino | **bpb PT** | fertilidade |
 |---|---:|---:|---:|
-| Tucano-160m (PT nativo) | ~200B | **0,884** | 0,2074 |
-| **Bee-150M @ 3B tokens** | **3B** | **0,947** | **0,2183** |
-| **Bee-150M @ 1B tokens** | **1B** | **1,021** | **0,2183** |
+| ⭐ **Bee-150M FINAL** | **21,7B** | **0,844** | **0,2183** |
+| Tucano-160m (PT nativo) | ~200B | 0,884 | 0,2074 |
 | SmolLM2-135M | ~2T (inglês) | 1,551 | 0,3576 |
 | 🔴 Bee-150M-v3 (com o bug) | 9,87B | 2,218 | 0,2183 |
 
-**O run de 21,75B tokens 100% PT está em andamento** (RTX 5090, ~96 h, ~US$ 97). Marcos de scaling
-em 1B, 3B, 6B, 10B, 15B e 21B — a curva vira medição, não extrapolação.
+**Curva medida**, não extrapolada — os marcos foram salvos e medidos com o mesmo holdout e o mesmo
+procedimento das referências:
+
+| tokens | 1B | 3B | 6B | 10B | 15B | 21B | final |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| **bpb** | 1,021 | 0,947 | 0,920 | 0,897 | 0,870 | 0,845 | **0,844** |
+
+⚠️ **A previsão pré-registrada falhou o próprio critério de aceite.** Em
+[docs/previsao-marco-10B.md](docs/previsao-marco-10B.md) a curva `L(D)=E+A·D^-α` foi registrada
+**antes** de medir, com tolerância de ±0,015. No marco de 15B ela errou por 0,0161 — para o lado
+bom, mas errou. O critério foi honrado e as projeções, descartadas: um critério pré-registrado que
+ganha exceção depois de ver o resultado não serve para nada.
 
 **A prova qualitativa.** Mesmo código, mesma arquitetura, menos dados:
 
