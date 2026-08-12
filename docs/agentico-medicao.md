@@ -172,7 +172,75 @@ que está aberta.
 
 ---
 
-## 6. Como reproduzir
+## 6. Over-calling: não era over-calling
+
+Os 23,1% de "over-calling" (15/65) eram o pior número do modelo. Lendo os 15 casos um a um
+contra suas referências, quase nenhum era over-calling no sentido clássico:
+
+| pedido do usuário | o que falta | o que o Bee fez |
+|---|---|---|
+| "e-mail pra maria@… assunto 'Reunião remarcada'" | o **corpo** | inventou o corpo |
+| "agendar dia 10 às 11h30" | **mês e ano** | inventou `2025-04-10` |
+| "e-mail de agradecimento pra ana@corp.com" | assunto **e** corpo | inventou os dois |
+| "evento dia 31 às 16h" | mês e ano | inventou `2025-04-01` — e trocou o dia 31 por 01 |
+
+O dataset tem uma política coerente: **falta argumento obrigatório, pergunte — não invente.**
+O modelo faz o inverso. Isso é **confabulação de argumentos**, a mesma patologia do "escreve
+português excelente e inventa fatos com confiança", agora em tool use.
+
+A distinção muda o ataque. Decidir *se* a query precisa de ferramenta é semântico e difícil;
+verificar se o argumento **veio do texto do usuário** é sintático e decidível.
+
+### 🔴 A primeira versão da regra estava larga e errada
+
+Exigi ancoragem de `to`, `subject`, `body`, `path`, `city`, `ticker`, `url`, `text`. Rodada
+contra as 85 chamadas de **referência** — legítimas por definição — acusou 6 (**7,1% de falso
+positivo puro**). Cada uma ensinou a mesma coisa:
+
+```
+"Petrobras na Bovespa"   -> PETR4                 DERIVAÇÃO por conhecimento
+"BBC's RSS feed"         -> feeds.bbci.co.uk/...  DERIVAÇÃO por conhecimento
+"reclamando do atraso"   -> corpo redigido        REDAÇÃO a partir da intenção
+"dia 10/05 às 15h"       -> 2025-05-10T15:00      mês e dia ESTÃO no texto
+```
+
+Eu havia confundido **confabular** com **derivar**. O modelo pode e deve normalizar
+("Petrobras" → `PETR4`) e redigir (intenção → corpo). O que ele não pode é inventar o que não
+se deriva de lugar nenhum.
+
+Sobrou um único campo em que a evidência é decidível sem semântica: a **data**. "dia 31 às
+16h" não tem mês, e nenhum conhecimento do mundo diz qual é. **Regra estreita e correta vale
+mais que regra ampla e errada.**
+
+### O resultado, e um achado sobre o verificador que já existia
+
+| verificador | pega over-call | bloqueia legítima | **saldo** |
+|---|---:|---:|---:|
+| intenção (`verifier.py`, já existia) | 4/15 | 5/85 | **−1** |
+| **ancoragem (`ancoragem.py`)** | 3/15 | **0/85** | **+3** |
+| os dois em série | 7/15 | 5/85 | +2 |
+
+⭐ **O `verifier.py` tem saldo negativo: ele piora o sistema.** Bloqueia 5 chamadas legítimas
+para consertar 4 over-calls. Isso nunca tinha aparecido porque só se media o ganho — quantos
+over-calls ele pega — e nunca o custo. **Toda intervenção que bloqueia tem de ser medida nos
+dois lados**, ou o número é meia-verdade.
+
+Over-calling com a ancoragem: **23,1% → 18,5%**, custo zero, sem treinar nada.
+
+### O que sobra, e por que não é atacável por regra
+
+Os 12 residuais: `web_search` 4, `calculator` 4, `send_email` 4. Os de `send_email` são
+confabulação de corpo — e a fronteira entre "redigir a partir da intenção" (legítimo, a
+referência chama) e "inventar o corpo" (a referência recusa) é sutil demais para regra
+determinística. Os de `calculator` são expressão errada (`8/3` para uma pergunta de
+porcentagem, `17*(1+i)^n` para testar se 17 é primo) — erro de raciocínio, não de política.
+
+Para esses, o caminho é **dado de treino**: exemplos de "peça o que falta" em vez de inventar.
+É o item 6 do plano, e agora ele tem alvo nomeado.
+
+---
+
+## 7. Como reproduzir
 
 ```bash
 python comeia/eval/tools_exec.py                     # autoteste do executor (5 provas)
