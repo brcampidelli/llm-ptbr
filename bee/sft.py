@@ -38,12 +38,19 @@ def parse_args() -> argparse.Namespace:
     ap.add_argument("--dados", type=Path, default=DADOS)
     ap.add_argument("--eval", type=Path, default=EVAL)
     ap.add_argument("--out", type=Path, default=SAIDA)
-    ap.add_argument("--max-seq-len", type=int, default=1024,
-                    help="p90 dos dados e ~1112 tok; 1024 cobre a maioria e economiza VRAM")
-    ap.add_argument("--epocas", type=float, default=3.0,
-                    help="3 epocas em 5,6k exemplos — SFT tolera mais repeticao que pre-treino")
-    ap.add_argument("--lr", type=float, default=2e-5,
-                    help="full FT pede LR MUITO menor que o pre-treino (3e-3)")
+    # ⚠️ 2026-08-12: o default era 1024 e isso DESCARTAVA SILENCIOSAMENTE 100% dos
+    # exemplos agenticos (prompt de 1096-1191 tok so no catalogo de ferramentas: o
+    # prompt sozinho estoura o limite, a completion e truncada fora, o exemplo fica
+    # todo mascarado e o TRL o joga fora sem erro). 2048 = seq_len do pre-treino.
+    ap.add_argument("--max-seq-len", type=int, default=2048,
+                    help="teto do pre-treino; abaixo disso exemplos longos somem sem aviso")
+    # ⚠️ 2026-08-12: 3 epocas decorava (loss 1,850 contra 1,768 em 2) e 2e-5 era
+    # ordens de grandeza abaixo do otimo. Medido em varredura de 6 pontos sobre a
+    # base correta: ver docs/sft-resultado.md.
+    ap.add_argument("--epocas", type=float, default=2.0,
+                    help="medido: 1ep 1,800 · 2ep 1,768 · 3ep 1,850 (decora)")
+    ap.add_argument("--lr", type=float, default=6e-4,
+                    help="medido: minimo da curva em U (5e-5 a 2e-3), ruido de 0,001")
     # ⚠️ micro-batch 2 nao e timidez, e o teto fisico dos 8 GB. Medido na RTX 5070
     # (2026-08-04) com sequencia cheia de 1024: bs2 = 5,8 GB e 6,5 amostras/s;
     # bs4 = 10,7 GB — nao cabe, vaza pra RAM do host e despenca pra 1,0; bs8 leva
@@ -54,6 +61,8 @@ def parse_args() -> argparse.Namespace:
     ap.add_argument("--grad-accum", type=int, default=16, help="batch efetivo = batch * grad_accum")
     ap.add_argument("--save-steps", type=int, default=200)
     ap.add_argument("--max-steps", type=int, default=-1, help="limita passos (smoke test)")
+    ap.add_argument("--permitir-descarte", action="store_true",
+                    help="segue mesmo com >1%% do dataset descartado por truncamento")
     ap.add_argument("--dry-run", action="store_true")
     return ap.parse_args()
 
@@ -180,6 +189,23 @@ def main() -> int:
 
     trainer = SFTTrainer(model=modelo, args=cfg, train_dataset=ds_treino,
                          eval_dataset=ds_eval, processing_class=tok)
+
+    # ⚠️ GUARDA — ABORTA (2026-08-12). O TRL descarta em silencio todo exemplo que
+    # fica inteiramente mascarado (prompt >= max_length => completion truncada fora).
+    # Foi assim que um treino "misto" de 7.152 exemplos rodou 354 passos em vez de
+    # 447 e nao viu UM SO dos 1.495 exemplos agenticos — sem erro, sem aviso, com a
+    # loss caindo bonito. Mesma familia do bug de rotulos: dado some, nada reclama.
+    sobreviveram = len(trainer.train_dataset)
+    if sobreviveram < len(treino):
+        perdidos = len(treino) - sobreviveram
+        print(f"\n  DESCARTADOS por truncamento: {perdidos}/{len(treino)} "
+              f"({perdidos/len(treino):.1%}) com max_seq_len={args.max_seq_len}")
+        if perdidos / len(treino) > 0.01:
+            print("ERRO: mais de 1% do dataset sumiu antes do passo 1. Aumente "
+                  "--max-seq-len (ou passe --permitir-descarte se for intencional).",
+                  file=sys.stderr)
+            if not args.permitir_descarte:
+                return 1
 
     print("\ntreinando... (Ctrl+C interrompe; checkpoints a cada save_steps)")
     trainer.train()

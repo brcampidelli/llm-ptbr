@@ -81,10 +81,27 @@ def main() -> int:
         # train_dataset e exigido pelo construtor; nada e treinado — so evaluate().
         trainer = SFTTrainer(model=modelo, args=cfg, train_dataset=ds,
                              eval_dataset=ds, processing_class=tok)
+
+        # ⚠️ GUARDA (2026-08-12): o TRL descarta em SILENCIO todo exemplo que fica
+        # inteiramente mascarado — o que acontece quando o prompt sozinho ja passa de
+        # max_length e a completion e truncada fora. Foi assim que os 1.495 exemplos
+        # agenticos sumiram de um treino "misto" sem uma linha de erro. Sem esta
+        # checagem a loss sai de um subconjunto e ninguem percebe.
+        sobreviveram = len(trainer.eval_dataset)
+        if sobreviveram < len(exemplos):
+            perdidos = len(exemplos) - sobreviveram
+            print(f"  ⚠️  {perdidos}/{len(exemplos)} exemplos DESCARTADOS por truncamento "
+                  f"(max_seq_len={args.max_seq_len}) — aumente --max-seq-len")
+        if sobreviveram == 0:
+            print(f"ERRO: nenhum exemplo de {caminho.name} sobreviveu ao truncamento. "
+                  f"A metrica seria vazia.", file=sys.stderr)
+            return 1
+
         m = trainer.evaluate()
 
         resultados[caminho.name] = {
-            "exemplos": len(exemplos),
+            "exemplos": sobreviveram,
+            "descartados": len(exemplos) - sobreviveram,
             "eval_loss": round(m["eval_loss"], 4),
             "acuracia_token": round(m.get("eval_mean_token_accuracy", float("nan")), 4),
         }
