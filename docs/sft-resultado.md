@@ -1,96 +1,169 @@
-# Bee-150M v3 — resultado do SFT (2026-08-04)
+# SFT do Bee-150M — o que foi medido (2026-08-12)
 
-Full fine-tune do `bee-150m-v3` base em 5.657 instruções PT-BR, local na RTX 5070 8 GB.
+Primeiro pós-treino sobre a base **correta** (a de 21,7B tokens, 0,844 bpb). Tudo aqui foi
+medido no mesmo dia em que o pré-treino terminou, na mesma RTX 5090 que estava ociosa.
 
-## Config
+**Régua:** `eval_loss` no holdout de 300 exemplos PT (`sft_ptbr.eval.jsonl`), com a loss
+**mascarada no prompt** — o modelo é cobrado só pelo que ele responde, nunca pela pergunta
+que o usuário fez. Menor é melhor.
+
+---
+
+## 1. ⭐ O learning rate herdado estava errado — e ele veio do modelo bugado
+
+O LR de **1e-3** que este projeto vinha usando para SFT foi escolhido numa varredura de 6
+pontos feita **sobre o Bee-v3, o modelo que treinava para prever t+2**. Reusar aquele número
+sobre a base correta seria repetir em miniatura o erro que custou duas semanas: tratar uma
+medição feita sobre um artefato como se valesse para o modelo consertado.
+
+Remedido do zero (1 época, batch efetivo 32):
+
+| LR | 5e-5 | 1e-4 | 3e-4 | **6e-4** | 1e-3 | 2e-3 |
+|---|---:|---:|---:|---:|---:|---:|
+| eval_loss | 2,086 | 1,957 | 1,814 | **1,800** | 1,852 | 2,038 |
+| acurácia/token | 0,555 | 0,571 | 0,592 | **0,595** | 0,588 | 0,564 |
+
+Curva em U limpa, mínimo em **6e-4**. O 1e-3 herdado é **2,9% pior**.
+
+⭐ **E há uma medida de ruído embutida na varredura, de graça.** O ponto 1e-3 foi rodado duas
+vezes por acidente (uma vez isolado, como teste de fumaça, outra dentro da varredura):
+**1,853** e **1,852**. Repetibilidade de **0,001**. Isso torna a comparação decidível — a
+vantagem do 6e-4 é 0,052, ou seja **~50× o ruído**. Sem esse número, "1,800 contra 1,852"
+seria só uma impressão.
+
+## 2. O default do próprio script decorava
+
+`sft.py` vinha com `--epocas 3.0`. Medido com o LR já corrigido:
+
+| épocas | 1 | **2** | 3 |
+|---|---:|---:|---:|
+| eval_loss | 1,800 | **1,768** | 1,850 |
+| acurácia/token | 0,595 | **0,605** | 0,602 |
+
+Na terceira época a **acurácia por token continua alta (0,602) enquanto a loss piora** — a
+assinatura clássica de decorar: o modelo acerta o token mais provável com mais frequência,
+mas fica confiante demais e paga caro quando erra. Com 5.657 exemplos, duas épocas é o ponto.
+
+**Config final: `--lr 6e-4 --epocas 2 --batch 16 --grad-accum 2`** (batch efetivo 32).
+
+⚠️ O `--batch 2` que estava no default era o **teto físico da RTX 5070 de 8 GB**, não uma
+escolha de qualidade. Na 5090 cabe 16, e uma época leva 90 segundos.
+
+---
+
+## 3. 🔴 O SFT descartava 100% dos exemplos agênticos — sem erro, sem aviso
+
+Ao juntar `sft_ptbr` (5.657) + `sft_agentic` (1.495) num treino misto de 7.152 exemplos, o
+holdout PT **não se mexeu**: 1,7674 contra 1,7682 do só-PT, diferença de 0,0008 — dentro do
+ruído de 0,001 medido acima. Somar 1.495 exemplos de outro domínio e não mover nada é o tipo
+de resultado que não deveria acontecer.
+
+Não aconteceu mesmo. Os exemplos nunca entraram:
 
 | | |
 |---|---|
-| tipo | full fine-tune, 151,2M params (100% treináveis), bf16 — **sem LoRA** |
-| dados | `sft_ptbr.jsonl` 5.657 exemplos · holdout `sft_ptbr.eval.jsonl` 300 |
-| formato | `{prompt, completion}` → TRL mascara o prompt sozinho |
-| batch | micro 2 × grad_accum 16 = **32 efetivo** · seq 1024 |
-| LR | 2e-5 cosine, warmup 3% · 3 épocas · 531 passos |
-| tempo | **27,8 min** (10,2 amostras/s) |
+| prompt agêntico | **1.096–1.191 tokens** só no catálogo de ferramentas |
+| `--max-seq-len` (default) | **1.024** |
+| exemplos com total ≥ 1024 | **150 de 150** (100%) |
 
-## Curva
+Quando o prompt sozinho já passa de `max_length`, a *completion* é truncada fora, o exemplo
+fica **inteiramente mascarado**, e o TRL o descarta silenciosamente.
 
-| época | eval_loss | acurácia de token |
-|---:|---:|---:|
-| 0 (base) | 6,582 | 6,4% |
-| 1,13 | 3,887 | 27,7% |
-| 2,26 | 3,584 | 32,0% |
-| 3,00 | **3,581** | **32,0%** |
+⭐ **A confirmação numérica veio da contagem de passos.** O treino previu ~447 passos e
+executou **354** — exatamente 79,2%. E 1.495/7.152 = **20,9%**. Bate na casa decimal: nenhum
+dos exemplos agênticos entrou. O modelo "misto" era o só-PT com outro nome.
 
-⚠️ **A 3ª época não rendeu nada** (3,584 → 3,581; acurácia idêntica). Em 5,6k exemplos,
-2 épocas bastam — a 3ª é ~9 min de GPU jogados fora.
+**É a mesma família do bug de rótulos e da amostragem com reposição: dado some, nada
+reclama, e a loss continua caindo bonito.** Terceira vez neste projeto. A defesa agora está
+no código:
 
-## Veredito: o gate do SFT PASSOU
+- default `--max-seq-len` **1024 → 2048** (o `seq_len` do pré-treino)
+- `sft.py` **ABORTA** se mais de 1% do dataset for descartado por truncamento
+  (`--permitir-descarte` para o caso raro em que isso é intencional)
+- `eval_sft.py` reporta quantos foram descartados e recusa devolver métrica de conjunto vazio
 
-O gate declarado antes de treinar era *"o modelo aprendeu a forma de instrução?"*, não
-*"ficou bom"*. Passou:
+### O resultado depois da correção
 
-- **Aprendeu a parar.** O base emendava texto até o limite de tokens. O pós-SFT termina o
-  turno. (Exigiu corrigir o `eos` — ver abaixo.)
-- **Responde em vez de completar.** Em prompts **da distribuição de treino** (holdout, nunca
-  vistos) ele produz português gramatical, no tópico, com estrutura de resposta:
-  > *"Reescreva a frase para remover a ambiguidade…"* → `"O gerente do escritório viu o
-  > funcionário saindo do escritório e depois do almoço…"`
+Ambos com `--max-seq-len 2048`, zero descartes, `--lr 6e-4 --epocas 2`:
 
-  Está errado (não resolve a ambiguidade, repete), mas é **uma tentativa de executar a
-  tarefa** — coisa que o base não fazia.
+| modelo | treino | **holdout PT** | **holdout agêntico** |
+|---|---|---:|---:|
+| `ep_2` | 5.657 PT, seq 1024 | 1,7682 | *dados descartados* |
+| `v2_ptbr` | 5.657 PT, seq 2048 | **1,7517** | 2,1838 |
+| ⭐ `v2_misto` | 7.152 PT+ag, seq 2048 | 1,7592 | **1,0672** |
 
-## O que continua ruim, e por quê
+Duas leituras:
 
-**Perguntas curtas de conhecimento geral falham.** As 8 sondas (`docs/sonda-sft-v3.txt` vs
-`docs/sonda-base-v3.txt`) saem vazias ou incoerentes. Duas causas somadas:
+1. **Só corrigir o comprimento melhorou o português em 0,93%** (1,7682 → 1,7517). O
+   truncamento parcial já cobrava caro mesmo nos exemplos PT, que são bem mais curtos.
+2. **Somar o agêntico troca 0,43% de piora em PT por 51,1% de ganho no agêntico**
+   (2,1838 → 1,0672). A piora de 0,0075 é real — 7,5× o ruído — mas o câmbio é claramente
+   favorável. **`v2_misto` é o modelo final.**
 
-1. **Fora da distribuição.** O corpus de SFT é de instruções longas e elaboradas (mediana 463
-   tokens de resposta). *"O que é o Brasil?"* não se parece com nada que ele treinou.
-2. **O base não sabe os fatos.** bpb 3,457 contra 2,010 do SmolLM2 — o SFT ensina forma, não
-   conhecimento. Não havia como sair diferente.
+---
 
-**A distribuição de saída é quase plana.** O token mais provável na 1ª posição tem só 10–15%
-de massa, e costuma ser `'\n'`. Consequência prática: **decodificação gulosa colapsa** (gera
-quebras de linha), e só com amostragem (temp 0,7) o modelo escapa. Isso é assinatura de modelo
-subtreinado, não bug do SFT.
+## 4. O que ele escreve — e a divergência que importa
 
-**Sinal de que o SFT não absorveu tudo que podia:** 47% dos completions do treino começam com
-`'Claro'`, `'Aqui'` ou `'Para'`, e nenhuma dessas aparece no top-5 do modelo. Um SFT saturado
-teria aprendido essa distribuição trivial. Sugere que **LR 2e-5 é conservador demais** para
-151M — é LR de modelo de 7B. Para a próxima rodada: 1e-4 a 3e-4, 2 épocas.
+Sonda de 8 perguntas fixas (`bee/chat.py --sonda`), amostragem temperatura 0,7.
 
-## Dois bugs achados e corrigidos
+**A forma foi aprendida.** O modelo deixou de completar texto e passou a *responder*: abre
+com "Claro! Aqui está...", estrutura em listas, usa markdown, e **para no fim do turno**. Isso
+é exatamente o que um SFT deve entregar, e entregou.
 
-**1. O modelo não saberia parar.** O pré-treino deixou `eos_token_id = <|endoftext|>` (0), mas
-o `chat_template` fecha turno com `<|im_end|>` (2). Sem corrigir, o pós-SFT geraria a resposta e
-emendaria turnos de usuário inventados sem fim. `sft.py` agora aceita `[0, 2]` como fim de
-geração.
+**O conteúdo factual, não.** Dos 8, a maioria contém erro:
 
-**2. O micro-batch escolhido era 8× mais lento.** O tensor de logits é `batch × 1024 × 32000`,
-e a cross-entropy ainda faz upcast pra fp32. Medido na RTX 5070:
+| pergunta | resposta | veredito |
+|---|---|---|
+| capital de Minas Gerais | "é **Minas Gerais**" | ❌ (Belo Horizonte) |
+| liste 3 frutas brasileiras | "Mix de Frutas Tropicais" (1 item, não é fruta) | ❌ |
+| traduza "bom dia" | "Bom dia! Tradução sugerida: **boa tarde**" | ❌ nem traduziu |
+| quem foi Machado de Assis | 1839 ✅, *Brás Cubas* ✅, mas "São Paulo" ❌, "ficção científica" ❌ | parcial |
+| escreva uma frase sobre o mar | coerente e bem escrita | ✅ |
 
-| micro-batch | tempo/passo | throughput | VRAM |
-|---:|---:|---:|---:|
-| 2 | 0,31 s | **6,5 amostras/s** | 5,78 GB ✓ |
-| 4 | 4,02 s | 1,0 amostras/s | 10,67 GB — vaza pra RAM do host |
-| 8 | 510 s | 0,06 amostras/s | estouro total |
+⚠️ **E os fatos não erram de forma estável — eles variam entre rodadas.** Perguntado duas
+vezes sobre Machado de Assis, o modelo respondeu "nasceu em 1839" (correto) numa amostragem e
+"nasceu em 1831, em São Paulo" na outra. Isso é diagnóstico: ele não *tem* o fato guardado
+errado, ele está **amostrando plausibilidade** a cada geração. Nenhuma quantidade de SFT
+conserta isso.
 
-A partir de 4 não cabe nos 8 GB e o passo cai 13×. O Liger (fused linear+CE, usado no
-pré-treino) resolveria, mas **não instala com transformers 5.x**.
+⭐ **A leitura correta disso não é "o SFT falhou".** O SFT ensina *formato*, não *fatos* —
+conhecimento factual entra no pré-treino, e 150M parâmetros com 21,7B tokens simplesmente não
+comportam a capital de cada estado. O modelo faz o que essa escala permite: **fala português
+muito bem e inventa fatos com confiança**.
 
-## Verificações feitas (não assumidas)
+**A consequência prática é uma decisão de produto, não um defeito a consertar:** este modelo
+não serve para perguntas factuais de mundo aberto, e serve bem para tarefas em que o
+conhecimento **vem no contexto** — extração estruturada, resumo, reescrita, classificação.
+Que é precisamente o que a COMEIA faz, com `groundedness` já medida. Aumentar o SFT não muda
+isso; só um pré-treino maior mudaria.
 
-- Máscara de loss inspecionada nas labels reais do TRL: 81% dos tokens supervisionados, 1º
-  supervisionado é `'Aqui'` logo após `<|im_start|>assistant\n`, prompt inteiro em −100. ✓
-- Template formatado conferido: sem duplicação de `<|im_start|>assistant`. ✓
-- Pesos e tokenizer batem byte a byte com o repo HF (604.740.496 e 2.312.545 B). ✓
-- 16,3% dos completions passam de 1024 tokens e são truncados no treino. ⚠️ tolerável agora,
-  mas é perda real de supervisão nas respostas longas.
+---
 
-## Próximo passo
+## 4. Régua reutilizável
 
-O gargalo **não é o SFT** — é o base. Repetir SFT com LR maior dá ganho marginal sobre um base
-de bpb 3,457. As hipóteses que valem, em ordem, seguem as de `gate-2-resultado.md`:
-qualidade/composição do corpus, geometria (razão d_model/camadas 19,2 vs 85–130 dos modelos
-reais) e LR do pré-treino (3e-3, ~3× a referência).
+`bee/eval_sft.py` avalia qualquer modelo em qualquer holdout **reusando o próprio
+`SFTTrainer`** e importando a conversão `messages → prompt/completion` do `sft.py`. A máscara
+é idêntica por construção, em vez de reimplementada — que é como se mede outra coisa sem
+perceber.
+
+```bash
+python bee/eval_sft.py --modelo /workspace/misto \
+  --eval comeia/data/processed/sft_ptbr.eval.jsonl \
+         comeia/data/processed/sft_agentic.eval.jsonl
+```
+
+---
+
+## Artefatos
+
+| arquivo | bytes | sha256 | conteúdo |
+|---|---:|---|---|
+| `bee-150m-pt-final.tar.gz` | 560.900.848 | `9561458f…af5c4d86` | a **base** de 21,7B tokens (fp32) |
+| `bee-150m-pt-sft.tar.gz` | 239.678.970 | `d6805118…1488e0c7` | o **SFT final** = `v2_misto` (bf16) |
+
+Config do SFT final: `--lr 6e-4 --epocas 2 --max-seq-len 2048 --batch 8 --grad-accum 4`
+(batch efetivo 32), sobre `sft_misto.jsonl` = `sft_ptbr` + `sft_agentic`, 7.152 exemplos.
+
+⚠️ O primeiro pacote saiu com **1,62 GB** porque o `SFTTrainer` deixa `checkpoint-*` com
+estados do otimizador dentro de `output_dir`. Sempre remover antes de empacotar ou publicar —
+são ~1,4 GB de lixo que não serve a ninguém que baixe o modelo.

@@ -70,6 +70,33 @@ petróleo é verdadeira). Números ainda erram por ordens de grandeza, o que é 
 
 ---
 
+## SFT — o Bee virou assistente (2026-08-12)
+
+Detalhe em **[docs/sft-resultado.md](docs/sft-resultado.md)**. O resumo:
+
+| | eval_loss PT | eval_loss agêntico |
+|---|---:|---:|
+| SFT final (`--lr 6e-4 --epocas 2 --max-seq-len 2048`) | 1,7592 | **1,0672** |
+| só PT | **1,7517** | 2,1838 |
+
+Três defaults do próprio script estavam errados, e cada um foi medido em vez de herdado:
+
+- **LR 1e-3 → 6e-4.** O 1e-3 tinha sido otimizado **sobre o modelo bugado**. Curva em U de 6
+  pontos, com ruído de 0,001 medido por repetição acidental de um ponto.
+- **3 épocas → 2.** Na terceira a acurácia por token sobe e a loss piora: decorou.
+- 🔴 **`max-seq-len` 1024 → 2048.** O default descartava **100% dos exemplos agênticos** em
+  silêncio (prompt de 1.096–1.191 tokens só no catálogo de ferramentas). O treino rodou 354
+  passos em vez de 447 — 79,2%, e 1.495/7.152 = 20,9%, bate exato. **Terceira vez neste
+  projeto que dado some sem nada reclamar.** Agora `sft.py` aborta se >1% for descartado.
+
+⚠️ **O que o SFT não faz:** ele ensina formato, não fatos. O Bee responde em português
+excelente e **inventa fatos com confiança** — e os inventa *diferente a cada rodada* (Machado
+de Assis "nasceu em 1839" numa amostragem, "1831, em São Paulo" na outra). Isso é o esperado
+em 150M params e não se conserta com mais SFT. O modelo serve para tarefas em que o
+conhecimento **vem no contexto** — extração, resumo, reescrita — que é o que a COMEIA faz.
+
+---
+
 ## Estado atual — o que está medido
 
 ### ⭐ GATE 1 — fertilidade do tokenizador: **APROVADO** (2026-07-27)
