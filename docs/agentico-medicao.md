@@ -240,7 +240,91 @@ Para esses, o caminho é **dado de treino**: exemplos de "peça o que falta" em 
 
 ---
 
-## 7. Como reproduzir
+## 7. ⭐ Autoaprendizado por rejection sampling — o ciclo fechado
+
+O `pass@16` de 72,9% dizia que havia cauda. Este capítulo é o que aconteceu ao colhê-la.
+
+### Rodada 1 — funcionou, e cobrou noutro eixo
+
+Colhi 1.022 amostras corretas do **treino** (k=8, T=0,8, filtradas por execução): 621 dos 865
+exemplos válidos renderam algo — `pass@8` de **71,8%**, batendo com o `pass@16` do holdout.
+
+| | base | ref100 | Δ |
+|---|---:|---:|---:|
+| executou e cumpriu | 57,6% | 61,2% | +3,6 |
+| argumentos idênticos | 24,7% | 31,8% | +7,1 |
+| ⚠️ over-calling | 26,2% | **33,8%** | **+7,6** |
+
+O método entregou o que promete — mais consistência e argumentos melhores — e **piorou a
+decisão de chamar**. A causa é estrutural: o rejection sampling só produz `tool_call`, porque
+só a chamada tem verificação por execução. A proporção agêntica foi de 59,3% para **75,8%**
+de tool, e o modelo aprendeu a chamar mais.
+
+⭐ **Se eu tivesse medido só `exec_ok`, teria declarado vitória.** O ganho de 3 tarefas veio
+com 5 chamadas indevidas — saldo negativo, invisível em qualquer relatório de um eixo só.
+
+### O controle que evitou a conclusão errada: `pass@16`
+
+| | base | ref100 |
+|---|---:|---:|
+| pass@1 | 52,3% | **57,6%** |
+| pass@16 | 72,9% | **72,9%** |
+
+Zero mudança no teto. **Não houve estreitamento destrutivo** — o STaR converteu cauda em
+consistência, exatamente como a teoria diz. Isso separa "o método é ruim" de "a mistura está
+errada", e sem esse controle os dois pareceriam iguais.
+
+⭐ **A lei que fica: o rejection sampling move o piso em direção ao teto, e não move o teto.**
+A folga aproveitável caiu de 20,6 para 15,3 pp — cada iteração rende menos. Para levantar os
+72,9% seria preciso capacidade ou dado novo, não reamostrar o que já existe.
+
+### Rodada 2 — colheita SIMÉTRICA
+
+Se o problema é a proporção, colha os dois lados. Para `text` a decisão certa é **não
+chamar**, e isso é verificável. Mas reforçar texto do próprio Bee é arriscado — ele inventa
+fatos —, então a colheita passa por quatro guardas (`texto_aproveitavel`).
+
+**A guarda que fez o trabalho:** exigir que a resposta cubra ≥25% do vocabulário da
+referência. Ela sozinha rejeitou **1.542** amostras, mais que todas as outras somadas (924
+por chamarem ferramenta, 69 por repetição, 15 por tamanho). Sem ela, eu teria colhido mil e
+quinhentas respostas fluentes **sobre o assunto errado** — reforçando de propósito o vício
+que se quer conter.
+
+Colheita: **1.038 tool + 787 text = 56,9% tool**, contra 59,3% do original. Mistura final:
+8.977 exemplos, **58,0% tool**.
+
+### O resultado
+
+| | base | ref100 | ⭐ **simétrico** |
+|---|---:|---:|---:|
+| JSON válido | 87,1% | 82,4% | 84,7% |
+| ferramenta certa | 81,2% | 80,0% | 80,0% |
+| argumentos idênticos | 24,7% | 31,8% | **34,1%** |
+| ⭐ **executou e cumpriu** | 57,6% | 61,2% | **65,9%** |
+| ⚠️ **over-calling** | 26,2% | 33,8% | **21,5%** |
+| pass@1 | 52,3% | 57,6% | 57,0% |
+| pass@16 | 72,9% | 72,9% | 71,8% |
+
+**Ganhou nos dois eixos ao mesmo tempo**: +8,3 pp de execução sobre o baseline e −4,7 pp de
+over-calling — este último ficando **abaixo** até do modelo publicado (23,1%). Em casos:
+**+7 tarefas cumpridas, −3 chamadas indevidas**, saldo +10 (contra −2 do ref100).
+
+E o `pass@1` de 57,0% preserva o ganho de consistência do ref100 (57,6%) enquanto o `pass@16`
+de 71,8% mantém a cauda (72,9%, dentro do ruído).
+
+⚠️ **Honestidade estatística:** com n=85/65 os intervalos ainda se sobrepõem
+(execução [55,3–75,1] contra [47,0–67,6]). Nenhuma comparação isolada é conclusiva. O que dá
+força ao resultado é o **padrão simultâneo**: execução, argumentos, over-calling e `pass@1`
+melhoraram juntos, e `pass@16` não caiu. Quatro eixos concordando é evidência mais forte que
+qualquer um deles sozinho — mas confirmar exigiria um holdout maior.
+
+**Conclusão: o laço de autoaprendizado offline está fechado e é repetível** neste modelo de
+151M — contra o folclore de que exigiria 1B+. A condição nunca foi contagem de parâmetros:
+foi ter cauda (`pass@k > pass@1`) e um verificador barato e externo.
+
+---
+
+## 8. Como reproduzir
 
 ```bash
 python comeia/eval/tools_exec.py                     # autoteste do executor (5 provas)

@@ -25,8 +25,26 @@ O QUE ESTE SCRIPT FAZ:
     medicao obrigatoria depois do retreino e pass@k de novo: se pass@1 subir e pass@256
     cair, estreitamos a distribuicao sem ganhar capacidade (arXiv 2504.13837).
 
+⭐ COLHEITA SIMETRICA (--incluir-text), e por que ela e necessaria (medido 2026-08-12):
+    A v1 colhia so `tool_call`, porque so a chamada tem verificacao por execucao. Resultado
+    do A/B: a proporcao agentica foi de 59,3% para 75,8% de tool, e o modelo aprendeu a
+    chamar ferramenta com mais frequencia — over-calling 26,2% -> 33,8%. O metodo entregou
+    o que prometia (pass@1 52,3% -> 57,6%, argumentos exatos +7,1 pp) e cobrou noutro eixo.
+
+    O conserto nao e diminuir o reforco: e colher os DOIS lados. Para um exemplo `text`, a
+    decisao certa e NAO chamar — e isso e verificavel: se saiu texto em vez de JSON, o
+    modelo acertou a decisao.
+
+⚠️ MAS reforcar texto gerado pelo proprio Bee e arriscado: ele escreve portugues excelente
+    e INVENTA FATOS. Aceitar qualquer resposta em texto ensinaria a decisao certa com
+    conteudo errado. Por isso a colheita de `text` passa por quatro guardas deterministicas
+    (ver `texto_aproveitavel`): nao e JSON, tem tamanho plausivel, nao e degenerada por
+    repeticao, e cobre parte do vocabulario da referencia do professor — esta ultima e a
+    que impede colher uma resposta fluente sobre o assunto errado.
+
 Uso:
     python comeia/data/15_rejection_sampling.py --model BrCamp/bee-150m-pt-sft --k 8
+    python comeia/data/15_rejection_sampling.py --incluir-text     # colheita simetrica
 """
 
 from __future__ import annotations
@@ -53,6 +71,42 @@ TREINO = RAIZ / "data" / "processed" / "sft_agentic.jsonl"
 SAIDA = RAIZ / "data" / "processed" / "sft_agentic_reforco.jsonl"
 
 
+def _palavras(s: str) -> set[str]:
+    import re
+    import unicodedata
+    txt = unicodedata.normalize("NFKD", str(s)).encode("ascii", "ignore").decode().lower()
+    return {p for p in re.findall(r"[a-z0-9]+", txt) if len(p) > 3}
+
+
+def texto_aproveitavel(pred: str, ref: str, cobertura_min: float = 0.25) -> tuple[bool, str]:
+    """A resposta em texto do MODELO serve de reforco? (guardas deterministicas)
+
+    Para `tool_call` o juiz e a execucao. Para `text` nao ha o que executar, e o unico
+    fato verificavel e que o modelo NAO chamou ferramenta — acertou a DECISAO. So que
+    aceitar qualquer texto ensinaria a decisao certa junto com conteudo inventado, que e
+    a fraqueza conhecida deste modelo. Dai as guardas:
+    """
+    t = (pred or "").strip()
+    if not t:
+        return False, "vazia"
+    if len(t) < 25 or len(t) > 2500:
+        return False, "tamanho implausivel"
+
+    # degeneracao por repeticao: modelo pequeno costuma travar em loop
+    tokens = t.split()
+    if len(tokens) >= 12 and len(set(tokens)) / len(tokens) < 0.35:
+        return False, "degenerada (repeticao)"
+
+    # ⭐ a guarda que importa: falar bem sobre o assunto ERRADO nao serve de reforco.
+    # Exigimos que a resposta cubra parte do vocabulario da referencia do professor.
+    pr, rf = _palavras(t), _palavras(ref)
+    if rf:
+        cobertura = len(pr & rf) / len(rf)
+        if cobertura < cobertura_min:
+            return False, f"fora do assunto (cobre {cobertura:.0%} da referencia)"
+    return True, "ok"
+
+
 def main() -> int:
     for s in (sys.stdout, sys.stderr):
         try:
@@ -70,12 +124,15 @@ def main() -> int:
     ap.add_argument("--max-por-exemplo", type=int, default=2,
                     help="quantas amostras corretas guardar por exemplo (dedup antes)")
     ap.add_argument("--limit", type=int, default=0)
+    ap.add_argument("--incluir-text", action="store_true",
+                    help="colheita SIMETRICA: tambem reforca a decisao de NAO chamar")
     args = ap.parse_args()
 
     linhas = [r for r in read_jsonl(args.dados)]
     if args.limit:
         linhas = linhas[: args.limit]
     tool_rows = [r for r in linhas if r.get("kind") == "tool_call"]
+    text_rows = [r for r in linhas if r.get("kind") != "tool_call"] if args.incluir_text else []
 
     TE.garantir_fixtures()
 
@@ -155,12 +212,65 @@ def main() -> int:
             print(f"  {i}/{len(tool_rows)} · com acerto {aproveito:.1%} · "
                   f"{len(reforco)} amostras colhidas", flush=True)
 
+    # ── colheita SIMETRICA: reforcar a decisao de NAO chamar ──────────────────
+    n_text_ok = 0
+    motivos_rejeicao = Counter()
+    for i, row in enumerate(text_rows, 1):
+        msgs = list(row.get("prompt") or [])
+        ref = next((m["content"] for m in (row.get("completion") or [])
+                    if m["role"] == "assistant"), "")
+        txt = tok.apply_chat_template(msgs, tokenize=False, add_generation_prompt=True)
+        ent = tok(txt, return_tensors="pt").to(dev)
+        n = ent["input_ids"].shape[1]
+        with torch.no_grad():
+            g = modelo.generate(**ent, max_new_tokens=args.max_new, do_sample=True,
+                                temperature=args.temp, top_p=0.95,
+                                num_return_sequences=args.k,
+                                pad_token_id=tok.pad_token_id or tok.eos_token_id)
+        guardadas = 0
+        vistos_t: set[str] = set()
+        for seq in g:
+            if guardadas >= args.max_por_exemplo:
+                break
+            saida = tok.decode(seq[n:], skip_special_tokens=True).strip()
+            pred, _ = strip_think(saida)
+            if _d7.extract_json(pred) is not None:      # chamou ferramenta: errou a decisao
+                motivos_rejeicao["chamou ferramenta"] += 1
+                continue
+            ok, motivo = texto_aproveitavel(pred, ref)
+            if not ok:
+                motivos_rejeicao[motivo.split(" (")[0]] += 1
+                continue
+            chave = pred[:200]
+            if chave in vistos_t:
+                continue
+            vistos_t.add(chave)
+            guardadas += 1
+            reforco.append({"prompt": msgs,
+                            "completion": [{"role": "assistant", "content": pred}],
+                            "kind": "text", "origem": "rejection_sampling"})
+        if guardadas:
+            n_text_ok += 1
+        if i % 100 == 0 or i == len(text_rows):
+            print(f"  [text] {i}/{len(text_rows)} · {n_text_ok} com reforco", flush=True)
+
     n_val = stats["com_acerto"] + stats["sem_acerto"]
     print("\n" + "=" * 66)
     print(f"exemplos avaliados          {n_val}")
     print(f"  com >=1 amostra correta   {stats['com_acerto']}/{n_val} = "
           f"{stats['com_acerto']/max(1,n_val):.1%}   <- pass@{args.k} no TREINO")
     print(f"  sem nenhuma               {stats['sem_acerto']}/{n_val}")
+    if text_rows:
+        n_tool_ref = sum(1 for r in reforco if r["kind"] == "tool_call")
+        n_text_ref = len(reforco) - n_tool_ref
+        print(f"\ncolheita de TEXT (decisao de nao chamar)")
+        print(f"  exemplos com reforco      {n_text_ok}/{len(text_rows)} = "
+              f"{n_text_ok/max(1,len(text_rows)):.1%}")
+        print(f"  amostras                  {n_text_ref}")
+        print(f"  rejeitadas por: {dict(motivos_rejeicao.most_common(5))}")
+        prop = n_tool_ref / max(1, len(reforco))
+        print(f"\n⭐ reforco: {n_tool_ref} tool / {n_text_ref} text = {prop:.1%} tool")
+        print(f"   (o original e 59,3% tool — quanto mais perto, menos desloca a decisao)")
     print(f"amostras de reforco colhidas {len(reforco)}")
     if stats["ref_nao_executa"]:
         print(f"⚠️ referencias descartadas (nao executam): {stats['ref_nao_executa']}")
