@@ -4,6 +4,19 @@
   "fallback_bee": "base_forte",
   "bees": [
     {
+      "name": "multiturno",
+      "description": "Abelha REAL (2026-08-13): responder DEPOIS do retorno de uma ferramenta — o turno que o Bee nunca tinha visto. Dos 1.645 exemplos agenticos originais, ZERO tinham papel `tool`; o modelo emitia a chamada e, ao receber o resultado, respondia com OUTRA chamada em 90,6% dos casos. Adapter LoRA r=16 alpha=32 sobre BrCamp/bee-150m-pt-sft-v2, 864 dialogos gerados por EXECUCAO determinstica (comeia/data/17_gerar_multiturno.py: executa a chamada de referencia no mundo simulado e escreve a resposta por molde) — sem professor externo, sem alucinacao possivel no dado. 5,62M treinaveis (3,72%), 24 MB.\nMEDIDO em holdout de 85 (comeia/eval/eval_multiturno.py):\n  ancorado (cita o dado do retorno)  5,9% -> 91,8%\n  cita TODOS os valores              0,0% -> 57,6%\n  responde com outra tool call      90,6% -> 0,0%\n  contaminado (numero que nao veio)  1,2% -> 3,5%\n⭐ POR QUE ADAPTER E NAO FULL FT: o mesmo dado em full fine-tune deu 89,4% de ancoragem MAS custou -5,9 pp de execucao single-turn (65,9% -> 60,0%) e -7,0 pp de argumentos exatos. Num modelo de 151M a capacidade e disputada: habilidade nova cobra a antiga. Com adapter o backbone fica INTACTO (medido: 65,9% preservado, zero regressao), o resultado multi-turno e MELHOR (91,8% vs 89,4%), a contaminacao e METADE (3,5% vs 7,1%) e o artefato e 14x menor (24 MB vs 302 MB).\n⚠️ LR 1e-3, contra 6e-4 do full FT — LoRA opera em outro regime e herdar o LR teria custado: a varredura mediu 1e-4=1,062 / 3e-4=0,272 / 6e-4=0,128 / 1e-3=0,108.\n⚠️ A suspeita de decoreba (loss 0,108 e baixa demais para dado feito de moldes) foi REFUTADA pelos dados: o LR MAIOR produziu MENOS contaminacao (3,5% vs 7,1%). Se fosse memorizacao, o maior decoraria mais.",
+      "adapter_path": "${MULTITURNO_ADAPTER:-models/bee-multiturno-adapter}",
+      "priority": 5,
+      "fast_path": true,
+      "system_from_tool_catalog": true,
+      "system_prompt": null,
+      "triggers": [
+        "<\\|im_start\\|>tool",
+        "\"role\"\\s*:\\s*\"tool\""
+      ]
+    },
+    {
       "name": "agentica",
       "description": "Abelha REAL (Fase 1): tool-use / seguir-instrucao. Adapter treinado em 1495 exemplos (886 tool_call + 609 texto), 2 epocas, loss mascarada no prompt. train_loss 0,4848 | token acc 93,2% | entropia 0,2765. ⚠️ CORRIGIDO em 2026-07-25: o system_prompt escrito a mao aqui NAO listava as ferramentas, mas o adapter foi TREINADO com um que lista — pediamos tool-call sem dizer quais ferramentas existem. Agora `system_from_tool_catalog` monta o prompt pela MESMA funcao do treino (data/tool_catalog.py build_system), a partir de data/agentic_tools.json. Treino, avaliacao e producao passam a ler a mesma fonte.",
       "adapter_path": "${AGENTICA_ADAPTER:-/content/drive/MyDrive/qwen35-4b-agentica}",

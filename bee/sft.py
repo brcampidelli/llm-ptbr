@@ -69,6 +69,14 @@ def parse_args() -> argparse.Namespace:
     # configuracao entre variantes, confundindo o efeito medido com o do comprimento.
     ap.add_argument("--grad-checkpoint", action="store_true",
                     help="recomputa ativacoes: cabe em GPU pequena, ~30%% mais lento")
+    # ⚠️ 2026-08-13: full FT de multi-turno sobre o SFT custou -5,9 pp de execucao
+    # single-turn — num modelo de 151M a capacidade e disputada, e ensinar uma habilidade
+    # nova cobra outra. LoRA resolve pela arquitetura da COMEIA: o backbone fica INTACTO e
+    # a habilidade nova mora num adapter trocado a quente (hive.py::set_adapter).
+    ap.add_argument("--lora", action="store_true",
+                    help="treina ADAPTER LoRA em vez de full FT — preserva o backbone")
+    ap.add_argument("--lora-r", type=int, default=16)
+    ap.add_argument("--lora-alpha", type=int, default=32)
     ap.add_argument("--dry-run", action="store_true")
     return ap.parse_args()
 
@@ -165,7 +173,23 @@ def main() -> int:
     else:
         print("  AVISO: <|im_end|> nao existe no tokenizer — o modelo nao vai saber parar.")
     n_par = sum(p.numel() for p in modelo.parameters())
-    print(f"  parametros treinaveis: {n_par/1e6:.1f}M (100% — full fine-tune)")
+    if args.lora:
+        from peft import LoraConfig, get_peft_model
+        # todos os lineares do bloco: atencao (q/k/v/o) + MLP (gate/up/down). Num modelo
+        # deste tamanho o MLP carrega boa parte da capacidade — deixar so a atencao
+        # limitaria demais o que o adapter consegue aprender.
+        cfg_lora = LoraConfig(
+            r=args.lora_r, lora_alpha=args.lora_alpha, lora_dropout=0.05, bias="none",
+            task_type="CAUSAL_LM",
+            target_modules=["q_proj", "k_proj", "v_proj", "o_proj",
+                            "gate_proj", "up_proj", "down_proj"])
+        modelo = get_peft_model(modelo, cfg_lora)
+        treinaveis = sum(p.numel() for p in modelo.parameters() if p.requires_grad)
+        print(f"  LoRA r={args.lora_r} alpha={args.lora_alpha}: "
+              f"{treinaveis/1e6:.2f}M treinaveis de {n_par/1e6:.1f}M "
+              f"({treinaveis/n_par:.2%}) — backbone CONGELADO")
+    else:
+        print(f"  parametros treinaveis: {n_par/1e6:.1f}M (100% — full fine-tune)")
 
     ds_treino = Dataset.from_list(treino)
     ds_eval = Dataset.from_list(avaliacao) if avaliacao else None

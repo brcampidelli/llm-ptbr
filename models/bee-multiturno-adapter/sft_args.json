@@ -1,0 +1,19 @@
+{
+  "modelo": "BrCamp/bee-150m-pt-sft-v2",
+  "dados": "comeia\\data\\processed\\sft_multiturno.jsonl",
+  "eval": "comeia\\data\\processed\\sft_multiturno.eval.jsonl",
+  "out": "models\\lora_1e-3",
+  "max_seq_len": 2048,
+  "epocas": 2.0,
+  "lr": 0.001,
+  "batch": 2,
+  "grad_accum": 16,
+  "save_steps": 200,
+  "max_steps": -1,
+  "permitir_descarte": false,
+  "grad_checkpoint": true,
+  "lora": true,
+  "lora_r": 16,
+  "lora_alpha": 32,
+  "dry_run": false
+}
