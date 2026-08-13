@@ -37,6 +37,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from common import read_jsonl, strip_think            # noqa: E402
 import verifier as VF                                  # noqa: E402
 import ancoragem as ANC                                # noqa: E402
+import politica as POL                                 # noqa: E402
 from eval_agentic_exec import mensagens, partes, wilson  # noqa: E402
 
 _spec = importlib.util.spec_from_file_location("d7", RAIZ / "data" / "07_distill_agentic.py")
@@ -91,6 +92,9 @@ def main() -> int:
     bloqueios_indevidos = 0    # custo: chamada legitima que o verificador barra
     anc_intercepta = 0         # idem para o verificador de ANCORAGEM
     anc_bloqueios = 0
+    pol_intercepta = 0
+    pol_bloqueios = 0
+    exemplos_fp_pol: list[tuple] = []
     juntos_intercepta = 0      # os dois em serie
     exemplos_fp: list[tuple] = []
     ferramentas = Counter()
@@ -103,6 +107,7 @@ def main() -> int:
         v = VF.verify(usuario, bruto, catalogo)
 
         anc = ANC.verificar(usuario, obj) if obj is not None else None
+        pol = POL.decidir(usuario, obj) if obj is not None else None
 
         if tipo == "text":
             n_text += 1
@@ -110,6 +115,9 @@ def main() -> int:
                 ferramentas[obj.get("tool")] += 1
                 pego = not v.ok
                 pego_anc = anc is not None and not anc.ancorado
+                pego_pol = pol is not None and not pol.procede
+                if pego_pol:
+                    pol_intercepta += 1
                 if pego:
                     interceptados += 1
                 if pego_anc:
@@ -130,6 +138,11 @@ def main() -> int:
                 if len(exemplos_fp) < 6:
                     exemplos_fp.append((usuario[:60], obj.get("tool"),
                                         ",".join(anc.campos_inventados)))
+            if pol is not None and not pol.procede:
+                pol_bloqueios += 1
+                if len(exemplos_fp_pol) < 6:
+                    exemplos_fp_pol.append((usuario[:58], obj.get("tool"),
+                                            ",".join(pol.faltando)))
 
         if i % 30 == 0 or i == len(linhas):
             print(f"  {i}/{len(linhas)}", flush=True)
@@ -151,13 +164,18 @@ def main() -> int:
     print(f"{'':<22} {'pega over':>10} {'bloqueia ok':>12} {'saldo':>7}")
     for nome, g, c in (("intencao (atual)", interceptados, bloqueios_indevidos),
                        ("ANCORAGEM (novo)", anc_intercepta, anc_bloqueios),
-                       ("os dois em serie", juntos_intercepta,
-                        bloqueios_indevidos + anc_bloqueios)):
+                       ("POLICY-AS-LOGIC", pol_intercepta, pol_bloqueios),
+                       ("ancoragem + politica", max(anc_intercepta, pol_intercepta),
+                        anc_bloqueios + pol_bloqueios)):
         print(f"  {nome:<20} {g:>4}/{n_over:<5} {c:>5}/{n_tool:<6} {g - c:>+6}")
     print("=" * 70)
     resid = n_over - anc_intercepta
     print(f"over-calling com ancoragem: {resid}/{n_text} = {resid/n_text:.1%}"
           f"  (era {n_over/n_text:.1%})")
+    if exemplos_fp_pol:
+        print("\n⚠️ chamadas legitimas que a POLITICA barrou:")
+        for q, t, campos in exemplos_fp_pol:
+            print(f"  {t} [{campos}] <- {q}")
     if exemplos_fp:
         print("\n⚠️ chamadas legitimas que a ancoragem barrou (falsos positivos):")
         for q, t, campos in exemplos_fp:

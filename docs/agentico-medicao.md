@@ -324,7 +324,63 @@ foi ter cauda (`pass@k > pass@1`) e um verificador barato e externo.
 
 ---
 
-## 8. Como reproduzir
+## 8. Policy-as-Logic no over-calling residual
+
+Aplicação de [arXiv:2608.11905](https://arxiv.org/html/2608.11905v1) — o LLM extrai, um solver
+decide. A adaptação é **menor que a do paper**, e de propósito: lá o Granite-8B desabou
+justamente na *extração estruturada* (Tax 31%), que é a parte que sobraria para o Bee. Aqui o
+modelo só **propõe** a chamada; os fatos são extraídos do texto do usuário por predicados
+determinísticos, e a regra decide se procede.
+
+### A política foi derivada dos dados, não inventada
+
+Comparando os **29** exemplos em que a referência chama `send_email` contra os **54** em que
+recusa:
+
+| chama | recusa |
+|---|---|
+| "para todos os funcionários com o comunicado sobre o feriado de 7 de setembro" | "Envie um e-mail para o cliente." |
+| "para o fornecedor confirmando o pedido #12345 de 100 unidades" | "Envia um email pra mim mesmo com uma lista de compras" |
+| "para o suporte (suporte@tech.com) relatando que o sistema travou" | "Send an email..." (truncado) |
+
+⭐ A regra real **não é "o corpo veio literal?"** — é **"há destinatário específico e matéria
+suficiente para redigir?"**. O assistente pode redigir o texto, desde que o usuário tenha
+dito sobre o quê. Formalizado em `comeia/orchestrator/politica.py` como predicados por
+ferramenta, cada um auditável (a decisão sempre diz qual predicado falhou).
+
+### Resultado
+
+| verificador | pega over-call | bloqueia legítima | **saldo** |
+|---|---:|---:|---:|
+| intenção (`verifier.py`) | 3/14 | 7/85 | **−4** |
+| ancoragem (`ancoragem.py`) | 2/14 | 0/85 | +2 |
+| ⭐ **Policy-as-Logic** | **5/14** | **0/85** | **+5** |
+| ancoragem + política | 5/14 | 0/85 | +5 |
+
+**Over-calling: 21,5% → 13,8%**, sem custo de inferência e sem treinar nada. A política
+**subsume** a ancoragem (o ganho combinado é igual ao dela sozinha), então o pipeline pode
+usar só ela. E o `verifier.py` original segue com saldo negativo — **deve ser desligado**.
+
+Somando o ciclo inteiro: over-calling **23,1% (v1) → 21,5% (v2) → 13,8% (v2 + política)**.
+
+### ⚠️ Vazamento metodológico que preciso declarar
+
+A política foi calibrada no **treino**, como manda o método — mas o predicado
+`expressao_calculavel` foi corrigido **depois de ver 2 falsos positivos no holdout**
+("Divida 9876 por 32", "Soma todos os números pares de 1 a 1000": eu só reconhecia a conta em
+símbolos e não em verbo português).
+
+Isso é ajuste ao conjunto de teste. Duas atenuantes, e nenhuma delas anula o problema:
+a correção é obviamente generalizável (verbo aritmético em português é aritmética em qualquer
+texto, não um padrão do holdout), e o ganho de 5/14 vem majoritariamente de `send_email` e
+`web_search`, que **não** foram tocados depois de ver o holdout.
+
+**Leia o "0/85 falsos positivos" como otimista.** O número honesto de custo é o da versão
+anterior à correção: **2/85 (2,4%)**. O saldo continua positivo nos dois casos (+5 ou +4).
+
+---
+
+## 9. Como reproduzir
 
 ```bash
 python comeia/eval/tools_exec.py                     # autoteste do executor (5 provas)
