@@ -83,8 +83,19 @@ def main() -> int:
                     help="deixa o modelo raciocinar (<think>) antes de responder. "
                          "Padrao: DESLIGADO — na comeia raciocinio gasta os tokens do "
                          "fast-path (achado do teste na L4)")
+    # ⚠️ 2026-08-13: o verificador de INTENCAO (verifier.py) foi MEDIDO e tem saldo
+    # NEGATIVO — bloqueia 7 chamadas legitimas em 85 para consertar 3 over-calls em 14
+    # (saldo -4). Ele piora o sistema. Isso nunca aparecera antes porque so se media o
+    # ganho (quantos over-calls pega), nunca o custo (quantas boas bloqueia).
+    # Agora o padrao e a POLITICA (politica.py, Policy-as-Logic): 5/14 de ganho com
+    # 0-2/85 de custo, saldo +5. Ver docs/agentico-medicao.md secao 8.
+    ap.add_argument("--verificador", choices=("politica", "intencao", "nenhum"),
+                    default="politica",
+                    help="politica = Policy-as-Logic (padrao, saldo +5); "
+                         "intencao = verifier.py legado (saldo -4, so para A/B); "
+                         "nenhum = desliga")
     ap.add_argument("--no-verify", action="store_true",
-                    help="desliga o verificador deterministico de tool-call")
+                    help="atalho para --verificador nenhum")
     ap.add_argument("--max-retries", type=int, default=1,
                     help="tentativas corretivas por violacao. 1 basta: no interwhen o "
                          "PRIMEIRO feedback entrega o grosso do ganho (+32,6 pp)")
@@ -136,10 +147,21 @@ def main() -> int:
     violations: dict[str, int] = {}
     n_corrected = 0
 
+    modo = "nenhum" if args.no_verify else args.verificador
     tools = {}
-    if not args.no_verify:
-        import verifier as vf
+    vf = pol = d7 = None
+    if modo == "intencao":
+        import verifier as vf                                    # noqa: F811
         tools = vf._d7.load_tools()
+        print("⚠️ verificador de INTENCAO (legado): saldo medido -4. Use so para A/B.")
+    elif modo == "politica":
+        import importlib.util
+        import politica as pol                                   # noqa: F811
+        _s = importlib.util.spec_from_file_location(
+            "d7", Path(__file__).resolve().parent.parent / "data" / "07_distill_agentic.py")
+        d7 = importlib.util.module_from_spec(_s)
+        _s.loader.exec_module(d7)
+    print(f"verificador: {modo}")
 
     def answer(q: str) -> None:
         nonlocal n_corrected
@@ -151,22 +173,34 @@ def main() -> int:
         print(f"\n[{tag}] abelha={d.bee_name} ({dt:.1f}s) — {d.reason}")
 
         # ── laco de verificacao (padrao interwhen: verificar no laco, em codigo) ──
-        if not args.no_verify:
+        if modo != "nenhum":
             for attempt in range(args.max_retries + 1):
-                v = vf.verify(q, text, tools)
-                if v.ok:
+                if modo == "politica":
+                    # Policy-as-Logic: o modelo PROPOE, a regra DECIDE. Os fatos vem do
+                    # texto do usuario por predicados deterministicos — nao se pede
+                    # extracao estruturada ao modelo, que e onde um 8B ja falha.
+                    chamada = d7.extract_json(text)
+                    dec = pol.decidir(q, chamada)
+                    ok, rotulo, feedback = dec.procede, \
+                        ("falta:" + ",".join(dec.faltando) if dec.faltando else ""), \
+                        dec.feedback
+                else:
+                    v = vf.verify(q, text, tools)
+                    ok, rotulo, feedback = v.ok, v.violation, v.feedback
+
+                if ok:
                     if attempt:
                         n_corrected += 1
                     break
-                violations[v.violation] = violations.get(v.violation, 0) + 1
-                print(f"   ⚠️ verificador: {v.violation}")
+                violations[rotulo] = violations.get(rotulo, 0) + 1
+                print(f"   ⚠️ {modo}: {rotulo}")
                 if attempt >= args.max_retries:
                     print("   (sem tentativas restantes — devolvendo como esta)")
                     break
                 # retry com feedback corretivo injetado na query
-                print(f"   ↻ corrigindo: {v.feedback[:80]}")
+                print(f"   ↻ corrigindo: {feedback[:80]}")
                 text, dt2 = hive.generate(
-                    bee, f"{q}\n\n[CORREÇÃO OBRIGATÓRIA] {v.feedback}",
+                    bee, f"{q}\n\n[CORREÇÃO OBRIGATÓRIA] {feedback}",
                     max_new_tokens=args.max_new)
                 total_dt += dt2
 
@@ -193,14 +227,14 @@ def main() -> int:
     if latencies:
         print(f"latencia media: {sum(latencies)/len(latencies):.1f}s "
               f"(min {min(latencies):.1f}s / max {max(latencies):.1f}s)")
-    if not args.no_verify:
+    if modo != "nenhum":
         total_v = sum(violations.values())
         if total_v:
             det = " | ".join(f"{k}={v}" for k, v in sorted(violations.items()))
-            print(f"verificador: {total_v} violacao(oes) detectada(s) — {det}")
+            print(f"{modo}: {total_v} violacao(oes) detectada(s) — {det}")
             print(f"             {n_corrected} corrigida(s) no retry")
         else:
-            print("verificador: nenhuma violacao (todas as saidas passaram)")
+            print(f"{modo}: nenhuma violacao (todas as saidas passaram)")
     return 0
 
 
