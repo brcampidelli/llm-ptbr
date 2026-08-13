@@ -6,15 +6,22 @@ corpus montado por nós, pesos inicializados aleatoriamente e treinados por nós
 
 > ## 🤗 Baixe e use
 > **[`BrCamp/bee-150m-pt-base`](https://huggingface.co/BrCamp/bee-150m-pt-base)** — o modelo base (21,7B tokens, 0,844 bpb)
-> **[`BrCamp/bee-150m-pt-sft`](https://huggingface.co/BrCamp/bee-150m-pt-sft)** — ajustado por instruções, formato ChatML
+> **[`BrCamp/bee-150m-pt-sft-v2`](https://huggingface.co/BrCamp/bee-150m-pt-sft-v2)** — ajustado por instruções (v2: rejection sampling simétrico)
 >
 > ⚠️ Leia a seção de limitações do card antes de usar: ele escreve português muito bem e
 > **inventa fatos com confiança**. Use onde o conhecimento vem no contexto.
 
-**Onde estamos (2026-08-12):** o pré-treino **terminou**. 21,7 bilhões de tokens 100% PT em 96,5 h
+**Onde estamos (2026-08-13):** o pré-treino terminou e o Bee virou **agente medido**. 21,7 bilhões de tokens 100% PT em 96,5 h
 de RTX 5090 (~US$ 97). O Bee mede **0,844 bpb** em português e **passa o Tucano-160m** (0,884) —
 que treinou com **9× mais tokens** — e o SmolLM2-135M (1,551) por 46%. Mesma arquitetura de sempre:
 o ganho veio inteiro de consertar o pipeline.
+
+Depois disso ele ganhou SFT medido por **execução** (65,9% de tarefas cumpridas), um ciclo de
+autoaprendizado que fechou, uma política determinística que levou o over-calling de 23,1% a
+**13,8%**, e uma abelha multi-turno em adapter de 24 MB (ancoragem 5,9% → **91,8%**) sem tocar
+no backbone. ⭐ **Antes de treinar qualquer Bee novo, leia
+[docs/licoes-de-metodo.md](docs/licoes-de-metodo.md)** — os cinco erros que este projeto pagou
+não davam erro nenhum.
 
 > ## 🔴 Leia isto antes de qualquer coisa: **[docs/licoes-pretreino.md](docs/licoes-pretreino.md)**
 >
@@ -101,6 +108,45 @@ excelente e **inventa fatos com confiança** — e os inventa *diferente a cada 
 de Assis "nasceu em 1839" numa amostragem, "1831, em São Paulo" na outra). Isso é o esperado
 em 150M params e não se conserta com mais SFT. O modelo serve para tarefas em que o
 conhecimento **vem no contexto** — extração, resumo, reescrita — que é o que a COMEIA faz.
+
+---
+
+## ⭐ O Bee agêntico — medido por EXECUÇÃO (2026-08-13)
+
+Detalhe: **[docs/agentico-medicao.md](docs/agentico-medicao.md)** ·
+**[docs/multiturno-adapter.md](docs/multiturno-adapter.md)**
+
+Até 12/08 o projeto tinha **zero** métricas funcionais do Bee em uso de ferramentas — só
+`eval_loss`, que mede predição de token, não acerto. Hoje a régua é **executar a chamada** num
+mundo simulado determinístico e comparar com a referência.
+
+| | v1 | **v2** |
+|---|---:|---:|
+| ⭐ executou e cumpriu a tarefa | 57,6% | **65,9%** |
+| ⚠️ over-calling | 26,2% | **21,5%** → **13,8%** com regra |
+| argumentos idênticos | 24,7% | **34,1%** |
+| pass@1 / pass@16 | 52,3% / 72,9% | **57,0% / 71,8%** |
+
+**As quatro peças que compõem o agente**, cada uma medida:
+
+| capacidade | onde vive | resultado |
+|---|---|---|
+| português | backbone (21,7B tokens) | **0,844 bpb** |
+| chamar ferramenta | `BrCamp/bee-150m-pt-sft-v2` | 65,9% de execução |
+| **não** chamar à toa | `orchestrator/politica.py` (Policy-as-Logic) | over-calling 13,8% |
+| responder após ferramenta | adapter LoRA de **24 MB** | ancoragem 5,9% → **91,8%** |
+
+### O que saiu daqui e vale para o próximo Bee
+
+- ⭐ **Autoaprendizado fecha em 151M.** Rejection sampling com verificador **externo** por
+  execução: `pass@1` 52,3 → 57,6%. Mas o **teto não se move** (`pass@16` 72,9 → 72,9%) — o
+  método move o piso rumo ao teto, e só escala ou dado novo levanta o teto.
+- ⭐ **Capacidade é disputada.** Ensinar multi-turno por full fine-tune custou −5,9 pp de
+  execução single-turn; em **adapter LoRA** custou **zero** e ficou melhor no alvo. É a
+  validação da tese da COMEIA — backbone congelado, capacidade em adapter.
+- ⚠️ **O `verifier.py` estava piorando o sistema** havia semanas (saldo −4: bloqueava 7
+  chamadas boas para consertar 4 ruins). Ninguém sabia porque só se media o ganho, nunca o
+  custo. Hoje o padrão é a política.
 
 ---
 
@@ -205,6 +251,13 @@ FineWeb-Edu descartou **91%** do corpus e subiu MMLU 33→37% e ARC 46→57%, ig
 10× menos tokens. **Corpus menor e melhor, não maior.**
 
 ### SFT — o gate de FORMA passou, o de CONTEÚDO não
+
+> 🔴 **OS NÚMEROS DESTA SUBSEÇÃO SÃO HISTÓRICOS E NÃO VALEM MAIS.** Toda a varredura abaixo
+> foi medida **sobre o Bee-v3, o modelo que treinava para prever t+2**. Remedida sobre a base
+> correta, a curva é outra e o ótimo é **6e-4**, não 1e-3 — ver
+> [docs/sft-resultado.md](docs/sft-resultado.md). Mantido aqui porque a *lição* continua
+> válida: a intuição "modelo pequeno, passo pequeno" é invertida, e parar a varredura antes
+> de ver a curva subir promove um vencedor falso.
 
 | | dados | LR | nll (holdout antigo) | nll (holdout BNCC) | acurácia | sondas vazias |
 |---|---:|---:|---:|---:|---:|---:|
@@ -378,11 +431,29 @@ python bee/train_tokenizer.py --corpus bee/corpus --vocab 32000
 # Gate 2 — bits-por-byte contra o SmolLM2
 python bee/eval_gate2.py --bee <modelo> --rival HuggingFaceTB/SmolLM2-135M
 
-# SFT local (RTX 5070 8 GB, ~19 min) — LR 1e-3 é o ótimo medido; micro-batch 2 é teto de VRAM
-python bee/sft.py --modelo <base> --dados comeia/data/processed/sft_combinado.jsonl --lr 1e-3
+# SFT — os defaults JA SAO os medidos (lr 6e-4, 2 epocas, seq 2048). Nao passar --lr 1e-3:
+# aquele numero foi otimizado sobre o modelo BUGADO. Ver docs/sft-resultado.md
+python bee/sft.py --modelo BrCamp/bee-150m-pt-base \
+  --dados comeia/data/processed/sft_misto.jsonl \
+  --eval comeia/data/processed/sft_ptbr.eval.jsonl --out models/meu-sft
+# na RTX 5070 (8 GB) acrescente: --batch 2 --grad-accum 16 --grad-checkpoint
 
-# Conversar com o resultado
+# Adapter LoRA (capacidade nova SEM tocar no backbone — ver docs/multiturno-adapter.md)
+python bee/sft.py --modelo BrCamp/bee-150m-pt-sft-v2 --lora --lr 1e-3 \
+  --dados comeia/data/processed/sft_multiturno.jsonl --out models/meu-adapter
+
+# ── AVALIAR (o que decide, e nao a loss) ──
+# tool-use por EXECUCAO + pass@k
+python comeia/eval/eval_agentic_exec.py --model BrCamp/bee-150m-pt-sft-v2 --k 1
+python comeia/eval/eval_agentic_exec.py --model BrCamp/bee-150m-pt-sft-v2 --k 16 --temp 0.8
+# o turno depois do retorno da ferramenta
+python comeia/eval/eval_multiturno.py --model BrCamp/bee-150m-pt-sft-v2 \
+  --peft models/bee-multiturno-adapter
+
+# Conversar com o resultado (SEMPRE com o catalogo no system, senao ele nao sabe que a
+# ferramenta existe)
 python bee/chat.py --sonda
+python bee/chat.py --system comeia/data/agentic_system.txt
 ```
 
 ---
@@ -438,4 +509,4 @@ por hora e sai **36% mais cara por token** — rodava a 99% de utilização usan
 em 200,0 W: saturada eletricamente. Nesse regime, batch maior é *pior*, Liger rende **0%** e
 `torch.compile` rende **+17%**.
 
-Última atualização: 2026-08-08.
+Última atualização: 2026-08-13.

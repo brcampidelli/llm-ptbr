@@ -50,3 +50,8 @@ bee/edu/
 corpus_pt/
 gate_pt/
 comeia/eval/fixtures/
+
+# corpus de 22B reconstruido localmente (41 GB) e logs de corrida
+dados_pt_22b/
+*.log
+bee/bncc/*.pdf
