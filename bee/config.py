@@ -47,6 +47,17 @@ class BeeConfig:
     vocab: int = VOCAB
     rope_theta: float = 10_000.0
     tied_embeddings: bool = True
+    # ⭐ "llama" ou "qwen3". Qwen3 É Llama + QK-Norm — mesmo SwiGLU, RoPE, RMSNorm, GQA,
+    # e igualmente suportado por PEFT/TRL/vLLM. O estudo do 350M pede QK-Norm (arXiv:2602.02522,
+    # ablação num proxy de 70M — ABAIXO do Bee-150M — mede −0,63% de loss e protege contra
+    # instabilidade de atenção). `LlamaConfig` não tem QK-Norm; implementá-lo exigiria código
+    # de modelagem custom, que é exatamente o que este arquivo se recusa a fazer.
+    # Trocar a FAMÍLIA resolve sem custom code, e custa 4,1k params (0,001% do modelo).
+    arquitetura: str = "llama"
+
+    @property
+    def qk_norm(self) -> bool:
+        return self.arquitetura == "qwen3"
 
     # ---------------------------------------------------------------- contas ---
     @property
@@ -113,7 +124,16 @@ class BeeConfig:
 # modelo real do transformers em `--verificar`.
 ESCADA = {
     "150m": BeeConfig("Bee-150M", n_camadas=30, d_model=576,  n_heads=9,  n_kv_heads=3,  intermediate=2048),
-    "350m": BeeConfig("Bee-350M", n_camadas=28, d_model=1024, n_heads=16, n_kv_heads=4,  intermediate=2816),
+    # ⭐ 350M — geometria do **SmolLM2-360M**, recipe publicado na MESMA escala. O 150M já provou
+    # que copiar recipe publicado nesta faixa funciona (bpb 0,844, batendo o Tucano-160m que usou
+    # 9× mais tokens). Ver docs/estudo-bee-350m.md §4.1.
+    # ⚠️ EVIDÊNCIA DIVIDIDA sobre a razão d_model/camadas: aqui 960/32 = 30,0; o LilMoo
+    # (arXiv:2603.03508, 670M hindi — o único ponto MEDIDO perto desta escala) usa 54,9. O estudo
+    # marcou o gate pareado de geometria como US$ 40 e OPCIONAL. Ficamos com o recipe publicado.
+    # ⚠️ intermediate 2560 = 2,67× d_model, seguindo o SmolLM2-360M. O Bee-150M usa 3,556× — o
+    # desvio é do recipe de origem e NÃO foi medido por nós.
+    "350m": BeeConfig("Bee-350M", n_camadas=32, d_model=960,  n_heads=15, n_kv_heads=5,
+                      intermediate=2560, arquitetura="qwen3"),
     "500m": BeeConfig("Bee-500M", n_camadas=27, d_model=1280, n_heads=20, n_kv_heads=4,  intermediate=3456),
     "1b":   BeeConfig("Bee-1B",   n_camadas=28, d_model=1792, n_heads=28, n_kv_heads=4,  intermediate=4864, seq_len=4096),
     "4b":   BeeConfig("Bee-4B",   n_camadas=40, d_model=3072, n_heads=24, n_kv_heads=8,  intermediate=8192, seq_len=4096),
@@ -122,8 +142,52 @@ ESCADA = {
 VRAM_L4_GB = 22.0
 
 
+def para_hf_config(cfg: BeeConfig):
+    """Converte para o config do transformers. **Zero código de modelagem custom.**
+
+    Llama e Qwen3 são a mesma arquitetura mais QK-Norm; a escolha vive no `BeeConfig`.
+    """
+    comum = dict(
+        vocab_size=cfg.vocab,
+        hidden_size=cfg.d_model,
+        intermediate_size=cfg.intermediate,
+        num_hidden_layers=cfg.n_camadas,
+        num_attention_heads=cfg.n_heads,
+        num_key_value_heads=cfg.n_kv_heads,      # GQA
+        max_position_embeddings=cfg.seq_len,
+        rope_theta=cfg.rope_theta,               # em transformers 5.x vira rope_parameters
+        tie_word_embeddings=cfg.tied_embeddings,
+        hidden_act="silu",                        # SwiGLU
+        rms_norm_eps=1e-5,
+        attention_bias=False,
+        bos_token_id=0, eos_token_id=0, pad_token_id=3,
+    )
+    if cfg.arquitetura == "qwen3":
+        from transformers import Qwen3Config
+        # ⚠️ head_dim EXPLÍCITO: o Qwen3 o trata como campo próprio, e deixar implícito é
+        # convite a divergir de d_model/n_heads sem ninguém notar.
+        # ⚠️ use_sliding_window=False: o Qwen3 traz janela deslizante opcional, e ela mudaria
+        # o modelo sem aparecer em lugar nenhum do log.
+        return Qwen3Config(**comum, head_dim=cfg.d_model // cfg.n_heads,
+                           use_sliding_window=False)
+    from transformers import LlamaConfig
+    return LlamaConfig(**comum, mlp_bias=False)
+
+
+def classe_do_modelo(cfg: BeeConfig):
+    if cfg.arquitetura == "qwen3":
+        from transformers import Qwen3ForCausalLM
+        return Qwen3ForCausalLM
+    from transformers import LlamaForCausalLM
+    return LlamaForCausalLM
+
+
 def para_llama_config(cfg: BeeConfig):
-    """Converte para o `LlamaConfig` do transformers. Zero código de modelagem custom."""
+    """Compatibilidade com chamadas antigas. Prefira `para_hf_config`."""
+    return para_hf_config(cfg)
+
+
+def _antigo_para_llama_config(cfg: BeeConfig):
     from transformers import LlamaConfig
     return LlamaConfig(
         vocab_size=cfg.vocab,
@@ -193,6 +257,7 @@ def detalhe(cfg: BeeConfig) -> str:
         f"  {cfg.n_heads} heads (head_dim {cfg.head_dim}) · {cfg.n_kv_heads} KV heads (GQA "
         f"{cfg.n_heads // cfg.n_kv_heads}x) · seq_len {cfg.seq_len}",
         f"  vocab {cfg.vocab} · tied_embeddings {cfg.tied_embeddings} · RoPE theta {cfg.rope_theta:.0f}",
+        f"  arquitetura {cfg.arquitetura}" + ("  ⭐ QK-Norm ligado" if cfg.qk_norm else "  (sem QK-Norm)"),
         "-" * 76,
         f"  parametros            {cfg.params/1e6:>10.1f}M",
         f"    embedding           {p_emb/1e6:>10.1f}M  ({100*p_emb/cfg.params:.0f}% do total)",
@@ -239,9 +304,8 @@ def main() -> int:
         # e contamos os tensores. Se divergir mais de 1%, o erro esta aqui, nao la.
         print("\ninstanciando o modelo real para conferir a conta…")
         import torch
-        from transformers import LlamaForCausalLM
         with torch.device("meta"):                    # sem alocar memoria de verdade
-            modelo = LlamaForCausalLM(para_llama_config(cfg))
+            modelo = classe_do_modelo(cfg)(para_hf_config(cfg))
         real = sum(p.numel() for p in modelo.parameters())
         # com tying, o transformers conta a matriz uma vez so — igual a nossa formula
         erro = abs(real - cfg.params) / real

@@ -34,6 +34,20 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "bee"))
 
 
+def perda_do_lote(modelo, x):
+    """⭐ O UNICO lugar deste arquivo que chama o modelo com `labels=`.
+
+    Existe para que haja **um** call site a auditar, e para que
+    `conferir_convencao_de_rotulos()` possa testa-lo por espionagem em vez de por
+    magnitude de loss (que e' cega num modelo recem-inicializado).
+
+    O rotulo e' o PROPRIO `x`: o transformers desloca por dentro
+    (`loss = CE(logits[..., :-1, :], labels[..., 1:])`). Passar `x[1:]` desloca duas
+    vezes e treina o modelo para prever t+2 — o bug que custou duas semanas e ~US$ 34.
+    """
+    return modelo(input_ids=x, labels=x).loss
+
+
 def conferir_convencao_de_rotulos(modelo, x, dev) -> None:
     """🔴 GUARDA CONTRA DESLOCAMENTO DUPLO DE ROTULOS — o bug que custou o projeto inteiro.
 
@@ -59,15 +73,76 @@ def conferir_convencao_de_rotulos(modelo, x, dev) -> None:
     """
     import torch
     import torch.nn.functional as F
+
+    # ------------------------------------------------------------------ 1) ESTRUTURAL
+    # 🔴 A VERSAO ANTERIOR DESTA GUARDA NAO PEGAVA O BUG QUE ELA EXISTE PARA PEGAR.
+    # Ela comparava magnitudes de loss — e roda ANTES do passo 1, com o modelo recem
+    # inicializado, cujas previsoes sao ~uniformes sobre o vocabulario. Prever t+1 ou t+2
+    # da praticamente a MESMA loss (~ln 32000 = 10,37). Medido no proprio Bee-350M:
+    #     convencao correta (labels=x) : 10,5384
+    #     convencao errada  (labels=y) : 10,5414   -> diferenca de 0,003
+    # O limiar era 0,01. **A guarda passaria com o bug ativo.** A regra do projeto avisava
+    # sobre *tokens aleatorios*; o problema real e' o *modelo aleatorio*, e acontece mesmo
+    # com dado de treino real.
+    #
+    # A correcao e' estrutural, nao numerica: o unico jeito de o bug voltar e' alguem mudar
+    # o call site, entao e' o call site que tem de ser testado. `perda_do_lote()` e' o UNICO
+    # lugar do arquivo que chama o modelo com `labels=`, e o espiao abaixo confere que o
+    # tensor de rotulos e' **o mesmo objeto** do de entrada. Exato, instantaneo, e vale em
+    # qualquer estado de treino.
+    class _EspiaoDeRotulos:
+        visto = None
+
+        def __call__(self, input_ids=None, labels=None, **kw):
+            _EspiaoDeRotulos.visto = (input_ids, labels)
+            from types import SimpleNamespace
+            return SimpleNamespace(loss=torch.zeros((), device=input_ids.device), logits=None)
+
+    espiao = _EspiaoDeRotulos()
+    perda_do_lote(espiao, x[:1])
+    ids_vistos, rot_vistos = _EspiaoDeRotulos.visto
+    # ⚠️ igualdade de VALOR, nao identidade de objeto: `labels=x.clone()` e' correto e a
+    # versao por identidade abortava nele — falso positivo. `torch.equal` aceita o clone e
+    # continua rejeitando qualquer deslocamento (o shift muda o shape, entao nem compara).
+    ok = (ids_vistos is not None and rot_vistos is not None
+          and rot_vistos.shape == ids_vistos.shape and torch.equal(rot_vistos, ids_vistos))
+    if not ok:
+        raise SystemExit("\n".join((
+            "",
+            "🔴 ABORTADO: o call site passa um tensor de rotulos DIFERENTE do de entrada.",
+            "   O modelo ja desloca por dentro — o rotulo tem de ser o PROPRIO input.",
+            "   Confira `perda_do_lote()`.")))
+    print("  convencao    ✅ call site passa labels == input_ids (teste estrutural, exato)")
+
+    # ------------------------------------------------------------------ 2) SEMANTICO
+    # Confere que a formula do transformers e' a que supomos — se uma versao futura parar
+    # de deslocar por dentro, `labels=x` passa a estar errado e nada avisaria.
+    #
+    # ⚠️ ESTE TESTE TEM POUCO PODER ANTES DO PASSO 1, E ISSO E' DECLARADO EM VEZ DE
+    # DISFARCADO. Num modelo recem-inicializado as previsoes sao quase uniformes, entao
+    # t+1 e t+2 dao quase a mesma loss (medido: 10,5384 vs 10,5414). Tentei dar 30 passos
+    # de sobreajuste para dar poder ao teste e foi PIOR: com AdamW estourou os 8 GB da 5070,
+    # e com SGD lr=0,5 o modelo COLAPSOU para uniforme exato (loss 10,3735 = ln 32000) —
+    # t+1 e t+2 passaram a empatar em 0,0000, isto e, o remedio cegou o teste que vinha
+    # curar. Um teste que danifica o modelo para ganhar poder marginal e depois se declara
+    # cego e' pior que nao ter teste. Voltou a ser um forward, e o **estrutural acima** e'
+    # quem de fato guarda a convencao.
     modelo.eval()
     with torch.no_grad():
         saida = modelo(input_ids=x[:1], labels=x[:1])
         lg = saida.logits
         manual = F.cross_entropy(lg[0, :-1].float(), x[0, 1:]).item()
+        t2 = F.cross_entropy(lg[0, :-2].float(), x[0, 2:]).item()   # a tarefa do bug
     modelo.train()
     dif = abs(saida.loss.item() - manual)
-    print(f"  convencao    loss do modelo {saida.loss.item():.4f} · t+1 na mao "
-          f"{manual:.4f} · dif {dif:.5f}")
+    folga = abs(t2 - manual)
+    print(f"  convencao    loss {saida.loss.item():.4f} · t+1 na mao {manual:.4f} "
+          f"(dif {dif:.5f}) · t+2 daria {t2:.4f} (folga {folga:.4f})")
+    if folga < 0.05:
+        print(f"  convencao    ⚠️ folga t+1/t+2 de apenas {folga:.4f} — o teste NUMERICO nao"
+              f" distingue as convencoes neste ponto (modelo ainda nao aprendeu nada).\n"
+              f"               Quem guarda aqui e' o teste estrutural. Isto e' esperado antes"
+              f" do passo 1, NAO e' um problema.")
     if dif > 0.01:
         raise SystemExit("\n".join((
             "",
@@ -272,8 +347,8 @@ def main() -> int:
 
     import numpy as np
     import torch
-    from transformers import AutoTokenizer, LlamaForCausalLM
-    from config import ESCADA, para_llama_config
+    from transformers import AutoTokenizer
+    from config import ESCADA, classe_do_modelo, para_hf_config
 
     cfg = ESCADA[args.tamanho]
     dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -323,17 +398,40 @@ def main() -> int:
     # micro-batch grande, que era o que segurava a L4 em ~26%% de utilizacao. Aplica-se ANTES
     # de instanciar o modelo (faz monkey-patch da classe Llama). O loop passa `labels=` ao
     # forward (linha ~320), entao o fused CE entra sozinho.
-    if args.liger:
+    # ⚠️ O PATCH E POR FAMILIA. Este bloco chamava `apply_liger_kernel_to_llama` FIXO; com o
+    # 350M em Qwen3 isso nao patcharia absolutamente nada e o log ainda imprimiria sucesso —
+    # mais um caso da familia "nao da erro, so nao acontece". O despacho abaixo, mais a guarda
+    # pos-instanciacao, fecham o buraco.
+    liger_pedido = args.liger
+    if liger_pedido:
         try:
-            from liger_kernel.transformers import apply_liger_kernel_to_llama
-            apply_liger_kernel_to_llama(
-                fused_linear_cross_entropy=True, cross_entropy=False,
-                rms_norm=True, rope=True, swiglu=True)
-            print("  liger        fused linear CE + RMSNorm/RoPE/SwiGLU (logits nao materializados)")
+            import liger_kernel.transformers as _lk
+            aplicar = getattr(_lk, f"apply_liger_kernel_to_{cfg.arquitetura}", None)
+            if aplicar is None:
+                raise AttributeError(
+                    f"liger nao tem apply_liger_kernel_to_{cfg.arquitetura} nesta versao")
+            aplicar(fused_linear_cross_entropy=True, cross_entropy=False,
+                    rms_norm=True, rope=True, swiglu=True)
+            print(f"  liger        patch de {cfg.arquitetura}: fused linear CE + RMSNorm/RoPE/SwiGLU")
         except Exception as e:
             print(f"  liger        indisponivel ({type(e).__name__}: {e}) — seguindo sem. "
                   f"pip install liger-kernel", file=sys.stderr)
-    modelo = LlamaForCausalLM(para_llama_config(cfg))
+            liger_pedido = False
+    # ⭐ a FAMILIA vem do config (llama ou qwen3). Qwen3 = Llama + QK-Norm, sem custom code.
+    modelo = classe_do_modelo(cfg)(para_hf_config(cfg))
+
+    # ⭐ GUARDA: o patch do Liger e monkey-patch de classe. Se ele "aplicou" mas o modelo nao
+    # carrega uma classe do liger, o patch nao pegou — e a unica evidencia seria a corrida
+    # ficar mais lenta e usar mais VRAM do que o previsto, sem nenhuma mensagem.
+    if liger_pedido:
+        alvos = [type(modelo.model.layers[0].input_layernorm).__module__,
+                 type(modelo.model.layers[0].mlp).__module__]
+        if not any("liger" in m for m in alvos):
+            print(f"\n🔴 ABORTA: liger foi aplicado mas o modelo nao carrega classe do liger "
+                  f"({alvos}). O patch nao pegou — rode com --sem-liger ou conserte.",
+                  file=sys.stderr)
+            return 1
+        print("  liger        ✅ conferido no modelo instanciado")
     # ⭐ GRADIENT CHECKPOINTING: não guarda as ativações intermediárias do forward;
     # recomputa-as no backward. Troca ~30% de tempo por uma queda grande de VRAM.
     # Num treino de 31 h, 30% mais lento é muito melhor que um OOM no passo 3.000 —
@@ -410,7 +508,7 @@ def main() -> int:
             x, _ = lote(dados_, args.micro_batch, cfg.seq_len, dev, gv)
             with torch.autocast(device_type=dev.type, dtype=torch.bfloat16,
                                 enabled=dev.type == "cuda"):
-                perdas.append(modelo(input_ids=x, labels=x).loss.item())
+                perdas.append(perda_do_lote(modelo, x).item())
         modelo.train()
         m = sum(perdas) / len(perdas)
         return m, math.exp(min(20, m))
@@ -473,7 +571,7 @@ def main() -> int:
                 x = amostrador(args.micro_batch, dev)
                 with torch.autocast(device_type=dev.type, dtype=torch.bfloat16,
                                     enabled=dev.type == "cuda"):
-                    perda = modelo(input_ids=x, labels=x).loss / args.grad_accum
+                    perda = perda_do_lote(modelo, x) / args.grad_accum
                 perda.backward()
                 perda_acc += perda.item()
             except torch.OutOfMemoryError:
