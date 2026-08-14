@@ -271,18 +271,56 @@ def init_pesos(modelo, n_camadas: int):
     return std_res, n_esc
 
 
-def lr_do_passo(passo: int, total: int, lr_max: float, warmup: int, lr_min_frac: float = 0.1):
-    """Warmup linear + cosine decay até `lr_min_frac * lr_max`.
+def lr_step_law(N: int, D: float) -> float:
+    """η* = 1,79 · N^-0,713 · D^0,307 — Step Law, ajustada sobre ~3.700 modelos.
 
-    ⚠️ O warmup não é ritual: com LR alto (3e-3, que modelos pequenos toleram e
-    aproveitam), os primeiros passos sobre pesos aleatórios produzem gradientes enormes.
-    Sem warmup, o otimizador dá um passo gigante numa direção sem sentido e a loss trava
-    num platô do qual não sai.
+    ⚠️ **O LR DEPENDE DOS DOIS**, e por isso não se herda de outro degrau NEM de outro
+    volume de dados. Foi o que aconteceu com o Bee-150M: os 3e-3 foram calculados quando
+    o alvo era 3B de tokens; o corpus cresceu para 21,75B e o LR nunca foi recalculado.
+    Para N=151M e D=21,75B a lei pede **3,93e-3** — o 150M treinou ~24% abaixo do ótimo.
+    Para o 350M (N=345M, D=21,75B) ela pede **2,18e-3**.
+    """
+    return 1.79 * (N ** -0.713) * (D ** 0.307)
+
+
+def lr_do_passo(passo: int, total: int, lr_max: float, warmup: int, lr_min_frac: float = 0.1,
+                *, schedule: str = "wsd", inicio_decaimento: int | None = None):
+    """Warmup linear + **WSD** (warmup-stable-decay) ou cosine.
+
+    ⚠️ O warmup não é ritual: com LR alto (que modelos pequenos toleram e aproveitam), os
+    primeiros passos sobre pesos aleatórios produzem gradientes enormes. Sem warmup, o
+    otimizador dá um passo gigante numa direção sem sentido e a loss trava num platô.
+
+    ⭐ POR QUE WSD E NÃO COSINE (docs/estudo-bee-350m.md §1.4)
+    O cosine precisa saber o horizonte no passo 1. Sob teto de US$ 300, se a corrida
+    precisar parar antes do fim, o cosine deixa o modelo num estado ruim — LR ainda alto,
+    sem ter decaído. O WSD é **horizon-free**: warmup → fase estável em `lr_max` →
+    decaimento só nos últimos `frac` passos. A decisão de onde decair pode ser tomada
+    DEPOIS, com `--decair-a-partir-de`, o que permite estender a fase estável se sobrar
+    orçamento sem replanejar nada.
+
+    Medido em: arXiv:2602.02522 (IMU-1, modelo final de 430M com ablações num proxy de
+    70M — abaixo do Bee-150M) reporta que 20% de decaimento **iguala o cosine**; e
+    arXiv:2602.03702 (*Anytime Pretraining*) avalia exatamente **150M e 300M**, as duas
+    escalas do Bee.
+
+    ⚠️ **NÃO VERIFICADO:** o estudo cita "fase estável a 55% do pico do cosseno" como
+    [VERIFICAR] — número extraído de resumo, não do PDF. Por isso a fase estável aqui fica
+    em `lr_max` (a forma canônica do WSD), e não em 55% de coisa alguma.
+
+    O decaimento usa **1−√t** (a forma do IMU-1), que cai rápido no começo da fase.
     """
     if passo < warmup:
         return lr_max * (passo + 1) / warmup
-    prog = (passo - warmup) / max(1, total - warmup)
-    return lr_max * (lr_min_frac + (1 - lr_min_frac) * 0.5 * (1 + math.cos(math.pi * prog)))
+    if schedule == "cosine":
+        prog = (passo - warmup) / max(1, total - warmup)
+        return lr_max * (lr_min_frac + (1 - lr_min_frac) * 0.5 * (1 + math.cos(math.pi * prog)))
+    # ---- WSD
+    ini = total if inicio_decaimento is None else inicio_decaimento
+    if passo < ini:
+        return lr_max                                  # fase ESTÁVEL
+    prog = (passo - ini) / max(1, total - ini)
+    return lr_max * (lr_min_frac + (1 - lr_min_frac) * (1 - math.sqrt(min(1.0, prog))))
 
 
 def main() -> int:
@@ -327,9 +365,18 @@ def main() -> int:
     ap.add_argument("--auto-batch", action="store_true", default=True,
                     help="ao dar OOM, reduz o micro-batch pela metade e dobra o accum, "
                          "preservando o batch efetivo. Melhor que morrer no passo 3000")
-    ap.add_argument("--lr", type=float, default=3e-3,
-                    help="3e-3: modelos pequenos toleram LR alto; 2e-4 seria desperdicio")
+    ap.add_argument("--lr", type=float, default=0.0,
+                    help="0 = calculado pela Step Law a partir de N e D (recomendado). "
+                         "⚠️ NAO herdar o LR de outro degrau nem de outro volume de dados")
     ap.add_argument("--warmup-frac", type=float, default=0.02)
+    ap.add_argument("--schedule", choices=("wsd", "cosine"), default="wsd",
+                    help="wsd = horizon-free (padrao); cosine exige saber o horizonte no passo 1")
+    ap.add_argument("--frac-decaimento", type=float, default=0.20,
+                    help="fracao FINAL dos passos em decaimento (IMU-1 mede que 20%% iguala o cosine)")
+    ap.add_argument("--decair-a-partir-de", type=int, default=0,
+                    help="passo em que o decaimento comeca; 0 = derivado de --frac-decaimento. "
+                         "⭐ e' isto que torna o WSD horizon-free: da para estender a fase estavel "
+                         "e so entao decidir onde decair, sem replanejar o run")
     ap.add_argument("--ckpt-cada", type=int, default=250)
     ap.add_argument("--marcos", default="",
                     help="⭐ INSTRUMENTACAO. Lista de marcos em BILHOES de tokens "
@@ -370,6 +417,14 @@ def main() -> int:
     alvo = args.epocas * len(treino) if args.epocas else args.tokens_alvo
     passos = args.passos or int(alvo / tokens_por_passo)
     warmup = max(10, int(passos * args.warmup_frac))
+    tokens_totais = passos * tokens_por_passo
+    if args.lr <= 0:
+        args.lr = lr_step_law(cfg.params, tokens_totais)
+        origem_lr = f"Step Law (N={cfg.params/1e6:.0f}M, D={tokens_totais/1e9:.2f}B)"
+    else:
+        origem_lr = "informado na linha de comando"
+    ini_dec = (args.decair_a_partir_de if args.decair_a_partir_de > 0
+               else int(passos * (1 - args.frac_decaimento)))
 
     print("=" * 76)
     print(f"⭐ PRÉ-TREINO {cfg.nome} — pesos aleatórios → modelo")
@@ -381,7 +436,14 @@ def main() -> int:
           f"{tokens_por_passo/1e3:.0f}k tokens/passo")
     print(f"  passos        {passos} (warmup {warmup}) → {passos*tokens_por_passo/1e9:.2f}B tokens")
     print(f"  épocas        {passos*tokens_por_passo/max(1,len(treino)):.2f}")
-    print(f"  LR            {args.lr:.0e} cosine → {args.lr*0.1:.0e}")
+    if args.schedule == "wsd":
+        print(f"  LR            {args.lr:.3e} · {origem_lr}")
+        print(f"  schedule      WSD: warmup {warmup} → estável até {ini_dec} → decai 1−√t "
+              f"nos últimos {passos-ini_dec} passos ({100*(passos-ini_dec)/max(1,passos):.0f}%)")
+        print(f"                ⭐ horizon-free: --decair-a-partir-de permite estender a fase "
+              f"estável sem replanejar")
+    else:
+        print(f"  LR            {args.lr:.3e} cosine → {args.lr*0.1:.3e} · {origem_lr}")
     print(f"  horas est.    {cfg.horas_treino_l4(passos*tokens_por_passo):.1f} h de L4")
     print(f"  checkpoint    a cada {args.ckpt_cada} passos em {args.out}")
 
@@ -554,7 +616,8 @@ def main() -> int:
     t0, t_ult = time.time(), time.time()
     hist = []
     for passo in range(inicio, passos):
-        lr = lr_do_passo(passo, passos, args.lr, warmup)
+        lr = lr_do_passo(passo, passos, args.lr, warmup,
+                         schedule=args.schedule, inicio_decaimento=ini_dec)
         for grupo in opt.param_groups:
             grupo["lr"] = lr
 
