@@ -606,15 +606,35 @@ def main() -> int:
     # ⭐ Marcos convertidos de bilhoes-de-tokens para numero de passo.
     marcos_passo = []
     if args.marcos:
+        pedidos, descartados = 0, []
         for b in args.marcos.split(","):
             b = b.strip()
             if not b:
                 continue
+            pedidos += 1
             n = int(float(b) * 1e9 / tokens_por_passo)
             if 0 < n <= passos:
                 marcos_passo.append((n, f"{b}B"))
+            else:
+                descartados.append((b, n))
         marcos_passo.sort()
         print(f"  marcos        " + " · ".join(f"{r} (passo {n:,})" for n, r in marcos_passo))
+        # 🔴 GUARDA: marco fora de faixa era descartado EM SILENCIO. O run terminava sem os
+        # snapshots de escala — que sao o motivo de instrumentar — e nada avisava. Mesma
+        # familia de "o dado some, nada reclama" que ja custou tres vezes a este projeto.
+        # ⚠️ O erro tipico e' de UNIDADE: `--marcos` e' em BILHOES (1,3,6), nao em tokens
+        # (1e9,3e9). Passar 1e9 vira 1e9 bilhoes = 1e18 tokens e o marco nunca acontece.
+        # ⚠️ NAO no --dry-run: ele trunca `passos` para 3, entao QUALQUER marco real cai fora
+        # de faixa e a guarda abortaria o proprio pre-voo que existe para proteger o run.
+        # Uma guarda que impede o teste de acontecer e' pior que guarda nenhuma.
+        if descartados and not args.dry_run:
+            print(f"\n🔴 ABORTADO: {len(descartados)} de {pedidos} marcos caem fora de "
+                  f"1..{passos:,} passos e seriam ignorados em silencio:", file=sys.stderr)
+            for b, n in descartados:
+                print(f"     '{b}' -> passo {n:,}", file=sys.stderr)
+            print("   ⚠️ --marcos e' em BILHOES de tokens (ex.: 1,3,6,10,15,21), NAO em tokens.",
+                  file=sys.stderr)
+            return 1
 
     # Amostrador com cobertura de 100% por epoca (ver AmostradorPermutado).
     amostrador = AmostradorPermutado(treino, cfg.seq_len, g)
