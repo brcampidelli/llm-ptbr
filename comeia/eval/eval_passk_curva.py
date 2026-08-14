@@ -113,7 +113,11 @@ def main() -> int:
     ap.add_argument("--model", default="BrCamp/bee-150m-pt-sft-v2")
     ap.add_argument("--peft", default=None)
     ap.add_argument("--data", type=Path, default=PADRAO_EVAL)
-    ap.add_argument("--n", type=int, default=256, help="amostras por exemplo")
+    ap.add_argument("--n", type=int, default=256, help="amostras por exemplo TOOL (a curva)")
+    ap.add_argument("--n-text", type=int, default=0,
+                    help="amostras nos exemplos TEXT (over-calling). 0 = igual a --n. "
+                         "⭐ 16 ja da >1000 observacoes agregadas e corta 40%% do custo: "
+                         "over-calling e taxa por amostra, nao curva em k.")
     ap.add_argument("--temp", type=float, default=0.8)
     ap.add_argument("--top-p", type=float, default=0.95)
     ap.add_argument("--min-p", type=float, default=0.0)
@@ -206,9 +210,23 @@ def main() -> int:
     over_amostras = 0
     tot_text_amostras = 0
 
+    def progresso(i: int) -> None:
+        # ⚠️ a versao anterior imprimia DEPOIS do `continue` dos exemplos 'text' — ficavam
+        #    minutos sem sinal nenhum e nao dava para saber se estava travado ou lento.
+        if i % 5 and i != len(linhas):
+            return
+        dt = time.time() - t0
+        res = torch.cuda.memory_reserved() / 2**20 if disp == "cuda" else 0
+        alo = torch.cuda.memory_allocated() / 2**20 if disp == "cuda" else 0
+        print(f"  {i}/{len(linhas)} · {dt/60:.1f} min · resta ~{dt*(len(linhas)-i)/i/60:.1f} min"
+              f" · VRAM {alo:.0f}/{res:.0f} MiB", flush=True)
+
+    n_text = args.n_text or args.n
     for i, row in enumerate(linhas, 1):
         sistema, usuario, ref, tipo = partes(row)
-        saidas = gerar(sistema, usuario, args.n)
+        saidas = gerar(sistema, usuario, n_text if tipo == "text" else args.n)
+        if disp == "cuda":
+            torch.cuda.empty_cache()
         ref_obj = _d7.extract_json(ref)
 
         if tipo == "text":
@@ -221,6 +239,7 @@ def main() -> int:
                 {"idx": i - 1, "tipo": "text", "n": len(saidas), "over": emitiu,
                  "taxa_over": round(emitiu / max(1, len(saidas)), 4)}
             )
+            progresso(i)
             continue
 
         n_tool += 1
@@ -255,9 +274,7 @@ def main() -> int:
             }
         )
 
-        if i % 5 == 0 or i == len(linhas):
-            dt = time.time() - t0
-            print(f"  {i}/{len(linhas)} · {dt/60:.1f} min · resta ~{dt*(len(linhas)-i)/i/60:.1f} min", flush=True)
+        progresso(i)
 
     # ---------------- a curva
     tools = [p for p in por_problema if p["tipo"] == "tool"]
@@ -315,6 +332,7 @@ def main() -> int:
                 "modelo": args.model,
                 "peft": args.peft,
                 "n": args.n,
+                "n_text": n_text,
                 "temp": args.temp,
                 "top_p": args.top_p,
                 "min_p": args.min_p,

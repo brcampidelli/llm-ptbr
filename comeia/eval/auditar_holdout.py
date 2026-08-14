@@ -147,7 +147,20 @@ def main() -> int:
                 pert[k] = " ".join(ws[::-1])
                 ok2, alt = TE.executar({"tool": obj["tool"], "args": pert})
                 if not ok2 or not TE.resultados_batem(alt, base):
-                    literais.append(k)
+                    # ⭐ EXCECAO MEDIDA: exigir a string literal so torna o item impossivel se a
+                    #    string nao puder ser COPIADA do pedido. Quando a query e' um trecho do
+                    #    proprio pedido ("filmes em cartaz Brasilia hoje" dentro de "Quais sao os
+                    #    filmes em cartaz nos cinemas de Brasilia hoje?"), copiar e' aprendivel —
+                    #    e o modelo acertou 96/128 nesse caso. Dois falsos positivos foram pegos
+                    #    justamente assim, cruzando a auditoria com a curva de pass@k.
+                    pv, pu = palavras(v), palavras(usuario)
+                    j = 0
+                    for w in pu:                      # subsequencia NA ORDEM
+                        if j < len(pv) and w == pv[j]:
+                            j += 1
+                    copiavel = len(pv) > 0 and j == len(pv)
+                    if not copiavel:
+                        literais.append(k)
 
             # (B) DERIVABILIDADE: o gabarito exige palavra que o usuario nunca disse?
             #     Vale para qualquer argumento — inclusive URL e conteudo de arquivo.

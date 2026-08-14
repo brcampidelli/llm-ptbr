@@ -127,6 +127,14 @@ mundo simulado determinístico e comparar com a referência.
 | argumentos idênticos | 24,7% | **34,1%** |
 | pass@1 / pass@16 | 52,3% / 72,9% | **57,0% / 71,8%** |
 
+⚠️ **Estes números são do holdout INTEIRO, e ele tem teto próprio.** Uma auditoria por
+perturbação achou **10 dos 85 exemplos (11,8%) impossíveis por construção** — o gabarito exige
+uma string de texto livre não derivável, ou um valor que o usuário nunca deu. O teto máximo
+alcançável por qualquer modelo é **88,2%**. Nos 75 exemplos possíveis e com n=128 amostras,
+o v2 faz **pass@1 64,1% · pass@128 85,3%**, e o over-calling medido em 1.040 amostras é
+**16,5%** (o 21,5% acima vinha de uma amostra por exemplo). Detalhe em
+**[docs/teto-passk-medido.md](docs/teto-passk-medido.md)**.
+
 **As quatro peças que compõem o agente**, cada uma medida:
 
 | capacidade | onde vive | resultado |
@@ -138,9 +146,12 @@ mundo simulado determinístico e comparar com a referência.
 
 ### O que saiu daqui e vale para o próximo Bee
 
-- ⭐ **Autoaprendizado fecha em 151M.** Rejection sampling com verificador **externo** por
-  execução: `pass@1` 52,3 → 57,6%. Mas o **teto não se move** (`pass@16` 72,9 → 72,9%) — o
-  método move o piso rumo ao teto, e só escala ou dado novo levanta o teto.
+- ⭐ **Autoaprendizado fecha em 151M, e o teto não se move.** Remedido em 2026-08-14 com
+  **n=128** e o holdout limpo dos itens impossíveis: o ganho decai **monotonicamente até zero** —
+  `pass@1` +5,07 pp, `pass@16` +0,08 pp, **`pass@128` +0,00 pp**. Só escala ou dado novo levanta
+  o teto. ⚠️ **Mas o teto era outro:** 85,3%, não 72,9% — o número antigo vinha de k=16 e de um
+  holdout com **11,8% de itens impossíveis por construção**. A folga colhível é **21,2 pp**, não
+  15,3. Ver **[docs/teto-passk-medido.md](docs/teto-passk-medido.md)**.
 - ⭐ **Capacidade é disputada.** Ensinar multi-turno por full fine-tune custou −5,9 pp de
   execução single-turn; em **adapter LoRA** custou **zero** e ficou melhor no alvo. É a
   validação da tese da COMEIA — backbone congelado, capacidade em adapter.

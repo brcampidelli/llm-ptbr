@@ -37,6 +37,15 @@ Ordenado por (ganho medido esperado ÷ risco). Os quatro primeiros custam ~US$ 0
 
 ### 1.1 — Auditar e deduplicar o corpus ANTES de gastar um dólar **[NA ESCALA]**
 
+> ## 🟢 JÁ RODADO (2026-08-14) — **o corpus está limpo; este item não existe**
+>
+> Censo dos 21,75B tokens (27,46M documentos), `bee/auditar_repeticao.py`:
+> **duplicata exata 0,000%** · **quase-dup total 0,28%** · **faixa 3–10× (o pico do dano) 0,016%**.
+> O cenário do paper exige **36× mais repetição** do que temos — o `fineweb-2` já vem deduplicado
+> por MinHash na origem. **Os "até US$ 100 recuperáveis" NÃO existem**; a conta do 350M volta a ser
+> a conta simples. Custou US$ 0 e 42 min de CPU descobrir isso, e evitou um esforço de dedup que
+> renderia zero. Detalhe e ressalvas: **[teto-passk-medido.md](teto-passk-medido.md) §I**.
+
 **O que fazer:** rodar MinHash/near-dup sobre os 22B tokens PT e reportar duas coisas — (a) a fração dos FLOPs que vem de documentos duplicados, (b) o **histograma da contagem de repetição**, não a taxa média.
 
 **Paper:** arXiv:2606.24998 — *Internal Data Repetition Destroys Language Models*.
@@ -219,6 +228,22 @@ Ordenado por custo crescente. Os itens 2.2 a 2.6 custam **US$ 0** e são só inf
 ---
 
 ### 2.2 — Estender o k do pass@k. US$ 0.
+
+> ## 🟡 JÁ RODADO (2026-08-14) — **os DOIS lados estavam errados**
+>
+> Curva com n=128 nos 75 exemplos possíveis: **k=1 64,1% · k=16 81,8% · k=128 85,3%**, com
+> **+0,43 pp no último degrau**.
+>
+> - 🔴 **"72,9% é o teto" (minha afirmação) caiu:** o número estava deprimido por 11,8% de itens
+>   impossíveis **e** k=16 não era o fim da curva. **O teto real é 85,3%.**
+> - 🔴 **A previsão desta seção também caiu:** a curva **não** sobe log-linear — ela **achata**.
+>   A palavra "teto" **fica** no vocabulário do projeto; só mudou de lugar. Hipótese para a
+>   divergência com Pythia-160M: em tool-use com verificador determinístico o espaço de respostas
+>   certas é minúsculo comparado a matemática aberta — pode ser propriedade **da tarefa**.
+> - ✅ **A folga colhível é MAIOR do que se acreditava: 21,2 pp** (64,1 → 85,3), não 15,3.
+>
+> Detalhe em **[teto-passk-medido.md](teto-passk-medido.md) §III–IV**. ⚠️ Rodado com **1 semente**,
+> não 3 — o número tem o ruído de uma corrida só.
 
 **Este é o teste que pode matar sozinho a premissa mais cara do projeto.**
 

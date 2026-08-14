@@ -30,6 +30,7 @@ está morto**.
 | documento | o que decide |
 |---|---|
 | **[estudo-bee-350m.md](estudo-bee-350m.md)** | ⭐ **~60 papers de ago/2026, 13 agentes, 4 afirmações passadas por refutação adversarial.** Receita, orçamento, o que NÃO fazer, e **três premissas do plano derrubadas** — inclusive "expandir o corpus para 30B" |
+| **[teto-passk-medido.md](teto-passk-medido.md)** | ⭐ **US$ 0, e derruba 3 afirmações**: o corpus está limpo (0,28% de repetição — o item de maior ROI do estudo não existia), o holdout tinha 11,8% de itens impossíveis, e o "teto" de 72,9% era na verdade **85,3%**. A folga colhível é **21,2 pp**, não 15,3 |
 
 ## Gates e decisões
 

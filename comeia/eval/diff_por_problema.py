@@ -87,17 +87,29 @@ def main() -> int:
     liquido = len(ganhou) - len(perdeu)
     print("-" * 72)
     print(f"  SALDO LIQUIDO: {liquido:+d} problemas")
+
+    # ⭐ McNemar EXATO sobre os pares discordantes. Sem isto o script grita "esqueceu mais do
+    #    que aprendeu" com 2 contra 1 — que e' ruido puro (p=1,000). Contar a direcao sem
+    #    testar a magnitude e' o mesmo erro do criterio de veredito multiplicativo que ja
+    #    declarou "nao ha cauda" havendo cauda.
+    b_, c_ = len(perdeu), len(ganhou)
+    nd = b_ + c_
+    p_val = (
+        min(1.0, 2 * sum(math.comb(nd, k) for k in range(0, min(b_, c_) + 1)) / 2**nd)
+        if nd else 1.0
+    )
+    print(f"  McNemar exato: {nd} pares discordantes, p = {p_val:.3f}")
     print()
-    if len(perdeu) > len(ganhou):
-        print("🔴 ESQUECEU MAIS DO QUE APRENDEU — e' exatamente a assimetria que o paper mede, e o")
-        print("   agregado a esconde. A proxima colheita deve MISTURAR dado do modelo base.")
-    elif len(perdeu) == len(ganhou) and len(perdeu) > 0:
-        print("🟡 EMPATE em contagem — o agregado nao se moveu porque houve TROCA, nao estabilidade.")
-        print("   Sao problemas diferentes; nao e' o mesmo modelo com ruido.")
-    elif len(ganhou) > len(perdeu):
-        print("🟢 aprendeu mais do que esqueceu. A colheita nao esta cobrando preco escondido.")
+    if p_val > 0.05:
+        print(f"🟢 NAO significativo (p={p_val:.3f}). A troca de conjunto e' indistinguivel de ruido:")
+        print(f"   {b_} esquecidos contra {c_} aprendidos nao sustentam conclusao nenhuma.")
+        print("   A assimetria que o paper mede NAO se reproduz nesta escala e neste holdout.")
+    elif b_ > c_:
+        print(f"🔴 ESQUECEU MAIS DO QUE APRENDEU, e e' significativo (p={p_val:.3f}) — a assimetria")
+        print("   que o paper mede, escondida pelo agregado. A proxima colheita deve MISTURAR")
+        print("   dado do modelo base.")
     else:
-        print("🟢 nenhuma troca de conjunto — estabilidade real, nao compensacao.")
+        print(f"🟢 aprendeu mais do que esqueceu, significativo (p={p_val:.3f}).")
 
     # tambem: mudanca de TAXA nos que ja resolviam (o piso subindo, sem trocar o conjunto)
     if sempre:

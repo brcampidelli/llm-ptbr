@@ -75,7 +75,8 @@ previsto é o detector mais barato que existe para dado que sumiu.
 
 ## Parte II — O instrumento mente antes do fenômeno
 
-Duas ocorrências em que o **avaliador** estava errado e quase produziu decisão de produto.
+**Cinco** ocorrências em que o **aparato** — avaliador, guarda, cronômetro — estava errado e quase
+produziu decisão de produto. É a família mais numerosa do projeto, e a mais barata de evitar.
 
 ### 4. Avaliador com mundo fechado — 23,5% que não existiam
 
@@ -105,19 +106,75 @@ crus teria fechado uma porta que estava aberta.
 
 ---
 
+### 6. Guarda fora do fluxo não guarda nada — o campo era `tool_call`, não `tool`
+
+A guarda de gabaritos do `eval_passk_curva.py` filtrava `if tipo != "tool": continue`. O campo do
+holdout é **`kind="tool_call"`**, e a convenção do resto do projeto é *"text" versus o resto*.
+Resultado: a guarda **pulou os 85 exemplos** e imprimiu **`✅ todas as referências executam`**
+tendo verificado **zero**.
+
+**Como foi pega:** o laço principal encontrou 5 exemplos `tool` na mesma corrida em que a guarda
+disse 0. Dois números do mesmo arquivo discordando — a contradição de sempre.
+
+**Guarda da guarda:** contar quantos itens a guarda inspecionou e **abortar se for zero**.
+
+```python
+if checadas == 0:
+    raise SystemExit("a guarda nao verificou NENHUMA referencia — o filtro de tipo esta errado")
+```
+
+### 7. A medição de desempenho mentiu QUATRO vezes no mesmo dia
+
+Todas "corretas" no próprio contexto, todas erradas para a decisão:
+
+| leitura | ms/amostra | por quê |
+|---|---:|---|
+| prompt de brinquedo, lote 64 | 109 | prompt curto, máquina ociosa |
+| durante a auditoria de corpus | **3.865** | geração de modelo pequeno é **CPU-bound**; a auditoria comia a CPU |
+| lote 32, CPU livre | 192 | ✅ o número real |
+| após ~500 chamadas de `generate` | **parou** | fragmentação do alocador: 7.766 de 8.151 MiB |
+
+⭐ **A fragmentação é a mais traiçoeira porque o sintoma não é OOM, é lentidão:** 100% de
+utilização de GPU com **35 W** de potência. Correção: `torch.cuda.empty_cache()` entre exemplos
+(⚠️ `expandable_segments` **não funciona no Windows** — o log avisa) e **VRAM impressa na linha de
+progresso**. Depois: `297/330 MiB` cravado do primeiro ao último exemplo, 59 W.
+
+> **Medir throughput "em regime" não basta. É preciso medir no regime em que a corrida vai
+> rodar** — com a mesma carga de CPU, o mesmo lote e depois de centenas de chamadas.
+
+### 8. Contar a direção sem testar a magnitude
+
+O `diff_por_problema.py` imprimiu **"🔴 ESQUECEU MAIS DO QUE APRENDEU"** com **2 esquecidos contra
+1 aprendido** — McNemar exato **p = 1,000**, ruído puro. É o mesmo defeito do critério de veredito
+multiplicativo da §5: um veredito impresso por código, com aparência de resultado.
+
+**Guarda:** todo veredito comparativo exige **teste de significância** antes de concluir; com n
+pequeno, a direção sozinha não é informação.
+
+---
+
 ## Parte III — As leis medidas
 
 Enunciados curtos, cada um com o número que o sustenta. Valem para o próximo Bee.
 
 ### 1. Rejection sampling move o **piso** rumo ao teto — e não move o teto
 
-| | antes | depois |
-|---|---:|---:|
-| pass@1 | 52,3% | **57,6%** |
-| pass@16 | 72,9% | **72,9%** |
+⭐ **Medido de novo em 2026-08-14 com n=128 e o holdout limpo dos itens impossíveis** — é a
+demonstração mais nítida que este projeto produziu. O ganho decai **monotonicamente até zero**:
 
-A folga aproveitável encolheu de 20,6 para 15,3 pp: **cada iteração rende menos**. Elevar o
-teto exige capacidade ou dado novo, não reamostrar o que já existe.
+| k | base | pós-colheita | delta |
+|---:|---:|---:|---:|
+| 1 | 59,1% | **64,1%** | **+5,07 pp** |
+| 16 | 81,7% | 81,8% | +0,08 pp |
+| 64 | 85,0% | 84,9% | −0,06 pp |
+| **128** | **85,3%** | **85,3%** | **+0,00 pp** |
+
+Não é interpretação — é a coluna de delta convergindo a zero. Elevar o teto exige capacidade ou
+dado novo, não reamostrar o que já existe.
+
+⚠️ **Mas a folga é MAIOR do que o projeto acreditava:** 64,1% → 85,3% são **21,2 pp**
+aproveitáveis, não os 15,3 pp que os números antigos sugeriam (eles vinham de k=16 e de um
+holdout com 11,8% de itens impossíveis). Ver [teto-passk-medido.md](teto-passk-medido.md).
 
 ### 2. Num modelo pequeno, a **capacidade é disputada**
 
@@ -187,6 +244,9 @@ Não mexer sem medir:
 - [ ] cobertura de amostragem reportada = 100%/época
 - [ ] nº de exemplos após truncamento == nº carregado (SFT) — **aborta** se não
 - [ ] gabaritos do avaliador **executam** antes de medir qualquer modelo
+- [ ] a guarda **reporta quantos itens inspecionou** e aborta se for zero
+- [ ] throughput medido **no regime real**: mesma carga de CPU, mesmo lote, depois de centenas de chamadas
+- [ ] veredito comparativo passa por **teste de significância**, nunca só pela direção
 - [ ] `--dry-run` de 3 passos passa
 - [ ] throughput em regime (passo ≥20, três leituras coincidentes)
 - [ ] custo em **$/B tokens**
