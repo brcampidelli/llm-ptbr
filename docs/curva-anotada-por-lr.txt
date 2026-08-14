@@ -1,0 +1,70 @@
+==============================================================================
+CURVA DE bpb DO BEE-150M, ANOTADA PELO LR DE CADA MARCO
+==============================================================================
+    tokens     bpb   LR no ponto  % do pico   inclinacao dL/dlnD
+     1.00B   1.021     2.995e-03      99.8%                     
+     3.00B   0.947     2.905e-03      96.8%              -0.0674
+     6.00B   0.920     2.571e-03      85.7%              -0.0390
+    10.00B   0.897     1.866e-03      62.2%              -0.0450
+    15.00B   0.870     9.148e-04      30.5%              -0.0666
+    21.00B   0.845     3.082e-04      10.3%              -0.0743
+    21.75B   0.844     3.000e-04      10.0%              -0.0285
+
+------------------------------------------------------------------------------
+A LEI DE ESCALA EXIGE QUE |dL/dlnD| CAIA MONOTONICAMENTE. Ela cai?
+------------------------------------------------------------------------------
+      1→3     |0.0674|   vs       3→6     |0.0390|   ✅ desacelerou
+      3→6     |0.0390|   vs       6→10    |0.0450|   🔴 ACELEROU
+      6→10    |0.0450|   vs      10→15    |0.0666|   🔴 ACELEROU
+     10→15    |0.0666|   vs      15→21    |0.0743|   🔴 ACELEROU
+     15→21    |0.0743|   vs      21→22    |0.0285|   ✅ desacelerou
+
+🔴 3 trechos ACELERAM. Nenhum L=E+A·D^-α com E>=0 e α>0 produz isso.
+   A refutacao esta CONFIRMADA por conta propria: a inclinacao final NAO e' a
+   lei de escala do dado.
+
+------------------------------------------------------------------------------
+A ACELERACAO COINCIDE COM A QUEDA DO LR?
+------------------------------------------------------------------------------
+  ~  2.0B   |inclinacao| 0.0674   LR medio 2.950e-03
+  ~  4.5B   |inclinacao| 0.0390   LR medio 2.738e-03
+  ~  8.0B   |inclinacao| 0.0450   LR medio 2.219e-03
+  ~ 12.5B   |inclinacao| 0.0666   LR medio 1.391e-03
+  ~ 18.0B   |inclinacao| 0.0743   LR medio 6.115e-04
+  ~ 21.4B   |inclinacao| 0.0285   LR medio 3.041e-04
+
+  Pearson com TODOS os 6 trechos: r = +0.059
+  ⚠️ este numero e' ENGANOSO e nao deve ser citado sozinho: ha DOIS mecanismos
+     produzindo inclinacao alta em pontas opostas — aprendizado inicial rapido
+     (LR alto) e decaimento de LR (LR baixo). Um cancela o outro no Pearson.
+
+  Pearson so no MIOLO (4 trechos, de 4.5B a 18.0B): r = -0.983
+  ⭐ FORTE e NEGATIVA: no regime em que o modelo ja saiu do transiente inicial,
+     quanto MENOR o LR, MAIOR a queda de bpb no trecho. E' a assinatura do
+     decaimento — o ganho do fim vem do schedule, nao do dado.
+  ⚠️ Com 4 pontos, r alto e' sugestivo, nao prova. O que decide o argumento e' a
+     ACELERACAO acima, que e' incompativel com lei de potencia por construcao.
+
+------------------------------------------------------------------------------
+EXTRAPOLACAO: ajustar so nos marcos com LR >= 80% do pico (regime comparavel)
+------------------------------------------------------------------------------
+  marcos usados: ['1B', '3B', '6B']  (n=3)
+  L(D) = 0.8675 + 37759.7434·D^-0.599   (SSE 1.27e-11)
+    previsao em  21.8B: 0.8918
+    previsao em  30.0B: 0.8875
+    MEDIDO   em 21,75B: 0.8440
+
+  ⚠️ O ajuste tem 3 parametros e 3 pontos: passa exato por construcao e NAO
+     valida nada (grau de liberdade zero — licao ja registrada). Serve so para
+     mostrar a ORDEM DE GRANDEZA de quanto a extrapolacao muda quando se tira
+     os pontos contaminados pelo decaimento.
+
+==============================================================================
+CONSEQUENCIA PARA O BEE-350M
+==============================================================================
+  1. NAO usar 'a curva ainda descia' como argumento para comprar mais tokens.
+  2. O WSD ja adotado conserta isso na origem: na fase ESTAVEL o LR e constante,
+     entao os checkpoints intermediarios sao comparaveis ENTRE SI e a curva medida
+     no 350M sera lei de escala de verdade, nao schedule disfarcado.
+  3. Salvar os marcos nos MESMOS volumes do 150M (1/3/6/10/15/21B) da 6 pontos
+     pareados em dois N — o suficiente para ajustar L(N,D) COM residuo.

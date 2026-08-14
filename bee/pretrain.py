@@ -304,9 +304,19 @@ def lr_do_passo(passo: int, total: int, lr_max: float, warmup: int, lr_min_frac:
     arXiv:2602.03702 (*Anytime Pretraining*) avalia exatamente **150M e 300M**, as duas
     escalas do Bee.
 
-    ⚠️ **NÃO VERIFICADO:** o estudo cita "fase estável a 55% do pico do cosseno" como
-    [VERIFICAR] — número extraído de resumo, não do PDF. Por isso a fase estável aqui fica
-    em `lr_max` (a forma canônica do WSD), e não em 55% de coisa alguma.
+    ⭐ **A FASE ESTÁVEL FICA EM 55% DO PICO** — verificado no HTML do IMU-1 (§3.4), que era
+    um `[VERIFICAR]` do estudo: *"set stable-phase LR to 55% of peak cosine LR based on
+    preliminary experiments (0.013 for Muon 2D params, 0.0039 for 1D params)"*. Confere com
+    os picos declarados: 0,0235 × 0,55 = 0,0129 ≈ 0,013.
+
+    O racional, que é o que torna o número transferível: um cosine passa a maior parte do
+    tempo **abaixo** do pico — a média fica em ~55% dele. A Step Law foi ajustada sobre runs
+    com cosine, então o η* dela é um **pico**, não um LR constante. Segurar 100% do η* por
+    todo o treino colocaria a média muito acima do regime em que a lei foi calibrada.
+
+    ⚠️ **Ressalva honesta:** os 55% vêm de *preliminary experiments* com **Muon**, não de uma
+    ablação publicada, e o Bee usa AdamW. O racional é agnóstico ao otimizador, mas o número
+    exato não foi medido para o nosso caso. Ajustável por `--lr-estavel-frac`.
 
     O decaimento usa **1−√t** (a forma do IMU-1), que cai rápido no começo da fase.
     """
@@ -371,6 +381,10 @@ def main() -> int:
     ap.add_argument("--warmup-frac", type=float, default=0.02)
     ap.add_argument("--schedule", choices=("wsd", "cosine"), default="wsd",
                     help="wsd = horizon-free (padrao); cosine exige saber o horizonte no passo 1")
+    ap.add_argument("--lr-estavel-frac", type=float, default=0.55,
+                    help="fracao do pico (Step Law) usada na FASE ESTAVEL do WSD. 0,55 vem do "
+                         "IMU-1 §3.4: um cosine passa a maior parte do tempo abaixo do pico, "
+                         "entao segurar 100%% do eta* constante extrapola o regime da lei")
     ap.add_argument("--frac-decaimento", type=float, default=0.20,
                     help="fracao FINAL dos passos em decaimento (IMU-1 mede que 20%% iguala o cosine)")
     ap.add_argument("--decair-a-partir-de", type=int, default=0,
@@ -425,6 +439,9 @@ def main() -> int:
         origem_lr = "informado na linha de comando"
     ini_dec = (args.decair_a_partir_de if args.decair_a_partir_de > 0
                else int(passos * (1 - args.frac_decaimento)))
+    # ⭐ no WSD o LR que o treino de fato usa e' a FASE ESTAVEL, nao o pico do cosine.
+    lr_pico = args.lr
+    lr_efetivo = args.lr * args.lr_estavel_frac if args.schedule == "wsd" else args.lr
 
     print("=" * 76)
     print(f"⭐ PRÉ-TREINO {cfg.nome} — pesos aleatórios → modelo")
@@ -437,7 +454,9 @@ def main() -> int:
     print(f"  passos        {passos} (warmup {warmup}) → {passos*tokens_por_passo/1e9:.2f}B tokens")
     print(f"  épocas        {passos*tokens_por_passo/max(1,len(treino)):.2f}")
     if args.schedule == "wsd":
-        print(f"  LR            {args.lr:.3e} · {origem_lr}")
+        print(f"  LR            pico {lr_pico:.3e} ({origem_lr})")
+        print(f"                → fase estável em {lr_efetivo:.3e} "
+              f"({100*args.lr_estavel_frac:.0f}% do pico, IMU-1 §3.4)")
         print(f"  schedule      WSD: warmup {warmup} → estável até {ini_dec} → decai 1−√t "
               f"nos últimos {passos-ini_dec} passos ({100*(passos-ini_dec)/max(1,passos):.0f}%)")
         print(f"                ⭐ horizon-free: --decair-a-partir-de permite estender a fase "
@@ -616,7 +635,7 @@ def main() -> int:
     t0, t_ult = time.time(), time.time()
     hist = []
     for passo in range(inicio, passos):
-        lr = lr_do_passo(passo, passos, args.lr, warmup,
+        lr = lr_do_passo(passo, passos, lr_efetivo, warmup,
                          schedule=args.schedule, inicio_decaimento=ini_dec)
         for grupo in opt.param_groups:
             grupo["lr"] = lr
