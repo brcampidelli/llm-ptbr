@@ -1,0 +1,95 @@
+{
+  "corpus": "C:\\Users\\brcam\\Desktop\\Desenvolvendo Projetos\\Desenvolvendo LLM\\dados_pt_22b\\train.bin",
+  "tokens_analisados": 21722230888,
+  "documentos": 27463666,
+  "tokens_por_doc_medio": 790.9,
+  "parametros": {
+    "k": 16,
+    "bandas": 4,
+    "limiar": 0.8,
+    "min_tokens": 50
+  },
+  "censo_completo": true,
+  "t1_exato": [
+    {
+      "faixa": "1 (unico)",
+      "documentos": 27463414,
+      "tokens": 21722171964,
+      "pct_tokens": 100.0
+    },
+    {
+      "faixa": "2",
+      "documentos": 252,
+      "tokens": 58924,
+      "pct_tokens": 0.0
+    },
+    {
+      "faixa": "3-10  ⚠️ PICO DO DANO",
+      "documentos": 0,
+      "tokens": 0,
+      "pct_tokens": 0.0
+    },
+    {
+      "faixa": "11-100",
+      "documentos": 0,
+      "tokens": 0,
+      "pct_tokens": 0.0
+    },
+    {
+      "faixa": "101-1000",
+      "documentos": 0,
+      "tokens": 0,
+      "pct_tokens": 0.0
+    },
+    {
+      "faixa": ">1000",
+      "documentos": 0,
+      "tokens": 0,
+      "pct_tokens": 0.0
+    }
+  ],
+  "t2_quase_dup": [
+    {
+      "faixa": "1 (unico)",
+      "documentos": 27381332,
+      "tokens": 21660374737,
+      "pct_tokens": 99.715
+    },
+    {
+      "faixa": "2",
+      "documentos": 74444,
+      "tokens": 56814268,
+      "pct_tokens": 0.262
+    },
+    {
+      "faixa": "3-10  ⚠️ PICO DO DANO",
+      "documentos": 5123,
+      "tokens": 3501686,
+      "pct_tokens": 0.016
+    },
+    {
+      "faixa": "11-100",
+      "documentos": 1728,
+      "tokens": 1044096,
+      "pct_tokens": 0.005
+    },
+    {
+      "faixa": "101-1000",
+      "documentos": 1039,
+      "tokens": 496101,
+      "pct_tokens": 0.002
+    },
+    {
+      "faixa": ">1000",
+      "documentos": 0,
+      "tokens": 0,
+      "pct_tokens": 0.0
+    }
+  ],
+  "pct_flops_repetidos_exato": 0.0,
+  "pct_flops_repetidos_quase": 0.285,
+  "pct_flops_faixa_3_a_10": 0.016,
+  "pares_testados": 327545,
+  "minutos": 41.7,
+  "referencia": "arXiv:2606.24998 — medido em 344M; 10% dos FLOPs em repetidos == perder 33% da computacao"
+}
