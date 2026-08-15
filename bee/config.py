@@ -123,15 +123,24 @@ class BeeConfig:
 # e a mais constrangedora de corrigir depois que alguém baixou. Conferido contra o
 # modelo real do transformers em `--verificar`.
 ESCADA = {
+    # ⚠️ intermediate 2048 = 3,556x d_model. O MobileLLM-125M — mesma profundidade, mesma
+    # largura, mesmo GQA — usa 1536 = **2,667x**, a mesma razao do 350M. QUEM DESVIA E O
+    # 150M, nao o 350M (a ressalva antiga dizia o contrario). Custo do desvio: 26,5M de
+    # params = 17,6% do modelo alocados no MLP por heranca, nunca medidos — dariam ~7
+    # camadas a mais. Nao invalida o 150M (bpb 0,844), mas a comparacao com o
+    # MobileLLM-125M nunca foi maca-com-maca: 151,2M contra 124,6M.
     "150m": BeeConfig("Bee-150M", n_camadas=30, d_model=576,  n_heads=9,  n_kv_heads=3,  intermediate=2048),
-    # ⭐ 350M — geometria do **SmolLM2-360M**, recipe publicado na MESMA escala. O 150M já provou
-    # que copiar recipe publicado nesta faixa funciona (bpb 0,844, batendo o Tucano-160m que usou
-    # 9× mais tokens). Ver docs/estudo-bee-350m.md §4.1.
-    # ⚠️ EVIDÊNCIA DIVIDIDA sobre a razão d_model/camadas: aqui 960/32 = 30,0; o LilMoo
-    # (arXiv:2603.03508, 670M hindi — o único ponto MEDIDO perto desta escala) usa 54,9. O estudo
-    # marcou o gate pareado de geometria como US$ 40 e OPCIONAL. Ficamos com o recipe publicado.
-    # ⚠️ intermediate 2560 = 2,67× d_model, seguindo o SmolLM2-360M. O Bee-150M usa 3,556× — o
-    # desvio é do recipe de origem e NÃO foi medido por nós.
+    # ⭐ 350M — esta geometria tem DUAS fontes publicadas independentes no tamanho exato:
+    # SmolLM2-360M e **MobileLLM-350M** (arXiv:2402.14905, Tabela 9: 32 camadas · dim 960 ·
+    # FFN 2560 · 15 heads · 5 KV — idêntico campo a campo). A do MobileLLM vem com ABLAÇÕES,
+    # o que a torna a citação mais forte. Ver docs/tres-lacunas-medidas.md §A.
+    # ⭐ E o MobileLLM mede fundo-e-fino a ~135M com params fixos (Tabela 11): 12 camadas 43,9%
+    # · **30 camadas 44,8%** · 42 camadas 44,5%. As 30 camadas do Bee-150M sao o otimo MEDIDO,
+    # nao uma analogia.
+    # ⚠️ Ressalva de dados: o MobileLLM treinou com 1T tokens, 46x o Bee. As acuracias absolutas
+    # nao transferem; a ORDENACAO entre arquiteturas e o que se aproveita.
+    # ⚠️ EVIDENCIA DIVIDIDA sobre a razao d_model/camadas: aqui 960/32 = 30,0; o LilMoo
+    # (670M hindi) usa 54,9. Gate pareado marcado como US$ 40 e OPCIONAL; ficamos no publicado.
     "350m": BeeConfig("Bee-350M", n_camadas=32, d_model=960,  n_heads=15, n_kv_heads=5,
                       intermediate=2560, arquitetura="qwen3"),
     "500m": BeeConfig("Bee-500M", n_camadas=27, d_model=1280, n_heads=20, n_kv_heads=4,  intermediate=3456),

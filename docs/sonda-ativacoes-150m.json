@@ -1,0 +1,60 @@
+{
+ "modelo": "models/bee-150m-v3-base",
+ "rotulo": "bee-150m-base",
+ "camadas": 30,
+ "d_model": 576,
+ "pico_razao": 1615.9693181781208,
+ "dims_envolvidas": [
+  538
+ ],
+ "top": [
+  {
+   "razao": 1615.9693181781208,
+   "camada": 16,
+   "token": "O",
+   "dim": 538
+  },
+  {
+   "razao": 1603.759621301381,
+   "camada": 16,
+   "token": "Em",
+   "dim": 538
+  },
+  {
+   "razao": 1584.2049631251534,
+   "camada": 16,
+   "token": "Receita",
+   "dim": 538
+  },
+  {
+   "razao": 1574.6437394117945,
+   "camada": 15,
+   "token": "O",
+   "dim": 538
+  },
+  {
+   "razao": 1569.761139801992,
+   "camada": 15,
+   "token": "Em",
+   "dim": 538
+  },
+  {
+   "razao": 1551.1179642365332,
+   "camada": 18,
+   "token": "O",
+   "dim": 538
+  },
+  {
+   "razao": 1549.5541990231554,
+   "camada": 15,
+   "token": "Receita",
+   "dim": 538
+  },
+  {
+   "razao": 1533.7130259171258,
+   "camada": 17,
+   "token": "O",
+   "dim": 538
+  }
+ ]
+}
