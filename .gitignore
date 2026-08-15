@@ -55,3 +55,6 @@ comeia/eval/fixtures/
 dados_pt_22b/
 *.log
 bee/bncc/*.pdf
+
+# holdout do Gate 2 — parquet de 526 MB baixado do HF, sempre reproduzivel
+_holdout_tmp/
