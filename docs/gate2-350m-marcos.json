@@ -1,0 +1,47 @@
+{
+ "_nota": "Dados brutos do Gate 2 nos marcos do Bee-350M. Consolidado de dois runs do gate2_marcos.py: os marcos 1B-10B medidos no pod principal (2026-08-17) e o marco 13B medido no pod do fork de decaimento. Leitura obrigatoria: docs/fork-decaimento.md.",
+ "_ATENCAO": "Os marcos 1B/3B/6B/10B foram medidos com o modelo no PLATO do WSD (LR em 55% do pico). A curva de referencia do Bee-150M foi medida com COSINE, ja em decaimento nesses pontos (99,8% -> 96,8% -> 85,7% -> 62,2% do pico). Comparar as duas colunas mede a diferenca entre os SCHEDULES, nao entre os modelos. Ver fork-decaimento.md secao 6.",
+
+ "holdout": {
+  "parquet_idx": 40,
+  "parquet": "data/por_Latn/train/002_00012.parquet",
+  "n_docs": 400,
+  "bytes": 833610,
+  "sha256": "2273c5e41e96d3d18f9802372dc0c03283b7d9d36655cf9ba80740e9663e028c",
+  "max_chars": 4000,
+  "seq_len": 2048
+ },
+
+ "ancora": {
+  "_o_que_e": "O Bee-150M final, remedido no mesmo texto em cada corrida. Se nao bater 0,844, a regua mudou e nenhum numero da corrida vale.",
+  "modelo": "BrCamp/bee-150m-pt-base",
+  "bpb_esperado": 0.844,
+  "bpb_medido": 0.843815160059675,
+  "fertilidade": 0.21833738637769629,
+  "confere": true
+ },
+
+ "curva_150m_referencia": {
+  "_schedule": "cosine",
+  "1": 1.021, "3": 0.947, "6": 0.92, "10": 0.897, "15": 0.87, "21": 0.845,
+  "final": 0.844
+ },
+
+ "bee_350m_plato": {
+  "_schedule": "WSD, fase estavel em 55% do pico — SEM decaimento",
+  "_comparacao_invalida_com": "curva_150m_referencia",
+  "1":  { "bpb": 0.9745230389484526, "fertilidade": 0.21833738637769629 },
+  "3":  { "bpb": 0.9385177862756914, "fertilidade": 0.21833738637769629 },
+  "6":  { "bpb": 0.9261133888342694, "fertilidade": 0.21833738637769629 },
+  "10": { "bpb": 0.9195603546527904, "fertilidade": 0.21833738637769629 }
+ },
+
+ "bee_350m_fork_decaindo": {
+  "_schedule": "WSD com decaimento 1-sqrt(t) iniciado no passo 183.104; no marco 13B esta a 1/3 do decaimento (LR 5,42e-04)",
+  "_bifurcado_de": "checkpoint.pt do run principal no passo 165.000 (10,81B tokens)",
+  "13": { "bpb": 0.8759886053273304, "fertilidade": 0.21833738637769629, "passo": 198364 }
+ },
+
+ "alvo_bpb": 0.8,
+ "_alvo_nota": "Declarado ANTES de gastar. Sera medido no modelo final do run principal (21,75B, decaimento completo), nunca previsto."
+}

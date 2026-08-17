@@ -124,6 +124,22 @@ volume de dados. Mas o LR está em decaimento cosseno, e o ganho acelera no fim 
 motivo que não é D. Uma curva em D sozinha não pode capturar isso. Testar exigiria runs com
 schedules diferentes — caro, e não é a pergunta do projeto agora.
 
+> ## ✅ VERIFICADA em 2026-08-17 — e confirmada. Ver [`fork-decaimento.md`](fork-decaimento.md).
+>
+> Uma cópia do Bee-350M foi bifurcada do `checkpoint.pt` no passo 165.000 e decaiu 20% em
+> `1−√t` enquanto o run principal seguia no platô do WSD. Mesmo corpus, mesma posição no dado,
+> LR de pico congelado com `--lr` explícito.
+>
+> **Antes do decaimento os dois são iguais dentro de ±0,006 de loss.** Depois, o fork descola
+> monotonicamente até **−0,1305** (perplexidade 20,8 → 18,3, **−12,0%**) com apenas **um terço**
+> do decaimento aplicado — e o principal fica **exatamente plano** no mesmo intervalo (3,0397 no
+> passo 183.000, 3,0415 no 193.000).
+>
+> ⭐ **O ganho veio sem um único token além do que o principal também viu.** Uma lei em D sozinho
+> atribui a D o que é do LR, e é por isso que ela subestimava o fim do run. A hipótese custou
+> **US$ 22** para fechar, não o "caro" que eu supus aqui — e a suposição de que era caro foi o
+> que a deixou sete dias sem teste.
+
 **Consequência prática:** o ponto final (21,7B) será **medido, não previsto**.
 
 ## O que os pontos medidos dizem, sem curva nenhuma

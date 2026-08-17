@@ -75,8 +75,13 @@ previsto é o detector mais barato que existe para dado que sumiu.
 
 ## Parte II — O instrumento mente antes do fenômeno
 
-**Cinco** ocorrências em que o **aparato** — avaliador, guarda, cronômetro — estava errado e quase
-produziu decisão de produto. É a família mais numerosa do projeto, e a mais barata de evitar.
+**Seis** ocorrências em que o **aparato** — avaliador, guarda, cronômetro, schedule — estava errado
+e quase produziu decisão de produto. É a família mais numerosa do projeto, e a mais barata de
+evitar.
+
+> ⭐ **O princípio comum:** quando dois experimentos internos se contradizem por uma margem
+> absurda, o defeito está **no aparato, não no fenômeno**. Investigar a contradição ANTES de
+> construir teoria em cima dela.
 
 ### 4. Avaliador com mundo fechado — 23,5% que não existiam
 
@@ -151,6 +156,32 @@ multiplicativo da §5: um veredito impresso por código, com aparência de resul
 **Guarda:** todo veredito comparativo exige **teste de significância** antes de concluir; com n
 pequeno, a direção sozinha não é informação.
 
+### 9. Comparar marcos de **schedules diferentes** — mediu o schedule e chamou de modelo
+
+O Bee-350M parecia perder do Bee-150M com volume crescente de tokens: 4,55% **melhor** em 1B,
+0,90% melhor em 3B, 0,66% **pior** em 6B, **2,51% pior** em 10B. Um modelo 2,3× maior começando
+na frente e terminando atrás, com o déficit crescendo limpo. Isso gerou a hipótese de subtreino
+(63 tok/param contra 143) e a pergunta de expandir o corpus no próximo degrau — coleta, dinheiro
+e semanas.
+
+Só que o **150M usou cosine** e nesses pontos já vinha colhendo decaimento (LR em 99,8% → 96,8%
+→ 85,7% → **62,2%** do pico), enquanto o **350M usa WSD** e estava cravado no platô de 55%. A
+tabela comparava um modelo que estava **assentando** com um que ainda **explorava**. O segundo
+sempre parece pior, e a diferença sumiria no fim.
+
+**Medido por bifurcação** (US$ 22, ver `fork-decaimento.md`): decair a cópia inverteu o sinal —
+de 2,51% pior em 10B para ~0,6% **melhor** em 13B — **sem um token novo**.
+
+> **Um modelo maior ficando pior com mais dados é uma contradição grande — e a resposta certa
+> era desconfiar do instrumento, não teorizar sobre subtreino.** É o princípio que abre esta
+> Parte II, aplicado a um caso que eu não reconheci como sendo dela.
+
+**Guarda:** marcos intermediários de modelos com **schedules de LR diferentes não são
+comparáveis**. Só o ponto final, ambos decaídos, compara modelos. E ao bifurcar para testar
+schedule, passar `--lr` **explícito**: com `--lr 0` a Step Law deriva de
+`passos × tokens_por_passo`, então mudar o horizonte muda o LR junto (15B em vez de 21,75B daria
+LR 10,8% menor) e o resultado fica inatribuível.
+
 ---
 
 ## Parte III — As leis medidas
@@ -221,6 +252,20 @@ caindo 10× entre 1e-4 e 1e-3.
 Medir com 6 passos de aquecimento deu **21,7 s/passo**; o valor real era **4,4 s/passo** —
 erro de 5×, que gerou uma decisão de infraestrutura equivocada. Só confiar a partir do passo
 ~20, com três leituras coincidentes.
+
+### 8. O decaimento de LR vale mais que os tokens que ele consome — e o platô não mostra nada
+
+Medido em 345M (`fork-decaimento.md`): decair 20% em `1−√t` tirou **−0,1305 de loss** (perplexidade
+20,8 → 18,3, **−12,0%**) com **um terço** do decaimento aplicado. No mesmo intervalo, o run gêmeo
+no platô ficou **plano**: 3,0397 → 3,0415 em dez mil passos e 655M tokens.
+
+Duas consequências que valem para qualquer run futuro:
+
+1. **Perplexidade de validação plana no platô do WSD não é sinal de saturação.** Ela não mede o que
+   o platô faz; só cobra quando o modelo assenta. Não abortar nem replanejar um run por causa disso.
+2. **Uma lei `L(D)` ajustada sobre um run com decaimento atribui a D o que é do LR.** Foi por isso
+   que a curva do 150M errou o marco de 15B por 0,0161 e teve as projeções descartadas
+   (`previsao-marco-10B.md`). Ajustar lei de scaling só sobre pontos do **mesmo regime de LR**.
 
 ---
 
