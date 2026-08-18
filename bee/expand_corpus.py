@@ -145,9 +145,51 @@ class Dedup:
 
 # ================================= coleta por arquivo =========================
 def listar_parquets() -> list[str]:
-    from huggingface_hub import HfApi
-    arquivos = HfApi().list_repo_files(REPO, repo_type="dataset")
-    return sorted(a for a in arquivos
+    """Os parquets PT do fineweb-2, em ordem estavel.
+
+    🔴 A VERSAO ANTIGA CHAMAVA `list_repo_files(REPO)`, que percorre o repositorio
+    INTEIRO — dezenas de milhares de arquivos de ~1.900 idiomas — para descobrir o nome
+    de UM arquivo. Em 2026-08-18 essa chamada devolveu **429 sete vezes ao longo de uma
+    hora** a partir de um IP de datacenter e derrubou o Gate 2 por completo, sendo que o
+    parquet que ele precisava ja estava em cache no disco. Insistir nao adianta: o
+    problema e' a chamada, nao o momento.
+
+    Tres camadas, da mais barata para a mais cara:
+
+    1. **Cache versionado** (`parquets_fineweb2_pt.json`). Custa zero requisicoes e torna
+       a medicao REPRODUTIVEL: `--parquet-idx 40` aponta para o mesmo texto hoje e daqui
+       a um ano, mesmo que o dataset ganhe arquivos. Para uma regua de avaliacao isso nao
+       e' efeito colateral, e' a propriedade desejada.
+    2. **Listagem do diretorio** `data/{CONFIG_DIR}/train` apenas — algumas dezenas de
+       entradas em vez de dezenas de milhares.
+    3. O caminho antigo, so' se os dois falharem.
+
+    ⚠️ Equivalencia verificada em 2026-08-18: as tres rotas dao a mesma lista ordenada —
+    66 parquets, indice 40 = `data/por_Latn/train/002_00012.parquet`, que e' exatamente o
+    holdout com que toda a curva do Bee-150M foi medida.
+    """
+    import json
+    cache = Path(__file__).resolve().parent / "parquets_fineweb2_pt.json"
+    if cache.exists():
+        d = json.loads(cache.read_text(encoding="utf-8"))
+        if d.get("repo") == REPO and d.get("config_dir") == CONFIG_DIR:
+            return d["arquivos"]
+
+    try:                                         # 2) so' o diretorio que interessa
+        from huggingface_hub import HfApi
+        api = HfApi()
+        arquivos = [x.path for x in api.list_repo_tree(
+            REPO, repo_type="dataset", path_in_repo=f"data/{CONFIG_DIR}/train",
+            recursive=False) if getattr(x, "path", "").endswith(".parquet")]
+        if arquivos:
+            return sorted(arquivos)
+    except Exception as e:
+        print(f"  ⚠️ listagem do diretorio falhou ({type(e).__name__}); "
+              f"caindo para o repo inteiro", file=sys.stderr)
+
+    from huggingface_hub import HfApi           # 3) caro, e o que toma 429
+    todos = HfApi().list_repo_files(REPO, repo_type="dataset")
+    return sorted(a for a in todos
                   if a.endswith(".parquet") and f"/{CONFIG_DIR}/" in a and "/train/" in a)
 
 
