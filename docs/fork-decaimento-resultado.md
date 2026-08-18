@@ -87,6 +87,30 @@ menos tokens por parametro, resultado melhor.
 
 ⭐ O decaimento sozinho, de 1/3 para completo, valeu **-6,13%** de bpb (0,8760 -> 0,8223).
 
+## ⭐ O par perfeito: o mesmo modelo, com e sem decaimento
+
+O run principal salvou um `marco_15B` — **o mesmo modelo, nos mesmos 15,00B tokens, no
+mesmo dado, na mesma posicao que o fork, mas ainda no plato**. Medi-lo custou US$ 0 (CPU,
+sem tocar a GPU) e fecha o experimento com controle total: entre os dois, **a unica coisa
+que difere e' o learning rate**.
+
+| Bee-350M @ 15,00B tokens | bpb | vs Bee-150M @15B (0,8700) |
+|---|---:|---|
+| no plato (`marco_15B`) | **0,9167** | 5,37% **pior** |
+| decaido (fork final) | **0,8223** | 5,48% **melhor** |
+| **efeito do decaimento** | **-0,0944** | **-10,3%** |
+
+⭐⭐ **A mesma comparacao, no mesmo ponto, inverte de 5,37% pior para 5,48% melhor — so'
+pelo schedule.** Isso nao e' interpretacao de curva: e' um modelo medido duas vezes, com e
+sem o decaimento aplicado, na mesma regua.
+
+A ancora confirma que a regua nao se moveu: Bee-150M final remedido = **0,8438** contra
+0,844 registrado, diferenca de **-0,0002**. A curva de referencia do 150M e' reprodutivel.
+
+⚠️ **Corolario para o dimensionamento:** o decaimento vale ~10% de bpb nesta escala. Qualquer
+decisao tomada a partir de um numero colhido no PLATO — abortar um run, expandir corpus,
+trocar arquitetura — esta olhando para um modelo que ainda nao assentou.
+
 ## Os vereditos
 
 1. 🔴 **A hipotese de subtreino esta morta.** Com 43 tok/param o 350M ja supera o 150M com
