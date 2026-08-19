@@ -59,6 +59,9 @@ def parse_args() -> argparse.Namespace:
                     help="⚠️ default herdado do Qwen-4B, NAO validado no Bee. Ver E2 do plano")
     ap.add_argument("--batch-size", type=int, default=1, help="por dispositivo — manter 1 em 8GB")
     ap.add_argument("--grad-accum", type=int, default=16, help="batch efetivo = batch-size * grad-accum")
+    ap.add_argument("--sem-lora", action="store_true",
+                    help="full fine-tuning, sem adapter. E o controle NEGATIVO do E2; "
+                         "exige LR ~10x menor que o de LoRA")
     ap.add_argument("--lora-r", type=int, default=16)
     ap.add_argument("--lora-alpha", type=int, default=32)
     ap.add_argument("--save-steps", type=int, default=200)
@@ -186,19 +189,37 @@ def main() -> int:
     else:
         model.gradient_checkpointing_enable()
 
-    lora = LoraConfig(
-        r=args.lora_r,
-        lora_alpha=args.lora_alpha,
-        lora_dropout=0.05,
-        bias="none",
-        task_type="CAUSAL_LM",
-        target_modules=[
-            "q_proj", "k_proj", "v_proj", "o_proj",
-            "gate_proj", "up_proj", "down_proj",
-        ],
-    )
-    model = get_peft_model(model, lora)
-    model.print_trainable_parameters()
+    if args.sem_lora:
+        # ⚠️ FULL FINE-TUNING — no Estagio 2 este e' o CONTROLE NEGATIVO, esperado abaixo do
+        #    proprio base em pelo menos uma capacidade. Em 151M ja' se mediu: full FT de
+        #    multi-turno custou -5,9 pp de execucao single-turn, e o adapter custou zero.
+        #    O LR aqui e' outra ordem de grandeza (~1/10 do de LoRA) — passar o LR de adapter
+        #    num full FT destroi o modelo, e o sintoma e' "o braco (c) foi mal", nao "o LR
+        #    estava errado".
+        print("modo     : FULL FINE-TUNING (sem LoRA) — controle negativo do E2")
+        for p in model.parameters():
+            p.requires_grad_(True)
+    else:
+        lora = LoraConfig(
+            r=args.lora_r,
+            lora_alpha=args.lora_alpha,
+            lora_dropout=0.05,
+            bias="none",
+            task_type="CAUSAL_LM",
+            target_modules=[
+                "q_proj", "k_proj", "v_proj", "o_proj",
+                "gate_proj", "up_proj", "down_proj",
+            ],
+        )
+        model = get_peft_model(model, lora)
+        model.print_trainable_parameters()
+
+    n_treinaveis = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    if n_treinaveis == 0:
+        print("\n[ABORTADO] ZERO parametros treinaveis. O treino rodaria inteiro sem erro e "
+              "produziria delta exatamente zero.", file=sys.stderr)
+        raise SystemExit(1)
+    print(f"treinaveis: {n_treinaveis:,} parametros")
 
     dataset = load_dataset("json", data_files=str(args.data), split="train")
 
@@ -241,6 +262,47 @@ def main() -> int:
     )
 
     trainer = SFTTrainer(model=model, args=cfg, train_dataset=dataset, processing_class=tokenizer)
+
+    # 🔴 GUARDA DE PESO QUE NAO MEXE — item 5 do checklist de run longo do projeto, escrito
+    #    ha' semanas e nunca implementado. arXiv:2607.25091 mediu em Pythia-70M e SmolLM2-135M
+    #    que um adapter marcado silenciosamente como nao-treinavel em PEFT/TRL produz delta
+    #    **exatamente zero** e o treino roda inteiro sem um erro: a loss cai (e' a loss do
+    #    modelo congelado sobre dado novo), o checkpoint sai, o adapter carrega, e a avaliacao
+    #    devolve o numero do base. Nada denuncia.
+    #    A guarda compara a norma dos treinaveis antes e depois do passo 1 e ABORTA se
+    #    identica. Custa uma passada de soma sobre os parametros.
+    from transformers import TrainerCallback
+
+    class GuardaDelta(TrainerCallback):
+        def __init__(self):
+            self.antes = None
+            self.conferido = False
+
+        def _norma(self):
+            import torch as _t
+            with _t.no_grad():
+                return float(sum(p.detach().float().pow(2).sum()
+                                 for p in model.parameters() if p.requires_grad))
+
+        def on_train_begin(self, *a, **k):
+            self.antes = self._norma()
+            print(f"guarda   : ||theta_treinavel||^2 antes do passo 1 = {self.antes:.6f}")
+
+        def on_step_end(self, arg, estado, controle, **k):
+            if self.conferido or estado.global_step < 1:
+                return
+            self.conferido = True
+            depois = self._norma()
+            if abs(depois - self.antes) <= 1e-9 * max(1.0, abs(self.antes)):
+                print(f"\n[ABORTADO] ||theta_treinavel|| IDENTICA depois do passo 1 "
+                      f"({self.antes:.6f} -> {depois:.6f}).", file=sys.stderr)
+                print("O treino rodaria inteiro sem erro e o adapter sairia com delta zero.",
+                      file=sys.stderr)
+                raise SystemExit(1)
+            print(f"guarda   : ||theta_treinavel||^2 depois do passo 1 = {depois:.6f} "
+                  f"(delta {depois - self.antes:+.3e}) [OK]")
+
+    trainer.add_callback(GuardaDelta())
 
     print("\ntreinando... (Ctrl+C interrompe; checkpoints em save_steps)")
     trainer.train()
