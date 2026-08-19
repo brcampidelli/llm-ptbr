@@ -36,6 +36,14 @@ está morto**.
 | **[fork-decaimento.md](fork-decaimento.md)** | 🔴 **US$ 22, e inverte o sinal de um resultado**: a curva pareada do 350M contra o 150M media o **schedule**, não o modelo. Decair uma cópia levou o 350M de **2,51% pior** em 10B a **~0,6% melhor** em 13B — **sem um token novo**. Fecha a hipótese registrada em 10/08 e deixada sem teste, e **invalida os marcos 1B–10B como comparação** |
 | **[teto-passk-medido.md](teto-passk-medido.md)** | ⭐ **US$ 0, e derruba 3 afirmações**: o corpus está limpo (0,28% de repetição — o item de maior ROI do estudo não existia), o holdout tinha 11,8% de itens impossíveis, e o "teto" de 72,9% era na verdade **85,3%**. A folga colhível é **21,2 pp**, não 15,3 |
 
+## 🐝 Pós-treino do Bee-350M (em curso)
+
+| documento | o que traz |
+|---|---|
+| **[plano-pos-treino-350m.md](plano-pos-treino-350m.md)** | o plano aprovado: estágios E0–E8, orçamento e os critérios declarados **antes** de medir |
+| **[reguas-e-pisos-e0.md](reguas-e-pisos-e0.md)** | ⭐ **as 8 réguas e o piso de cada uma.** Copiar 2 frases resume 51,3%; contar a palavra "não" faz 79,0% em sentimento; copiar a fonte marca chrF++ 21,5 em tradução. E a régua de tradução reproduziu o **BLEU 50,4 publicado do opus-mt em 50,5** — validação do aparato, não só do modelo |
+| [censo-mistura-350m.md](censo-mistura-350m.md) | censo por TOKEN: o agêntico recebe 2,7% do gradiente, não 20,9% |
+
 ## Gates e decisões
 
 | documento | veredito |

@@ -1,0 +1,23 @@
+{
+ "nome": "EXTERNO opus-mt",
+ "en->pt": {
+  "chrf2": 70.39959848562188,
+  "bleu": 50.53998709274467,
+  "idioma_alvo": 0.9933333333333333,
+  "numeros_ok": 0.97,
+  "vazio": 0.0,
+  "n": 300
+ },
+ "pt->en": {
+  "chrf2": 68.02991839397515,
+  "bleu": 45.14641001762288,
+  "idioma_alvo": 0.9933333333333333,
+  "numeros_ok": 0.9766666666666667,
+  "vazio": 0.0,
+  "n": 300
+ },
+ "modelos": {
+  "en->pt": "Helsinki-NLP/opus-mt-tc-big-en-pt",
+  "pt->en": "Helsinki-NLP/opus-mt-ROMANCE-en"
+ }
+}
