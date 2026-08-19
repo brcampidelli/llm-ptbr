@@ -80,13 +80,15 @@ def main() -> int:
             pass
 
     ap = argparse.ArgumentParser()
-    ap.add_argument("--model", default="BrCamp/bee-150m-pt-sft")
+    ap.add_argument("--model", default="BrCamp/bee-350m-pt-base")
     ap.add_argument("--data", type=Path, default=PADRAO_EVAL)
     ap.add_argument("--k", type=int, default=1, help="amostras por exemplo (k>1 liga pass@k)")
     ap.add_argument("--temp", type=float, default=0.8, help="so usado quando k>1")
     ap.add_argument("--max-new", type=int, default=320)
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--tag", default=None)
+    ap.add_argument("--dry-run", action="store_true",
+                    help="executa as referencias e sai, sem carregar modelo")
     args = ap.parse_args()
 
     linhas = [r for r in read_jsonl(args.data) if mensagens(r)]
@@ -121,6 +123,12 @@ def main() -> int:
     print(f"guarda: as {sum(1 for r in linhas if r.get('kind') == 'tool_call')} "
           f"referencias executam [OK]\n")
 
+    if args.dry_run:
+        # a guarda acima ja' e' o dry-run inteiro: executar todos os gabaritos ANTES de
+        # carregar modelo e' exatamente o criterio do Estagio 0. Aqui so' se sai antes da GPU.
+        print("✅ DRY-RUN: referencias validadas. Nenhum modelo foi carregado.")
+        return 0
+
     import torch
     from transformers import AutoModelForCausalLM, AutoTokenizer
 
@@ -143,7 +151,13 @@ def main() -> int:
     def gerar(sistema: str | None, usuario: str, k: int) -> list[str]:
         msgs = ([{"role": "system", "content": sistema}] if sistema else []) \
             + [{"role": "user", "content": usuario}]
-        txt = tok.apply_chat_template(msgs, tokenize=False, add_generation_prompt=True)
+        # ⚠️ O MODELO BASE NAO TEM CHAT TEMPLATE — o `apply_chat_template` num tokenizador sem
+        #    template levanta excecao ou inventa um formato, e nos dois casos o numero medido
+        #    seria de outro experimento. Deteccao automatica, sem flag.
+        if getattr(tok, "chat_template", None):
+            txt = tok.apply_chat_template(msgs, tokenize=False, add_generation_prompt=True)
+        else:
+            txt = (f"{sistema}\n\n" if sistema else "") + f"Usuario: {usuario}\nAssistente:"
         ent = tok(txt, return_tensors="pt").to(dispositivo)
         n = ent["input_ids"].shape[1]
         cfg = dict(max_new_tokens=args.max_new, pad_token_id=tok.pad_token_id or tok.eos_token_id)
