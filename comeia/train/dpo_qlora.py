@@ -44,7 +44,15 @@ DEFAULT_OUT = ROOT / "models" / "qwen3.5-4b-ptbr-dpo"
 
 def parse_args() -> argparse.Namespace:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--model", default="Qwen/Qwen3.5-4B", help="modelo base")
+    # 🔴 SEM DEFAULT, DE PROPOSITO. Este arquivo nasceu do plano de fine-tunar um
+    #    Qwen3.5-4B, que foi ABANDONADO — o projeto pre-treina modelos proprios. O default
+    #    antigo ("Qwen/Qwen3.5-4B") sobreviveu ao abandono: rodar isto hoje baixaria 8 GB e
+    #    treinaria o modelo ERRADO sem emitir um unico aviso. Mesma familia de "o dado some
+    #    e nada reclama" que ja custou tres vezes a este projeto (ver docs/licoes-de-metodo).
+    #    Agora e' obrigatorio dizer qual modelo se esta treinando.
+    #    Os modelos do projeto: BrCamp/bee-350m-pt-base · BrCamp/bee-150m-pt-base
+    ap.add_argument("--model", required=True,
+                    help="OBRIGATORIO. ex.: BrCamp/bee-350m-pt-base")
     ap.add_argument("--sft-adapter", default=None,
                     help="adapter LoRA do SFT — ponto de partida do DPO (recomendado). "
                          "Sem ele, treina DPO direto sobre o base (menos eficaz).")
