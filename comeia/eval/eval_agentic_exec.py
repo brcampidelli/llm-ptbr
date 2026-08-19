@@ -87,6 +87,8 @@ def main() -> int:
     ap.add_argument("--max-new", type=int, default=320)
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--tag", default=None)
+    ap.add_argument("--chat", action="store_true",
+                    help="usa o chat template. So' DEPOIS do SFT — ver comentario em gerar()")
     ap.add_argument("--dry-run", action="store_true",
                     help="executa as referencias e sai, sem carregar modelo")
     args = ap.parse_args()
@@ -151,10 +153,13 @@ def main() -> int:
     def gerar(sistema: str | None, usuario: str, k: int) -> list[str]:
         msgs = ([{"role": "system", "content": sistema}] if sistema else []) \
             + [{"role": "user", "content": usuario}]
-        # ⚠️ O MODELO BASE NAO TEM CHAT TEMPLATE — o `apply_chat_template` num tokenizador sem
-        #    template levanta excecao ou inventa um formato, e nos dois casos o numero medido
-        #    seria de outro experimento. Deteccao automatica, sem flag.
-        if getattr(tok, "chat_template", None):
+        # 🔴 CHAT TEMPLATE E' ESCOLHA EXPLICITA (--chat), NAO DETECCAO AUTOMATICA.
+        #    `tok.chat_template` do bee-350m-pt-base devolve **True**: o `TokenizersBackend`
+        #    oferece um ChatML padrao mesmo sem nada no tokenizer_config.json. Mas o base foi
+        #    pre-treinado em texto cru e nunca viu `<|im_start|>` — medi-lo por esse template
+        #    mede a reacao a tokens ineditos, e o sintoma sai como "o base nao sabe usar
+        #    ferramenta". BASE = prompt simples; depois do SFT com ChatML = --chat.
+        if args.chat:
             txt = tok.apply_chat_template(msgs, tokenize=False, add_generation_prompt=True)
         else:
             txt = (f"{sistema}\n\n" if sistema else "") + f"Usuario: {usuario}\nAssistente:"

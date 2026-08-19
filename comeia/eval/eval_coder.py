@@ -79,6 +79,10 @@ def main() -> int:
                     help="quantiza em 4 bits. NAO e' mais o padrao: o base bf16 sao 691 MB, "
                          "e o QLoRA custa 20-30%% de throughput para poupar memoria que "
                          "nao falta")
+    ap.add_argument("--chat", action="store_true",
+                    help="usa o chat template. So' DEPOIS do SFT: o base nunca viu "
+                         "<|im_start|>, e o tokenizador oferece um ChatML padrao que "
+                         "engana a deteccao automatica")
     ap.add_argument("--dry-run", action="store_true",
                     help="valida tarefas e gabaritos sem carregar modelo")
     ap.add_argument("--tasks", type=Path, default=DEFAULT_TASKS)
@@ -145,10 +149,17 @@ def main() -> int:
     falhas: list[tuple[str, str]] = []
 
     for i, t in enumerate(tasks, 1):
-        # ⚠️ O MODELO BASE NAO TEM CHAT TEMPLATE. Chamar apply_chat_template nele levanta
-        #    excecao ou aplica um formato inventado pelo tokenizador — e nos dois casos o
-        #    numero medido seria de outro experimento. Deteccao automatica, sem flag.
-        if getattr(tok, "chat_template", None):
+        # 🔴 O CHAT TEMPLATE E' ESCOLHA EXPLICITA (--chat), NAO DETECCAO AUTOMATICA.
+        #    A primeira versao desta linha perguntava `if tok.chat_template` — e o
+        #    BrCamp/bee-350m-pt-base responde **True**: o `TokenizersBackend` fornece um
+        #    template ChatML padrao mesmo sem nada no tokenizer_config.json. So' que o base
+        #    foi pre-treinado em texto cru e **nunca viu `<|im_start|>`** (os tokens existem
+        #    no vocabulario, reservados para o SFT, e praticamente nao aparecem no corpus).
+        #    Medir o base atraves desse template mede a reacao dele a tokens ineditos, e o
+        #    sintoma sai como "o base nao sabe programar" — conclusao sobre o modelo apoiada
+        #    num artefato do aparato, que e' o erro assinatura deste projeto.
+        #    Regra: BASE = prompt simples. Depois do SFT com ChatML = --chat.
+        if args.chat:
             msgs = [{"role": "system", "content": SYSTEM},
                     {"role": "user", "content": t["prompt"]}]
             tpl = {"add_generation_prompt": True, "return_tensors": "pt", "return_dict": True}
