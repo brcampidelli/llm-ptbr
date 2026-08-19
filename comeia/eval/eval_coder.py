@@ -43,6 +43,26 @@ SYSTEM = (
     "ou depois. A função deve ser pura: sem input(), open(), os, sys ou rede."
 )
 
+# Prompt para modelo BASE, que não tem chat template. Fica o mais próximo possível do
+# formato de continuação natural: a assinatura já começa, e o modelo só precisa seguir.
+MOLDE_BASE = "# {sistema}\n\n{prompt}"
+
+
+def guarda_modelo_do_projeto(nome: str, permitir_terceiro: bool) -> None:
+    """🔴 Aborta se o modelo avaliado não for do projeto.
+
+    A mesma guarda do `sft_qlora.py`, e pelo mesmo motivo: o default deste arquivo era
+    `Qwen/Qwen3.5-4B`, herdado de quando ele foi escrito para outra coisa. Rodar o baseline
+    do Bee com o default errado produz um número plausível de um modelo que não é o nosso —
+    e nada no relatório denunciaria, porque o campo `modelo` sairia preenchido e correto.
+    """
+    if "bee" in nome.lower() or permitir_terceiro:
+        return
+    print(f"\n[ABORTADO] '{nome}' nao parece um modelo do projeto Bee.", file=sys.stderr)
+    print("Se e' proposital (baseline externo), passe --permitir-modelo-de-terceiros.",
+          file=sys.stderr)
+    raise SystemExit(1)
+
 
 def main() -> int:
     for s in (sys.stdout, sys.stderr):
@@ -52,8 +72,15 @@ def main() -> int:
             pass
 
     ap = argparse.ArgumentParser()
-    ap.add_argument("--model", default="Qwen/Qwen3.5-4B")
+    ap.add_argument("--model", default="BrCamp/bee-350m-pt-base")
     ap.add_argument("--peft", default=None)
+    ap.add_argument("--permitir-modelo-de-terceiros", action="store_true")
+    ap.add_argument("--quatro-bits", action="store_true",
+                    help="quantiza em 4 bits. NAO e' mais o padrao: o base bf16 sao 691 MB, "
+                         "e o QLoRA custa 20-30%% de throughput para poupar memoria que "
+                         "nao falta")
+    ap.add_argument("--dry-run", action="store_true",
+                    help="valida tarefas e gabaritos sem carregar modelo")
     ap.add_argument("--tasks", type=Path, default=DEFAULT_TASKS)
     ap.add_argument("--limit", type=int, default=30, help="0 = todas")
     ap.add_argument("--max-new", type=int, default=420,
@@ -71,11 +98,31 @@ def main() -> int:
         print(f"ERRO: nenhuma tarefa em {args.tasks}", file=sys.stderr)
         return 1
 
+    guarda_modelo_do_projeto(args.model, args.permitir_modelo_de_terceiros)
+
+    # 🔴 O TETO DO CONJUNTO, EXECUTADO ANTES DE CARREGAR O MODELO. Tarefa cujo gabarito nao
+    #    passa no proprio teste e' impossivel por construcao, e o sintoma nao aparece no
+    #    resultado: um modelo que acerta 40% num conjunto de teto 92% parece um modelo de 40%.
+    from code_exec import run_tests as _rt
+    ruins = [t["name"] for t in tasks
+             if t.get("solution") and not _rt(t["solution"], t["tests"]).ok
+             and not _rt(t["prompt"] + "\n" + t["solution"], t["tests"]).ok]
+    if ruins:
+        print(f"⚠️ TETO ABAIXO DE 100%: {len(ruins)}/{len(tasks)} gabaritos falham no proprio "
+              f"teste: {ruins[:6]}", file=sys.stderr)
+        print("   O pass@1 medido abaixo esta' descontado desse teto.", file=sys.stderr)
+    else:
+        print(f"✅ teto do conjunto verificado: {len(tasks)}/{len(tasks)} gabaritos executam")
+
+    if args.dry_run:
+        print("\n✅ DRY-RUN: tarefas e gabaritos validados. Nenhum modelo foi carregado.")
+        return 0
+
     import torch
     from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
     kwargs: dict = {"dtype": torch.bfloat16, "device_map": {"": 0}}
-    if not args.no_4bit:
+    if args.quatro_bits:
         kwargs["quantization_config"] = BitsAndBytesConfig(
             load_in_4bit=True, bnb_4bit_quant_type="nf4",
             bnb_4bit_use_double_quant=True, bnb_4bit_compute_dtype=torch.bfloat16,
@@ -98,13 +145,20 @@ def main() -> int:
     falhas: list[tuple[str, str]] = []
 
     for i, t in enumerate(tasks, 1):
-        msgs = [{"role": "system", "content": SYSTEM},
-                {"role": "user", "content": t["prompt"]}]
-        tpl = {"add_generation_prompt": True, "return_tensors": "pt", "return_dict": True}
-        try:
-            enc = tok.apply_chat_template(msgs, enable_thinking=False, **tpl)
-        except TypeError:
-            enc = tok.apply_chat_template(msgs, **tpl)
+        # ⚠️ O MODELO BASE NAO TEM CHAT TEMPLATE. Chamar apply_chat_template nele levanta
+        #    excecao ou aplica um formato inventado pelo tokenizador — e nos dois casos o
+        #    numero medido seria de outro experimento. Deteccao automatica, sem flag.
+        if getattr(tok, "chat_template", None):
+            msgs = [{"role": "system", "content": SYSTEM},
+                    {"role": "user", "content": t["prompt"]}]
+            tpl = {"add_generation_prompt": True, "return_tensors": "pt", "return_dict": True}
+            try:
+                enc = tok.apply_chat_template(msgs, enable_thinking=False, **tpl)
+            except TypeError:
+                enc = tok.apply_chat_template(msgs, **tpl)
+        else:
+            enc = tok(MOLDE_BASE.format(sistema=SYSTEM, prompt=t["prompt"]),
+                      return_tensors="pt")
         inputs = {k: v.to("cuda") for k, v in dict(enc).items() if hasattr(v, "to")}
         plen = inputs["input_ids"].shape[1]
         with torch.no_grad():

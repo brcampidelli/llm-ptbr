@@ -132,7 +132,11 @@ def main() -> int:
     modelo.eval()
 
     amostrado = args.k > 1
-    print(f"modelo : {args.model}")
+    n_par = sum(p.numel() for p in modelo.parameters())
+    # ⚠️ O NUMERO DE PARAMETROS VAI IMPRESSO porque o nome nao basta. O default deste arquivo
+    #    era `bee-150m-pt-sft`: contem "bee", passa em qualquer guarda de nome, e mediria o
+    #    modelo da geracao anterior sem que uma linha do relatorio denunciasse.
+    print(f"modelo : {args.model}  ({n_par / 1e6:.1f}M parametros)")
     print(f"holdout: {len(linhas)} exemplos · {dispositivo}")
     print(f"modo   : {'amostragem k=%d T=%.2f (pass@k)' % (args.k, args.temp) if amostrado else 'greedy (k=1)'}\n")
 
