@@ -516,12 +516,38 @@ def main() -> int:
         return saidas
 
     # ---------------------------------------------------------------- medicao
+    # ⭐ PARCIAL EM DISCO, UM PROBLEMA POR LINHA. Este run leva ~4,6 h na 5070; sem gravar
+    #    nada ate' o fim, qualquer queda no minuto 270 custa as 4,5 h anteriores. E' o mesmo
+    #    item do checklist que ja' existe para o pre-treino ("checkpoint em disco
+    #    persistente") aplicado ao lado da avaliacao, onde faltava.
+    #    Retomar e' automatico: o que ja' esta' no .parcial nao e' regerado.
+    parcial = DESTINO / f"aritmetica-passk{('-' + args.tag) if args.tag else ''}.parcial.jsonl"
+    parcial.parent.mkdir(parents=True, exist_ok=True)
+    feitos: dict[str, dict] = {}
+    if parcial.exists():
+        for linha in parcial.read_text(encoding="utf-8").splitlines():
+            if linha.strip():
+                r = json.loads(linha)
+                # so' aproveita quem foi medido com o MESMO n de amostras — parcial de um
+                # k diferente nao e' comparavel e reaproveita-lo falsearia o resultado
+                if r.get("n") == n_amostras:
+                    feitos[r["id"]] = r
+        if feitos:
+            print(f"   ↻ retomando: {len(feitos)}/{len(itens)} problemas ja' medidos em "
+                  f"{parcial.name}", flush=True)
+
     por_problema: list[dict] = []
     t0 = time.time()
     sem_numero = 0
     total_amostras = 0
+    fparcial = parcial.open("a", encoding="utf-8")
 
     for i, it in enumerate(itens, 1):
+        if it["id"] in feitos:
+            r = feitos[it["id"]]
+            por_problema.append(r)
+            total_amostras += r["n"]
+            continue
         prompt = montar_prompt(it["pergunta"], args.tiros)
         brutas = gerar(prompt, n_amostras)
 
@@ -544,6 +570,8 @@ def main() -> int:
             "taxa": round(acertos / max(1, len(brutas)), 4),
             "amostra_saida": primeira_saida, "amostra_numero_lido": primeira_lida,
         })
+        fparcial.write(json.dumps(por_problema[-1], ensure_ascii=False) + chr(10))
+        fparcial.flush()
 
         if i % 5 == 0 or i == len(itens):
             dt = time.time() - t0
@@ -552,6 +580,7 @@ def main() -> int:
             print(f"  {i}/{len(itens)} · {dt / 60:.1f} min · resta ~"
                   f"{dt * (len(itens) - i) / i / 60:.1f} min{vram}", flush=True)
 
+    fparcial.close()
     return relatar(args, itens, por_problema, n_amostras, sem_numero, total_amostras, t0)
 
 
