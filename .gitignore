@@ -58,3 +58,5 @@ bee/bncc/*.pdf
 
 # holdout do Gate 2 — parquet de 526 MB baixado do HF, sempre reproduzivel
 _holdout_tmp/
+comeia/eval/benchmarks/b2w_bruto.csv
+comeia/eval/benchmarks/humaneval_xl_pt_bruto.jsonl
