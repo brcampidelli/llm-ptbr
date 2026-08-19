@@ -93,6 +93,60 @@ print(tok.decode(modelo.generate(**ids, max_new_tokens=40)[0]))
 """
 
 
+# ---------------------------------------------------------------------------------------
+# O FORK. Nao e' "outro modelo": e' o gemeo experimental do principal, e o par entre os
+# dois e' que carrega o resultado. Publicar so' um deles jogaria fora a comparacao.
+CARD_FORK = """---
+language: [pt]
+license: apache-2.0
+library_name: transformers
+pipeline_tag: text-generation
+tags: [portuguese, pt-br, from-scratch, bee, ablation]
+---
+
+# Bee-350M PT — variante 15B (fork de decaimento)
+
+**Este e' o gemeo experimental de [BrCamp/bee-350m-pt-base](https://huggingface.co/BrCamp/bee-350m-pt-base).**
+Mesma arquitetura, mesmo corpus, mesmo tokenizador, mesma forma de schedule — **a unica
+coisa que difere e' o total de tokens**: 15,00B aqui contra 21,75B no principal.
+
+Ele existe porque foi bifurcado do checkpoint do run principal no passo 165.000 (com estado
+do Adam e posicao no dado), decaindo dali ate 15,00B enquanto o principal seguia no plato.
+
+## Por que ele importa
+
+| modelo | tokens | tok/param | bpb |
+|---|---:|---:|---:|
+| [bee-350m-pt-base](https://huggingface.co/BrCamp/bee-350m-pt-base) | 21,75B | 63 | 0,8207 |
+| **este (15B)** | **15,00B** | **43** | **0,8223** |
+| [bee-150m-pt-base](https://huggingface.co/BrCamp/bee-150m-pt-base) | 21,75B | 143 | 0,8438 |
+
+⭐ **45% mais dado renderam 0,19% de bpb.** Ja ir de 151M para 345M parametros rendeu
+**2,76%**. Nesta arquitetura o volume de tokens satura por volta de **43 tok/param** — e a
+escala continua pagando.
+
+⭐ E o mesmo modelo, nos mesmos 15,00B tokens, mede **0,9167** se colhido no plato do WSD e
+**0,8223** decaido: **o decaimento de LR sozinho vale 10,3% de bpb**. Comparar marcos
+intermediarios de modelos com schedules diferentes mede o *schedule*, nao o modelo.
+
+## Para que serve
+
+Como modelo, ele e' ligeiramente pior que o principal — use o principal. Este aqui serve
+para **reproduzir a ablacao**: e' o unico ponto que permite isolar o efeito do volume de
+tokens com todo o resto fixo.
+
+Detalhes: [bpb medido](https://github.com/brcampidelli/llm-ptbr/blob/main/docs/fork-decaimento-resultado.md).
+
+## Limitacoes
+
+As mesmas do principal: modelo **base**, nao segue instrucoes, nao conversa, nao usa
+ferramentas; 345M parametros e 2048 de contexto alucinam fatos com facilidade; herda os
+vieses da web em portugues. `bpb` mede modelagem de linguagem, nao fluencia de resposta.
+"""
+
+VARIANTES = {"final": CARD, "fork": CARD_FORK}
+
+
 def main() -> int:
     for s in (sys.stdout, sys.stderr):
         try:
@@ -104,11 +158,13 @@ def main() -> int:
     ap.add_argument("--modelo", type=Path, required=True)
     ap.add_argument("--repo", required=True)
     ap.add_argument("--privado", action="store_true")
+    ap.add_argument("--variante", choices=("final", "fork"), default="final",
+                    help="qual model card usar — 'fork' e' o gemeo de 15B")
     ap.add_argument("--so-card", action="store_true",
                     help="imprime o model card e sai — nao sobe nada, nao precisa de token")
     a = ap.parse_args()
 
-    card = CARD.replace("{repo}", a.repo)
+    card = VARIANTES[a.variante].replace("{repo}", a.repo)
     if a.so_card:
         print(card)
         return 0
@@ -157,7 +213,8 @@ def main() -> int:
     api.create_repo(a.repo, repo_type="model", private=a.privado, exist_ok=True)
     (a.modelo / "README.md").write_text(card, encoding="utf-8")
     api.upload_folder(folder_path=str(a.modelo), repo_id=a.repo, repo_type="model",
-                      commit_message="Bee-350M PT base — 21,75B tokens, bpb 0,8207")
+                      commit_message=("Bee-350M PT base — 21,75B tokens, bpb 0,8207" if a.variante == "final"
+                                      else "Bee-350M PT 15B — fork de decaimento, bpb 0,8223"))
     print(f"\n✅ https://huggingface.co/{a.repo}")
     return 0
 
