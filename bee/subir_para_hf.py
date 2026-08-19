@@ -4,6 +4,9 @@
    de ambiente, alimentada pelo cofre de Secrets do RunPod (ou do Colab). A licao esta
    registrada no projeto: um token ja vazou por ter sido colado numa celula.
 
+⚠️ Container com pouca RAM: o Xet vem DESLIGADO por padrao aqui (ver o comentario no
+   corpo). Sem isso, um pod de 488 MB mata o upload no meio com um "Killed" seco.
+
 Uso (no pod, com o secret HF_TOKEN cadastrado no RunPod):
     python bee/subir_para_hf.py --modelo /workspace/bee-350m/modelo \
                                 --repo BrCamp/bee-350m-pt-base
@@ -130,6 +133,15 @@ def main() -> int:
               file=sys.stderr)
         print("   NAO passe o token como argumento nem cole no terminal.", file=sys.stderr)
         return 1
+
+    # 🔴 XET DESLIGADO, E ISSO NAO E' OPCIONAL AQUI.
+    #    O backend Xet faz dedup em RAM antes de enviar. Num container com pouca memoria
+    #    ele estoura: medido em 2026-08-19 num pod de **488 MB** de cgroup — o processo
+    #    morreu com "Killed" aos 656 MB de 1,38 GB, sem traceback, so' a palavra Killed.
+    #    Com HF_HUB_DISABLE_XET=1 o mesmo upload passou em 37 s a 37 MB/s.
+    #    ⚠️ A licao ja estava registrada no projeto (uso do Drive) e mesmo assim foi
+    #    repetida — por isso agora ela mora no codigo, e nao so' na memoria.
+    os.environ.setdefault("HF_HUB_DISABLE_XET", "1")
 
     from huggingface_hub import HfApi
     api = HfApi(token=token)
