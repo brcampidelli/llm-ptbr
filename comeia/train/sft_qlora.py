@@ -1,18 +1,20 @@
-"""Fase 3 — SFT via QLoRA no Qwen3-4B (local, RTX 5070 8 GB).
+"""SFT com LoRA sobre os modelos do projeto Bee.
 
-Calibrado para caber em 8 GB de VRAM:
-  - carga em 4-bit (NF4) + double quant
-  - LoRA r=16 nas projeções de atenção e MLP
-  - batch 1 + gradient accumulation (batch efetivo configurável)
-  - gradient checkpointing ligado
-  - max_seq_len 2048 por padrão (subir só se sobrar VRAM)
+⚠️ ESTE ARQUIVO NASCEU PARA OUTRO MODELO. Ele foi escrito quando o plano era fine-tunar um
+Qwen3.5-4B de terceiros — daí o nome "qlora", os defaults apertados de 8 GB e o 4-bit
+obrigatório. Aquele plano foi ABANDONADO: o projeto pré-treina modelos próprios. Em
+2026-08-19 o arquivo foi reapontado (Estágio 1 do plano de pós-treino), e o que sobrou de
+herança está marcado com ⚠️ no ponto exato.
+
+O que mudou, e por quê:
+  - `--model` é OBRIGATÓRIO e há guarda de nome: o default "Qwen/Qwen3.5-4B" sobreviveu ao
+    abandono e teria baixado 8 GB para treinar o modelo errado sem um aviso.
+  - 4-bit virou OPT-IN (`--quatro-bits`). O Bee-350M em bf16 são 691 MB.
+  - `--lr` continua com o default herdado, marcado como não-validado: medir é o Estágio 2.
 
 Uso:
-    python train/sft_qlora.py --data data/processed/sft_ptbr.jsonl
-    python train/sft_qlora.py --data ... --max-seq-len 1024 --epochs 2
-    python train/sft_qlora.py --data ... --dry-run     # valida config sem treinar
-
-Se estourar VRAM: baixar --max-seq-len (1024), manter batch 1, fechar apps de GPU.
+    python comeia/train/sft_qlora.py --model BrCamp/bee-350m-pt-base \\
+        --data comeia/data/processed/sft_misto.jsonl --dry-run
 """
 
 from __future__ import annotations
@@ -23,7 +25,9 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_OUT = ROOT / "models" / "qwen3-4b-ptbr-sft"
+# O nome antigo era "qwen3-4b-ptbr-sft": gravaria o adapter do Bee numa pasta com o nome
+# do modelo que este projeto NAO treina mais. Confusao barata de evitar, cara de depurar.
+DEFAULT_OUT = ROOT / "models" / "bee-sft-adapter"
 
 
 def parse_args() -> argparse.Namespace:
@@ -41,7 +45,18 @@ def parse_args() -> argparse.Namespace:
     ap.add_argument("--out", type=Path, default=DEFAULT_OUT)
     ap.add_argument("--max-seq-len", type=int, default=2048)
     ap.add_argument("--epochs", type=float, default=2.0)
-    ap.add_argument("--lr", type=float, default=2e-4)
+    # ⚠️ 2e-4 E' HERANCA DO QWEN-4B E QUASE CERTAMENTE ESTA ERRADO AQUI — mas nao vou
+    #    trocar por um chute. Dois fatos que se somam: (a) o projeto MEDIU 6e-4 como otimo
+    #    de full FT no Bee-150M (curva em U, ruido 0,001, docs/sft-resultado.md §1);
+    #    (b) o estudo de pos-treino achou que LoRA quer LR ~10x o de full FT, quase
+    #    independente do rank. Os dois juntos apontam para a casa de 6e-3, ou seja **30x**
+    #    este default.
+    #    🔴 Nao fixo esse valor aqui porque seria repetir o erro que custou duas semanas:
+    #    herdar numero medido noutro modelo. O Estagio 2 do plano existe exatamente para
+    #    medir LR, rank e lambda_prompt num grid conjunto (~US$ 7). Ate la, passe --lr
+    #    explicito e saiba que o default nao foi validado para o Bee.
+    ap.add_argument("--lr", type=float, default=2e-4,
+                    help="⚠️ default herdado do Qwen-4B, NAO validado no Bee. Ver E2 do plano")
     ap.add_argument("--batch-size", type=int, default=1, help="por dispositivo — manter 1 em 8GB")
     ap.add_argument("--grad-accum", type=int, default=16, help="batch efetivo = batch-size * grad-accum")
     ap.add_argument("--lora-r", type=int, default=16)
@@ -52,6 +67,11 @@ def parse_args() -> argparse.Namespace:
     ap.add_argument("--packing", action="store_true",
                     help="empacota exemplos curtos numa mesma sequencia (mediana dos nossos "
                          "dados e ~450 tokens contra max_seq_len 2048 — reduz passos)")
+    ap.add_argument("--quatro-bits", action="store_true",
+                    help="carrega em 4-bit NF4. DESLIGADO por padrao: o Bee-350M em bf16 sao "
+                         "691 MB e a quantizacao custaria 20-30%% de throughput a toa")
+    ap.add_argument("--permitir-modelo-de-terceiros", action="store_true",
+                    help="desarma a guarda que exige um modelo do projeto Bee")
     ap.add_argument("--dry-run", action="store_true")
     return ap.parse_args()
 
@@ -70,8 +90,40 @@ def check_vram() -> None:
         print("AVISO: menos de 7 GB de VRAM — reduza --max-seq-len para 1024.")
 
 
+
+def guarda_modelo_do_projeto(nome: str, permitir_terceiro: bool) -> None:
+    """Aborta se o modelo nao for do projeto Bee.
+
+    Estes scripts nasceram do plano de fine-tunar um Qwen3.5-4B de terceiros, ABANDONADO
+    quando o projeto passou a pre-treinar modelos proprios. O default antigo sobreviveu ao
+    abandono: rodar isto baixaria 8 GB e treinaria o modelo ERRADO sem um unico aviso.
+
+    Tornar --model obrigatorio resolve o esquecimento, mas nao o engano: quem colar um
+    comando antigo de um log ou README ainda passa o Qwen explicitamente. Esta guarda fecha
+    esse caminho, e --permitir-modelo-de-terceiros torna a excecao uma DECISAO visivel na
+    linha de comando em vez de um acidente silencioso.
+    """
+    import sys
+    if "bee" in nome.lower() or permitir_terceiro:
+        return
+    print(f"\n[ABORTADO] '{nome}' nao parece um modelo do projeto Bee.", file=sys.stderr)
+    print("   Modelos do projeto: BrCamp/bee-350m-pt-base | BrCamp/bee-150m-pt-base",
+          file=sys.stderr)
+    print("   Se for MESMO intencional treinar modelo de terceiros, passe",
+          file=sys.stderr)
+    print("   --permitir-modelo-de-terceiros e assuma a escolha.", file=sys.stderr)
+    raise SystemExit(1)
+
 def main() -> int:
+    # O console do Windows usa cp1252 e explode ao imprimir emoji. Os scripts do projeto ja
+    # tratam isso; estes dois nao tratavam, e quebravam DEPOIS de validar tudo — a pior hora.
+    for _s in (sys.stdout, sys.stderr):
+        try:
+            _s.reconfigure(encoding="utf-8")
+        except Exception:
+            pass
     args = parse_args()
+    guarda_modelo_do_projeto(args.model, args.permitir_modelo_de_terceiros)
 
     if not args.data.exists():
         print(f"ERRO: dataset nao encontrado: {args.data}", file=sys.stderr)
@@ -102,26 +154,37 @@ def main() -> int:
     from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
     from trl import SFTConfig, SFTTrainer
 
-    print("\ncarregando tokenizer/modelo em 4-bit...")
+    # 🔴 4-BIT AGORA E' OPT-IN, E O DEFAULT E' bf16.
+    #    O QLoRA foi escolhido quando o alvo era um Qwen de 4B (8 GB em bf16, apertado na
+    #    5070). O Bee-350M em bf16 sao **691 MB** — quantizar economizaria ~0,5 GB que nao
+    #    fazem falta e cobraria 20-30% de throughput por isso.
+    #    ⚠️ E o vilao de memoria aqui nem e' o peso: e' o tensor de logits, que com
+    #    2048 x 32.000 x bf16 da **131 MB por sequencia**. Quantizar o modelo nao mexe nisso.
+    print(f"\ncarregando tokenizer/modelo em {'4-bit NF4' if args.quatro_bits else 'bf16'}...")
     tokenizer = AutoTokenizer.from_pretrained(args.model, trust_remote_code=True)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
-    bnb = BitsAndBytesConfig(
-        load_in_4bit=True,
-        bnb_4bit_quant_type="nf4",
-        bnb_4bit_use_double_quant=True,
-        bnb_4bit_compute_dtype=torch.bfloat16,
-    )
+    extra = {}
+    if args.quatro_bits:
+        extra["quantization_config"] = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_use_double_quant=True,
+            bnb_4bit_compute_dtype=torch.bfloat16,
+        )
     model = AutoModelForCausalLM.from_pretrained(
         args.model,
-        quantization_config=bnb,
         dtype=torch.bfloat16,
         device_map={"": 0},
         trust_remote_code=True,
+        **extra,
     )
     model.config.use_cache = False
-    model = prepare_model_for_kbit_training(model, use_gradient_checkpointing=True)
+    if args.quatro_bits:
+        model = prepare_model_for_kbit_training(model, use_gradient_checkpointing=True)
+    else:
+        model.gradient_checkpointing_enable()
 
     lora = LoraConfig(
         r=args.lora_r,

@@ -39,7 +39,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_OUT = ROOT / "models" / "qwen3.5-4b-ptbr-dpo"
+DEFAULT_OUT = ROOT / "models" / "bee-dpo-adapter"   # era "qwen3.5-4b-ptbr-dpo"
 
 
 def parse_args() -> argparse.Namespace:
@@ -60,8 +60,18 @@ def parse_args() -> argparse.Namespace:
                     default=ROOT / "data" / "processed" / "preferences_ptbr.jsonl")
     ap.add_argument("--out", type=Path, default=DEFAULT_OUT)
     # DPO segura chosen+rejected → ~2x memória do SFT. Sequência mais curta por padrão.
-    ap.add_argument("--max-seq-len", type=int, default=1536)
-    ap.add_argument("--max-prompt-len", type=int, default=512)
+    # 🔴 max_prompt_len ERA 512, E ISSO TERIA APAGADO O AGENTICO INTEIRO.
+    #    O censo por token (comeia/data/censo_tokens.py, 2026-08-19) mediu que o prompt
+    #    agentico tem **1.094 tokens de media** — so' o catalogo de ferramentas. Com corte
+    #    em 512, todo par de preferencia agentico perderia o catalogo, o modelo veria uma
+    #    pergunta sem as ferramentas disponiveis, e o DPO aprenderia a preferir respostas
+    #    para um problema que nao e' o problema.
+    #    ⚠️ E nao daria erro: e' a MESMA familia que ja descartou 150 de 150 exemplos
+    #    agenticos no SFT do Bee-150M (docs/licoes-de-metodo.md §2b). O default vinha
+    #    dimensionado para um Qwen de 4B com dado de chat curto, nao para este projeto.
+    #    Agora o default e' o contexto inteiro, e a guarda abaixo conta o que seria cortado.
+    ap.add_argument("--max-seq-len", type=int, default=2048)
+    ap.add_argument("--max-prompt-len", type=int, default=1536)
     ap.add_argument("--epochs", type=float, default=1.0)
     ap.add_argument("--lr", type=float, default=5e-6, help="DPO usa LR bem menor que SFT")
     ap.add_argument("--beta", type=float, default=0.1,
@@ -75,6 +85,10 @@ def parse_args() -> argparse.Namespace:
     ap.add_argument("--max-grad-norm", type=float, default=0.3,
                     help="clipping de gradiente — rede contra spikes no DPO (o estudo sugeriu "
                          "percentile_clipping=5 no bnb; via HF Trainer usamos max_grad_norm)")
+    ap.add_argument("--quatro-bits", action="store_true",
+                    help="carrega em 4-bit NF4. DESLIGADO por padrao (ver nota no codigo)")
+    ap.add_argument("--permitir-modelo-de-terceiros", action="store_true",
+                    help="desarma a guarda que exige um modelo do projeto Bee")
     ap.add_argument("--dry-run", action="store_true")
     return ap.parse_args()
 
@@ -118,8 +132,40 @@ def check_vram() -> None:
               "reduza --max-seq-len ou rode na L4.")
 
 
+
+def guarda_modelo_do_projeto(nome: str, permitir_terceiro: bool) -> None:
+    """Aborta se o modelo nao for do projeto Bee.
+
+    Estes scripts nasceram do plano de fine-tunar um Qwen3.5-4B de terceiros, ABANDONADO
+    quando o projeto passou a pre-treinar modelos proprios. O default antigo sobreviveu ao
+    abandono: rodar isto baixaria 8 GB e treinaria o modelo ERRADO sem um unico aviso.
+
+    Tornar --model obrigatorio resolve o esquecimento, mas nao o engano: quem colar um
+    comando antigo de um log ou README ainda passa o Qwen explicitamente. Esta guarda fecha
+    esse caminho, e --permitir-modelo-de-terceiros torna a excecao uma DECISAO visivel na
+    linha de comando em vez de um acidente silencioso.
+    """
+    import sys
+    if "bee" in nome.lower() or permitir_terceiro:
+        return
+    print(f"\n[ABORTADO] '{nome}' nao parece um modelo do projeto Bee.", file=sys.stderr)
+    print("   Modelos do projeto: BrCamp/bee-350m-pt-base | BrCamp/bee-150m-pt-base",
+          file=sys.stderr)
+    print("   Se for MESMO intencional treinar modelo de terceiros, passe",
+          file=sys.stderr)
+    print("   --permitir-modelo-de-terceiros e assuma a escolha.", file=sys.stderr)
+    raise SystemExit(1)
+
 def main() -> int:
+    # O console do Windows usa cp1252 e explode ao imprimir emoji. Os scripts do projeto ja
+    # tratam isso; estes dois nao tratavam, e quebravam DEPOIS de validar tudo — a pior hora.
+    for _s in (sys.stdout, sys.stderr):
+        try:
+            _s.reconfigure(encoding="utf-8")
+        except Exception:
+            pass
     args = parse_args()
+    guarda_modelo_do_projeto(args.model, args.permitir_modelo_de_terceiros)
 
     n_valid = check_data(args.data)
     effective_batch = args.batch_size * args.grad_accum
@@ -149,23 +195,30 @@ def main() -> int:
     from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
     from trl import DPOConfig, DPOTrainer
 
-    print("\ncarregando base em 4-bit...")
+    # 🔴 4-bit e' OPT-IN. Ver a mesma nota em sft_qlora.py: o Bee-350M em bf16 sao 691 MB;
+    #    quantizar economiza ~0,5 GB que nao fazem falta e custa 20-30% de throughput.
+    print(f"\ncarregando base em {'4-bit NF4' if args.quatro_bits else 'bf16'}...")
     tokenizer = AutoTokenizer.from_pretrained(args.model, trust_remote_code=True)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
-    bnb = BitsAndBytesConfig(
-        load_in_4bit=True,
-        bnb_4bit_quant_type="nf4",
-        bnb_4bit_use_double_quant=True,
-        bnb_4bit_compute_dtype=torch.bfloat16,
-    )
+    extra = {}
+    if args.quatro_bits:
+        extra["quantization_config"] = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_use_double_quant=True,
+            bnb_4bit_compute_dtype=torch.bfloat16,
+        )
     model = AutoModelForCausalLM.from_pretrained(
-        args.model, quantization_config=bnb, dtype=torch.bfloat16,
-        device_map={"": 0}, trust_remote_code=True,
+        args.model, dtype=torch.bfloat16,
+        device_map={"": 0}, trust_remote_code=True, **extra,
     )
     model.config.use_cache = False
-    model = prepare_model_for_kbit_training(model, use_gradient_checkpointing=True)
+    if args.quatro_bits:
+        model = prepare_model_for_kbit_training(model, use_gradient_checkpointing=True)
+    else:
+        model.gradient_checkpointing_enable()
 
     # ── POLÍTICA (o que treinamos) ──
     # Se há adapter do SFT, partimos DELE (o DPO refina o modelo já instruído).
