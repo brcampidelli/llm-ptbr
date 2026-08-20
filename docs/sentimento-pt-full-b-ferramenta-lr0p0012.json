@@ -1,0 +1,57 @@
+{
+ "modelo": "BrCamp/bee-350m-pt-base",
+ "peft": "comeia/models/e2-b-ferramenta-lr0p0012",
+ "modelo_r": {
+  "nome": "MODELO bee-350m-pt-base",
+  "n": 600,
+  "acuracia": 0.5133333333333333,
+  "balanceada": 0.5133333333333333,
+  "revocacao": {
+   "positivo": 1.0,
+   "negativo": 0.02666666666666667
+  },
+  "ic95": [
+   0.47338173546286777,
+   0.5531152796483798
+  ],
+  "distribuicao": {
+   "positivo": 592,
+   "negativo": 8
+  }
+ },
+ "piso_lexico": {
+  "nome": "PISO lexico de 60 palavras",
+  "n": 600,
+  "acuracia": 0.79,
+  "balanceada": 0.79,
+  "revocacao": {
+   "positivo": 0.9266666666666666,
+   "negativo": 0.6533333333333333
+  },
+  "ic95": [
+   0.7556150851399188,
+   0.8206949935297192
+  ],
+  "distribuicao": {
+   "negativo": 218,
+   "positivo": 382
+  }
+ },
+ "piso_majoritaria": {
+  "nome": "PISO classe majoritaria",
+  "n": 600,
+  "acuracia": 0.5,
+  "balanceada": 0.5,
+  "revocacao": {
+   "positivo": 1.0,
+   "negativo": 0.0
+  },
+  "ic95": [
+   0.46011913576597613,
+   0.5398808642340238
+  ],
+  "distribuicao": {
+   "positivo": 600
+  }
+ }
+}
