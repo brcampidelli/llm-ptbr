@@ -55,10 +55,28 @@ def guarda_modelo_do_projeto(nome: str, permitir_terceiro: bool) -> None:
     `Qwen/Qwen3.5-4B`, herdado de quando ele foi escrito para outra coisa. Rodar o baseline
     do Bee com o default errado produz um número plausível de um modelo que não é o nosso —
     e nada no relatório denunciaria, porque o campo `modelo` sairia preenchido e correto.
+
+    ⚠️ E a guarda por NOME reprovou modelo legítimo. No grid do E2 os três braços de full FT
+    saem em `comeia/models/e2-c-tudo-*` — não têm "bee" no caminho — e a régua de código
+    abortou nos três, deixando a coluna vazia justamente no braço que era o controle
+    negativo do experimento. Guarda que reprova o caso legítimo acaba desligada por hábito,
+    e aí não guarda mais nada.
+
+    O critério certo não é o nome, é a **procedência**: um diretório que este projeto mesmo
+    escreveu em `comeia/models/` é, por construção, modelo do projeto.
     """
     if "bee" in nome.lower() or permitir_terceiro:
         return
-    print(f"\n[ABORTADO] '{nome}' nao parece um modelo do projeto Bee.", file=sys.stderr)
+    try:
+        caminho = Path(nome).resolve()
+        modelos = (Path(__file__).resolve().parent.parent / "models").resolve()
+        if caminho.is_dir() and modelos in caminho.parents:
+            print(f"procedencia: {caminho.name} vem de comeia/models/ — artefato do projeto")
+            return
+    except (OSError, ValueError):
+        pass
+    print()
+    print(f"[ABORTADO] '{nome}' nao parece um modelo do projeto Bee.", file=sys.stderr)
     print("Se e' proposital (baseline externo), passe --permitir-modelo-de-terceiros.",
           file=sys.stderr)
     raise SystemExit(1)
