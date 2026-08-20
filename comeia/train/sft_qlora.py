@@ -274,33 +274,93 @@ def main() -> int:
     from transformers import TrainerCallback
 
     class GuardaDelta(TrainerCallback):
+        """🔴 A PRIMEIRA VERSAO DESTA GUARDA DAVA FALSO POSITIVO, e o erro era de estatistica.
+
+        Ela comparava **a norma dos parametros** antes e depois: `|‖θ_depois‖ − ‖θ_antes‖|`.
+        Dois problemas, e os dois disparam alarme num treino saudavel:
+
+        1. ⭐ **A norma pode ficar identica com θ mudando.** Dois pesos que se movem em
+           direcoes opostas mantem ‖θ‖ constante. A estatistica certa e' a norma da MUDANCA,
+           `‖θ_depois − θ_antes‖`, que so' e' zero se nada mexeu.
+        2. ⚠️ **Precisao.** Somar 345M quadrados em float32 da' ~5,5e5; a variacao de um passo
+           e' da ordem de 1e-6 relativa e **desaparece no arredondamento**. Medido: a guarda
+           imprimiu 554946.125000 -> 554946.125000 e abortou um full FT que estava treinando
+           normalmente.
+
+        A versao correta guarda uma AMOSTRA dos pesos (limitada, para nao copiar 1,4 GB) e
+        compara elemento a elemento. Amostra basta: se o otimizador andou, andou em tudo que
+        recebeu gradiente; se o adapter estava congelado, nao andou em lugar nenhum.
+        """
+
+        POR_TENSOR = 64             # elementos amostrados de CADA tensor treinavel
+
         def __init__(self):
             self.antes = None
             self.conferido = False
 
-        def _norma(self):
+        def _amostra(self):
+            """Uma fatia pequena de CADA tensor treinavel — nao um bloco do primeiro.
+
+            🔴 A SEGUNDA VERSAO DESTA GUARDA TAMBEM DEU FALSO POSITIVO, agora por VIES DE
+            AMOSTRAGEM. Ela pegava os primeiros 262.144 elementos varrendo os parametros em
+            ordem — e o primeiro tensor do Qwen3 e' `embed_tokens.weight`, cujas primeiras
+            linhas sao os tokens de ID mais baixo. **Linha de embedding de token que nao
+            aparece no lote recebe gradiente ZERO.** A amostra caia justamente sobre os pesos
+            com maior chance de nao se mover, e o alarme disparava num treino saudavel.
+            ⭐ "Amostrar os primeiros N" nao e' amostrar: e' escolher o comeco, e num tensor
+            indexado por token o comeco tem significado.
+            Pegar poucos elementos de TODOS os tensores cobre atencao, MLP e normalizacao —
+            que recebem gradiente em qualquer lote nao-vazio.
+            """
             import torch as _t
             with _t.no_grad():
-                return float(sum(p.detach().float().pow(2).sum()
-                                 for p in model.parameters() if p.requires_grad))
+                pedacos = []
+                for p in model.parameters():
+                    if not p.requires_grad:
+                        continue
+                    achatado = p.detach().reshape(-1)
+                    n = min(achatado.numel(), self.POR_TENSOR)
+                    # do MEIO do tensor, nao do inicio
+                    ini = max(0, (achatado.numel() - n) // 2)
+                    pedacos.append(achatado[ini:ini + n].float().cpu().clone())
+                return _t.cat(pedacos) if pedacos else None
 
         def on_train_begin(self, *a, **k):
-            self.antes = self._norma()
-            print(f"guarda   : ||theta_treinavel||^2 antes do passo 1 = {self.antes:.6f}")
+            self.antes = self._amostra()
+            n = 0 if self.antes is None else self.antes.numel()
+            print(f"guarda   : amostra de {n:,} pesos treinaveis capturada antes do passo 1")
+
+        PASSOS_DE_GRACA = 3         # so' aborta se NENHUM destes tiver mexido
 
         def on_step_end(self, arg, estado, controle, **k):
+            """⚠️ CHECAR SO' O PASSO 1 E' FRAGIL, e me custou dois diagnosticos errados.
+            Com acumulacao de gradiente, warmup e schedule, o primeiro passo pode legitimamente
+            nao mover a amostra. A guarda so' aborta se a amostra continuar IDENTICA depois de
+            PASSOS_DE_GRACA passos — a essa altura, silencio e' defeito.
+            """
             if self.conferido or estado.global_step < 1:
                 return
-            self.conferido = True
-            depois = self._norma()
-            if abs(depois - self.antes) <= 1e-9 * max(1.0, abs(self.antes)):
-                print(f"\n[ABORTADO] ||theta_treinavel|| IDENTICA depois do passo 1 "
-                      f"({self.antes:.6f} -> {depois:.6f}).", file=sys.stderr)
-                print("O treino rodaria inteiro sem erro e o adapter sairia com delta zero.",
+            import torch as _t
+            depois = self._amostra()
+            if self.antes is None or depois is None:
+                print("\n[ABORTADO] nenhum peso treinavel para amostrar.", file=sys.stderr)
+                raise SystemExit(1)
+            d = (depois - self.antes).abs()
+            mexeram = int((d > 0).sum())
+            if mexeram:
+                self.conferido = True
+                print(f"guarda   : {mexeram:,}/{d.numel():,} pesos amostrados mudaram ate' o "
+                      f"passo {estado.global_step} · delta max {float(d.max()):.3e} [OK]")
+                return
+            print(f"guarda   : passo {estado.global_step} — amostra ainda identica "
+                  f"({d.numel():,} pesos)", flush=True)
+            if estado.global_step >= self.PASSOS_DE_GRACA:
+                self.conferido = True
+                print(f"\n[ABORTADO] os {d.numel():,} pesos amostrados continuam IDENTICOS "
+                      f"depois de {estado.global_step} passos.", file=sys.stderr)
+                print("O treino rodaria inteiro sem erro e sairia sem aprender nada.",
                       file=sys.stderr)
                 raise SystemExit(1)
-            print(f"guarda   : ||theta_treinavel||^2 depois do passo 1 = {depois:.6f} "
-                  f"(delta {depois - self.antes:+.3e}) [OK]")
 
     trainer.add_callback(GuardaDelta())
 
