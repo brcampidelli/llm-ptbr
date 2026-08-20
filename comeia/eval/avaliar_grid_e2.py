@@ -57,6 +57,7 @@ PY = sys.executable
 MODELO = "BrCamp/bee-350m-pt-base"
 GRID = RAIZ / "docs" / "grid-e2-resultado.json"
 SAIDA = RAIZ / "docs" / "grid-e2-avaliado.json"
+COLAPSO = RAIZ / "docs" / "grid-e2-colapso.json"
 
 # (capacidade, script, args reduzidos, arquivo de relatorio, chave do numero principal)
 REGUAS = [
@@ -143,6 +144,9 @@ def main() -> int:
     ap.add_argument("--model", default=MODELO)
     ap.add_argument("--grid", type=Path, default=GRID)
     ap.add_argument("--so", default="", help="avalia so' as tags que contenham este texto")
+    ap.add_argument("--medir-colapsados", action="store_true",
+                    help="mede tambem os bracos que a sonda deu como mortos (custa GPU "
+                         "para produzir zeros ja' conhecidos)")
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args()
 
@@ -150,6 +154,19 @@ def main() -> int:
         print(f"🔴 {a.grid} nao existe — rode o grid antes.", file=sys.stderr)
         return 1
     runs = json.loads(a.grid.read_text(encoding="utf-8"))["runs"]
+
+    # ⭐ SONDA DE COLAPSO: pular braco morto, mas NUNCA em silencio.
+    # Medir um adapter degenerado nas 7 reguas custa ~50 min de GPU para produzir 49 zeros
+    # que ja' se conhecem. O risco de pular e' outro: um braco ausente da tabela le'-se como
+    # "nao testado" quando foi testado e morreu. Por isso ele ENTRA na tabela, com o motivo.
+    mortos: dict[str, str] = {}
+    if COLAPSO.exists() and not a.medir_colapsados:
+        c = json.loads(COLAPSO.read_text(encoding="utf-8"))
+        mortos = {t: v["motivo"] for t, v in c.items() if not v["vivo"]}
+        print(f"sonda de colapso: {len(mortos)} braco(s) mortos, medidos e reportados como "
+              f"tal, nao avaliados nas reguas")
+    elif not COLAPSO.exists():
+        print("⚠️ sem docs/grid-e2-colapso.json — todos serao avaliados, inclusive mortos.")
     tags = [t for t, v in sorted(runs.items()) if "erro" not in v and (not a.so or a.so in t)]
 
     print("=" * 78)
@@ -173,6 +190,13 @@ def main() -> int:
         carga = rota(d, bool(sem_lora), a.model)
         if carga is None:
             falhas_de_carga.append(tag)
+            continue
+        if tag in mortos:
+            resultados[tag] = {"lr": runs[tag]["lr"], "braco": runs[tag]["braco"],
+                               "parte": runs[tag]["parte"], "colapsado": mortos[tag],
+                               "capacidades": {c: None for c, *_ in REGUAS}}
+            print()
+            print(f"[{i}/{len(tags)}] {tag} · COLAPSADO ({mortos[tag]}) — nao avaliado")
             continue
         resultados[tag] = {"lr": runs[tag]["lr"], "braco": runs[tag]["braco"],
                            "parte": runs[tag]["parte"],
@@ -201,6 +225,7 @@ def main() -> int:
         "minutos": round((time.time() - t0) / 60, 1),
         "n_reduzido": {c: e for c, _, e, _, _ in REGUAS},
         "capacidades_nao_discriminaveis": sorted(SEM_DADO),
+        "colapsados": mortos,
         "falhas_de_carga": falhas_de_carga,
         "resultados": resultados,
     }, ensure_ascii=False, indent=1), encoding="utf-8")
