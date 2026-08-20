@@ -70,8 +70,20 @@ def main() -> int:
                 if l.strip()][:a.n]
         print(f"  chaves do dado: {list(regs[0])[:8]}")
         for r in regs:
-            pedido = (r.get("prompt") or r.get("instrucao") or r.get("pergunta")
-                      or r.get("texto") or r.get("mensagem") or "")
+            # 🔴 NAO ADIVINHAR O NOME DO CAMPO. A primeira versao procurava
+            # prompt/instrucao/pergunta/texto/mensagem; o dado de resumo tem `fonte`, entao o
+            # diagnostico mandou prompt VAZIO nos tres exemplos, o modelo respondeu qualquer
+            # coisa, e eu quase li isso como "o modelo nao sabe resumir". Cada regua constroi
+            # o pedido do seu jeito, e o diagnostico tem de usar o MESMO construtor — senao
+            # ele nao diagnostica a regua, diagnostica a si mesmo.
+            if "fonte" in r:                      # resumo: ver PEDIDO em eval_resumo_pt.py
+                pedido = ("Resuma o texto abaixo em duas frases, mantendo os numeros e os "
+                          "nomes exatamente como aparecem." + chr(10) * 2 + r["fonte"])
+            else:
+                pedido = (r.get("prompt") or r.get("mensagem") or r.get("instrucao") or "")
+            if not str(pedido).strip():
+                print("  🔴 PEDIDO VAZIO — o diagnostico nao achou o campo; nao interprete "
+                      f"a saida. chaves: {list(r)}")
             if isinstance(pedido, list):
                 pedido = " ".join(x.get("content", "") for x in pedido)
             sistema = r.get("sistema") or r.get("system")
