@@ -151,11 +151,56 @@ def main() -> int:
     ap.add_argument("--model", default=MODELO)
     ap.add_argument("--grid", type=Path, default=GRID)
     ap.add_argument("--so", default="", help="avalia so' as tags que contenham este texto")
+    ap.add_argument("--base-controle", action="store_true",
+                    help="mede SO' o modelo base, com e sem --chat, sob o protocolo "
+                         "identico ao dos bracos (mesmo n, mesmas reguas)")
     ap.add_argument("--medir-colapsados", action="store_true",
                     help="mede tambem os bracos que a sonda deu como mortos (custa GPU "
                          "para produzir zeros ja' conhecidos)")
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args()
+
+    if a.base_controle:
+        # 🔴 SEM ESTA LINHA A TABELA INTEIRA E' ILEGIVEL. O baseline do E0 mediu o base com
+        # n COMPLETO e SEM --chat; os bracos sao medidos com n reduzido e COM --chat. Comparar
+        # os dois numeros diretamente confunde tres coisas ao mesmo tempo: o pos-treino, o
+        # tamanho da amostra e o formato do prompt. Medido assim, "traducao caiu de 27,1 para
+        # 11" pode ser regressao catastrofica ou pode ser nada — e as duas leituras mudam o
+        # que se faz a seguir.
+        # O controle roda o BASE nas MESMAS reguas, com os MESMOS limites, nas duas
+        # convencoes de formato. Ai' a diferenca que sobrar e' do pos-treino.
+        print("=" * 78)
+        print("CONTROLE: modelo base sob o protocolo IDENTICO ao dos bracos")
+        print("=" * 78)
+        fora = {}
+        for etiqueta, com_chat in (("base-cru", False), ("base-chat", True)):
+            fora[etiqueta] = {}
+            for cap, script, extras, molde, _ in REGUAS:
+                args_r = [x for x in extras if x != "--chat"] + (["--chat"] if com_chat else [])
+                if script == "eval_sentimento_pt.py":
+                    args_r = [x for x in extras if x != "--chat"]
+                tag = f"e2-{etiqueta}"
+                cmd = [PY, str(AQUI / script), "--model", a.model, "--tag", tag, *args_r]
+                print(f"[{etiqueta}] {cap}", flush=True)
+                pr = subprocess.run(cmd, cwd=str(RAIZ), text=True, encoding="utf-8",
+                                    errors="replace", capture_output=True)
+                rel = RAIZ / molde.format(tag=tag)
+                if pr.returncode != 0 or not rel.exists():
+                    print(f"   🔴 falhou (rc={pr.returncode})")
+                    for ln in (pr.stderr or "").strip().splitlines()[-4:]:
+                        print("   " + ln)
+                    fora[etiqueta][cap] = None
+                    continue
+                v = numero(cap, json.loads(rel.read_text(encoding="utf-8")))
+                fora[etiqueta][cap] = v
+                print(f"   {cap} = {v:.2f}" if v is not None else f"   {cap} = ?")
+        alvo = RAIZ / "docs" / "grid-e2-controle-base.json"
+        alvo.write_text(json.dumps({"modelo": a.model, "controle": fora,
+                                    "n_reduzido": {c: e for c, _, e, _, _ in REGUAS}},
+                                   ensure_ascii=False, indent=1), encoding="utf-8")
+        print()
+        print(f"✅ {alvo}")
+        return 0
 
     if not a.grid.exists():
         print(f"🔴 {a.grid} nao existe — rode o grid antes.", file=sys.stderr)
