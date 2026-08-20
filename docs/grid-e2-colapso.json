@@ -1,0 +1,137 @@
+{
+ "e2-a-tudo-lr0p0003": {
+  "vivo": true,
+  "motivo": "3/3 com conteudo",
+  "amostra": "A capital da Franca é **Franca**. A cidade é a capital do estado de São Paulo e está local"
+ },
+ "e2-a-tudo-lr0p0006": {
+  "vivo": true,
+  "motivo": "3/3 com conteudo",
+  "amostra": "A capital da Franca é **Franca**.\n\n**Centralidade:**  \nFranca é a maior cidade da França, "
+ },
+ "e2-a-tudo-lr0p0012": {
+  "vivo": true,
+  "motivo": "3/3 com conteudo",
+  "amostra": "A capital da França é Paris. A cidade é a capital da República Francesa e a maior cidade d"
+ },
+ "e2-a-tudo-lr0p003": {
+  "vivo": true,
+  "motivo": "3/3 com conteudo",
+  "amostra": "A capital da Franca é Paris, capital da França.\n\n**Cidades principais:**\n- **Paris** (cida"
+ },
+ "e2-a-tudo-lr0p006": {
+  "vivo": false,
+  "motivo": "so espaco/repeticao — COLAPSADO",
+  "amostra": ""
+ },
+ "e2-a-tudo-lr0p012": {
+  "vivo": false,
+  "motivo": "so espaco/repeticao — COLAPSADO",
+  "amostra": ""
+ },
+ "e2-b-ferramenta-lr0p0003": {
+  "vivo": true,
+  "motivo": "3/3 com conteudo",
+  "amostra": "Qual é a capital da Franca?"
+ },
+ "e2-b-ferramenta-lr0p0006": {
+  "vivo": true,
+  "motivo": "3/3 com conteudo",
+  "amostra": "A capital da Franca é Paris."
+ },
+ "e2-b-ferramenta-lr0p0012": {
+  "vivo": true,
+  "motivo": "3/3 com conteudo",
+  "amostra": "A capital da Franca é Paris."
+ },
+ "e2-b-ferramenta-lr0p003": {
+  "vivo": true,
+  "motivo": "3/3 com conteudo",
+  "amostra": "A capital da Franca é Paris."
+ },
+ "e2-b-ferramenta-lr0p006": {
+  "vivo": false,
+  "motivo": "so espaco/repeticao — COLAPSADO",
+  "amostra": ""
+ },
+ "e2-b-ferramenta-lr0p012": {
+  "vivo": false,
+  "motivo": "so espaco/repeticao — COLAPSADO",
+  "amostra": ""
+ },
+ "e2-b-simbolico-lr0p0003": {
+  "vivo": true,
+  "motivo": "3/3 com conteudo",
+  "amostra": "A capital da Franca é Franca, uma cidade brasileira com cerca de **1,5 milhão de habitante"
+ },
+ "e2-b-simbolico-lr0p0006": {
+  "vivo": true,
+  "motivo": "3/3 com conteudo",
+  "amostra": "A capital da Franca é Franca, que é a maior cidade do país. A cidade é dividida em duas pa"
+ },
+ "e2-b-simbolico-lr0p0012": {
+  "vivo": true,
+  "motivo": "3/3 com conteudo",
+  "amostra": "A capital da Franca é Franca, estado brasileiro do interior do Brasil.\n\n**Cálculo:**\n- Áre"
+ },
+ "e2-b-simbolico-lr0p003": {
+  "vivo": true,
+  "motivo": "3/3 com conteudo",
+  "amostra": "A Franca é a capital da França. Ela está localizada no sudeste do país, na região da Prove"
+ },
+ "e2-b-simbolico-lr0p006": {
+  "vivo": false,
+  "motivo": "so espaco/repeticao — COLAPSADO",
+  "amostra": ""
+ },
+ "e2-b-simbolico-lr0p012": {
+  "vivo": false,
+  "motivo": "so espaco/repeticao — COLAPSADO",
+  "amostra": ""
+ },
+ "e2-b-texto-lr0p0003": {
+  "vivo": true,
+  "motivo": "3/3 com conteudo",
+  "amostra": "A capital da Franca é a cidade de Franca, que fica no estado de São Paulo. A cidade é a ma"
+ },
+ "e2-b-texto-lr0p0006": {
+  "vivo": true,
+  "motivo": "3/3 com conteudo",
+  "amostra": "A capital da Franca é a cidade de Franca, que fica no estado de São Paulo. A cidade é a ma"
+ },
+ "e2-b-texto-lr0p0012": {
+  "vivo": true,
+  "motivo": "3/3 com conteudo",
+  "amostra": "A capital da Franca é a cidade de Franca, localizada no estado de São Paulo.\n\n**Cidades qu"
+ },
+ "e2-b-texto-lr0p003": {
+  "vivo": true,
+  "motivo": "3/3 com conteudo",
+  "amostra": "A capital da Franca é a cidade de Franca, localizada no estado de São Paulo, Brasil. A cid"
+ },
+ "e2-b-texto-lr0p006": {
+  "vivo": true,
+  "motivo": "3/3 com conteudo",
+  "amostra": "######################:**:**: **"
+ },
+ "e2-b-texto-lr0p012": {
+  "vivo": false,
+  "motivo": "so espaco/repeticao — COLAPSADO",
+  "amostra": ""
+ },
+ "e2-c-tudo-lr0p0003": {
+  "vivo": true,
+  "motivo": "3/3 com conteudo",
+  "amostra": "A capital da Franca é **Franca**.\n\n**Dados oficiais:**\n- **População:** aproximadamente **"
+ },
+ "e2-c-tudo-lr0p0006": {
+  "vivo": true,
+  "motivo": "3/3 com conteudo",
+  "amostra": "A capital da Franca é **Londres**."
+ },
+ "e2-c-tudo-lr0p0012": {
+  "vivo": true,
+  "motivo": "3/3 com conteudo",
+  "amostra": "A capital da Franca é a maior do Brasil, localizada no estado de São Paulo, e está localiz"
+ }
+}

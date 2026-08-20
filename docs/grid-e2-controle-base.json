@@ -1,0 +1,71 @@
+{
+ "modelo": "BrCamp/bee-350m-pt-base",
+ "controle": {
+  "base-cru": {
+   "instrucao": 30.0,
+   "resumo": 0.0,
+   "traducao": 28.10048232162333,
+   "sentimento": 47.333333333333336,
+   "atendimento": 0.0,
+   "codigo": 0.0,
+   "agentico": 0.0
+  },
+  "base-chat": {
+   "instrucao": 27.40740740740741,
+   "resumo": 0.0,
+   "traducao": 3.042328171124065,
+   "sentimento": 47.333333333333336,
+   "atendimento": 0.0,
+   "codigo": 0.0,
+   "agentico": 0.0
+  }
+ },
+ "n_reduzido": {
+  "instrucao": [
+   "--limite",
+   "150",
+   "--lote",
+   "48",
+   "--chat"
+  ],
+  "resumo": [
+   "--limite",
+   "40",
+   "--lote",
+   "40",
+   "--chat"
+  ],
+  "traducao": [
+   "--limite",
+   "60",
+   "--lote",
+   "60",
+   "--chat"
+  ],
+  "sentimento": [
+   "--limite",
+   "150"
+  ],
+  "atendimento": [
+   "--limite",
+   "60",
+   "--lote",
+   "60",
+   "--chat"
+  ],
+  "codigo": [
+   "--limit",
+   "120",
+   "--lote",
+   "24",
+   "--chat"
+  ],
+  "agentico": [
+   "--limit",
+   "0",
+   "--lote",
+   "24",
+   "--chat"
+  ]
+ }
+}

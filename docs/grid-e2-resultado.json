@@ -1,0 +1,308 @@
+{
+ "data": "2026-08-20",
+ "modelo": "BrCamp/bee-350m-pt-base",
+ "n_treinos": 15,
+ "minutos_totais": 98.6,
+ "capacidades_nao_discriminaveis": {
+  "sentimento": 4,
+  "atendimento": 92,
+  "resumo": 135,
+  "traducao": 124
+ },
+ "runs": {
+  "e2-a-tudo-lr0p003": {
+   "minutos_treino": 11.6,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e2-a-tudo-lr0p003",
+   "lr": 0.003,
+   "braco": "a",
+   "parte": "tudo",
+   "loss_inicio": 2.259567451477051,
+   "loss_fim": 1.5303467750549316,
+   "divergiu": false
+  },
+  "e2-a-tudo-lr0p006": {
+   "minutos_treino": 11.5,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e2-a-tudo-lr0p006",
+   "lr": 0.006,
+   "braco": "a",
+   "parte": "tudo",
+   "loss_inicio": 2.2252607345581055,
+   "loss_fim": 7.268937683105468,
+   "divergiu": true
+  },
+  "e2-a-tudo-lr0p012": {
+   "minutos_treino": 11.5,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e2-a-tudo-lr0p012",
+   "lr": 0.012,
+   "braco": "a",
+   "parte": "tudo",
+   "loss_inicio": 2.1987722396850584,
+   "loss_fim": 7.266267395019531,
+   "divergiu": true
+  },
+  "e2-b-texto-lr0p003": {
+   "minutos_treino": 4.5,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e2-b-texto-lr0p003",
+   "lr": 0.003,
+   "braco": "b",
+   "parte": "texto",
+   "loss_inicio": 2.302261543273926,
+   "loss_fim": 1.477657413482666,
+   "divergiu": false
+  },
+  "e2-b-texto-lr0p006": {
+   "minutos_treino": 4.5,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e2-b-texto-lr0p006",
+   "lr": 0.006,
+   "braco": "b",
+   "parte": "texto",
+   "loss_inicio": 2.271411895751953,
+   "loss_fim": 6.311482238769531,
+   "divergiu": true
+  },
+  "e2-b-texto-lr0p012": {
+   "minutos_treino": 4.5,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e2-b-texto-lr0p012",
+   "lr": 0.012,
+   "braco": "b",
+   "parte": "texto",
+   "loss_inicio": 2.3521656036376952,
+   "loss_fim": 7.295972442626953,
+   "divergiu": true
+  },
+  "e2-b-ferramenta-lr0p003": {
+   "minutos_treino": 2.5,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e2-b-ferramenta-lr0p003",
+   "lr": 0.003,
+   "braco": "b",
+   "parte": "ferramenta",
+   "loss_inicio": 2.185955810546875,
+   "loss_fim": 0.9219979286193848,
+   "divergiu": false
+  },
+  "e2-b-ferramenta-lr0p006": {
+   "minutos_treino": 2.4,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e2-b-ferramenta-lr0p006",
+   "lr": 0.006,
+   "braco": "b",
+   "parte": "ferramenta",
+   "loss_inicio": 2.3476755142211916,
+   "loss_fim": 6.980460357666016,
+   "divergiu": true
+  },
+  "e2-b-ferramenta-lr0p012": {
+   "minutos_treino": 2.4,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e2-b-ferramenta-lr0p012",
+   "lr": 0.012,
+   "braco": "b",
+   "parte": "ferramenta",
+   "loss_inicio": 3.5308502197265623,
+   "loss_fim": 6.809928131103516,
+   "divergiu": true
+  },
+  "e2-b-simbolico-lr0p003": {
+   "minutos_treino": 4.2,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e2-b-simbolico-lr0p003",
+   "lr": 0.003,
+   "braco": "b",
+   "parte": "simbolico",
+   "loss_inicio": 2.2005743026733398,
+   "loss_fim": 1.4238801002502441,
+   "divergiu": false
+  },
+  "e2-b-simbolico-lr0p006": {
+   "minutos_treino": 4.1,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e2-b-simbolico-lr0p006",
+   "lr": 0.006,
+   "braco": "b",
+   "parte": "simbolico",
+   "loss_inicio": 2.1930660247802733,
+   "loss_fim": 7.037554168701172,
+   "divergiu": true
+  },
+  "e2-b-simbolico-lr0p012": {
+   "minutos_treino": 4.1,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e2-b-simbolico-lr0p012",
+   "lr": 0.012,
+   "braco": "b",
+   "parte": "simbolico",
+   "loss_inicio": 2.4701305389404298,
+   "loss_fim": 7.0006256103515625,
+   "divergiu": true
+  },
+  "e2-c-tudo-lr0p0003": {
+   "minutos_treino": 10.2,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e2-c-tudo-lr0p0003",
+   "lr": 0.0003,
+   "braco": "c",
+   "parte": "tudo",
+   "loss_inicio": 2.252476692199707,
+   "loss_fim": 1.0174229621887207,
+   "divergiu": false
+  },
+  "e2-c-tudo-lr0p0006": {
+   "minutos_treino": 10.2,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e2-c-tudo-lr0p0006",
+   "lr": 0.0006,
+   "braco": "c",
+   "parte": "tudo",
+   "loss_inicio": 2.202240753173828,
+   "loss_fim": 1.0171630859375,
+   "divergiu": false
+  },
+  "e2-c-tudo-lr0p0012": {
+   "minutos_treino": 10.2,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e2-c-tudo-lr0p0012",
+   "lr": 0.0012,
+   "braco": "c",
+   "parte": "tudo",
+   "loss_inicio": 2.1846454620361326,
+   "loss_fim": 1.301466464996338,
+   "divergiu": false
+  },
+  "e2-a-tudo-lr0p0003": {
+   "adapter": "/workspace/llm-ptbr/comeia/models/e2-a-tudo-lr0p0003",
+   "lr": 0.0003,
+   "braco": "a",
+   "parte": "tudo",
+   "sem_lora": false,
+   "minutos_treino": null,
+   "reconstruido_do_disco": true,
+   "loss_inicio": 2.3482765197753905,
+   "loss_fim": 1.6979230880737304,
+   "divergiu": false
+  },
+  "e2-a-tudo-lr0p0006": {
+   "adapter": "/workspace/llm-ptbr/comeia/models/e2-a-tudo-lr0p0006",
+   "lr": 0.0006,
+   "braco": "a",
+   "parte": "tudo",
+   "sem_lora": false,
+   "minutos_treino": null,
+   "reconstruido_do_disco": true,
+   "loss_inicio": 2.3301034927368165,
+   "loss_fim": 1.6093717575073243,
+   "divergiu": false
+  },
+  "e2-a-tudo-lr0p0012": {
+   "adapter": "/workspace/llm-ptbr/comeia/models/e2-a-tudo-lr0p0012",
+   "lr": 0.0012,
+   "braco": "a",
+   "parte": "tudo",
+   "sem_lora": false,
+   "minutos_treino": null,
+   "reconstruido_do_disco": true,
+   "loss_inicio": 2.300054740905762,
+   "loss_fim": 1.5123564720153808,
+   "divergiu": false
+  },
+  "e2-b-ferramenta-lr0p0003": {
+   "adapter": "/workspace/llm-ptbr/comeia/models/e2-b-ferramenta-lr0p0003",
+   "lr": 0.0003,
+   "braco": "b",
+   "parte": "ferramenta",
+   "sem_lora": false,
+   "minutos_treino": null,
+   "reconstruido_do_disco": true,
+   "loss_inicio": 2.4248126983642577,
+   "loss_fim": 1.3715854644775392,
+   "divergiu": false
+  },
+  "e2-b-ferramenta-lr0p0006": {
+   "adapter": "/workspace/llm-ptbr/comeia/models/e2-b-ferramenta-lr0p0006",
+   "lr": 0.0006,
+   "braco": "b",
+   "parte": "ferramenta",
+   "sem_lora": false,
+   "minutos_treino": null,
+   "reconstruido_do_disco": true,
+   "loss_inicio": 2.33668212890625,
+   "loss_fim": 1.2312390327453613,
+   "divergiu": false
+  },
+  "e2-b-ferramenta-lr0p0012": {
+   "adapter": "/workspace/llm-ptbr/comeia/models/e2-b-ferramenta-lr0p0012",
+   "lr": 0.0012,
+   "braco": "b",
+   "parte": "ferramenta",
+   "sem_lora": false,
+   "minutos_treino": null,
+   "reconstruido_do_disco": true,
+   "loss_inicio": 2.2494600296020506,
+   "loss_fim": 1.0731260299682617,
+   "divergiu": false
+  },
+  "e2-b-simbolico-lr0p0003": {
+   "adapter": "/workspace/llm-ptbr/comeia/models/e2-b-simbolico-lr0p0003",
+   "lr": 0.0003,
+   "braco": "b",
+   "parte": "simbolico",
+   "sem_lora": false,
+   "minutos_treino": null,
+   "reconstruido_do_disco": true,
+   "loss_inicio": 2.3156974792480467,
+   "loss_fim": 1.7338834762573243,
+   "divergiu": false
+  },
+  "e2-b-simbolico-lr0p0006": {
+   "adapter": "/workspace/llm-ptbr/comeia/models/e2-b-simbolico-lr0p0006",
+   "lr": 0.0006,
+   "braco": "b",
+   "parte": "simbolico",
+   "sem_lora": false,
+   "minutos_treino": null,
+   "reconstruido_do_disco": true,
+   "loss_inicio": 2.278762435913086,
+   "loss_fim": 1.652716064453125,
+   "divergiu": false
+  },
+  "e2-b-simbolico-lr0p0012": {
+   "adapter": "/workspace/llm-ptbr/comeia/models/e2-b-simbolico-lr0p0012",
+   "lr": 0.0012,
+   "braco": "b",
+   "parte": "simbolico",
+   "sem_lora": false,
+   "minutos_treino": null,
+   "reconstruido_do_disco": true,
+   "loss_inicio": 2.244576072692871,
+   "loss_fim": 1.5480280876159669,
+   "divergiu": false
+  },
+  "e2-b-texto-lr0p0003": {
+   "adapter": "/workspace/llm-ptbr/comeia/models/e2-b-texto-lr0p0003",
+   "lr": 0.0003,
+   "braco": "b",
+   "parte": "texto",
+   "sem_lora": false,
+   "minutos_treino": null,
+   "reconstruido_do_disco": true,
+   "loss_inicio": 2.4164796829223634,
+   "loss_fim": 1.7441699981689454,
+   "divergiu": false
+  },
+  "e2-b-texto-lr0p0006": {
+   "adapter": "/workspace/llm-ptbr/comeia/models/e2-b-texto-lr0p0006",
+   "lr": 0.0006,
+   "braco": "b",
+   "parte": "texto",
+   "sem_lora": false,
+   "minutos_treino": null,
+   "reconstruido_do_disco": true,
+   "loss_inicio": 2.3808477401733397,
+   "loss_fim": 1.6643453598022462,
+   "divergiu": false
+  },
+  "e2-b-texto-lr0p0012": {
+   "adapter": "/workspace/llm-ptbr/comeia/models/e2-b-texto-lr0p0012",
+   "lr": 0.0012,
+   "braco": "b",
+   "parte": "texto",
+   "sem_lora": false,
+   "minutos_treino": null,
+   "reconstruido_do_disco": true,
+   "loss_inicio": 2.3470619201660154,
+   "loss_fim": 1.5526643753051759,
+   "divergiu": false
+  }
+ }
+}

@@ -1,0 +1,476 @@
+{
+ "data": "2026-08-20",
+ "modelo": "BrCamp/bee-350m-pt-base",
+ "minutos": 57.2,
+ "n_reduzido": {
+  "instrucao": [
+   "--limite",
+   "150",
+   "--lote",
+   "48",
+   "--chat"
+  ],
+  "resumo": [
+   "--limite",
+   "40",
+   "--lote",
+   "40",
+   "--chat"
+  ],
+  "traducao": [
+   "--limite",
+   "60",
+   "--lote",
+   "60",
+   "--chat"
+  ],
+  "sentimento": [
+   "--limite",
+   "150"
+  ],
+  "atendimento": [
+   "--limite",
+   "60",
+   "--lote",
+   "60",
+   "--chat"
+  ],
+  "codigo": [
+   "--limit",
+   "120",
+   "--lote",
+   "24",
+   "--chat"
+  ],
+  "agentico": [
+   "--limit",
+   "0",
+   "--lote",
+   "24",
+   "--chat"
+  ]
+ },
+ "capacidades_nao_discriminaveis": [
+  "atendimento",
+  "resumo",
+  "sentimento",
+  "traducao"
+ ],
+ "colapsados": {
+  "e2-a-tudo-lr0p006": "so espaco/repeticao — COLAPSADO",
+  "e2-a-tudo-lr0p012": "so espaco/repeticao — COLAPSADO",
+  "e2-b-ferramenta-lr0p006": "so espaco/repeticao — COLAPSADO",
+  "e2-b-ferramenta-lr0p012": "so espaco/repeticao — COLAPSADO",
+  "e2-b-simbolico-lr0p006": "so espaco/repeticao — COLAPSADO",
+  "e2-b-simbolico-lr0p012": "so espaco/repeticao — COLAPSADO",
+  "e2-b-texto-lr0p012": "so espaco/repeticao — COLAPSADO"
+ },
+ "falhas_de_carga": [],
+ "resultados": {
+  "e2-a-tudo-lr0p0003": {
+   "lr": 0.0003,
+   "braco": "a",
+   "parte": "tudo",
+   "carregado_como": "lora",
+   "capacidades": {
+    "instrucao": 29.629629629629626,
+    "resumo": 0.0,
+    "traducao": 7.038128146050015,
+    "sentimento": 75.33333333333333,
+    "atendimento": 0.0,
+    "codigo": 0.0,
+    "agentico": 45.88235294117647
+   }
+  },
+  "e2-a-tudo-lr0p0006": {
+   "lr": 0.0006,
+   "braco": "a",
+   "parte": "tudo",
+   "carregado_como": "lora",
+   "capacidades": {
+    "instrucao": 28.51851851851852,
+    "resumo": 0.0,
+    "traducao": 17.215194366015847,
+    "sentimento": 61.33333333333333,
+    "atendimento": 0.0,
+    "codigo": 0.0,
+    "agentico": 48.23529411764706
+   }
+  },
+  "e2-a-tudo-lr0p0012": {
+   "lr": 0.0012,
+   "braco": "a",
+   "parte": "tudo",
+   "carregado_como": "lora",
+   "capacidades": {
+    "instrucao": 27.037037037037038,
+    "resumo": 0.0,
+    "traducao": 11.231620557171418,
+    "sentimento": 54.0,
+    "atendimento": 0.0,
+    "codigo": 0.0,
+    "agentico": 51.76470588235294
+   }
+  },
+  "e2-a-tudo-lr0p003": {
+   "lr": 0.003,
+   "braco": "a",
+   "parte": "tudo",
+   "carregado_como": "lora",
+   "capacidades": {
+    "instrucao": 26.296296296296294,
+    "resumo": 0.0,
+    "traducao": 9.948420737385053,
+    "sentimento": 58.666666666666664,
+    "atendimento": 0.0,
+    "codigo": 0.0,
+    "agentico": 56.470588235294116
+   }
+  },
+  "e2-a-tudo-lr0p006": {
+   "lr": 0.006,
+   "braco": "a",
+   "parte": "tudo",
+   "colapsado": "so espaco/repeticao — COLAPSADO",
+   "capacidades": {
+    "instrucao": null,
+    "resumo": null,
+    "traducao": null,
+    "sentimento": null,
+    "atendimento": null,
+    "codigo": null,
+    "agentico": null
+   }
+  },
+  "e2-a-tudo-lr0p012": {
+   "lr": 0.012,
+   "braco": "a",
+   "parte": "tudo",
+   "colapsado": "so espaco/repeticao — COLAPSADO",
+   "capacidades": {
+    "instrucao": null,
+    "resumo": null,
+    "traducao": null,
+    "sentimento": null,
+    "atendimento": null,
+    "codigo": null,
+    "agentico": null
+   }
+  },
+  "e2-b-ferramenta-lr0p0003": {
+   "lr": 0.0003,
+   "braco": "b",
+   "parte": "ferramenta",
+   "carregado_como": "lora",
+   "capacidades": {
+    "instrucao": 28.14814814814815,
+    "resumo": 0.0,
+    "traducao": 11.156209029413608,
+    "sentimento": 50.66666666666667,
+    "atendimento": 0.0,
+    "codigo": 0.0,
+    "agentico": 51.76470588235294
+   }
+  },
+  "e2-b-ferramenta-lr0p0006": {
+   "lr": 0.0006,
+   "braco": "b",
+   "parte": "ferramenta",
+   "carregado_como": "lora",
+   "capacidades": {
+    "instrucao": 26.296296296296294,
+    "resumo": 0.0,
+    "traducao": 8.775860813173958,
+    "sentimento": 53.333333333333336,
+    "atendimento": 0.0,
+    "codigo": 0.0,
+    "agentico": 56.470588235294116
+   }
+  },
+  "e2-b-ferramenta-lr0p0012": {
+   "lr": 0.0012,
+   "braco": "b",
+   "parte": "ferramenta",
+   "carregado_como": "lora",
+   "capacidades": {
+    "instrucao": 30.0,
+    "resumo": 0.0,
+    "traducao": 12.352096774823087,
+    "sentimento": 48.66666666666667,
+    "atendimento": 0.0,
+    "codigo": 0.0,
+    "agentico": 64.70588235294117
+   }
+  },
+  "e2-b-ferramenta-lr0p003": {
+   "lr": 0.003,
+   "braco": "b",
+   "parte": "ferramenta",
+   "carregado_como": "lora",
+   "capacidades": {
+    "instrucao": 28.888888888888886,
+    "resumo": 0.0,
+    "traducao": 2.5564278411449783,
+    "sentimento": 53.333333333333336,
+    "atendimento": 0.0,
+    "codigo": 0.0,
+    "agentico": 56.470588235294116
+   }
+  },
+  "e2-b-ferramenta-lr0p006": {
+   "lr": 0.006,
+   "braco": "b",
+   "parte": "ferramenta",
+   "colapsado": "so espaco/repeticao — COLAPSADO",
+   "capacidades": {
+    "instrucao": null,
+    "resumo": null,
+    "traducao": null,
+    "sentimento": null,
+    "atendimento": null,
+    "codigo": null,
+    "agentico": null
+   }
+  },
+  "e2-b-ferramenta-lr0p012": {
+   "lr": 0.012,
+   "braco": "b",
+   "parte": "ferramenta",
+   "colapsado": "so espaco/repeticao — COLAPSADO",
+   "capacidades": {
+    "instrucao": null,
+    "resumo": null,
+    "traducao": null,
+    "sentimento": null,
+    "atendimento": null,
+    "codigo": null,
+    "agentico": null
+   }
+  },
+  "e2-b-simbolico-lr0p0003": {
+   "lr": 0.0003,
+   "braco": "b",
+   "parte": "simbolico",
+   "carregado_como": "lora",
+   "capacidades": {
+    "instrucao": 30.37037037037037,
+    "resumo": 0.0,
+    "traducao": 13.964095234992778,
+    "sentimento": 55.333333333333336,
+    "atendimento": 0.0,
+    "codigo": 0.0,
+    "agentico": 0.0
+   }
+  },
+  "e2-b-simbolico-lr0p0006": {
+   "lr": 0.0006,
+   "braco": "b",
+   "parte": "simbolico",
+   "carregado_como": "lora",
+   "capacidades": {
+    "instrucao": 31.11111111111111,
+    "resumo": 0.0,
+    "traducao": 11.781365737498902,
+    "sentimento": 61.33333333333333,
+    "atendimento": 0.0,
+    "codigo": 0.0,
+    "agentico": 0.0
+   }
+  },
+  "e2-b-simbolico-lr0p0012": {
+   "lr": 0.0012,
+   "braco": "b",
+   "parte": "simbolico",
+   "carregado_como": "lora",
+   "capacidades": {
+    "instrucao": 30.37037037037037,
+    "resumo": 0.0,
+    "traducao": 16.16511743010904,
+    "sentimento": 62.66666666666667,
+    "atendimento": 0.0,
+    "codigo": 0.0,
+    "agentico": 0.0
+   }
+  },
+  "e2-b-simbolico-lr0p003": {
+   "lr": 0.003,
+   "braco": "b",
+   "parte": "simbolico",
+   "carregado_como": "lora",
+   "capacidades": {
+    "instrucao": 29.259259259259256,
+    "resumo": 0.0,
+    "traducao": 5.2311033391635835,
+    "sentimento": 49.333333333333336,
+    "atendimento": 0.0,
+    "codigo": 0.0,
+    "agentico": 0.0
+   }
+  },
+  "e2-b-simbolico-lr0p006": {
+   "lr": 0.006,
+   "braco": "b",
+   "parte": "simbolico",
+   "colapsado": "so espaco/repeticao — COLAPSADO",
+   "capacidades": {
+    "instrucao": null,
+    "resumo": null,
+    "traducao": null,
+    "sentimento": null,
+    "atendimento": null,
+    "codigo": null,
+    "agentico": null
+   }
+  },
+  "e2-b-simbolico-lr0p012": {
+   "lr": 0.012,
+   "braco": "b",
+   "parte": "simbolico",
+   "colapsado": "so espaco/repeticao — COLAPSADO",
+   "capacidades": {
+    "instrucao": null,
+    "resumo": null,
+    "traducao": null,
+    "sentimento": null,
+    "atendimento": null,
+    "codigo": null,
+    "agentico": null
+   }
+  },
+  "e2-b-texto-lr0p0003": {
+   "lr": 0.0003,
+   "braco": "b",
+   "parte": "texto",
+   "carregado_como": "lora",
+   "capacidades": {
+    "instrucao": 32.96296296296296,
+    "resumo": 0.0,
+    "traducao": 3.967156205107937,
+    "sentimento": 52.666666666666664,
+    "atendimento": 0.0,
+    "codigo": 0.0,
+    "agentico": 0.0
+   }
+  },
+  "e2-b-texto-lr0p0006": {
+   "lr": 0.0006,
+   "braco": "b",
+   "parte": "texto",
+   "carregado_como": "lora",
+   "capacidades": {
+    "instrucao": 28.14814814814815,
+    "resumo": 0.0,
+    "traducao": 5.539133332276605,
+    "sentimento": 54.0,
+    "atendimento": 0.0,
+    "codigo": 0.0,
+    "agentico": 0.0
+   }
+  },
+  "e2-b-texto-lr0p0012": {
+   "lr": 0.0012,
+   "braco": "b",
+   "parte": "texto",
+   "carregado_como": "lora",
+   "capacidades": {
+    "instrucao": 29.259259259259256,
+    "resumo": 0.0,
+    "traducao": 6.7522948164125,
+    "sentimento": 60.0,
+    "atendimento": 0.0,
+    "codigo": 0.0,
+    "agentico": 0.0
+   }
+  },
+  "e2-b-texto-lr0p003": {
+   "lr": 0.003,
+   "braco": "b",
+   "parte": "texto",
+   "carregado_como": "lora",
+   "capacidades": {
+    "instrucao": 29.259259259259256,
+    "resumo": 0.0,
+    "traducao": 7.054226767044222,
+    "sentimento": 61.33333333333333,
+    "atendimento": 0.0,
+    "codigo": 0.0,
+    "agentico": 0.0
+   }
+  },
+  "e2-b-texto-lr0p006": {
+   "lr": 0.006,
+   "braco": "b",
+   "parte": "texto",
+   "carregado_como": "lora",
+   "capacidades": {
+    "instrucao": 29.629629629629626,
+    "resumo": 0.0,
+    "traducao": 0.0,
+    "sentimento": 52.0,
+    "atendimento": 0.0,
+    "codigo": 0.0,
+    "agentico": 0.0
+   }
+  },
+  "e2-b-texto-lr0p012": {
+   "lr": 0.012,
+   "braco": "b",
+   "parte": "texto",
+   "colapsado": "so espaco/repeticao — COLAPSADO",
+   "capacidades": {
+    "instrucao": null,
+    "resumo": null,
+    "traducao": null,
+    "sentimento": null,
+    "atendimento": null,
+    "codigo": null,
+    "agentico": null
+   }
+  },
+  "e2-c-tudo-lr0p0003": {
+   "lr": 0.0003,
+   "braco": "c",
+   "parte": "tudo",
+   "carregado_como": "full",
+   "capacidades": {
+    "instrucao": 25.185185185185183,
+    "resumo": 0.0,
+    "traducao": 16.551791712522263,
+    "sentimento": 62.66666666666667,
+    "atendimento": 0.0,
+    "codigo": null,
+    "agentico": 60.0
+   }
+  },
+  "e2-c-tudo-lr0p0006": {
+   "lr": 0.0006,
+   "braco": "c",
+   "parte": "tudo",
+   "carregado_como": "full",
+   "capacidades": {
+    "instrucao": 25.185185185185183,
+    "resumo": 0.0,
+    "traducao": 3.654722238946158,
+    "sentimento": 63.33333333333333,
+    "atendimento": 0.0,
+    "codigo": null,
+    "agentico": 61.1764705882353
+   }
+  },
+  "e2-c-tudo-lr0p0012": {
+   "lr": 0.0012,
+   "braco": "c",
+   "parte": "tudo",
+   "carregado_como": "full",
+   "capacidades": {
+    "instrucao": 25.925925925925924,
+    "resumo": 0.0,
+    "traducao": 0.2648896216677431,
+    "sentimento": 45.33333333333333,
+    "atendimento": 0.0,
+    "codigo": null,
+    "agentico": 52.94117647058823
+   }
+  }
+ }
+}
