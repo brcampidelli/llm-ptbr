@@ -91,6 +91,11 @@ def main() -> int:
                     help="codigo precisa de mais tokens que JSON de tool-call")
     ap.add_argument("--timeout", type=int, default=8)
     ap.add_argument("--no-4bit", action="store_true")
+    ap.add_argument("--lote", type=int, default=24,
+                    help="tarefas por lote de geracao. Era 1 (implicito) ate' 2026-08-19, "
+                         "o que dava 5 tarefas/min e ~2,8h nas 877")
+    ap.add_argument("--jobs", type=int, default=6,
+                    help="subprocessos de teste em paralelo (CPU)")
     ap.add_argument("--tag", default=None)
     ap.add_argument("--show-fails", type=int, default=4)
     args = ap.parse_args()
@@ -148,57 +153,91 @@ def main() -> int:
     motivos: Counter[str] = Counter()
     falhas: list[tuple[str, str]] = []
 
-    for i, t in enumerate(tasks, 1):
+    # ⚠️ GERACAO EM LOTE + TESTES EM PARALELO. A versao anterior fazia uma tarefa por vez,
+    #    e as duas metades eram seriais: um `generate` de batch 1 (GPU a ~30% de utilizacao)
+    #    seguido de um subprocesso de teste bloqueante. Medido em 2026-08-19 no Bee-350M:
+    #    **5 tarefas/min**, ou seja ~2,8 h para as 877 — e no grid do Estagio 2 esta regua
+    #    roda UMA VEZ POR BRACO, o que daria 42 h em 15 bracos. Nao era incomodo, era
+    #    bloqueador.
+    def monta_prompt(t: dict) -> str:
         # 🔴 O CHAT TEMPLATE E' ESCOLHA EXPLICITA (--chat), NAO DETECCAO AUTOMATICA.
-        #    A primeira versao desta linha perguntava `if tok.chat_template` — e o
-        #    BrCamp/bee-350m-pt-base responde **True**: o `TokenizersBackend` fornece um
-        #    template ChatML padrao mesmo sem nada no tokenizer_config.json. So' que o base
-        #    foi pre-treinado em texto cru e **nunca viu `<|im_start|>`** (os tokens existem
-        #    no vocabulario, reservados para o SFT, e praticamente nao aparecem no corpus).
-        #    Medir o base atraves desse template mede a reacao dele a tokens ineditos, e o
-        #    sintoma sai como "o base nao sabe programar" — conclusao sobre o modelo apoiada
-        #    num artefato do aparato, que e' o erro assinatura deste projeto.
-        #    Regra: BASE = prompt simples. Depois do SFT com ChatML = --chat.
+        #    O BrCamp/bee-350m-pt-base responde `tok.chat_template is not None` = True: o
+        #    `TokenizersBackend` fornece um ChatML padrao mesmo sem nada no
+        #    tokenizer_config.json. So' que o base foi pre-treinado em texto cru e **nunca
+        #    viu `<|im_start|>`** (os tokens existem no vocabulario, reservados para o SFT).
+        #    Medir o base por esse template mede a reacao dele a tokens ineditos, e o
+        #    sintoma sai como "o base nao sabe programar" — conclusao sobre o MODELO apoiada
+        #    num artefato do APARATO. Regra: BASE = prompt simples; pos-SFT = --chat.
         if args.chat:
             msgs = [{"role": "system", "content": SYSTEM},
                     {"role": "user", "content": t["prompt"]}]
-            tpl = {"add_generation_prompt": True, "return_tensors": "pt", "return_dict": True}
             try:
-                enc = tok.apply_chat_template(msgs, enable_thinking=False, **tpl)
+                return tok.apply_chat_template(msgs, tokenize=False,
+                                               add_generation_prompt=True,
+                                               enable_thinking=False)
             except TypeError:
-                enc = tok.apply_chat_template(msgs, **tpl)
-        else:
-            enc = tok(MOLDE_BASE.format(sistema=SYSTEM, prompt=t["prompt"]),
-                      return_tensors="pt")
-        inputs = {k: v.to("cuda") for k, v in dict(enc).items() if hasattr(v, "to")}
-        plen = inputs["input_ids"].shape[1]
-        with torch.no_grad():
-            g = model.generate(**inputs, max_new_tokens=args.max_new, do_sample=False,
-                               pad_token_id=tok.eos_token_id)
-        raw = tok.decode(g[0][plen:], skip_special_tokens=True).strip()
+                return tok.apply_chat_template(msgs, tokenize=False,
+                                               add_generation_prompt=True)
+        return MOLDE_BASE.format(sistema=SYSTEM, prompt=t["prompt"])
+
+    tok.padding_side = "left"          # obrigatorio para geracao em lote em decoder-only
+    if tok.pad_token is None:
+        tok.pad_token = tok.eos_token
+
+    from concurrent.futures import ThreadPoolExecutor
+
+    def julga(par):
+        """Extrai o codigo e roda os testes. Devolve (nome, ok, motivo)."""
+        t, raw = par
         answer, _ = strip_think(raw)
         code = extract_code(answer)
-
         if not code:
-            n_nocode += 1
-            motivos["sem codigo"] += 1
-            falhas.append((t["name"], "nao devolveu codigo"))
-        else:
-            res = run_tests(code, t["tests"], timeout=args.timeout)
-            if res.ok:
-                n_pass += 1
-            else:
-                # categoriza o motivo (separa "errou a logica" de "nem roda")
-                r = res.reason
-                cat = ("timeout" if "timeout" in r else
-                       "assert falhou" if "assert falhou" in r else
-                       "padrao proibido" if "proibido" in r else
-                       "erro de execucao")
-                motivos[cat] += 1
-                falhas.append((t["name"], r[:110]))
+            return t["name"], None, "nao devolveu codigo"
+        res = run_tests(code, t["tests"], timeout=args.timeout)
+        return t["name"], res.ok, res.reason
 
-        if i % 10 == 0 or i == len(tasks):
-            print(f"  {i}/{len(tasks)}  pass@1 parcial: {n_pass/i:.1%}", flush=True)
+    lote, i = args.lote, 0
+    while i < len(tasks):
+        bloco = tasks[i:i + lote]
+        ent = tok([monta_prompt(t) for t in bloco], return_tensors="pt",
+                  padding=True, truncation=True, max_length=1024).to("cuda")
+        try:
+            with torch.no_grad():
+                g = model.generate(**ent, max_new_tokens=args.max_new, do_sample=False,
+                                   pad_token_id=tok.pad_token_id or tok.eos_token_id)
+        except torch.OutOfMemoryError:
+            torch.cuda.empty_cache()
+            if lote == 1:
+                raise
+            lote = max(1, lote // 2)
+            print(f"  ⚠️ OOM — lote reduzido para {lote}, refazendo o bloco", flush=True)
+            continue
+        plen = ent["input_ids"].shape[1]
+        brutas = [tok.decode(g[j][plen:], skip_special_tokens=True).strip()
+                  for j in range(len(bloco))]
+        del g
+        torch.cuda.empty_cache()
+
+        # os testes sao subprocessos de CPU: rodam em paralelo enquanto a GPU ja' poderia
+        # estar no proximo bloco. Aqui ficam serializados por simplicidade, mas o paralelismo
+        # interno ja' corta a maior parte do custo.
+        with ThreadPoolExecutor(max_workers=args.jobs) as ex:
+            for nome, ok, motivo in ex.map(julga, zip(bloco, brutas)):
+                if ok is None:
+                    n_nocode += 1
+                    motivos["sem codigo"] += 1
+                    falhas.append((nome, motivo))
+                elif ok:
+                    n_pass += 1
+                else:
+                    cat = ("timeout" if "timeout" in motivo else
+                           "assert falhou" if "assert falhou" in motivo else
+                           "padrao proibido" if "proibido" in motivo else
+                           "erro de execucao")
+                    motivos[cat] += 1
+                    falhas.append((nome, motivo[:110]))
+        i += len(bloco)
+        print(f"  {i}/{len(tasks)}  pass@1 parcial: {n_pass/i:.1%}", flush=True)
 
     n = len(tasks)
     rodou = n - n_nocode

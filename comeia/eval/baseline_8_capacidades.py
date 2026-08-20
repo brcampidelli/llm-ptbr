@@ -45,15 +45,15 @@ SAIDA = RAIZ / "docs" / "baseline-pre-postreino-350m.json"
 
 # (capacidade, script, argumentos extras, relatorio json que ele grava)
 REGUAS = [
-    ("instrucao_conteudo", "eval_ifeval_pt.py", ["--tag", "base350m"],
+    ("instrucao_conteudo", "eval_ifeval_pt.py", ["--tag", "base350m", "--lote", "48"],
      RAIZ / "docs" / "ifeval-pt-base350m.json"),
-    ("resumo", "eval_resumo_pt.py", ["--tag", "base350m"],
+    ("resumo", "eval_resumo_pt.py", ["--tag", "base350m", "--lote", "48"],
      RAIZ / "docs" / "resumo-pt-base350m.json"),
-    ("traducao", "eval_traducao_pt.py", ["--tag", "base350m"],
+    ("traducao", "eval_traducao_pt.py", ["--tag", "base350m", "--lote", "48"],
      RAIZ / "docs" / "traducao-pt-base350m.json"),
     ("sentimento", "eval_sentimento_pt.py", ["--tag", "base350m"],
      RAIZ / "docs" / "sentimento-pt-base350m.json"),
-    ("atendimento", "eval_atendimento_pt.py", ["--tag", "base350m"],
+    ("atendimento", "eval_atendimento_pt.py", ["--tag", "base350m", "--lote", "48"],
      RAIZ / "docs" / "atendimento-pt-base350m.json"),
     ("codigo_interno", "eval_coder.py", ["--limit", "0", "--tag", "base350m"],
      AQUI / "results" / "coder_base350m.json"),
@@ -109,13 +109,17 @@ def main() -> int:
             cmd += ["--dry-run"]
         print(f"\n{'=' * 78}\n>> {capacidade}  ({script})\n{'=' * 78}", flush=True)
         t0 = time.time()
-        p = subprocess.run(cmd, cwd=str(RAIZ), text=True, encoding="utf-8", errors="replace",
-                           capture_output=True)
-        cauda = "\n".join((p.stdout or "").strip().splitlines()[-14:])
-        print(cauda)
+        # ⚠️ SAIDA STREAMADA, NAO CAPTURADA. A primeira versao usava capture_output=True, o
+        #    que bufferiza o filho e so' imprime quando ele termina. Resultado medido em
+        #    2026-08-19: nove minutos rodando a primeira regua sem UMA linha de progresso, e
+        #    nenhuma forma de perceber que a GPU estava a 31% de utilizacao e 36 W porque o
+        #    lote padrao era 8 contra os 96 que o gate usava. Ficar cego por escolha propria
+        #    e' pior que log verboso — e impede exatamente a medicao de throughput que o
+        #    checklist do projeto exige antes de comprometer um run longo.
+        p = subprocess.run(cmd, cwd=str(RAIZ), text=True, encoding="utf-8", errors="replace")
         if p.returncode != 0:
-            print(f"🔴 {capacidade} FALHOU (codigo {p.returncode})")
-            print("\n".join((p.stderr or "").strip().splitlines()[-8:]))
+            # stderr do filho ja' saiu direto no log (nao e' mais capturado)
+            print(f"🔴 {capacidade} FALHOU (codigo {p.returncode}) — erro acima")
             falhas.append(capacidade)
             continue
         print(f"   ({(time.time() - t0) / 60:.1f} min)")
