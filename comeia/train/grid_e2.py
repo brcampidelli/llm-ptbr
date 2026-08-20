@@ -174,6 +174,8 @@ def main() -> int:
     ap.add_argument("--sem-checkpointing", action="store_true")
     ap.add_argument("--lrs", default="", help="sobrepoe as LRs, ex: 3e-4,6e-4,1.2e-3")
     ap.add_argument("--tag-sufixo", default="", help="sufixo nas tags, p/ nao sobrescrever runs")
+    ap.add_argument("--reparar", action="store_true",
+                    help="so' reconstroi o JSON a partir de comeia/models/e2-*, sem treinar")
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args()
 
@@ -186,6 +188,26 @@ def main() -> int:
     if a.tag_sufixo:
         for r in runs:
             r["tag"] = r["tag"] + a.tag_sufixo
+
+    if a.reparar:
+        atual = json.loads(SAIDA.read_text(encoding="utf-8")) if SAIDA.exists() else {"runs": {}}
+        runs_j = atual.get("runs", {})
+        novas = {t: e for t, e in entradas_do_disco().items() if t not in runs_j}
+        runs_j.update(novas)
+        for tag in sorted(runs_j):
+            L = loss_do_treino(runs_j[tag]["adapter"])
+            if L:
+                passos, ini, fim = L
+                ruim = (fim >= ini) or (fim != fim)
+                runs_j[tag].update(loss_inicio=ini, loss_fim=fim, divergiu=bool(ruim))
+                print(f"  {'🔴' if ruim else '✅'} {tag:30} {passos:>4} passos | "
+                      f"{ini:.4f} -> {fim:.4f}")
+        atual["runs"] = runs_j
+        SAIDA.write_text(json.dumps(atual, ensure_ascii=False, indent=1), encoding="utf-8")
+        print()
+        print(f"reparo: {len(novas)} entrada(s) reconstruida(s) do disco · "
+              f"{len(runs_j)} no total · {SAIDA}")
+        return 0
 
     print("=" * 78)
     print(f"GRID DO ESTAGIO 2 — {len(runs)} treinos · modelo {a.model}")
