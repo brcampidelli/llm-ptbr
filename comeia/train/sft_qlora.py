@@ -59,6 +59,10 @@ def parse_args() -> argparse.Namespace:
                     help="⚠️ default herdado do Qwen-4B, NAO validado no Bee. Ver E2 do plano")
     ap.add_argument("--batch-size", type=int, default=1, help="por dispositivo — manter 1 em 8GB")
     ap.add_argument("--grad-accum", type=int, default=16, help="batch efetivo = batch-size * grad-accum")
+    ap.add_argument("--sem-checkpointing", action="store_true",
+                    help="desliga o gradient checkpointing. Ele troca ~30% de "
+                         "velocidade por memoria — bom nos 8 GB da 5070, desperdicio "
+                         "numa 5090 de 32 GB onde a memoria sobra")
     ap.add_argument("--sem-lora", action="store_true",
                     help="full fine-tuning, sem adapter. E o controle NEGATIVO do E2; "
                          "exige LR ~10x menor que o de LoRA")
@@ -185,8 +189,9 @@ def main() -> int:
     )
     model.config.use_cache = False
     if args.quatro_bits:
-        model = prepare_model_for_kbit_training(model, use_gradient_checkpointing=True)
-    else:
+        model = prepare_model_for_kbit_training(
+            model, use_gradient_checkpointing=not args.sem_checkpointing)
+    elif not args.sem_checkpointing:
         model.gradient_checkpointing_enable()
 
     if args.sem_lora:
@@ -246,7 +251,7 @@ def main() -> int:
         max_steps=args.max_steps,
         per_device_train_batch_size=args.batch_size,
         gradient_accumulation_steps=args.grad_accum,
-        gradient_checkpointing=True,
+        gradient_checkpointing=not args.sem_checkpointing,
         learning_rate=args.lr,
         lr_scheduler_type="cosine",
         warmup_ratio=0.03,
