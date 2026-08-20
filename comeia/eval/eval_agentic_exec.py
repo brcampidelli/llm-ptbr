@@ -27,6 +27,7 @@ import importlib.util
 import json
 import math
 import sys
+import time
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent.parent          # comeia/
@@ -86,6 +87,8 @@ def main() -> int:
     ap.add_argument("--temp", type=float, default=0.8, help="so usado quando k>1")
     ap.add_argument("--max-new", type=int, default=320)
     ap.add_argument("--limit", type=int, default=0)
+    ap.add_argument("--lote", type=int, default=24,
+                    help="exemplos por lote de geracao (so' vale para k=1)")
     ap.add_argument("--tag", default=None)
     ap.add_argument("--chat", action="store_true",
                     help="usa o chat template. So' DEPOIS do SFT — ver comentario em gerar()")
@@ -174,6 +177,62 @@ def main() -> int:
             g = modelo.generate(**ent, **cfg)
         return [tok.decode(s[n:], skip_special_tokens=True).strip() for s in g]
 
+    def gerar_em_lote(rows: list[dict], lote: int) -> list[list[str]]:
+        """Gera greedy para TODAS as linhas, em lotes. So' vale para k=1.
+
+        ⚠️ POR QUE ISTO EXISTE. Com batch 1 esta regua levou 21 min sem sair dos exemplos
+        21-39 e disparou o monitor de estagnacao DUAS vezes. Nas duas eu diagnostiquei
+        errado: na primeira culpei a calculadora do mundo simulado (que de fato tinha um bug
+        de exaustao de recurso, corrigido — mas nao era este caso), e na segunda chamei de
+        travamento o que era lentidao. O `py-spy dump` foi o que resolveu: a pilha estava
+        dentro de `generate` → `_sample` → forward do Qwen3, e o CPU subia de forma
+        constante. Estava trabalhando, a 22% de GPU.
+        ⭐ A licao e' de instrumentacao: `utilization.gpu` de 22% com progresso invisivel e'
+        indistinguivel de travamento SE a regua so' imprime a cada 20 exemplos. Ou o passo
+        e' menor, ou o log e' mais frequente — mas nao os dois grandes ao mesmo tempo.
+        """
+        textos = []
+        for row in rows:
+            sistema, usuario, _, _ = partes(row)
+            if args.chat:
+                msgs = ([{"role": "system", "content": sistema}] if sistema else []) \
+                    + [{"role": "user", "content": usuario}]
+                textos.append(tok.apply_chat_template(msgs, tokenize=False,
+                                                      add_generation_prompt=True))
+            else:
+                textos.append((f"{sistema}\n\n" if sistema else "")
+                              + f"Usuario: {usuario}\nAssistente:")
+        tok.padding_side = "left"
+        fora: list[list[str]] = []
+        b, i2 = lote, 0
+        t0 = time.time()
+        while i2 < len(textos):
+            bloco = textos[i2:i2 + b]
+            ent = tok(bloco, return_tensors="pt", padding=True, truncation=True,
+                      max_length=1536).to(dispositivo)
+            try:
+                with torch.no_grad():
+                    g = modelo.generate(**ent, max_new_tokens=args.max_new, do_sample=False,
+                                        pad_token_id=tok.pad_token_id or tok.eos_token_id)
+            except torch.OutOfMemoryError:
+                torch.cuda.empty_cache()
+                if b == 1:
+                    raise
+                b = max(1, b // 2)
+                print(f"  ⚠️ OOM — lote {b}, refazendo", flush=True)
+                continue
+            plen = ent["input_ids"].shape[1]
+            for j in range(len(bloco)):
+                fora.append([tok.decode(g[j][plen:], skip_special_tokens=True).strip()])
+            del g
+            if dispositivo == "cuda":
+                torch.cuda.empty_cache()
+            i2 += len(bloco)
+            dt = (time.time() - t0) / 60
+            print(f"  gerando {i2}/{len(textos)} · {dt:.1f} min · "
+                  f"resta ~{dt / i2 * (len(textos) - i2):.1f} min", flush=True)
+        return fora
+
     n_tool = n_text = 0
     json_ok = tool_right = args_exact = exec_ok = 0
     over = under = trunc = 0
@@ -181,9 +240,12 @@ def main() -> int:
     soma_taxa = 0.0            # pass@1 estimado a partir das k amostras
     por_ferramenta: dict[str, list[int]] = {}
 
+    # k>1 (pass@k) continua um-a-um: `num_return_sequences` ja' enche o batch sozinho
+    prontas = gerar_em_lote(linhas, args.lote) if args.k == 1 else None
+
     for i, row in enumerate(linhas, 1):
         sistema, usuario, ref, tipo = partes(row)
-        saidas = gerar(sistema, usuario, args.k)
+        saidas = prontas[i - 1] if prontas is not None else gerar(sistema, usuario, args.k)
         ref_obj = _d7.extract_json(ref)
 
         if tipo == "text":
