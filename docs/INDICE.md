@@ -44,6 +44,12 @@ está morto**.
 | **[reguas-e-pisos-e0.md](reguas-e-pisos-e0.md)** | ⭐ **as 8 réguas e o piso de cada uma.** Copiar 2 frases resume 51,3%; contar a palavra "não" faz 79,0% em sentimento; copiar a fonte marca chrF++ 21,5 em tradução. E a régua de tradução reproduziu o **BLEU 50,4 publicado do opus-mt em 50,5** — validação do aparato, não só do modelo |
 | [censo-mistura-350m.md](censo-mistura-350m.md) | censo por TOKEN: o agêntico recebe 2,7% do gradiente, não 20,9% |
 
+## Estudos de fontes externas — o que NÃO adotar também é resultado
+
+| documento | veredito |
+|---|---|
+| **[estudo-ml-guide-mikeroyal-2026-08-19.md](estudo-ml-guide-mikeroyal-2026-08-19.md)** | ❌ **2/10.** Guia de ML com 709★ pedido para análise: índice de links de engenharia acadêmica de ~2021 com uma prateleira de LLM pendurada em 2023. "MATLAB" aparece **103 vezes**, "attention" **zero**, "Portug" **zero**. Podridão de link é baixa (6,7%) — o problema é obsolescência técnica, que nenhum código HTTP detecta |
+
 ## Gates e decisões
 
 | documento | veredito |
