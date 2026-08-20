@@ -182,11 +182,28 @@ def main() -> int:
     todos = sorted(catalogo_global)
     # vocabulario de cada ferramenta = nome + descricao + nomes dos argumentos
     pal_ferramenta = {n: palavras(catalogo_global[n].replace("_", " ")) for n in todos}
+    # 🔴 AMOSTRAGEM COM REPOSICAO — o mesmo erro da §2 das licoes, em lugar novo.
+    #    `rnd.choice(dialogos)` a cada iteracao produziu, em 10.000 negativos, apenas 3.126
+    #    pares (pedido, ferramenta removida) DISTINTOS: 68,7% de duplicacao, com um par
+    #    repetindo 292 vezes. Treinar assim ensina a decorar aquele pedido, nao o
+    #    comportamento — e cai direto na §2c-6 (repeticao interna do corpus, com dano maximo
+    #    justamente em contagem intermediaria).
+    #    ⭐ Correto: percorrer a lista PERMUTADA uma vez, e recusar par ja' usado.
+    ordem = list(range(len(dialogos)))
+    rnd.shuffle(ordem)
+    vistos: set[tuple[str, str]] = set()
     fora, motivos = [], Counter()
     tentativas = 0
-    while len(fora) < a.n and tentativas < a.n * 20:
+    for idx in ordem:
+        if len(fora) >= a.n:
+            break
         tentativas += 1
-        d = rnd.choice(dialogos)
+        d = dialogos[idx]
+        par = (d["usuario"], d["alvo"])
+        if par in vistos:
+            motivos["par_repetido"] += 1
+            continue
+        vistos.add(par)
         alvo, nuc_alvo = d["alvo"], nucleo(d["alvo"])
         if not nuc_alvo:
             motivos["alvo_so_com_verbo_generico"] += 1
@@ -260,6 +277,12 @@ def main() -> int:
         print("  🔴 o filtro de atracao NAO esta' separando — negativo continua facil")
     else:
         print(f"  ✅ {m_dur/max(0.01,m_ale):.1f}x mais atraente que o acaso")
+
+    pares = {(r["messages"][1]["content"], r["ferramenta_removida"]) for r in fora}
+    print(f"pares (pedido, removida) distintos: {len(pares):,} de {len(fora):,} "
+          f"({100*len(pares)/max(1,len(fora)):.1f}%)")
+    if len(pares) < len(fora):
+        print("  🔴 ainda ha duplicata — a permutacao nao esta' cobrindo")
 
     usados = Counter(r["ferramenta_removida"] for r in fora)
     print(f"\nnegativos gerados    : {len(fora):,}")

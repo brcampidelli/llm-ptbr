@@ -168,6 +168,8 @@ def main() -> int:
     ap.add_argument("--limite", type=int, default=0, help="0 = tudo")
     ap.add_argument("--sem-esclarecimento", action="store_true",
                     help="descarta dialogos que pedem esclarecimento ANTES da 1a chamada")
+    ap.add_argument("--com-duplicatas", action="store_true",
+                    help="mantem duplicatas (o default DEDUPLICA por (pedido, chamada))")
     ap.add_argument("--escrever", action="store_true")
     a = ap.parse_args()
 
@@ -215,6 +217,35 @@ def main() -> int:
                       "source": "gigaverbo_function_call",
                       "instruct_score": reg.get("instruct_score")})
 
+    # 🔴 REDUNDANCIA INTERNA MEDIDA, NAO SUPOSTA. Os 40.716 convertidos colapsam em 14.003
+    #    pares (pedido, chamada) distintos e 9.303 pedidos: 65,6% de duplicata, com um par
+    #    repetindo 969 vezes. O histograma tem a forma que a licao 2c-6 descreve — dano
+    #    maximo em contagem INTERMEDIARIA (3-10x) — e "40.716 exemplos" e' manchete: a
+    #    diversidade efetiva e' ~14 mil. A licao manda reportar o HISTOGRAMA, nao a media.
+    if not a.com_duplicatas:
+        def _par(r):
+            u = next((m["content"] for m in r["messages"] if m["role"] == "user"), "")
+            c = next((m["content"] for m in r["messages"] if m["role"] == "assistant"
+                      and m["content"].startswith(chr(123) + chr(34) + "tool" + chr(34))), "")
+            return u + "|" + c
+        antes = len(saida)
+        rep = Counter(_par(r) for r in saida)
+        vistos, unicos = set(), []
+        for r in saida:
+            k = _par(r)
+            if k in vistos:
+                continue
+            vistos.add(k)
+            unicos.append(r)
+        saida = unicos
+        h = Counter(rep.values())
+        print()
+        print(f"redundancia interna: {antes:,} -> {len(saida):,} "
+              f"({100*(1-len(saida)/max(1,antes)):.1f}% eram duplicata)")
+        print("  histograma de repeticao (vezes -> quantos pares):")
+        for kk in sorted(h)[:6]:
+            print(f"    {kk:>3}x : {h[kk]:>7,}")
+        print(f"    max  : {max(rep.values())}x")
     print(f"\nmotivos ({len(linhas):,} lidos):")
     for m, c in motivos.most_common():
         marca = "✅" if m.startswith("convertido") else ("  " if "reprovado" in m or "descartado" in m else "🔴")

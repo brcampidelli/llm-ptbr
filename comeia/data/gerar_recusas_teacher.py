@@ -48,7 +48,46 @@ TEACHERS = ["nvidia/nemotron-3-ultra-550b-a55b:free", "openai/gpt-oss-20b:free"]
 RX_FERR = re.compile(r"^- ([a-zA-Z0-9_]+):", re.M)
 RX_CHAMADA = re.compile(r'\{\s*"tool"|<tool_call>|"arguments"\s*:')
 # marcas de portugues; ausencia total = provavelmente o teacher respondeu em ingles
+RX_NEGA = re.compile(
+    r"(n[aã]o (consigo|posso|tenho|e[' ]?\s?poss[ií]vel|da[' ]?\s?para|disponho|encontrei)"
+    r"|infelizmente|fora do meu alcance|n[aã]o est[aá] dispon[ií]vel|nenhuma (das )?ferramenta"
+    r"|sem ferramenta|n[aã]o h[aá] ferramenta|impossibilitad)", re.I)
 RX_PT = re.compile(r"\b(não|nao|com|para|que|você|voce|posso|consigo|ferramenta)\b", re.I)
+
+
+def tem_letra_estrangeira(t: str) -> bool:
+    """🔴 LETRA fora do alfabeto latino — o teacher às vezes injeta outro sistema de escrita.
+
+    Medido: *"Desculpe, **περιο** não consigo converter moedas com as ferramentas que tenho"*.
+    A guarda de idioma passou porque exigia apenas UMA marca de português **presente**, e não
+    a ausência de lixo. Presença de sinal não é ausência de ruído.
+
+    ⚠️ Só LETRA. O espaço estreito (U+202F) em "Nova York" é tipografia, não contaminação —
+    reprová-lo descartaria resposta boa num free tier limitado por minuto.
+    """
+    import unicodedata
+    for ch in t:
+        if ch.isalpha() and "LATIN" not in unicodedata.name(ch, ""):
+            return True
+    return False
+
+# 🔴 O PROMPT UNICO CONVERGE. Medido: no piloto de 29 recusas, 83% de aberturas distintas;
+#    em 332, apenas 30%, com "desculpe, mas nao consigo" repetindo 39x e a TTR caindo de
+#    0,354 para 0,130. O problema do template chegou assim mesmo, pela porta do teacher — e
+#    caro. A causa e' o proprio molde: ele DITA a frase ("diga que nao consegue fazer isso"),
+#    e um pedido identico 4.000 vezes produz a mesma resposta 4.000 vezes, por mais alta que
+#    seja a temperatura.
+#    ⭐ A correcao nao e' subir temperatura: e' variar o PEDIDO. Cada recusa sorteia um
+#    registro diferente, e registros diferentes forcam construcoes diferentes.
+ESTILOS = [
+    "direto e objetivo, sem pedir desculpas",
+    "cordial, comecando por reconhecer o que o usuario quer",
+    "informal, como um colega de trabalho falaria",
+    "formal e conciso, de atendimento profissional",
+    "prestativo: gaste a maior parte da resposta na alternativa que VOCE PODE fazer",
+    "explicativo: diga em uma frase por que a ferramenta certa nao esta' disponivel",
+    "breve — no maximo uma frase",
+]
 
 MOLDE = """Um assistente tem acesso APENAS a estas ferramentas:
 {catalogo}
@@ -56,11 +95,13 @@ MOLDE = """Um assistente tem acesso APENAS a estas ferramentas:
 O usuário pediu: "{pedido}"
 
 Nenhuma das ferramentas acima atende esse pedido. Escreva a resposta do assistente em
-português brasileiro natural, em 1 a 2 frases:
-- diga que não consegue fazer isso com as ferramentas que tem;
-- se alguma ferramenta da lista for minimamente útil ao usuário, ofereça-a pelo nome;
-- NÃO invente ferramenta que não esteja na lista;
-- NÃO escreva JSON nem chamada de função.
+português brasileiro natural.
+
+ESTILO DESTA RESPOSTA: {estilo}
+
+Regras: deixe claro que o pedido não pode ser atendido com as ferramentas disponíveis; se
+alguma da lista for minimamente útil, ofereça-a; NÃO invente ferramenta fora da lista; NÃO
+escreva JSON nem chamada de função; escreva SOMENTE em português.
 
 Responda SÓ com a fala do assistente, sem aspas e sem comentário."""
 
@@ -95,6 +136,15 @@ def valida(texto: str, nomes: set[str], removida: str) -> str | None:
         return "contem_chamada"
     if not RX_PT.search(t):
         return "provavelmente_nao_e_portugues"
+    if tem_letra_estrangeira(t):
+        return "letra_fora_do_alfabeto_latino"
+    # 🔴 A RECUSA TEM DE RECUSAR. Sem esta guarda passou "Ola! Entendo que voce gostaria de
+    #    descobrir restaurantes nas proximidades da sua localizacao atual" — que ACOLHE o
+    #    pedido e nunca diz que nao da'. Como exemplo de treino isso ensina o oposto do
+    #    pretendido, e a metrica `over_call` nao veria diferenca: nenhuma chamada foi emitida
+    #    nos dois casos. Numero bom, comportamento errado.
+    if not RX_NEGA.search(t):
+        return "nao_contem_recusa"
     # ⚠️ 400 rejeitava 15% no piloto, e recusa util de 3 frases e' legitima. Rejeitar
     #    resposta boa desperdica chamada num free tier limitado por minuto.
     if len(t) > 520:
@@ -155,7 +205,8 @@ def main() -> int:
             sistema = d["messages"][0]["content"]
             nomes = set(RX_FERR.findall(sistema))
             prompt = MOLDE.format(catalogo=catalogo_curto(sistema),
-                                  pedido=d["messages"][1]["content"])
+                                  pedido=d["messages"][1]["content"],
+                                  estilo=ESTILOS[i % len(ESTILOS)])
             teacher = TEACHERS[i % len(TEACHERS)]
             try:
                 r = call_teacher(prompt, teacher, k, temperature=a.temp,
@@ -212,8 +263,17 @@ def main() -> int:
               f"(TTR {len(vocab)/max(1,total_tok):.3f})")
         mais = aberturas.most_common(1)[0]
         print(f"  abertura mais comum : {mais[1]}x  {mais[0]!r}")
-        if mais[1] / len(aceitos) > 0.3:
-            print("  🔴 mais de 30% comecam igual — esta' virando template com custo de API")
+        # 🔴 A GUARDA ANTERIOR OLHAVA SO' O TOPO e por isso nao disparou: com 332 recusas a
+        #    abertura mais comum era 12% (abaixo do limiar de 30%) enquanto apenas 30% das
+        #    aberturas eram distintas. Concentracao nao se mede pelo maior balde.
+        frac = len(aberturas) / len(aceitos)
+        top3 = sum(c for _, c in aberturas.most_common(3)) / len(aceitos)
+        print(f"  top-3 aberturas     : {100*top3:.0f}% do total")
+        if frac < 0.6:
+            print(f"  🔴 so' {100*frac:.0f}% das aberturas sao distintas — convergindo para "
+                  "template, com custo de API")
+        elif top3 > 0.25:
+            print(f"  ⚠️ as 3 aberturas mais comuns cobrem {100*top3:.0f}% — de olho")
         for r in aceitos[:3] if a.amostra else []:
             print(f"\n  removida {r['ferramenta_removida']} ({r['teacher'].split('/')[-1]})")
             print(f"    pedido: {r['messages'][1]['content'][:110]}")
