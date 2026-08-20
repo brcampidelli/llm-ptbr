@@ -97,14 +97,44 @@ def _calcular(expr: str) -> float:
         if isinstance(n, ast.Name) and n.id in _CONSTS:
             return _CONSTS[n.id]
         if isinstance(n, ast.BinOp) and type(n.op) in _OPS:
-            return _OPS[type(n.op)](_no(n.left), _no(n.right))
+            a, b = _no(n.left), _no(n.right)
+            # 🔴 GUARDA DE EXAUSTAO DE RECURSO — o avaliador travou de verdade por isto.
+            #    2026-08-20: a regua agentica ficou 21 min presa entre os exemplos 21 e 39,
+            #    com 1.604 s de CPU e 2,5 GB de working set num unico processo. O modelo
+            #    BASE gerou uma chamada de calculadora com potencia enorme, e este `_no`
+            #    foi calcular o inteiro gigante.
+            #    ⚠️ "Seguro" aqui sempre significou "nao executa codigo arbitrario" (usa AST,
+            #    nao eval). Isso e' verdade e nao bastava: uma expressao inteiramente valida
+            #    exaure memoria e CPU sem executar nada proibido. Sao ameacas diferentes.
+            #    E o sintoma nao era erro: era o run parado, indistinguivel de lentidao.
+            if type(n.op) is ast.Pow and (abs(b) > 64 or (abs(a) > 1e6 and abs(b) > 8)):
+                raise ErroFerramenta(f"potencia grande demais: {a}**{b}")
+            return _OPS[type(n.op)](a, b)
         if isinstance(n, ast.UnaryOp) and type(n.op) in _OPS:
             return _OPS[type(n.op)](_no(n.operand))
         if isinstance(n, ast.Call) and isinstance(n.func, ast.Name) and n.func.id in _FUNCS:
-            return float(_FUNCS[n.func.id](*[_no(x) for x in n.args]))
+            args = [_no(x) for x in n.args]
+            # mesma familia da guarda de potencia: factorial(1e6) nao e' codigo proibido,
+            # e' um numero com 5,5 milhoes de digitos. E `pow` chega pelo mesmo caminho.
+            if n.func.id == "factorial" and (args and abs(args[0]) > 170):
+                raise ErroFerramenta(f"factorial grande demais: {args[0]}")
+            if n.func.id == "pow" and len(args) >= 2 and abs(args[1]) > 64:
+                raise ErroFerramenta(f"potencia grande demais: pow({args[0]}, {args[1]})")
+            # ⚠️ BUG ANTERIOR, ACHADO PELO TESTE DESTA GUARDA: `_no` devolve float e
+            #    `math.factorial` exige int, entao `factorial(10)` SEMPRE levantou
+            #    TypeError — e o `executar()` contava isso como falha do MODELO. A funcao
+            #    estava na tabela desde sempre e nunca funcionou uma vez.
+            if n.func.id == "factorial":
+                if args[0] != int(args[0]):
+                    raise ErroFerramenta(f"factorial exige inteiro: {args[0]}")
+                args = [int(args[0])]
+            return float(_FUNCS[n.func.id](*args))
         raise ErroFerramenta(f"expressao nao suportada: {expr!r}")
     try:
-        return round(_no(ast.parse(expr, mode="eval")), 6)
+        r = _no(ast.parse(expr, mode="eval"))
+        if not math.isfinite(r):
+            raise ErroFerramenta(f"resultado nao finito: {expr!r}")
+        return round(r, 6)
     except ZeroDivisionError as e:
         raise ErroFerramenta("divisao por zero") from e
     except (SyntaxError, ValueError) as e:
