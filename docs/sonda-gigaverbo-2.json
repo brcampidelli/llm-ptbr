@@ -1,0 +1,28 @@
+{
+ "structured": {
+  "n": 200,
+  "pt_pt": 0.0,
+  "pt_br": 0.425,
+  "indefinido": 0.575,
+  "convencao": {},
+  "dialogos_com_chamada": 0,
+  "esclarece_antes_de_chamar": null,
+  "score_mediano": 4.7316093445,
+  "fracao_score_4mais": 0.765,
+  "tokens_medianos": 431,
+  "turnos_medianos": 3
+ },
+ "translation": {
+  "n": 200,
+  "pt_pt": 0.0,
+  "pt_br": 0.0,
+  "indefinido": 1.0,
+  "convencao": {},
+  "dialogos_com_chamada": 0,
+  "esclarece_antes_de_chamar": null,
+  "score_mediano": 4.948113203,
+  "fracao_score_4mais": 0.97,
+  "tokens_medianos": 157,
+  "turnos_medianos": 3
+ }
+}

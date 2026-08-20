@@ -1,0 +1,43 @@
+{
+ "function_call": {
+  "n": 200,
+  "pt_pt": 0.0,
+  "pt_br": 0.365,
+  "indefinido": 0.635,
+  "convencao": {
+   "hermes_xml": 200
+  },
+  "dialogos_com_chamada": 196,
+  "esclarece_antes_de_chamar": 0.24489795918367346,
+  "score_mediano": 4.9913415909,
+  "fracao_score_4mais": 0.885,
+  "tokens_medianos": 621,
+  "turnos_medianos": 7
+ },
+ "summarization": {
+  "n": 200,
+  "pt_pt": 0.025,
+  "pt_br": 0.285,
+  "indefinido": 0.69,
+  "convencao": {},
+  "dialogos_com_chamada": 0,
+  "esclarece_antes_de_chamar": null,
+  "score_mediano": 3.8366088867,
+  "fracao_score_4mais": 0.28,
+  "tokens_medianos": 631,
+  "turnos_medianos": 3
+ },
+ "code": {
+  "n": 200,
+  "pt_pt": 0.0,
+  "pt_br": 0.555,
+  "indefinido": 0.445,
+  "convencao": {},
+  "dialogos_com_chamada": 0,
+  "esclarece_antes_de_chamar": null,
+  "score_mediano": 3.9421539307,
+  "fracao_score_4mais": 0.42,
+  "tokens_medianos": 1009,
+  "turnos_medianos": 3
+ }
+}
