@@ -41,6 +41,7 @@ está morto**.
 | documento | o que traz |
 |---|---|
 | **[plano-pos-treino-350m.md](plano-pos-treino-350m.md)** | o plano aprovado: estágios E0–E8, orçamento e os critérios declarados **antes** de medir |
+| **[baseline-350m-resultado.md](baseline-350m-resultado.md)** | ⭐ **O E0 FECHADO: as 9 medições do base antes de qualquer treino.** Tradução en→pt **BLEU 27,1** sem SFT (piso 2,5; opus-mt 50,5) e matemática `pass@256` **22%** com gate aprovado. Resumo, código, atendimento e agêntico deram **zero — e o zero é FORMATO, não capacidade**: o resumo cobre 84% dos fatos e reprova por não encurtar; 78% das respostas de código não têm bloco extraível; o agêntico nunca emite um JSON. 🔴 Sentimento 49,7% é o acaso, e aí não é formato: são 4 exemplos no SFT inteiro |
 | **[reguas-e-pisos-e0.md](reguas-e-pisos-e0.md)** | ⭐ **as 8 réguas e o piso de cada uma.** Copiar 2 frases resume 51,3%; contar a palavra "não" faz 79,0% em sentimento; copiar a fonte marca chrF++ 21,5 em tradução. E a régua de tradução reproduziu o **BLEU 50,4 publicado do opus-mt em 50,5** — validação do aparato, não só do modelo |
 | [censo-mistura-350m.md](censo-mistura-350m.md) | censo por TOKEN: o agêntico recebe 2,7% do gradiente, não 20,9% |
 

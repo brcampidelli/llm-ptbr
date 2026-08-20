@@ -1,0 +1,57 @@
+{
+ "modelo": "BrCamp/bee-350m-pt-base",
+ "peft": null,
+ "modelo_r": {
+  "nome": "MODELO bee-350m-pt-base",
+  "n": 600,
+  "acuracia": 0.49666666666666665,
+  "balanceada": 0.4966666666666667,
+  "revocacao": {
+   "positivo": 0.92,
+   "negativo": 0.07333333333333333
+  },
+  "ic95": [
+   0.4568078894900112,
+   0.536567856732177
+  ],
+  "distribuicao": {
+   "positivo": 554,
+   "negativo": 46
+  }
+ },
+ "piso_lexico": {
+  "nome": "PISO lexico de 60 palavras",
+  "n": 600,
+  "acuracia": 0.79,
+  "balanceada": 0.79,
+  "revocacao": {
+   "positivo": 0.9266666666666666,
+   "negativo": 0.6533333333333333
+  },
+  "ic95": [
+   0.7556150851399188,
+   0.8206949935297192
+  ],
+  "distribuicao": {
+   "negativo": 218,
+   "positivo": 382
+  }
+ },
+ "piso_majoritaria": {
+  "nome": "PISO classe majoritaria",
+  "n": 600,
+  "acuracia": 0.5,
+  "balanceada": 0.5,
+  "revocacao": {
+   "positivo": 1.0,
+   "negativo": 0.0
+  },
+  "ic95": [
+   0.46011913576597613,
+   0.5398808642340238
+  ],
+  "distribuicao": {
+   "positivo": 600
+  }
+ }
+}
