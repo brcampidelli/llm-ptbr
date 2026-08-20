@@ -1,0 +1,31 @@
+{
+ "repo": "Polygl0t/gigaverbo-v2-sft",
+ "destino": "C:\\Users\\brcam\\Desktop\\Desenvolvendo Projetos\\Desenvolvendo LLM\\comeia\\data\\raw\\gigaverbo",
+ "configs": {
+  "function_call": {
+   "linhas": 45891,
+   "esperado": 45891,
+   "arquivos": 1
+  },
+  "translation": {
+   "linhas": 45204,
+   "esperado": 45204,
+   "arquivos": 1
+  },
+  "structured": {
+   "linhas": 163542,
+   "esperado": 163542,
+   "arquivos": 1
+  },
+  "code": {
+   "linhas": 80774,
+   "esperado": 80774,
+   "arquivos": 1
+  },
+  "summarization": {
+   "linhas": 128669,
+   "esperado": 128669,
+   "arquivos": 1
+  }
+ }
+}

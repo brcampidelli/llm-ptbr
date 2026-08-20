@@ -62,3 +62,5 @@ comeia/eval/benchmarks/b2w_bruto.csv
 comeia/eval/benchmarks/humaneval_xl_pt_bruto.jsonl
 comeia/data/processed/sft_grupo_*.jsonl
 comeia/models/
+comeia/data/raw/gigaverbo/
+comeia/data/processed/gigaverbo_*.jsonl
