@@ -83,6 +83,18 @@ def parse_args() -> argparse.Namespace:
     return ap.parse_args()
 
 
+def _passos_de_aquecimento(n_exemplos: int, batch_efetivo: int, args, fracao: float = 0.03) -> int:
+    """3% dos passos totais, calculado a partir do tamanho do conjunto.
+
+    Devolve um numero ABSOLUTO porque o TRL 1.10 nao aceita mais `warmup_ratio`, mas o
+    calculo preserva a FRACAO — que e' o que torna bracos de tamanhos diferentes comparaveis.
+    """
+    import math
+    total = args.max_steps if args.max_steps and args.max_steps > 0 else \
+        math.ceil(n_exemplos * args.epochs / max(1, batch_efetivo))
+    return max(1, int(fracao * total))
+
+
 def check_vram() -> None:
     import torch
 
@@ -254,7 +266,15 @@ def main() -> int:
         gradient_checkpointing=not args.sem_checkpointing,
         learning_rate=args.lr,
         lr_scheduler_type="cosine",
-        warmup_ratio=0.03,
+        # ⚠️ `warmup_ratio` FOI REMOVIDO no TRL 1.10 (o pod do RunPod tem transformers 5.15.1 +
+        #    trl 1.10.0; a maquina local ainda aceitava, com aviso de depreciacao). A troca por
+        #    `warmup_steps` NAO e' mecanica: um numero ABSOLUTO de passos de aquecimento vira
+        #    uma FRACAO diferente em cada conjunto, e o braco (b) do E2 treina em conjuntos de
+        #    3.267, 1.495 e 2.267 exemplos. Fixar 27 passos daria 3% num braco e 9% noutro — os
+        #    tres deixariam de ser comparaveis, que e' a familia de erro do §2d (comparar sob
+        #    schedules diferentes mede o schedule, nao o modelo).
+        #    Por isso o valor e' DERIVADO do tamanho, preservando os 3% em todos os bracos.
+        warmup_steps=_passos_de_aquecimento(n_examples, effective_batch, args),
         logging_steps=10,
         save_steps=args.save_steps,
         save_total_limit=2,
