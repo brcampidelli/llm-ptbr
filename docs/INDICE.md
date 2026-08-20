@@ -44,6 +44,12 @@ está morto**.
 | **[reguas-e-pisos-e0.md](reguas-e-pisos-e0.md)** | ⭐ **as 8 réguas e o piso de cada uma.** Copiar 2 frases resume 51,3%; contar a palavra "não" faz 79,0% em sentimento; copiar a fonte marca chrF++ 21,5 em tradução. E a régua de tradução reproduziu o **BLEU 50,4 publicado do opus-mt em 50,5** — validação do aparato, não só do modelo |
 | [censo-mistura-350m.md](censo-mistura-350m.md) | censo por TOKEN: o agêntico recebe 2,7% do gradiente, não 20,9% |
 
+## Infraestrutura
+
+| documento | decide |
+|---|---|
+| **[colab-cli-avaliacao-2026-08-19.md](colab-cli-avaliacao-2026-08-19.md)** | ⭐ **Colab volta ao jogo — para carga diferente.** A CLI do Colab (jun/2026) faz `colab run --gpu A100 script.py` com keep-alive sem navegador; instalada e verificada aqui (v0.6.0, via WSL — não roda em Windows). Aceleradores **T4/L4/G4/H100/A100**, e o G4 é RTX PRO 6000 Blackwell de 96 GB, exclusivo do Pro+. A migração para o RunPod continua certa para **run longo**; os 15 SFTs curtos do E2 cabem nas 600 unidades já pagas. ❓ Falta medir a taxa de queima por GPU-hora antes de decidir |
+
 ## Estudos de fontes externas — o que NÃO adotar também é resultado
 
 | documento | veredito |
