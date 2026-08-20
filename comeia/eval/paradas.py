@@ -45,15 +45,25 @@ def ids_de_parada(tok, chat: bool) -> list[int]:
 
 
 def terminador_correto(texto: str) -> bool | None:
-    """`True` se parou por `<|im_end|>`, `False` por outro especial, `None` se não parou.
+    """Qual especial o modelo emitiu para PARAR. `None` = não parou, foi ao teto.
 
-    `None` (não parou) e `False` (parou pelo token errado) são falhas DIFERENTES: a primeira
-    é o modelo que não aprendeu a terminar, a segunda é o que aprendeu a terminar errado.
+    🔴 A primeira versão olhava o FIM da string e media o padding, não o terminador. No
+    caminho em lote a geração só termina quando a sequência MAIS LONGA acaba; as que
+    terminaram antes ficam preenchidas com pad até lá. O texto decodificado então acaba em
+    pad, e `endswith("<|im_end|>")` dava falso em 30/30 — inclusive no braço que eu tinha
+    visto parar corretamente na inspeção manual, um a um.
+
+    ⚠️ Um número que contradiz uma observação direta é o aparato, não o fenômeno. O certo é
+    olhar o PRIMEIRO especial depois do conteúdo: é ele que encerrou a resposta.
     """
-    t = texto.rstrip()
-    if t.endswith("<|im_end|>"):
-        return True
-    return False if any(t.endswith(e) for e in ESPECIAIS_CHAT[1:]) else None
+    primeiro, pos = None, len(texto)
+    for e in ESPECIAIS_CHAT:
+        i = texto.find(e)
+        if 0 <= i < pos:
+            primeiro, pos = e, i
+    if primeiro is None:
+        return None
+    return primeiro == ESPECIAIS_CHAT[0]
 
 
 def limpar(texto: str) -> str:
