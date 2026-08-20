@@ -19,6 +19,13 @@ ponto de partida "melhorou" é opinião (arXiv:2604.08880).
    não o desempenho do sistema. O roteador não está medido aqui, e comparar o teto do braço
    (b) com o número real dos braços (a) e (c) favorece o (b). Está dito na tabela.
 
+⚠️ n MENOR AINDA nas quatro não-discrimináveis, e por um motivo diferente. Elas não rankeiam
+   braço nenhum — existem aqui para **detectar regressão**, que é o risco real do full FT
+   (mexer em todos os pesos pode derrubar tradução, que é a única capacidade com base sólida
+   no baseline: BLEU 27,1). Detectar uma queda grande precisa de muito menos amostra que
+   separar dois braços parecidos, então elas rodam com n reduzido pela metade. Se alguma
+   acusar queda, o braço volta para a régua inteira antes de qualquer conclusão.
+
 ⚠️ Capacidades com menos de 1,5% do gradiente (sentimento, atendimento, resumo, tradução) são
    medidas mas marcadas: nenhum arranjo de adapter cria sinal onde não há dado, e empate nelas
    não é evidência sobre arquitetura.
@@ -63,13 +70,13 @@ COLAPSO = RAIZ / "docs" / "grid-e2-colapso.json"
 REGUAS = [
     ("instrucao", "eval_ifeval_pt.py", ["--limite", "150", "--lote", "48", "--chat"],
      "docs/ifeval-pt-{tag}.json", "estrito_instrucao"),
-    ("resumo", "eval_resumo_pt.py", ["--limite", "60", "--lote", "48", "--chat"],
+    ("resumo", "eval_resumo_pt.py", ["--limite", "40", "--lote", "40", "--chat"],
      "docs/resumo-pt-{tag}.json", "modelo_util"),
-    ("traducao", "eval_traducao_pt.py", ["--limite", "120", "--lote", "48", "--chat"],
+    ("traducao", "eval_traducao_pt.py", ["--limite", "60", "--lote", "60", "--chat"],
      "docs/traducao-pt-{tag}.json", None),
-    ("sentimento", "eval_sentimento_pt.py", ["--limite", "200"],
+    ("sentimento", "eval_sentimento_pt.py", ["--limite", "150"],
      "docs/sentimento-pt-{tag}.json", None),
-    ("atendimento", "eval_atendimento_pt.py", ["--limite", "100", "--lote", "48", "--chat"],
+    ("atendimento", "eval_atendimento_pt.py", ["--limite", "60", "--lote", "60", "--chat"],
      "docs/atendimento-pt-{tag}.json", None),
     ("codigo", "eval_coder.py", ["--limit", "120", "--lote", "24", "--chat"],
      "comeia/eval/results/coder_{tag}.json", "pass1"),
