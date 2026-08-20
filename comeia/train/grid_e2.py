@@ -57,7 +57,15 @@ PY = sys.executable
 MODELO = "BrCamp/bee-350m-pt-base"
 SAIDA = RAIZ / "docs" / "grid-e2-resultado.json"
 
-LR_ADAPTER = [3e-3, 6e-3, 1.2e-2]
+# 🔴 A PRIMEIRA GRADE DE LoRA FICOU INTEIRA ACIMA DO OTIMO MEDIDO — e 7 dos 15 bracos
+#    morreram. Rodou-se [3e-3, 6e-3, 1.2e-2]; o otimo de LoRA medido NESTE projeto e' 6e-4,
+#    entao a varredura comecou 5x acima dele e subiu ate 20x. A sonda de colapso mostrou:
+#    1,2e-2 matou 4/4, 6e-3 matou 3/4, e a 3e-3 (a borda de BAIXO) tudo sobreviveu.
+#    ⚠️ Pior que perder 46 min de GPU: com o unico LoRA vivo na borda da grade, a comparacao
+#    LoRA x full FT compara full FT perto do otimo DELE contra LoRA a 5x do otimo DELA — que
+#    e' o §2d das licoes (comparar sob regimes de LR diferentes mede o LR, nao a arquitetura).
+OTIMO_LORA_MEDIDO = 6e-4     # medido no SFT do Bee-150M; ver README
+LR_ADAPTER = [3e-4, 6e-4, 1.2e-3]
 LR_FULL = [3e-4, 6e-4, 1.2e-3]
 
 BRACOS = {
@@ -113,11 +121,20 @@ def main() -> int:
                     help="⚠️ batch-size x grad-accum tem de dar 16 em TODOS os bracos, senao "
                          "o grid compara trajetorias de otimizacao diferentes")
     ap.add_argument("--sem-checkpointing", action="store_true")
+    ap.add_argument("--lrs", default="", help="sobrepoe as LRs, ex: 3e-4,6e-4,1.2e-3")
+    ap.add_argument("--tag-sufixo", default="", help="sufixo nas tags, p/ nao sobrescrever runs")
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args()
 
+    if a.lrs:
+        novas = [float(x) for x in a.lrs.split(",") if x.strip()]
+        for k in BRACOS:
+            BRACOS[k]["lrs"] = novas
     chaves = [a.so] if a.so else list(BRACOS)
     runs = [r for k in chaves for r in braco_runs(k)]
+    if a.tag_sufixo:
+        for r in runs:
+            r["tag"] = r["tag"] + a.tag_sufixo
 
     print("=" * 78)
     print(f"GRID DO ESTAGIO 2 — {len(runs)} treinos · modelo {a.model}")
@@ -166,6 +183,22 @@ def main() -> int:
         print(f"🔴 ABORTA: LR de adapter num braco de full FT: {ruins}", file=sys.stderr)
         return 1
     print("  ✅ guarda 3/4: nenhum braco de full FT recebeu LR de adapter")
+
+    # ---- guarda 5: a grade de LoRA tem de CERCAR o otimo medido, nao ficar toda acima dele
+    #      (a guarda 3 checava so' o inverso, e foi por essa fresta que 7 bracos morreram)
+    lrs_lora = sorted({r["lr"] for r in runs if not r["sem_lora"]})
+    if lrs_lora and min(lrs_lora) > OTIMO_LORA_MEDIDO:
+        print(f"🔴 ABORTA: a grade de LoRA {lrs_lora} esta' INTEIRA acima do otimo medido "
+              f"({OTIMO_LORA_MEDIDO:.0e}).", file=sys.stderr)
+        for msg in ("   Nesse regime o LoRA colapsa: medido, 7/15 bracos mortos.",
+                    "   E pior que perder GPU: o que sobrevive fica na BORDA da grade,",
+                    "   entao a comparacao mede o LR e nao a arquitetura (licoes 2d).",
+                    "   Use --lrs para cercar o otimo, ou justifique por escrito."):
+            print(msg, file=sys.stderr)
+        return 2
+    if lrs_lora:
+        print(f"  ✅ guarda 5/5: grade de LoRA {lrs_lora} cerca o otimo medido "
+              f"{OTIMO_LORA_MEDIDO:.0e}")
 
     # ---- guarda 3: quais capacidades este grid NAO consegue discriminar
     print("  ⚠️ guarda 4/4: capacidades sem dado suficiente para o grid discriminar —")
@@ -221,6 +254,12 @@ def main() -> int:
         print(f"   treinado em {resultados[r['tag']]['minutos_treino']} min", flush=True)
 
     SAIDA.parent.mkdir(parents=True, exist_ok=True)
+    if SAIDA.exists():
+        # ⚠️ MESCLAR, nunca sobrescrever: os bracos ja' medidos (inclusive os colapsados, que
+        #    sao o dado que sustenta a guarda 5) precisam sobreviver a uma segunda rodada.
+        antigo = json.loads(SAIDA.read_text(encoding="utf-8")).get("runs", {})
+        antigo.update(feitos)
+        feitos = antigo
     SAIDA.write_text(json.dumps({
         "data": date.today().isoformat(), "modelo": a.model,
         "n_treinos": len(runs), "minutos_totais": round((time.time() - t0) / 60, 1),
