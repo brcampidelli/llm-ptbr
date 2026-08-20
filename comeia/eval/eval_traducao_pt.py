@@ -192,6 +192,15 @@ def main() -> int:
     tok = AutoTokenizer.from_pretrained(a.model)
     if tok.pad_token is None:
         tok.pad_token = tok.eos_token
+    _AQUI = str(Path(__file__).resolve().parent)
+    if _AQUI not in sys.path:
+        sys.path.insert(0, _AQUI)
+    from paradas import ids_de_parada
+    # 🔴 Ver comeia/eval/paradas.py: sem parada, um modelo que APRENDEU a terminar
+    #    gera ate o teto, o caso vira "truncado" e o parser recebe N respostas
+    #    concatenadas. A regua marca 0% justamente no modelo que acertou.
+    PARADAS = ids_de_parada(tok, a.chat)
+    print(f"paradas: {{PARADAS}}")
     tok.padding_side = "left"
     modelo = AutoModelForCausalLM.from_pretrained(a.model, dtype=torch.bfloat16).cuda().eval()
     if a.peft:
@@ -211,6 +220,7 @@ def main() -> int:
         try:
             with torch.no_grad():
                 g = modelo.generate(**ent, max_new_tokens=a.max_new, do_sample=False,
+                                    eos_token_id=PARADAS,
                                     pad_token_id=tok.pad_token_id)
         except torch.OutOfMemoryError:
             torch.cuda.empty_cache()

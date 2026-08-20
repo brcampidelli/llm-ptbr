@@ -137,6 +137,8 @@ def main() -> int:
 
     import torch
     from transformers import AutoModelForCausalLM, AutoTokenizer
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from paradas import ids_de_parada, terminador_correto, limpar
 
     dispositivo = "cuda" if torch.cuda.is_available() else "cpu"
     tok = AutoTokenizer.from_pretrained(args.model)
@@ -158,6 +160,13 @@ def main() -> int:
     print(f"holdout: {len(linhas)} exemplos · {dispositivo}")
     print(f"modo   : {'amostragem k=%d T=%.2f (pass@k)' % (args.k, args.temp) if amostrado else 'greedy (k=1)'}\n")
 
+    PARADAS = ids_de_parada(tok, args.chat)
+    # 🔴 SEM ISTO A REGUA ZERA MODELOS QUE ACERTAM. Ver comeia/eval/paradas.py: o braco full
+    #    FT emitia a chamada exata seguida de <|im_end|>, a geracao nao parava, o caso virava
+    #    "truncado" e o parser recebia cinco chamadas concatenadas -> 0%.
+    print(f"paradas: {PARADAS} (<|im_end|> primeiro = terminador correto)")
+    terminadores: list[bool | None] = []
+
     def gerar(sistema: str | None, usuario: str, k: int) -> list[str]:
         msgs = ([{"role": "system", "content": sistema}] if sistema else []) \
             + [{"role": "user", "content": usuario}]
@@ -173,14 +182,17 @@ def main() -> int:
             txt = (f"{sistema}\n\n" if sistema else "") + f"Usuario: {usuario}\nAssistente:"
         ent = tok(txt, return_tensors="pt").to(dispositivo)
         n = ent["input_ids"].shape[1]
-        cfg = dict(max_new_tokens=args.max_new, pad_token_id=tok.pad_token_id or tok.eos_token_id)
+        cfg = dict(max_new_tokens=args.max_new, eos_token_id=PARADAS,
+                   pad_token_id=tok.pad_token_id or tok.eos_token_id)
         if k > 1:
             cfg.update(do_sample=True, temperature=args.temp, top_p=0.95, num_return_sequences=k)
         else:
             cfg.update(do_sample=False)
         with torch.no_grad():
             g = modelo.generate(**ent, **cfg)
-        return [tok.decode(s[n:], skip_special_tokens=True).strip() for s in g]
+        crus = [tok.decode(s[n:], skip_special_tokens=False) for s in g]
+        terminadores.append(terminador_correto(crus[0]))
+        return [limpar(c) for c in crus]
 
     def gerar_em_lote(rows: list[dict], lote: int) -> list[list[str]]:
         """Gera greedy para TODAS as linhas, em lotes. So' vale para k=1.
@@ -218,6 +230,7 @@ def main() -> int:
             try:
                 with torch.no_grad():
                     g = modelo.generate(**ent, max_new_tokens=args.max_new, do_sample=False,
+                                        eos_token_id=PARADAS,
                                         pad_token_id=tok.pad_token_id or tok.eos_token_id)
             except torch.OutOfMemoryError:
                 torch.cuda.empty_cache()
@@ -228,7 +241,9 @@ def main() -> int:
                 continue
             plen = ent["input_ids"].shape[1]
             for j in range(len(bloco)):
-                fora.append([tok.decode(g[j][plen:], skip_special_tokens=True).strip()])
+                cru = tok.decode(g[j][plen:], skip_special_tokens=False)
+                terminadores.append(terminador_correto(cru))
+                fora.append([limpar(cru)])
             del g
             if dispositivo == "cuda":
                 torch.cuda.empty_cache()
@@ -315,6 +330,13 @@ def main() -> int:
         print(linha("⭐ EXECUTOU E CUMPRIU A TAREFA", exec_ok, n_tool))
     print(linha("under-calling", under, n_tool))
     print(linha("truncado (--max-new)", trunc, n_tool))
+    if terminadores:
+        certo = sum(1 for t in terminadores if t is True)
+        errado = sum(1 for t in terminadores if t is False)
+        nunca = sum(1 for t in terminadores if t is None)
+        print(linha("terminou com <|im_end|> (certo)", certo, len(terminadores)))
+        print(f"  {'terminou com especial ERRADO':34} {errado}/{len(terminadores)}")
+        print(f"  {'nao terminou (foi ao teto)':34} {nunca}/{len(terminadores)}")
     print("-" * 72)
     print(f"CASOS QUE NAO EXIGEM FERRAMENTA: {n_text}")
     print(linha("⚠️ over-calling", over, n_text))
@@ -324,6 +346,10 @@ def main() -> int:
         "n_tool": n_tool, "n_text": n_text, "json_ok": json_ok, "tool_right": tool_right,
         "args_exact": args_exact, "exec_ok": exec_ok if args.k == 1 else None,
         "under_call": under, "truncado": trunc, "over_call": over,
+        "terminador_certo": sum(1 for t in terminadores if t is True),
+        "terminador_errado": sum(1 for t in terminadores if t is False),
+        "terminador_ausente": sum(1 for t in terminadores if t is None),
+        "n_geracoes": len(terminadores),
     }
 
     if amostrado:

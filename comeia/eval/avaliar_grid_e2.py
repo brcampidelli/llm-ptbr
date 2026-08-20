@@ -23,6 +23,19 @@ ponto de partida "melhorou" é opinião (arXiv:2604.08880).
    medidas mas marcadas: nenhum arranjo de adapter cria sinal onde não há dado, e empate nelas
    não é evidência sobre arquitetura.
 
+⭐ POR QUE TODA RÉGUA LEVA `--chat` AQUI, e o baseline NÃO levava.
+
+O `prompt` do SFT normalizado é **lista de mensagens com papéis**, então o TRL aplicou
+`apply_chat_template`: os 15 braços aprenderam ChatML. O modelo base nunca viu `<|im_start|>`
+e foi medido em texto cru. Cada modelo é medido no formato em que foi treinado — que é a
+comparação certa para "o pós-treino ajudou", e não é uma comparação de formato único. Medido
+ao vivo: o adapter de ferramenta sem `--chat` marcava 0/10 em tudo; com `--chat`, emitia a
+chamada correta.
+
+⚠️ `eval_sentimento_pt` mede por verossimilhança e não tem `--chat` — os braços são medidos
+ali no formato do base. Sentimento já está na lista de não-discrimináveis (4 exemplos no SFT
+inteiro), então isso não muda veredito nenhum, mas está dito.
+
 Uso:
     python comeia/eval/avaliar_grid_e2.py --dry-run
     python comeia/eval/avaliar_grid_e2.py
@@ -47,19 +60,19 @@ SAIDA = RAIZ / "docs" / "grid-e2-avaliado.json"
 
 # (capacidade, script, args reduzidos, arquivo de relatorio, chave do numero principal)
 REGUAS = [
-    ("instrucao", "eval_ifeval_pt.py", ["--limite", "150", "--lote", "48"],
+    ("instrucao", "eval_ifeval_pt.py", ["--limite", "150", "--lote", "48", "--chat"],
      "docs/ifeval-pt-{tag}.json", "estrito_instrucao"),
-    ("resumo", "eval_resumo_pt.py", ["--limite", "60", "--lote", "48"],
+    ("resumo", "eval_resumo_pt.py", ["--limite", "60", "--lote", "48", "--chat"],
      "docs/resumo-pt-{tag}.json", "modelo_util"),
-    ("traducao", "eval_traducao_pt.py", ["--limite", "120", "--lote", "48"],
+    ("traducao", "eval_traducao_pt.py", ["--limite", "120", "--lote", "48", "--chat"],
      "docs/traducao-pt-{tag}.json", None),
     ("sentimento", "eval_sentimento_pt.py", ["--limite", "200"],
      "docs/sentimento-pt-{tag}.json", None),
-    ("atendimento", "eval_atendimento_pt.py", ["--limite", "100", "--lote", "48"],
+    ("atendimento", "eval_atendimento_pt.py", ["--limite", "100", "--lote", "48", "--chat"],
      "docs/atendimento-pt-{tag}.json", None),
-    ("codigo", "eval_coder.py", ["--limit", "120", "--lote", "24"],
+    ("codigo", "eval_coder.py", ["--limit", "120", "--lote", "24", "--chat"],
      "comeia/eval/results/coder_{tag}.json", "pass1"),
-    ("agentico", "eval_agentic_exec.py", ["--limit", "0", "--lote", "24"],
+    ("agentico", "eval_agentic_exec.py", ["--limit", "0", "--lote", "24", "--chat"],
      "comeia/eval/results/exec_{tag}.json", None),
 ]
 
