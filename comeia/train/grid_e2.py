@@ -216,7 +216,8 @@ def main() -> int:
             continue
         resultados[r["tag"]] = {"minutos_treino": round((time.time() - t) / 60, 1),
                                 "adapter": str(COMEIA / "models" / r["tag"]),
-                                "lr": r["lr"], "braco": r["braco"], "parte": r["parte"]}
+                                "lr": r["lr"], "braco": r["braco"], "parte": r["parte"],
+                                "sem_lora": r["sem_lora"]}
         print(f"   treinado em {resultados[r['tag']]['minutos_treino']} min", flush=True)
 
     SAIDA.parent.mkdir(parents=True, exist_ok=True)

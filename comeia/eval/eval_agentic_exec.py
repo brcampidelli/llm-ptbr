@@ -82,6 +82,7 @@ def main() -> int:
 
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", default="BrCamp/bee-350m-pt-base")
+    ap.add_argument("--peft", default=None, help="adapter LoRA opcional")
     ap.add_argument("--data", type=Path, default=PADRAO_EVAL)
     ap.add_argument("--k", type=int, default=1, help="amostras por exemplo (k>1 liga pass@k)")
     ap.add_argument("--temp", type=float, default=0.8, help="so usado quando k>1")
@@ -142,6 +143,9 @@ def main() -> int:
     if tok.pad_token is None:
         tok.pad_token = tok.eos_token
     modelo = AutoModelForCausalLM.from_pretrained(args.model, dtype=torch.bfloat16).to(dispositivo)
+    if args.peft:
+        from peft import PeftModel
+        modelo = PeftModel.from_pretrained(modelo, args.peft)
     modelo.eval()
 
     amostrado = args.k > 1
@@ -150,6 +154,7 @@ def main() -> int:
     #    era `bee-150m-pt-sft`: contem "bee", passa em qualquer guarda de nome, e mediria o
     #    modelo da geracao anterior sem que uma linha do relatorio denunciasse.
     print(f"modelo : {args.model}  ({n_par / 1e6:.1f}M parametros)")
+    print(f"adapter: {args.peft or '(base, sem adapter)'}")
     print(f"holdout: {len(linhas)} exemplos · {dispositivo}")
     print(f"modo   : {'amostragem k=%d T=%.2f (pass@k)' % (args.k, args.temp) if amostrado else 'greedy (k=1)'}\n")
 
@@ -315,7 +320,7 @@ def main() -> int:
     print(linha("⚠️ over-calling", over, n_text))
 
     resultado = {
-        "modelo": args.model, "k": args.k, "temp": args.temp if amostrado else None,
+        "modelo": args.model, "peft": args.peft, "k": args.k, "temp": args.temp if amostrado else None,
         "n_tool": n_tool, "n_text": n_text, "json_ok": json_ok, "tool_right": tool_right,
         "args_exact": args_exact, "exec_ok": exec_ok if args.k == 1 else None,
         "under_call": under, "truncado": trunc, "over_call": over,
