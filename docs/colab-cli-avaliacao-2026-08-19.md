@@ -103,9 +103,60 @@ medição a fazer**, e custa poucos minutos de uma sessão T4.
 
 ---
 
+## 3-bis. 🔴 MEDIDO AO VIVO — e o resultado inverte a recomendação
+
+Depois que a autenticação foi feita, testei de ponta a ponta. **A CLI funciona; a conta é que
+não tem o que ela precisa.**
+
+### 3-bis.1 O caminho funciona — em 25,5 segundos
+
+`colab run --gpu T4 sonda.py` provisionou a VM, rodou um script **local**, imprimiu a saída e
+**derrubou a VM sozinho**, tudo em 25,5 s de relógio. O que veio:
+
+| | |
+|---|---|
+| GPU | **Tesla T4 · 15.360 MiB · limite de 70 W · sm_75** |
+| software | Python 3.12.13 · **torch 2.11.0+cu128 já instalado** |
+| máquina | 2 vCPUs · 12,7 GB RAM |
+
+⚠️ **`sm_75` é Turing e NÃO suporta bf16** — e todo o treino do Bee é bf16. A T4 sozinha já
+não serve para o E2. E 70 W de limite, contra os 600 W da 5090 medidos neste projeto, diz o
+resto pela regra do TDP.
+
+### 3-bis.2 🔴 Todos os aceleradores úteis foram RECUSADOS
+
+Testei os quatro que a CLI aceita além da T4. **Os quatro voltaram a mesma resposta, em ~2,5 s
+cada e a custo zero:**
+
+> `Backend rejected accelerator 'L4'. **You may not have quota or entitlement for this
+> accelerator on your account.**`
+
+| acelerador | resultado |
+|---|---|
+| T4 | ✅ funciona |
+| L4 | 🔴 recusado |
+| A100 | 🔴 recusado |
+| H100 | 🔴 recusado |
+| G4 (RTX PRO 6000, 96 GB) | 🔴 recusado |
+
+### 3-bis.3 A causa, confirmada na página de preços
+
+> **"No momento, você tem 0 unidades de computação."**
+
+E o próprio card do Pro+ condiciona tudo a isso: *"**Com unidades de computação**, o notebook
+continua em execução por até 24 horas"*, e as GPUs premium estão *"sujeitas à disponibilidade
+**e ao saldo de unidades de computação**"*.
+
+🔴 **O quadro atual, em uma frase: a assinatura Pro+ está ativa e sendo cobrada em R$ 258/mês,
+o saldo de unidades é ZERO, e o que sobra é uma T4 sem bf16 — que não serve para este
+projeto.** As unidades expiram em 90 dias; ou foram consumidas, ou expiraram, ou a concessão
+mensal não entrou. **Isso é para o Bruno verificar na conta** — não é diagnóstico que eu possa
+fechar de fora, e mexer em cobrança não é minha alçada.
+
 ## 4. Recomendação
 
-**Manter os dois, com divisão por tipo de carga — não escolher um.**
+**A recomendação por tipo de carga continua válida em tese — mas está BLOQUEADA na prática
+enquanto o saldo for zero.** Com 0 unidades não há L4, A100, H100 nem G4, e a T4 não faz bf16.
 
 | carga | onde | por quê |
 |---|---|---|
