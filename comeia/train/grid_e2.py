@@ -15,9 +15,14 @@ dado e para avaliação, não para GPU.
 
 **Eixo B — LR, cada braço no ótimo dele.** Rodar todos no mesmo LR é o confundimento que o
 lote PEFT do estudo apontou: parte dos −5,9 pp medidos em 151M pode ter sido artefato de LR
-mal transferido, e isso precisa ser separado antes de virar teoria. Adapter em
-{3e-3, 6e-3, 1,2e-2} (regra dos 10× sobre o 6e-4 medido em full FT) e full FT em
-{3e-4, 6e-4, 1,2e-3}.
+mal transferido, e isso precisa ser separado antes de virar teoria.
+
+🔴 **A primeira versão errou justamente aqui.** Adapter foi varrido em {3e-3, 6e-3, 1,2e-2},
+   por uma "regra dos 10×" sobre o 6e-4 de full FT — uma regra de bolso, não uma medição. O
+   ótimo de LoRA **medido neste projeto** é 6e-4, e a grade inteira ficou de 5× a 20× acima
+   dele: **7 dos 15 braços divergiram** (loss 2,2 → 7,27) e só geravam quebra de linha. Agora
+   ambos os eixos usam {3e-4, 6e-4, 1,2e-3}, cercando o ótimo medido, e a guarda 5 aborta se
+   a grade de adapter ficar toda de um lado dele.
 
 🔴 UMA RESSALVA QUE O CENSO POR EXEMPLO TORNOU CONCRETA, E QUE MUDA O QUE ESTE GRID PODE
    RESPONDER. A mistura atual dá a quatro das oito capacidades-alvo menos de 1,5% do
@@ -92,6 +97,52 @@ AMOSTRA = [
 
 # capacidades sem dado suficiente para o grid discriminar — medidas, mas nao usadas no veredito
 SEM_DADO = {"sentimento": 4, "atendimento": 92, "resumo": 135, "traducao": 124}
+
+
+def loss_do_treino(diretorio) -> tuple[int, float, float] | None:
+    """(passos, loss inicial, loss final) do `trainer_state.json` do ultimo checkpoint.
+
+    🔴 POR QUE ISTO EXISTE. O primeiro grid fechou 15 treinos e imprimiu "com erro: nenhum".
+    Estava certo — nenhum PROCESSO falhou. Mas 7 dos 15 tinham divergido: a loss subia de 2,2
+    para 7,27 e o adapter so' gerava quebra de linha. Isso foi descoberto horas depois, com
+    uma sonda de geracao e GPU paga, quando o numero ja' estava no disco desde o fim do run.
+
+    ⭐ "Terminou sem erro" nao e' "treinou". Um treino que diverge sai com codigo 0, grava os
+    pesos e escreve um relatorio bonito.
+    """
+    from pathlib import Path as _P
+    estados = sorted(_P(diretorio).glob("checkpoint-*/trainer_state.json"))
+    if not estados:
+        return None
+    try:
+        st = json.loads(estados[-1].read_text(encoding="utf-8"))
+        h = [x for x in st.get("log_history", []) if "loss" in x]
+        return (st.get("global_step", 0), h[0]["loss"], h[-1]["loss"]) if h else None
+    except (json.JSONDecodeError, KeyError, IndexError):
+        return None
+
+
+def entradas_do_disco() -> dict:
+    """Reconstroi as entradas do JSON a partir de `comeia/models/e2-*` que existam.
+
+    ⚠️ Reparo, e a razao de precisar dele: um NameError no bloco de mesclagem abortou a
+    gravacao DEPOIS de treinar. Os pesos estavam salvos e a contabilidade nao — e sonda e
+    avaliador leem a contabilidade, entao 3 adapters treinados ficariam invisiveis. O nome da
+    pasta carrega braco, parte e LR, entao a contabilidade e' reconstruivel sem retreinar.
+    """
+    fora = {}
+    for d in sorted((COMEIA / "models").glob("e2-*")):
+        if not d.is_dir():
+            continue
+        partes = d.name.split("-")
+        if len(partes) < 4 or not partes[-1].startswith("lr"):
+            continue
+        lr = float(partes[-1][2:].replace("p", "."))
+        fora[d.name] = {"adapter": str(d), "lr": lr, "braco": partes[1],
+                        "parte": "-".join(partes[2:-1]),
+                        "sem_lora": not (d / "adapter_config.json").exists(),
+                        "minutos_treino": None, "reconstruido_do_disco": True}
+    return fora
 
 
 def braco_runs(chave: str) -> list[dict]:
@@ -253,13 +304,40 @@ def main() -> int:
                                 "sem_lora": r["sem_lora"]}
         print(f"   treinado em {resultados[r['tag']]['minutos_treino']} min", flush=True)
 
+    print()
+    print("loss por braco (inicio -> fim; SUBIR = divergiu):")
+    divergiram = []
+    for tag in sorted(resultados):
+        if "erro" in resultados[tag]:
+            continue
+        L = loss_do_treino(resultados[tag]["adapter"])
+        if L is None:
+            print(f"  ?  {tag:30} sem trainer_state")
+            continue
+        passos, ini, fim = L
+        ruim = (fim >= ini) or (fim != fim)      # fim != fim pega NaN
+        if ruim:
+            divergiram.append(tag)
+        print(f"  {'🔴' if ruim else '✅'} {tag:30} {passos:>4} passos | "
+              f"{ini:.4f} -> {fim:.4f}")
+        resultados[tag].update(loss_inicio=ini, loss_fim=fim, divergiu=bool(ruim))
+    if divergiram:
+        print()
+        print(f"🔴 {len(divergiram)} braco(s) DIVERGIRAM e mesmo assim sairam com codigo 0:")
+        print(f"   {divergiram}")
+        print("   Nao avalie estes: 0% ali e' modelo morto, nao arquitetura ruim.")
+
     SAIDA.parent.mkdir(parents=True, exist_ok=True)
     if SAIDA.exists():
         # ⚠️ MESCLAR, nunca sobrescrever: os bracos ja' medidos (inclusive os colapsados, que
         #    sao o dado que sustenta a guarda 5) precisam sobreviver a uma segunda rodada.
         antigo = json.loads(SAIDA.read_text(encoding="utf-8")).get("runs", {})
-        antigo.update(feitos)
-        feitos = antigo
+        antigo.update(resultados)
+        resultados = antigo
+    # ⚠️ tudo que estiver em disco e faltar no JSON entra aqui: e' exatamente o buraco que um
+    #    erro NESTE bloco abriu uma vez, treinando 3 adapters que ninguem depois enxergou.
+    for tag, ent in entradas_do_disco().items():
+        resultados.setdefault(tag, ent)
     SAIDA.write_text(json.dumps({
         "data": date.today().isoformat(), "modelo": a.model,
         "n_treinos": len(runs), "minutos_totais": round((time.time() - t0) / 60, 1),
