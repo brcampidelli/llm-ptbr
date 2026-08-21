@@ -231,7 +231,7 @@ def main() -> int:
         print("🔴 OPENROUTER_API_KEY nao encontrada (ambiente nem .env)", file=sys.stderr)
         return 1
 
-    linhas = [json.loads(l) for l in a.entrada.read_text(encoding="utf-8").split(chr(10))]
+    linhas = [json.loads(l) for l in a.entrada.read_text(encoding="utf-8").split(chr(10)) if l.strip()]
     # ⭐ RETOMADA: o free tier e' limitado por minuto, e este job leva horas. Reprocessar o
     #    que ja' foi feito seria desperdicio E mudaria as recusas ja' aceitas.
     feitos = set()
