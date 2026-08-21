@@ -62,10 +62,24 @@ TEACHERS = ["openai/gpt-oss-120b", "google/gemma-4-31b-it"]
 RX_FERR = re.compile(r"^- ([a-zA-Z0-9_]+):", re.M)
 RX_CHAMADA = re.compile(r'\{\s*"tool"|<tool_call>|"arguments"\s*:')
 # marcas de portugues; ausencia total = provavelmente o teacher respondeu em ingles
+# 🔴 A PRIMEIRA VERSAO REPROVOU 19,6% e boa parte era dado BOM. A auditoria (que so' foi
+#    possivel depois de passar a gravar os rejeitados) mostrou os dois lados:
+#      falso positivo: "nao esta' entre as funcoes", "nao possuo", "nao tem nada pra",
+#                      "nao pode ser realizado" — e, o pior, "Nao E' possivel", porque o
+#                      padrao trazia `e possivel` SEM ACENTO e nao casava com "e'".
+#      acerto real   : "Posso gerar esse QR usando a ferramenta generate_qrcode" — o teacher
+#                      alucinou a ferramenta REMOVIDA como disponivel.
+#    Guarda estreita demais nao e' "conservadora": ela descarta dado bom em silencio, e o
+#    unico jeito de saber era guardar o que foi reprovado.
 RX_NEGA = re.compile(
-    r"(n[aã]o (consigo|posso|tenho|e[' ]?\s?poss[ií]vel|da[' ]?\s?para|disponho|encontrei)"
-    r"|infelizmente|fora do meu alcance|n[aã]o est[aá] dispon[ií]vel|nenhuma (das )?ferramenta"
-    r"|sem ferramenta|n[aã]o h[aá] ferramenta|impossibilitad)", re.I)
+    r"(n[aã]o (consigo|posso|tenho|possuo|disponho|encontrei|h[aá]|existe|d[aá]|deu)"
+    r"|n[aã]o [eé][' ]?\s?poss[ií]vel"
+    r"|n[aã]o (est[aá]|estao|est[aã]o) (entre|dispon[ií]ve|na lista|no meu|ao meu)"
+    r"|n[aã]o (pode|podem|poderia) ser"
+    r"|n[aã]o tem nada|n[aã]o h[aá] (nenhuma|ferramenta|como)"
+    r"|nenhuma (das )?ferramenta|sem ferramenta|fora do (meu|que)"
+    r"|infelizmente|lamento|sinto muito|impossibilitad|indispon[ií]ve)", re.I)
+
 RX_PT = re.compile(r"\b(não|nao|com|para|que|você|voce|posso|consigo|ferramenta)\b", re.I)
 
 
@@ -214,6 +228,7 @@ def main() -> int:
 
     motivos, aceitos, t0 = Counter(), [], time.time()
     saida_f = None if a.amostra else a.saida.open("a", encoding="utf-8")
+    rejeitos_f = (a.saida.parent / "recusas_rejeitadas.jsonl").open("a", encoding="utf-8")
     try:
         for i, d in enumerate(pendentes):
             sistema = d["messages"][0]["content"]
@@ -233,6 +248,15 @@ def main() -> int:
             motivo = valida(r, nomes, d["ferramenta_removida"])
             if motivo:
                 motivos[motivo] += 1
+                # ⚠️ REJEITADO TAMBEM E' DADO. Sem guardar o texto nao ha' como saber se a
+                #    guarda reprovou lixo ou se ela esta' estreita demais — e "19,6% reprovados
+                #    por nao_contem_recusa" e' exatamente o tipo de numero que pode significar
+                #    as duas coisas opostas.
+                if rejeitos_f:
+                    rejeitos_f.write(json.dumps(
+                        {"motivo": motivo, "teacher": teacher, "texto": r.strip()[:600],
+                         "removida": d["ferramenta_removida"]}, ensure_ascii=False) + chr(10))
+                    rejeitos_f.flush()
                 continue
             reg = dict(d)
             reg["messages"] = [d["messages"][0], d["messages"][1],
@@ -254,6 +278,7 @@ def main() -> int:
     finally:
         if saida_f:
             saida_f.close()
+        rejeitos_f.close()
 
     print(f"\nresultado ({sum(motivos.values())} tentativas):")
     for m, c in motivos.most_common():
