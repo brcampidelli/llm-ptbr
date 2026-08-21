@@ -237,6 +237,8 @@ def main() -> int:
     feitos = set()
     if a.saida.exists():
         for l in a.saida.read_text(encoding="utf-8").split(chr(10)):
+            if not l.strip():
+                continue
             d = json.loads(l)
             feitos.add(d["messages"][1]["content"] + "|" + d["ferramenta_removida"])
         print(f"retomando: {len(feitos):,} ja' gravados")

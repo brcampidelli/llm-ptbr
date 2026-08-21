@@ -161,6 +161,8 @@ def main() -> int:
     dialogos = []
     catalogo_global: dict[str, str] = {}
     for linha in a.entrada.read_text(encoding="utf-8").split(chr(10)):
+        if not linha.strip():
+            continue
         d = json.loads(linha)
         if d.get("kind") != "tool_call":
             continue
