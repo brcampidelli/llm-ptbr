@@ -1,0 +1,42 @@
+{
+ "ngram": 13,
+ "n_ngramas_proibidos": 307266,
+ "resultado": {
+  "gigaverbo_translation": {
+   "antes": 41647,
+   "limpo": 41647,
+   "contaminado": 0,
+   "pct": 0.0
+  },
+  "gigaverbo_structured": {
+   "antes": 123469,
+   "limpo": 123469,
+   "contaminado": 0,
+   "pct": 0.0
+  },
+  "gigaverbo_code": {
+   "antes": 34856,
+   "limpo": 34856,
+   "contaminado": 0,
+   "pct": 0.0
+  },
+  "gigaverbo_summarization": {
+   "antes": 40267,
+   "limpo": 40267,
+   "contaminado": 0,
+   "pct": 0.0
+  },
+  "gigaverbo_ferramenta": {
+   "antes": 14003,
+   "limpo": 14003,
+   "contaminado": 0,
+   "pct": 0.0
+  },
+  "negativos_com_recusa": {
+   "antes": 7220,
+   "limpo": 7220,
+   "contaminado": 0,
+   "pct": 0.0
+  }
+ }
+}
