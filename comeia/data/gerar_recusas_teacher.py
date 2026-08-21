@@ -44,7 +44,21 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 ENTRADA = RAIZ / "comeia" / "data" / "processed" / "negativos_masking.jsonl"
 SAIDA = RAIZ / "comeia" / "data" / "processed" / "negativos_com_recusa.jsonl"
 
-TEACHERS = ["nvidia/nemotron-3-ultra-550b-a55b:free", "openai/gpt-oss-20b:free"]
+# 🔴 OS MODELOS `:free` TEM TETO DIARIO DE 1.000 CHAMADAS somado em TODOS eles
+# (`free-models-per-day-high-balance`). A 70% de aceitacao, os ~9.800 negativos levariam
+# ~14 dias. A conta ja' tinha saldo, e modelo PAGO nao tem esse teto: 14 mil chamadas custam
+# ~US$ 1. O teto nao era de dinheiro, era de plano — e custou meio dia para ser diagnosticado
+# porque o sintoma foi "o arquivo parou de crescer", que se parece com travamento.
+#
+# ⚠️ DOIS DOS QUATRO CANDIDATOS TESTADOS VAZARAM A CADEIA DE PENSAMENTO como conteudo:
+#   nemotron-3-super : "Okay, the user is asking for a QR code... Let me check the tools."
+#   qwen3.5-9b       : "Thinking Process: 1. Analyze the Request..."
+# A guarda de idioma pega (nao ha marca de portugues), mas rejeitar metade das chamadas de um
+# teacher e' desperdicio. Escolher teacher por TESTE na tarefa real, nao por tamanho.
+#
+# O par ficou com duas familias distintas — e os positivos do gigaverbo sao TODOS Qwen, entao
+# usar nao-Qwen nas recusas adiciona diversidade onde ela falta.
+TEACHERS = ["openai/gpt-oss-120b", "google/gemma-4-31b-it"]
 RX_FERR = re.compile(r"^- ([a-zA-Z0-9_]+):", re.M)
 RX_CHAMADA = re.compile(r'\{\s*"tool"|<tool_call>|"arguments"\s*:')
 # marcas de portugues; ausencia total = provavelmente o teacher respondeu em ingles
