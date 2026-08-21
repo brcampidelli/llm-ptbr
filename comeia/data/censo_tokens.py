@@ -116,7 +116,7 @@ def main() -> int:
         #    exemplo vira 100% mascarado. O TRL descarta esses SEM ERRO (licoes §2b: foi
         #    assim que 150 de 150 exemplos agenticos sumiram em silencio no Bee-150M).
         estoura, prompt_ja_estoura, compl_perdida = 0, 0, 0
-        for linha in p.read_text(encoding="utf-8").splitlines():
+        for linha in p.read_text(encoding="utf-8").split(chr(10)):
             linha = linha.strip()
             if not linha:
                 continue

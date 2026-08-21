@@ -40,7 +40,7 @@ DADOS = Path(__file__).resolve().parent / "benchmarks" / "resumo_pt.jsonl"
 
 
 def carregar() -> list[dict]:
-    return [json.loads(l) for l in DADOS.read_text(encoding="utf-8").splitlines() if l.strip()]
+    return [json.loads(l) for l in DADOS.read_text(encoding="utf-8").split(chr(10)) if l.strip()]
 
 
 # ---------------------------------------------------------------- unidades isoladas

@@ -172,7 +172,7 @@ def main() -> int:
         if a.preparar:
             return 0
 
-    itens = [json.loads(l) for l in DADOS.read_text(encoding="utf-8").splitlines() if l.strip()]
+    itens = [json.loads(l) for l in DADOS.read_text(encoding="utf-8").split(chr(10)) if l.strip()]
     if a.limite:
         itens = itens[:a.limite]
     print(f"dados : {DADOS.name} · {len(itens)} itens")

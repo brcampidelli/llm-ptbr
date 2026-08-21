@@ -1,0 +1,22 @@
+{
+ "translation": {
+  "antes": 41647,
+  "descartados_por_tamanho": 0,
+  "final": 41647
+ },
+ "structured": {
+  "antes": 123469,
+  "descartados_por_tamanho": 0,
+  "final": 123469
+ },
+ "code": {
+  "antes": 35528,
+  "descartados_por_tamanho": 652,
+  "final": 34876
+ },
+ "summarization": {
+  "antes": 40296,
+  "descartados_por_tamanho": 28,
+  "final": 40268
+ }
+}

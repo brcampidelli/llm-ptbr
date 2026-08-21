@@ -213,7 +213,7 @@ def main() -> int:
         print(f"🔴 ABORTA: {a.dados} nao existe.", file=sys.stderr)
         return 1
 
-    itens = [json.loads(l) for l in a.dados.read_text(encoding="utf-8").splitlines() if l.strip()]
+    itens = [json.loads(l) for l in a.dados.read_text(encoding="utf-8").split(chr(10)) if l.strip()]
     print("=" * 78)
     print("VALIDACAO DO IFEval-PT — todo prompt tem de ser SATISFAZIVEL")
     print("=" * 78)

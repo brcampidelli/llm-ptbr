@@ -102,7 +102,7 @@ def load_seeds(path: Path) -> list[str]:
             if s:
                 seeds.append(s.strip())
         return seeds
-    return [l.strip() for l in path.read_text(encoding="utf-8").splitlines() if l.strip()]
+    return [l.strip() for l in path.read_text(encoding="utf-8").split(chr(10)) if l.strip()]
 
 
 def call_teacher(

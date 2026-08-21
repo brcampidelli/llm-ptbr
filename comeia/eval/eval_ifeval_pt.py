@@ -183,7 +183,7 @@ def main() -> int:
     ap.add_argument("--tag", default="")
     a = ap.parse_args()
 
-    itens = [json.loads(l) for l in a.dados.read_text(encoding="utf-8").splitlines() if l.strip()]
+    itens = [json.loads(l) for l in a.dados.read_text(encoding="utf-8").split(chr(10)) if l.strip()]
     if a.limite:
         itens = itens[:a.limite]
 

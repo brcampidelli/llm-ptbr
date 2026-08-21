@@ -39,6 +39,14 @@ import time
 from collections import Counter
 from pathlib import Path
 
+# 🔴 NAO USE splitlines() PARA LER JSONL. `json.dumps` NAO escapa U+2028 (LINE
+#    SEPARATOR) nem U+2029 (PARAGRAPH SEPARATOR) — sao legais dentro de string JSON —
+#    mas `str.splitlines()` do Python os trata como quebra de linha e PARTE o registro
+#    ao meio. Medido: 2 ocorrencias em 35.528 registros de codigo bastaram para
+#    35.528 virarem 35.530 fragmentos, dois deles JSON invalido. Aqui deu erro alto;
+#    com um try/except em volta teria virado registro descartado em silencio.
+#    `split(chr(10))` e a iteracao do proprio arquivo quebram SO em quebra de linha de verdade.
+
 RAIZ = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 ENTRADA = RAIZ / "comeia" / "data" / "processed" / "negativos_masking.jsonl"
@@ -156,7 +164,7 @@ def chave_openrouter() -> str:
         return k
     env = RAIZ / ".env"
     if env.exists():
-        for l in env.read_text(encoding="utf-8").splitlines():
+        for l in env.read_text(encoding="utf-8").split(chr(10)):
             if l.startswith("OPENROUTER_API_KEY="):
                 return l.split("=", 1)[1].strip()
     return ""
@@ -223,12 +231,12 @@ def main() -> int:
         print("🔴 OPENROUTER_API_KEY nao encontrada (ambiente nem .env)", file=sys.stderr)
         return 1
 
-    linhas = [json.loads(l) for l in a.entrada.read_text(encoding="utf-8").splitlines()]
+    linhas = [json.loads(l) for l in a.entrada.read_text(encoding="utf-8").split(chr(10))]
     # ⭐ RETOMADA: o free tier e' limitado por minuto, e este job leva horas. Reprocessar o
     #    que ja' foi feito seria desperdicio E mudaria as recusas ja' aceitas.
     feitos = set()
     if a.saida.exists():
-        for l in a.saida.read_text(encoding="utf-8").splitlines():
+        for l in a.saida.read_text(encoding="utf-8").split(chr(10)):
             d = json.loads(l)
             feitos.add(d["messages"][1]["content"] + "|" + d["ferramenta_removida"])
         print(f"retomando: {len(feitos):,} ja' gravados")

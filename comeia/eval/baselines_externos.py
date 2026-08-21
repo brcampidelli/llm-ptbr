@@ -86,7 +86,7 @@ def rodar_sentimento(limite: int) -> int:
     from transformers import pipeline
     from eval_sentimento_pt import ablacoes, lexico, lexico_com, relatar
 
-    itens = [json.loads(l) for l in SENT_DADOS.read_text(encoding="utf-8").splitlines()
+    itens = [json.loads(l) for l in SENT_DADOS.read_text(encoding="utf-8").split(chr(10))
              if l.strip()]
     if limite:
         itens = itens[:limite]
@@ -164,7 +164,7 @@ def rodar_traducao(limite: int) -> int:
     from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
     from eval_traducao_pt import pontuar
 
-    itens = [json.loads(l) for l in TRAD_DADOS.read_text(encoding="utf-8").splitlines()
+    itens = [json.loads(l) for l in TRAD_DADOS.read_text(encoding="utf-8").split(chr(10))
              if l.strip()]
     if limite:
         itens = itens[:limite]

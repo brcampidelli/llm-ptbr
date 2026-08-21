@@ -149,7 +149,7 @@ def main() -> int:
         print(f"🔴 {a.dados.name} nao existe. Rode comeia/eval/preparar_sentimento_pt.py.",
               file=sys.stderr)
         return 1
-    itens = [json.loads(l) for l in a.dados.read_text(encoding="utf-8").splitlines() if l.strip()]
+    itens = [json.loads(l) for l in a.dados.read_text(encoding="utf-8").split(chr(10)) if l.strip()]
     if a.limite:
         itens = itens[:a.limite]
 

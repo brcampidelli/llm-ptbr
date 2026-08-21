@@ -137,7 +137,7 @@ def load_seeds(path: Path) -> list[str]:
     if path.suffix == ".jsonl":
         return [(r.get("prompt") or r.get("instruction") or "").strip()
                 for r in read_jsonl(path) if (r.get("prompt") or r.get("instruction"))]
-    return [l.strip() for l in path.read_text(encoding="utf-8").splitlines() if l.strip()]
+    return [l.strip() for l in path.read_text(encoding="utf-8").split(chr(10)) if l.strip()]
 
 
 def main() -> int:

@@ -66,7 +66,7 @@ def main() -> int:
         if not caminho.exists():
             print("  arquivo ausente")
             continue
-        regs = [json.loads(l) for l in caminho.read_text(encoding="utf-8").splitlines()
+        regs = [json.loads(l) for l in caminho.read_text(encoding="utf-8").split(chr(10))
                 if l.strip()][:a.n]
         print(f"  chaves do dado: {list(regs[0])[:8]}")
         for r in regs:

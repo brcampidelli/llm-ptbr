@@ -1,0 +1,30 @@
+{
+ "translation": {
+  "bruto": 45204,
+  "pos_score": 41694,
+  "final": 41647,
+  "redundancia_pct": 0.1,
+  "acima_2048": 0
+ },
+ "structured": {
+  "bruto": 163542,
+  "pos_score": 123469,
+  "final": 123469,
+  "redundancia_pct": 0.0,
+  "acima_2048": 0
+ },
+ "code": {
+  "bruto": 80774,
+  "pos_score": 35717,
+  "final": 35528,
+  "redundancia_pct": 0.5,
+  "acima_2048": 0
+ },
+ "summarization": {
+  "bruto": 128669,
+  "pos_score": 40296,
+  "final": 40296,
+  "redundancia_pct": 0.0,
+  "acima_2048": 0
+ }
+}

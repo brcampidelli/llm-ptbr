@@ -46,6 +46,14 @@ import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 
+# 🔴 NAO USE splitlines() PARA LER JSONL. `json.dumps` NAO escapa U+2028 (LINE
+#    SEPARATOR) nem U+2029 (PARAGRAPH SEPARATOR) — sao legais dentro de string JSON —
+#    mas `str.splitlines()` do Python os trata como quebra de linha e PARTE o registro
+#    ao meio. Medido: 2 ocorrencias em 35.528 registros de codigo bastaram para
+#    35.528 virarem 35.530 fragmentos, dois deles JSON invalido. Aqui deu erro alto;
+#    com um try/except em volta teria virado registro descartado em silencio.
+#    `split(chr(10))` e a iteracao do proprio arquivo quebram SO em quebra de linha de verdade.
+
 RAIZ = Path(__file__).resolve().parent.parent.parent
 ENTRADA = RAIZ / "comeia" / "data" / "processed" / "gigaverbo_ferramenta.jsonl"
 SAIDA = RAIZ / "comeia" / "data" / "processed" / "negativos_masking.jsonl"
@@ -152,7 +160,7 @@ def main() -> int:
 
     dialogos = []
     catalogo_global: dict[str, str] = {}
-    for linha in a.entrada.read_text(encoding="utf-8").splitlines():
+    for linha in a.entrada.read_text(encoding="utf-8").split(chr(10)):
         d = json.loads(linha)
         if d.get("kind") != "tool_call":
             continue

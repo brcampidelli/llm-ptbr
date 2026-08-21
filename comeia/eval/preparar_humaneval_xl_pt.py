@@ -67,7 +67,7 @@ def main() -> int:
         print(f'   curl -sS -A "curl/8.5.0" -o {BRUTO} {FONTE}', file=sys.stderr)
         return 1
 
-    brutos = [json.loads(l) for l in BRUTO.read_text(encoding="utf-8").splitlines() if l.strip()]
+    brutos = [json.loads(l) for l in BRUTO.read_text(encoding="utf-8").split(chr(10)) if l.strip()]
     itens = [converter(b) for b in brutos]
 
     print("=" * 78)

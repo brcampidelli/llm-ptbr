@@ -49,7 +49,7 @@ def main() -> int:
     ap.add_argument("--tarefas", type=Path, default=TAREFAS)
     a = ap.parse_args()
 
-    itens = [json.loads(l) for l in a.tarefas.read_text(encoding="utf-8").splitlines()
+    itens = [json.loads(l) for l in a.tarefas.read_text(encoding="utf-8").split(chr(10))
              if l.strip()]
     if a.limite:
         itens = itens[:a.limite]

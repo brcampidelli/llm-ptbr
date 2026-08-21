@@ -525,7 +525,7 @@ def main() -> int:
     parcial.parent.mkdir(parents=True, exist_ok=True)
     feitos: dict[str, dict] = {}
     if parcial.exists():
-        for linha in parcial.read_text(encoding="utf-8").splitlines():
+        for linha in parcial.read_text(encoding="utf-8").split(chr(10)):
             if linha.strip():
                 r = json.loads(linha)
                 # so' aproveita quem foi medido com o MESMO n de amostras — parcial de um

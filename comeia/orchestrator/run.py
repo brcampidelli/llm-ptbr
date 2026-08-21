@@ -56,7 +56,7 @@ def load_batch(path: Path) -> list[str]:
             if q:
                 out.append(q.strip())
         return out
-    return [l.strip() for l in path.read_text(encoding="utf-8").splitlines() if l.strip()]
+    return [l.strip() for l in path.read_text(encoding="utf-8").split(chr(10)) if l.strip()]
 
 
 def main() -> int:

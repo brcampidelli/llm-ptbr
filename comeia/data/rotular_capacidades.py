@@ -160,7 +160,7 @@ def main() -> int:
                     help="grava sft_grupo_{texto,ferramenta,simbolico}.jsonl")
     a = ap.parse_args()
 
-    regs = [json.loads(l) for l in a.entrada.read_text(encoding="utf-8").splitlines()
+    regs = [json.loads(l) for l in a.entrada.read_text(encoding="utf-8").split(chr(10))
             if l.strip()]
 
     # `tokenizers` em vez de `transformers`: contar token nao precisa de torch (mesma escolha

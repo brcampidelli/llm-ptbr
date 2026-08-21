@@ -184,12 +184,12 @@ def main() -> int:
     random.seed(args.seed)
 
     tools = json.loads(TOOLS_FILE.read_text(encoding="utf-8-sig"))["tools"]
-    base = [l.strip() for l in SEEDS_BASE.read_text(encoding="utf-8").splitlines() if l.strip()]
+    base = [l.strip() for l in SEEDS_BASE.read_text(encoding="utf-8").split(chr(10)) if l.strip()]
 
     # retomada: se ja existe saida, parte dela (ja contem as originais)
     start = base
     if args.out.exists():
-        prev = [l.strip() for l in args.out.read_text(encoding="utf-8").splitlines() if l.strip()]
+        prev = [l.strip() for l in args.out.read_text(encoding="utf-8").split(chr(10)) if l.strip()]
         if len(prev) >= len(base):
             start = prev
             print(f"[retomada] partindo de {len(prev)} sementes existentes")
