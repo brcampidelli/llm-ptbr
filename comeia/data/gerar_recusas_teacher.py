@@ -58,7 +58,23 @@ SAIDA = RAIZ / "comeia" / "data" / "processed" / "negativos_com_recusa.jsonl"
 #
 # O par ficou com duas familias distintas — e os positivos do gigaverbo sao TODOS Qwen, entao
 # usar nao-Qwen nas recusas adiciona diversidade onde ela falta.
-TEACHERS = ["openai/gpt-oss-120b", "google/gemma-4-31b-it"]
+# ⭐ TRES FAMILIAS, e todas com licenca VERIFICADA NA ORIGEM (nao no rotulo do agregador):
+#    gpt-oss-120b (Apache-2.0) · gemma-4-31b (Google) · mistral-nemo (Apache-2.0).
+#    Os positivos do gigaverbo sao 100% Qwen, entao a diversidade das recusas e' onde da'
+#    para compensar o vies de familia unica.
+#
+# 🔴 HERMES-4-70B FOI TESTADO, PASSOU NA QUALIDADE E FICOU DE FORA POR LICENCA: tag `llama3`,
+#    base `meta-llama/Meta-Llama-3.1-70B`, e a Llama Community License traz clausula contra
+#    usar a saida para melhorar outro modelo de linguagem — que e' exatamente este uso.
+#    ⚠️ Nao foi possivel LER o texto na origem (repos da Meta sao gated, pagina publica
+#    renderizada por JS). O verificado e' a tag e a base. Como mistral-nemo e phi-4 fazem o
+#    mesmo trabalho sob Apache-2.0 e MIT, nao ha' motivo para correr o risco.
+#
+# ⚠️ E o criterio de escolha e' TESTE NA TAREFA, nao tamanho nem preco: nemotron-3-super-120b
+#    e qwen3.5-9b vazaram cadeia de pensamento; phi-4 mandou o usuario "usar algum aplicativo
+#    online", saindo do catalogo. O mais barato dos testados (mistral-nemo, US$ 0,20/12k) foi
+#    o que produziu a recusa mais bem estruturada.
+TEACHERS = ["openai/gpt-oss-120b", "google/gemma-4-31b-it", "mistralai/mistral-nemo"]
 RX_FERR = re.compile(r"^- ([a-zA-Z0-9_]+):", re.M)
 RX_CHAMADA = re.compile(r'\{\s*"tool"|<tool_call>|"arguments"\s*:')
 # marcas de portugues; ausencia total = provavelmente o teacher respondeu em ingles
