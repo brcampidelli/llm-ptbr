@@ -104,7 +104,40 @@ RX_NEGA = re.compile(
     r"|nenhuma (das )?ferramenta|sem ferramenta|fora do (meu|que)"
     r"|infelizmente|lamento|sinto muito|impossibilitad|indispon[ií]ve)", re.I)
 
-RX_PT = re.compile(r"\b(não|nao|com|para|que|você|voce|posso|consigo|ferramenta)\b", re.I)
+# 🔴 O TESTE ERA DE PRESENCA DE PORTUGUES, E O MODO DE FALHA E' PRESENCA DE INGLES.
+#    Medido na classe resposta_direta: 111 de 451 (24,6%) reprovados por "nao e' portugues".
+#    A auditoria mostrou o estrago — "O vestido vai custar agora $80.", "A gorjeta de 15%
+#    sobre um valor de $50 e' $7,50.", "Seu rendimento tributavel e' $80.000." Portugues
+#    perfeito, e nenhuma continha as palavras da lista, porque RESPOSTA DIRETA E' CURTA e nao
+#    precisa delas. Ja' o defeito real aparecia inteiro: "The user wants a QR code for
+#    data..." — vazamento de cadeia de pensamento.
+#    ⭐ Detectar o INGLES pega o defeito sem punir o texto curto correto. Segunda vez hoje que
+#    uma guarda estreita demais descartou dado bom; a primeira foi RX_NEGA.
+RX_EN = re.compile(r"\b(the|we|user|should|need to|let me|there is|it is|this is|compute|"
+                   r"okay|so the|assistant|difference between|answer)\b", re.I)
+RX_PT = re.compile(r"[àáâãéêíóôõúçÀÁÂÃÉÊÍÓÔÕÚÇ]|"
+                   r"\b(nao|com|para|que|voce|posso|consigo|ferramenta|seu|sua|custa|custar|"
+                   r"valor|de|do|da|em|um|uma|no|na|os|as|vai|fica)\b", re.I)
+
+
+def parece_ingles(t: str) -> bool:
+    """Densidade de marcas do INGLES — o vazamento vem em bloco, nunca em palavra solta."""
+    n = len(RX_EN.findall(t))
+    return n >= 3 or (n >= 2 and n / max(1, len(t.split())) > 0.08)
+
+
+def idioma_ok(t: str) -> bool:
+    """Aprova se NAO parece ingles; exige marca de portugues so' em texto longo o bastante.
+
+    ⚠️ "100 °F equivalem a 37,8 °C." e' resposta correta e nao tem uma unica marca da lista —
+    nao ha' texto suficiente para verificar idioma POSITIVAMENTE. Exigir marca ali reprova a
+    resposta boa exatamente na classe em que as respostas sao curtas por natureza.
+    ⭐ O modo de falha, ao contrario, e' sempre VERBOSO: cadeia de pensamento vazada tem
+    dezenas de palavras. Abaixo de 8 palavras, so' o teste de ingles decide.
+    """
+    if parece_ingles(t):
+        return False
+    return len(t.split()) < 8 or bool(RX_PT.search(t))
 
 
 def tem_letra_estrangeira(t: str) -> bool:
@@ -140,6 +173,33 @@ ESTILOS = [
     "explicativo: diga em uma frase por que a ferramenta certa nao esta' disponivel",
     "breve — no maximo uma frase",
 ]
+
+# ⭐ SEGUNDA CLASSE DE NEGATIVO, DESCOBERTA PELA REJEICAO. 451 negativos falharam
+#    repetidamente em "nao_contem_recusa", e a concentracao denunciou o motivo:
+#    calculate_discount (62x), calculate_tax, calculate_tip, convert_temperature. Os pedidos
+#    eram "100 F para Celsius" e "vestido de $100 com 20% de desconto". O teacher se recusava
+#    a dizer "nao consigo" porque ELE CONSEGUE — e respondia.
+#
+#    🔴 O function masking supos "ferramenta removida => tarefa impossivel". Falso para
+#    aritmetica trivial. E o comportamento certo ali e' MELHOR que recusar: responder direto,
+#    sem chamar ferramenta — que e' precisamente o anti-over-calling que se busca.
+#
+#    A rejeicao sistematica do teacher E' o rotulo. Estes viram classe propria.
+MOLDE_DIRETO = """Um assistente tem acesso APENAS a estas ferramentas:
+{catalogo}
+
+O usuário pediu: "{pedido}"
+
+Nenhuma ferramenta da lista faz isso — MAS o pedido pode ser respondido diretamente, sem
+ferramenta nenhuma (é conta simples, conversão ou conhecimento comum).
+
+ESTILO DESTA RESPOSTA: {estilo}
+
+Escreva a resposta do assistente em português brasileiro: RESPONDA o que foi pedido, com o
+resultado correto. NÃO diga que não consegue. NÃO escreva JSON nem chamada de função. NÃO
+mencione ferramentas.
+
+Responda SÓ com a fala do assistente, sem aspas e sem comentário."""
 
 MOLDE = """Um assistente tem acesso APENAS a estas ferramentas:
 {catalogo}
@@ -186,7 +246,7 @@ def valida(texto: str, nomes: set[str], removida: str) -> str | None:
         return "vazio"
     if RX_CHAMADA.search(t):
         return "contem_chamada"
-    if not RX_PT.search(t):
+    if not idioma_ok(t):
         return "provavelmente_nao_e_portugues"
     if tem_letra_estrangeira(t):
         return "letra_fora_do_alfabeto_latino"
@@ -209,6 +269,32 @@ def valida(texto: str, nomes: set[str], removida: str) -> str | None:
     return None
 
 
+def valida_direta(texto: str, nomes: set[str]) -> str | None:
+    """Validação da resposta DIRETA — o espelho da de recusa.
+
+    ⚠️ Aqui a recusa é o DEFEITO: se o modelo disser "não consigo" para uma conta que ele faz
+    de cabeça, o exemplo ensina timidez, que é o oposto do útil. E continua valendo o que
+    valia: nada de chamada, nada de ferramenta inventada, português.
+    """
+    t = texto.strip()
+    if not t:
+        return "vazio"
+    if RX_CHAMADA.search(t):
+        return "contem_chamada"
+    if not idioma_ok(t):
+        return "provavelmente_nao_e_portugues"
+    if tem_letra_estrangeira(t):
+        return "letra_fora_do_alfabeto_latino"
+    if RX_NEGA.search(t):
+        return "recusou_o_que_devia_responder"
+    if len(t) > 520:
+        return "longo_demais"
+    citadas = set(re.findall(r"\b([a-z][a-z0-9]*(?:_[a-z0-9]+)+)\b", t))
+    if citadas - nomes:
+        return f"citou_ferramenta_inexistente:{sorted(citadas - nomes)[:2]}"
+    return None
+
+
 def main() -> int:
     for s in (sys.stdout, sys.stderr):
         try:
@@ -221,6 +307,9 @@ def main() -> int:
     ap.add_argument("--limite", type=int, default=0, help="0 = todos")
     ap.add_argument("--temp", type=float, default=0.9)
     ap.add_argument("--pausa", type=float, default=1.0, help="segundos entre chamadas")
+    ap.add_argument("--direto", action="store_true",
+                    help="gera RESPOSTA DIRETA em vez de recusa (para pedidos que o modelo "
+                         "resolve sem ferramenta)")
     ap.add_argument("--amostra", action="store_true")
     a = ap.parse_args()
 
@@ -259,7 +348,8 @@ def main() -> int:
         for i, d in enumerate(pendentes):
             sistema = d["messages"][0]["content"]
             nomes = set(RX_FERR.findall(sistema))
-            prompt = MOLDE.format(catalogo=catalogo_curto(sistema),
+            molde = MOLDE_DIRETO if a.direto else MOLDE
+            prompt = molde.format(catalogo=catalogo_curto(sistema),
                                   pedido=d["messages"][1]["content"],
                                   estilo=ESTILOS[i % len(ESTILOS)])
             teacher = TEACHERS[i % len(TEACHERS)]
@@ -271,7 +361,8 @@ def main() -> int:
                 if "429" in str(e):
                     time.sleep(8)
                 continue
-            motivo = valida(r, nomes, d["ferramenta_removida"])
+            motivo = (valida_direta(r, nomes) if a.direto
+                      else valida(r, nomes, d["ferramenta_removida"]))
             if motivo:
                 motivos[motivo] += 1
                 # ⚠️ REJEITADO TAMBEM E' DADO. Sem guardar o texto nao ha' como saber se a
@@ -288,6 +379,7 @@ def main() -> int:
             reg["messages"] = [d["messages"][0], d["messages"][1],
                                {"role": "assistant", "content": r.strip()}]
             reg["teacher"] = teacher
+            reg["classe"] = "resposta_direta" if a.direto else "recusa"
             motivos["aceito"] += 1
             aceitos.append(reg)
             if saida_f:
