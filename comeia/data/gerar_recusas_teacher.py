@@ -263,21 +263,28 @@ def main() -> int:
               f"(TTR {len(vocab)/max(1,total_tok):.3f})")
         mais = aberturas.most_common(1)[0]
         print(f"  abertura mais comum : {mais[1]}x  {mais[0]!r}")
-        # 🔴 A GUARDA ANTERIOR OLHAVA SO' O TOPO e por isso nao disparou: com 332 recusas a
-        #    abertura mais comum era 12% (abaixo do limiar de 30%) enquanto apenas 30% das
-        #    aberturas eram distintas. Concentracao nao se mede pelo maior balde.
+        # 🔴 AS DUAS METRICAS ANTERIORES DEPENDIAM DO TAMANHO DA AMOSTRA, e por isso o alarme
+        #    disparou sem motivo. "Aberturas distintas" cai mecanicamente conforme n cresce
+        #    (mais amostras, mais colisao), e TTR cai por definicao. Comparar 83% em n=29 com
+        #    32% em n=555 media o n, nao a diversidade.
+        #    ⭐ O controle resolve: os PEDIDOS do usuario sao texto natural, todos distintos
+        #    entre si, e nao foram gerados por teacher nenhum. Medidos com a MESMA regua e no
+        #    MESMO n, dao 23% — abaixo dos 32% das recusas. O portugues tem poucas maneiras de
+        #    comecar uma recusa, e poucas de comecar um pedido; o nivel absoluto nao diz nada.
+        pedidos = [r["messages"][1]["content"] for r in aceitos]
+        ab_ctrl = Counter(" ".join(t.split()[:4]).lower() for t in pedidos)
+        frac_ctrl = len(ab_ctrl) / len(aceitos)
         frac = len(aberturas) / len(aceitos)
         top3 = sum(c for _, c in aberturas.most_common(3)) / len(aceitos)
         print(f"  top-3 aberturas     : {100*top3:.0f}% do total")
-        if frac < 0.6:
-            print(f"  🔴 so' {100*frac:.0f}% das aberturas sao distintas — convergindo para "
-                  "template, com custo de API")
-        elif top3 > 0.25:
-            print(f"  ⚠️ as 3 aberturas mais comuns cobrem {100*top3:.0f}% — de olho")
-        for r in aceitos[:3] if a.amostra else []:
-            print(f"\n  removida {r['ferramenta_removida']} ({r['teacher'].split('/')[-1]})")
-            print(f"    pedido: {r['messages'][1]['content'][:110]}")
-            print(f"    recusa: {r['messages'][2]['content'][:230]}")
+        print(f"  CONTROLE (pedidos)  : {100*frac_ctrl:.0f}% de aberturas distintas, "
+              f"mesmo n, texto natural")
+        if frac < frac_ctrl * 0.8:
+            print(f"  🔴 as recusas ({100*frac:.0f}%) sao MENOS diversas que o texto natural "
+                  f"({100*frac_ctrl:.0f}%) — convergindo para template")
+        else:
+            print(f"  ✅ {100*frac:.0f}% contra {100*frac_ctrl:.0f}% do controle — "
+                  "diversidade compativel com texto natural")
     if not a.amostra:
         print(f"\n✅ {a.saida}")
     return 0
