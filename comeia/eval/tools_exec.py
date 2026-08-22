@@ -63,6 +63,20 @@ def _norm(s: object) -> str:
     return " ".join(txt.lower().split())
 
 
+def _norm_caminho(s: object) -> str:
+    """Como _norm, mas tambem tira a barra final: /a/b/ E' o diretorio /a/b.
+
+    🔴 Medido no E5 (2026-08-22): o modelo pediu `/home/usuario/documentos/` onde a
+    referencia dizia `/home/usuario/documentos`, e a regua reprovou. `_norm` cuida de acento,
+    caixa e espaco — "porque ortografia nao deve decidir acerto" — mas deixava passar a barra,
+    que tambem nao deve. E o defeito aparecia duas vezes: no campo ecoado E no hash, porque
+    `_det` chama `_norm`.
+
+    ⚠️ Funcao SEPARADA de _norm de proposito: cidade e texto livre nao devem perder barra.
+    """
+    return _norm(s).rstrip("/") or "/"
+
+
 def _det(*partes: object) -> int:
     """Inteiro estavel derivado da entrada — o mundo e aberto, mas nunca aleatorio."""
     chave = "|".join(_norm(p) for p in partes)
@@ -173,17 +187,17 @@ def _read_file(a: dict) -> Any:
     """Mundo ABERTO: qualquer caminho 'existe' e devolve conteudo derivado dele.
     O que decide o acerto e o modelo ter pedido o MESMO arquivo que a referencia."""
     (p,) = _exigir(a, "path")
-    return {"arquivo": _norm(p), "conteudo_id": _det("read", p)}
+    return {"arquivo": _norm_caminho(p), "conteudo_id": _det("read", _norm_caminho(p))}
 
 
 def _write_file(a: dict) -> Any:
     p, c = _exigir(a, "path", "content")
-    return {"escrito": _norm(p), "bytes": len(str(c).encode("utf-8"))}
+    return {"escrito": _norm_caminho(p), "bytes": len(str(c).encode("utf-8"))}
 
 
 def _list_dir(a: dict) -> Any:
     (p,) = _exigir(a, "path")
-    return {"dir": _norm(p), "listagem_id": _det("ls", p)}
+    return {"dir": _norm_caminho(p), "listagem_id": _det("ls", _norm_caminho(p))}
 
 
 def _run_sql(a: dict) -> Any:
@@ -330,3 +344,22 @@ if __name__ == "__main__":
             print(f"         pred={rp!r} ref={rr!r}")
     print(f"\n{len(provas)-falhou}/{len(provas)} provas passaram")
     raise SystemExit(1 if falhou else 0)
+
+
+# ⚠️ FERRAMENTAS PONTUADAS POR ECO, NAO POR EXECUCAO — declarado, nao consertado.
+#
+# Medido no E5 (2026-08-22). `_web_search` devolve {"query": <a propria query>, "resultados":
+# BUSCA_FIXA}. Como BUSCA_FIXA e' identica para todo mundo, ela nao discrimina nada: a
+# comparacao inteira e' IGUALDADE EXATA da string da query, vestida de equivalencia
+# funcional. Qualquer parafrase igualmente boa conta como erro — e web_search reprovou 11 de
+# 13 no holdout por isso. `http_get` e `summarize_url` ecoam a URL (com rstrip("/")).
+#
+# 🔴 NAO ha' conserto honesto disponivel: dizer que duas queries de busca sao "a mesma" exige
+# um criterio que este projeto nao tem, e inventar um (sobreposicao de palavras, por exemplo)
+# seria escolher o limiar que produz o numero desejado. O certo e' DECLARAR: o acerto nessas
+# ferramentas mede escolha de string, e a taxa agregada tem de ser lida com esse peso a' vista.
+#
+# Piora o caso: as referencias do holdout sao inconsistentes quanto a `max_results` (umas
+# trazem, outras nao, sem nada no pedido que decida), e em pelo menos um caso a referencia e'
+# MENOS fiel ao pedido que a previsao (a ref inventou "IBGE", que o usuario nao pediu).
+PONTUADAS_POR_ECO = {"web_search", "http_get", "summarize_url"}

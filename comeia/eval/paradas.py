@@ -74,3 +74,128 @@ def limpar(texto: str) -> str:
         if i >= 0:
             t = t[:i]
     return t.strip()
+
+
+# C0 menos \t \n \r: nunca é conteúdo legítimo, nem em JSON (onde teria de vir escapado)
+# nem em texto. Medido no E5: o terminador do adapter é INSTÁVEL entre modos de decodificação
+# — o greedy emitia `<|im_start|>` (id 1, ligado como parada) e a amostragem caía em bytes de
+# controle vizinhos (\x00, \x0f, \x1e), que não param nada. A geração então enchia 320 tokens
+# e o parser recebia chamadas concatenadas.
+_CONTROLE = {chr(c) for c in range(32)} - {"\t", "\n", "\r"} | {"\x7f"}
+
+
+def cortar_no_controle(texto: str) -> str:
+    """Corta no primeiro caractere de controle. Independe de QUAL id o modelo escolheu."""
+    for i, ch in enumerate(texto):
+        if ch in _CONTROLE:
+            return texto[:i]
+    return texto
+
+
+def primeiro_objeto(texto: str) -> str | None:
+    """Extrai o PRIMEIRO objeto JSON balanceado, ignorando o que vier depois.
+
+    ⚠️ Esta é uma régua DIFERENTE da estrita, não um conserto dela. A estrita
+    (`extract_json`) exige que a saída inteira seja um objeto só — foi escrita para CURAR
+    dado de destilação, onde texto solto ao lado do JSON significa exemplo ruim, e ali está
+    certa. Como régua de avaliação ela mede junto o terminador, que é instável.
+
+    Esta imita o que um harness real faz: lê a primeira chamada completa e descarta o resto.
+    As duas devem ser reportadas LADO A LADO — a diferença entre elas é o tamanho do problema
+    de terminação, e trocar uma pela outra no meio de uma comparação seria mudar o
+    instrumento entre os grupos.
+    """
+    i = texto.find("{")
+    if i < 0:
+        return None
+    prof = 0
+    dentro_str = False
+    escapa = False
+    for j in range(i, len(texto)):
+        ch = texto[j]
+        if dentro_str:
+            if escapa:
+                escapa = False
+            elif ch == "\\":
+                escapa = True
+            elif ch == '"':
+                dentro_str = False
+            continue
+        if ch == '"':
+            dentro_str = True
+        elif ch == "{":
+            prof += 1
+        elif ch == "}":
+            prof -= 1
+            if prof == 0:
+                return texto[i:j + 1]
+    return None
+
+
+def _autoteste() -> int:
+    """Regua sem teste e' regua em que nao se pode confiar — o projeto ja' pagou por isso."""
+    casos = [
+        # (entrada, esperado de primeiro_objeto)
+        ('{"tool": "x", "args": {}}', '{"tool": "x", "args": {}}'),
+        # o caso do E5: chamada boa + lixo depois
+        ('{"tool": "a", "args": {"c": 1}}\x1e\n{"c": 2}}', '{"tool": "a", "args": {"c": 1}}'),
+        # aninhamento tem de ser respeitado, senao corta no } de dentro
+        ('{"a": {"b": {"c": 1}}, "d": 2} sobra', '{"a": {"b": {"c": 1}}, "d": 2}'),
+        # chave com } dentro de string nao pode fechar o objeto
+        ('{"q": "fecha } aqui", "n": 1} resto', '{"q": "fecha } aqui", "n": 1}'),
+        # aspas escapadas dentro da string
+        (r'{"q": "diz \"oi\" }", "n": 1} x', r'{"q": "diz \"oi\" }", "n": 1}'),
+        # texto antes da chamada
+        ('Claro! {"tool": "y", "args": {}}', '{"tool": "y", "args": {}}'),
+        # nao ha objeto
+        ('desculpe, nao consigo', None),
+        # objeto truncado (sem fechar) -> None, nao um palpite
+        ('{"tool": "z", "args": {"a": 1}', None),
+    ]
+    falhas = 0
+    for entrada, esperado in casos:
+        obtido = primeiro_objeto(entrada)
+        if obtido != esperado:
+            falhas += 1
+            print(f"  FALHOU: {entrada!r}\n    esperado {esperado!r}\n    obtido   {obtido!r}")
+    ctrl = [("abc\x00def", "abc"), ("sem controle", "sem controle"),
+            ("linha\nquebra", "linha\nquebra"), ("\x1ecomeca", "")]
+    for entrada, esperado in ctrl:
+        obtido = cortar_no_controle(entrada)
+        if obtido != esperado:
+            falhas += 1
+            print(f"  FALHOU cortar_no_controle: {entrada!r} -> {obtido!r} (esperado {esperado!r})")
+    total = len(casos) + len(ctrl)
+    print(f"autoteste paradas.py: {total - falhas}/{total} passaram")
+    return 1 if falhas else 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(_autoteste())
+
+
+def ids_de_controle(tok, teto: int = 2048) -> list[int]:
+    """Ids cujo texto decodificado E' um caractere de controle. DERIVADO, nao adivinhado.
+
+    O terminador de-facto deste adapter sob amostragem cai nesses ids (\x00, \x0f, \x1e...),
+    que nao param a geracao: ela vai ao teto de max_new e desperdica ~280 tokens por amostra.
+    Parar neles e' intervencao de RUNTIME (o que o E5b e'), nao mudanca de modelo — e nao pode
+    custar conteudo legitimo, porque C0 nunca e' conteudo legitimo.
+
+    🔴 E' DELIBERADO que isto NAO inclua os bytes altos (0x80-0xF7), que tambem aparecem no
+    fim das geracoes decodificando como U+FFFD. Em BPE de byte, um caractere acentuado E' uma
+    SEQUENCIA desses bytes — o `i` de "Brasilia" sai como 0xC3 0xAD, e cada um sozinho
+    decodifica para U+FFFD. Parar neles truncaria portugues valido no meio da palavra.
+    Os C0 sao seguros porque 0x00-0x1F nunca ocorre dentro de UTF-8 multibyte (continuacao e'
+    0x80-0xBF, lider e' 0xC0-0xF7). A diferenca entre as duas faixas e' a diferenca entre uma
+    guarda e um bug.
+    """
+    fora = []
+    for i in range(min(teto, len(tok))):
+        try:
+            s = tok.decode([i])
+        except Exception:
+            continue
+        if s and all(c in _CONTROLE for c in s):
+            fora.append(i)
+    return fora
