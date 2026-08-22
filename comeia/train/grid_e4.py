@@ -142,12 +142,47 @@ def montar(dominios: list[str], alvo: str, razao: float, base: int, semente: int
         resumo[d] = {"exemplos": n, "tokens": somados, "orcamento": orcamento}
     rnd.shuffle(linhas)
     destino.parent.mkdir(parents=True, exist_ok=True)
+    perdidos = 0
     with destino.open("w", encoding="utf-8") as f:
         for r in linhas:
-            f.write(json.dumps({k: v for k, v in r.items()
-                                if k in ("messages", "prompt", "completion", "kind")},
-                               ensure_ascii=False) + chr(10))
+            u = _uniformizar(r)
+            if u is None:
+                perdidos += 1
+                continue
+            f.write(json.dumps(u, ensure_ascii=False) + chr(10))
+    if perdidos:
+        resumo["_descartados_sem_assistente"] = perdidos
     return resumo
+
+
+def _uniformizar(r: dict) -> dict | None:
+    """TUDO em `prompt`/`completion`. Esquema misto quebra o treino E muda a loss.
+
+    🔴 PEGO PELO TESTE DE FUMACA, e e' a segunda vez que este projeto tropeca aqui. Os
+    arquivos do gigaverbo trazem `messages`; os grupos originais do Bee trazem
+    `prompt`/`completion`. Num mesmo arquivo, o TRL ve uma coluna `prompt` em ALGUNS registros,
+    entra em modo prompt/completion, e morre nos que so' tem `messages`:
+
+        ValueError: You need to specify either `text` or `text_target`.
+
+    ⚠️ E o erro e' o menor dos problemas. Com `messages` o TRL cobra loss em TODOS os tokens,
+    prompt incluido; com `prompt`/`completion` ele MASCARA o prompt. Misturar treina metade
+    do conjunto sob uma convencao e metade sob outra — o que este projeto ja' pagou em
+    2026-07-24, quando um system prompt de 928 tokens repetido derrubou a loss de 1,273 para
+    0,0755 decorando o catalogo, com so' 6,2% dos tokens medindo habilidade real.
+
+    ⚠️ Registro sem fala de assistente e' CONTADO, nunca descartado em silencio.
+    """
+    if isinstance(r.get("prompt"), list) and r.get("completion"):
+        return {"prompt": r["prompt"], "completion": r["completion"]}
+    msgs = r.get("messages")
+    if not isinstance(msgs, list) or not msgs:
+        return None
+    ult = next((i for i in range(len(msgs) - 1, -1, -1)
+                if msgs[i].get("role") == "assistant"), None)
+    if ult is None or ult == 0:
+        return None
+    return {"prompt": msgs[:ult], "completion": [msgs[ult]]}
 
 
 def main() -> int:
