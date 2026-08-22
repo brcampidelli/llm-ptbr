@@ -1,7 +1,7 @@
 # Estágio 4 — a mistura: a lei discorda do estoque, e as réguas não enxergam
 
 > **2026-08-22.** 40 mini-runs, 8 domínios × 5 razões de perturbação, 151,2M tokens em
-> 533 min (8,9 h) numa RTX PRO 4500, **zero erros**. O E4 existia para responder duas
+> 533 min (8,9 h) numa RTX 5090, **zero erros**. O E4 existia para responder duas
 > perguntas: *qual mistura de dado maximiza a capacidade* e *loss e régua concordam*.
 > Respondeu a primeira. A segunda **não pôde ser respondida** — e o motivo é o resultado.
 
