@@ -53,6 +53,7 @@ PROC = COMEIA / "data" / "processed"
 PY = sys.executable
 MODELO = "BrCamp/bee-350m-pt-base"
 SAIDA = RAIZ / "docs" / "grid-e4-resultado.json"
+MIX = COMEIA / "data" / "processed" / "mix_e4"
 
 # dominio -> (arquivo, filtro opcional)
 DOMINIOS = {
@@ -161,6 +162,11 @@ def main() -> int:
                     help="tokens por dominio na alocacao BASE (razao 1.0)")
     ap.add_argument("--dominios", nargs="*", default=list(DOMINIOS))
     ap.add_argument("--semente", type=int, default=20260821)
+    ap.add_argument("--lr", type=float, default=6e-4,
+                    help="MESMO em todos os mini-runs — ver a nota no laco")
+    ap.add_argument("--epochs", type=float, default=2.0)
+    ap.add_argument("--batch-size", type=int, default=4)
+    ap.add_argument("--grad-accum", type=int, default=4)
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args()
 
@@ -251,13 +257,64 @@ def main() -> int:
         print("\n✅ DRY-RUN: nada treinado.")
         return 0
 
-    print("\n⚠️ A montagem dos conjuntos e o laco de treino entram no proximo commit.")
-    SAIDA.parent.mkdir(parents=True, exist_ok=True)
-    SAIDA.write_text(json.dumps({"data": date.today().isoformat(),
-                                 "base_tokens": a.base_tokens, "razoes": RAZOES,
-                                 "inventario": inventario}, ensure_ascii=False, indent=1),
-                     encoding="utf-8")
-    return 0
+    feitos, t0 = {}, time.time()
+    if SAIDA.exists():
+        # ⭐ RETOMADA: 40 mini-runs sao horas de GPU paga. Refazer o que ja' rodou nao e' so'
+        #    desperdicio — muda o ajuste, porque a semente e a ordem seriam outras.
+        feitos = json.loads(SAIDA.read_text(encoding="utf-8")).get("runs", {})
+        print(f"retomando: {len(feitos)} mini-run(s) ja' feitos")
+
+    for i, r in enumerate(runs, 1):
+        if r["tag"] in feitos:
+            continue
+        mix = MIX / f"{r['tag']}.jsonl"
+        comp = montar(a.dominios, r["dominio"], r["razao"], a.base_tokens,
+                      a.semente + i, mix)
+        tot_tok = sum(v["tokens"] for v in comp.values())
+        print()
+        print(f"[{i}/{len(runs)}] {r['tag']}  ·  {tot_tok:,} tokens, "
+              f"{sum(v['exemplos'] for v in comp.values()):,} exemplos", flush=True)
+
+        # ⚠️ MESMO LR E MESMAS EPOCAS EM TODOS OS MINI-RUNS. A perturbacao tem de isolar o
+        #    VOLUME do dominio; variar hiperparametro junto mediria os dois de uma vez — a
+        #    familia de erro do 2d, que ja' custou um veredito neste projeto.
+        saida_mod = COMEIA / "models" / r["tag"]
+        cmd = [PY, str(COMEIA / "train" / "sft_qlora.py"),
+               "--model", a.model, "--data", str(mix), "--out", str(saida_mod),
+               "--lr", str(a.lr), "--epochs", str(a.epochs),
+               "--batch-size", str(a.batch_size), "--grad-accum", str(a.grad_accum),
+               "--sem-checkpointing", "--save-steps", "100000"]
+        t1 = time.time()
+        p_ = subprocess.run(cmd, cwd=str(RAIZ), text=True, encoding="utf-8",
+                            errors="replace")
+        mins = round((time.time() - t1) / 60, 1)
+        if p_.returncode != 0:
+            print(f"🔴 {r['tag']} falhou (codigo {p_.returncode})")
+            feitos[r["tag"]] = {"erro": p_.returncode, "composicao": comp}
+        else:
+            feitos[r["tag"]] = {"dominio": r["dominio"], "razao": r["razao"],
+                                "adapter": str(saida_mod), "minutos": mins,
+                                "tokens": tot_tok, "composicao": comp}
+            print(f"   treinado em {mins} min", flush=True)
+        SAIDA.parent.mkdir(parents=True, exist_ok=True)
+        SAIDA.write_text(json.dumps({"data": date.today().isoformat(), "modelo": a.model,
+                                     "base_tokens": a.base_tokens, "razoes": RAZOES,
+                                     "lr": a.lr, "epochs": a.epochs,
+                                     "inventario": inventario, "runs": feitos},
+                                    ensure_ascii=False, indent=1), encoding="utf-8")
+
+    ok = [k for k, v in feitos.items() if "erro" not in v]
+    ruins = [k for k, v in feitos.items() if "erro" in v]
+    print()
+    print("=" * 78)
+    print(f"mini-runs: {len(ok)}/{len(runs)} | minutos totais: "
+          f"{round((time.time() - t0) / 60, 1)}")
+    print(f"com erro: {ruins or 'nenhum'}")
+    print(f"✅ {SAIDA}")
+    print("   Proximo: avaliar cada mini-run e AJUSTAR a lei de escala — contra a loss E")
+    print("   contra a regua, que e' a adaptacao que este projeto pode fazer e o paper nao.")
+    return 0 if not ruins else 1
+
 
 
 if __name__ == "__main__":

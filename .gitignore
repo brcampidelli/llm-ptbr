@@ -64,3 +64,4 @@ comeia/data/processed/sft_grupo_*.jsonl
 comeia/models/
 comeia/data/raw/gigaverbo/
 comeia/data/processed/gigaverbo_*.jsonl
+comeia/data/processed/mix_e4/
