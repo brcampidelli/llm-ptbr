@@ -79,10 +79,48 @@ def numero(cap, d):
     return None
 
 
-def holdout(dominio: str, n: int, grid_e4) -> list[dict]:
-    """Últimas `n` linhas do domínio — reservadas, nunca usadas na montagem."""
-    regs = grid_e4.carregar(dominio)
-    return regs[-n:]
+def indices_livres(grid_e4, base: int, semente: int) -> dict[str, list[int]]:
+    """Índices que NENHUM dos 40 mini-runs usou — reconstruídos, não supostos.
+
+    🔴 A PRIMEIRA VERSAO PEGAVA AS ULTIMAS N LINHAS "porque a montagem nao chega la'". Isso e'
+    falso: a montagem PERMUTA os indices, entao qualquer linha pode ser sorteada logo no
+    inicio. Um holdout que se supoe limpo e nao e' produz loss medida sobre dado de TREINO —
+    o numero sai bonito e mede memorizacao.
+
+    ⭐ Como a montagem e' deterministica na semente, da' para reconstruir exatamente o que cada
+    run consumiu e tomar o complemento. Medido nos 40 runs deste E4:
+
+        estruturado 69,0% livre · codigo 62,1% · resumo 43,3%
+        traducao     3,0%       · agentico_pos 2,6% · agentico_neg 2,4%
+        texto        0,0%       · simbolico     0,0%   ← NAO HA HOLDOUT
+
+    ⚠️ `texto` e `simbolico` foram consumidos INTEIROS. Loss por dominio ali nao existe, e o
+    avaliador marca em vez de fingir. E' o mesmo teto de oferta que a guarda do grid ja' tinha
+    apontado, agora com consequencia na medicao.
+    """
+    import random
+    usados = {d: set() for d in grid_e4.DOMINIOS}
+    i = 0
+    for alvo in grid_e4.DOMINIOS:
+        for raz in grid_e4.RAZOES:
+            i += 1
+            rnd = random.Random(semente + i)
+            for d in grid_e4.DOMINIOS:
+                orc = int(base * raz) if d == alvo else base
+                regs = grid_e4.carregar(d)
+                ordem = list(range(len(regs)))
+                rnd.shuffle(ordem)
+                som = 0
+                for idx in ordem:
+                    t = grid_e4.tokens_de(regs[idx])
+                    if som + t > orc:
+                        continue
+                    usados[d].add(idx)
+                    som += t
+                    if som >= orc * 0.995:
+                        break
+    return {d: sorted(set(range(len(grid_e4.carregar(d)))) - usados[d])
+            for d in grid_e4.DOMINIOS}
 
 
 def loss_por_dominio(modelo: str, adapter: str, holdouts: dict, max_len: int = 1024) -> dict:
@@ -146,6 +184,8 @@ def main() -> int:
     ap.add_argument("--grid", type=Path, default=GRID)
     ap.add_argument("--saida", type=Path, default=SAIDA)
     ap.add_argument("--n-holdout", type=int, default=120)
+    ap.add_argument("--base-tokens", type=int, default=450_000)
+    ap.add_argument("--semente", type=int, default=20260821)
     ap.add_argument("--so-loss", action="store_true")
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args()
@@ -158,9 +198,21 @@ def main() -> int:
     print(f"AVALIACAO DO E4 — {len(runs)} mini-runs")
     print("=" * 78)
 
-    holdouts = {d: holdout(d, a.n_holdout, grid_e4) for d in grid_e4.DOMINIOS}
-    for d, h in holdouts.items():
-        print(f"  holdout {d:14} {len(h):>4} exemplos (ultimas linhas, fora da montagem)")
+    livres = indices_livres(grid_e4, a.base_tokens, a.semente)
+    holdouts, sem_holdout = {}, []
+    for d, idxs in livres.items():
+        regs = grid_e4.carregar(d)
+        if not idxs:
+            sem_holdout.append(d)
+            continue
+        holdouts[d] = [regs[i] for i in idxs[:a.n_holdout]]
+        marca = "⚠️" if len(idxs) < a.n_holdout else "  "
+        print(f"  {marca} holdout {d:14} {len(holdouts[d]):>4} de {len(idxs):>6,} livres "
+              f"({100*len(idxs)/len(regs):.1f}% do dominio)")
+    if sem_holdout:
+        print(f"  🔴 SEM HOLDOUT LIMPO: {sem_holdout} — consumidos INTEIROS pelos 40 runs.")
+        print("     A loss desses dominios nao entra no ajuste; so' as reguas, que usam")
+        print("     holdout independente e nunca tocado pelas misturas.")
     if a.dry_run:
         print("\n✅ DRY-RUN.")
         return 0
