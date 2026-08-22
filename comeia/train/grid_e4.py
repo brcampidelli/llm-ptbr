@@ -81,13 +81,72 @@ def carregar(nome: str) -> list[dict]:
     return regs
 
 
+class SemContagem(RuntimeError):
+    """Exemplo sem contagem de tokens — ver `tokens_de`."""
+
+
 def tokens_de(r: dict) -> int:
-    """Tokens do exemplo — do campo medido com o NOSSO tokenizador quando existe.
+    """Tokens do exemplo, medidos com o NOSSO tokenizador. LEVANTA se não houver.
+
+    🔴 A PRIMEIRA VERSAO TINHA `or 0` NO FIM, E UM `or 1` NO CHAMADOR. Quatro arquivos nao
+    traziam contagem (`gigaverbo_ferramenta`, `negativos_com_recusa` e os dois grupos
+    originais do Bee), e o fallback transformou **medicao ausente em custo despresivel**: cada
+    exemplo "custava" 1 token, o orcamento nunca fechava, e os quatro dominios entraram
+    INTEIROS. A mistura saiu com 49,4% de traducao em vez dos ~33% pretendidos — numero
+    plausivel, receita errada, e nada deu erro.
 
     ⚠️ `token_count` do gigaverbo e' do tokenizador do Qwen e subestima o nosso em ~12% no
-    codigo. `tokens_bee` foi medido com o tokenizador do Bee no E3 e e' o que vale.
+    codigo; so' `tokens_bee` vale. Faltando, **aborta** — porque o certo e' medir (custa
+    minutos de CPU), nunca chutar.
     """
-    return r.get("tokens_bee") or r.get("token_count") or 0
+    n = r.get("tokens_bee")
+    if not n:
+        raise SemContagem(
+            "exemplo sem `tokens_bee`. Rode a contagem com o tokenizador do Bee antes de "
+            "montar mistura — fallback aqui vira receita errada em silencio.")
+    return n
+
+
+def montar(dominios: list[str], alvo: str, razao: float, base: int, semente: int,
+           destino: Path) -> dict:
+    """Monta UM conjunto perturbado: `alvo` recebe base*razao tokens, os outros recebem base.
+
+    ⭐ AMOSTRAGEM SEM REPOSICAO, PERMUTANDO UMA VEZ. E' a licao §2 do projeto, que ja'
+    reapareceu duas vezes (no pre-treino e nos negativos do E3): sortear com reposicao a cada
+    escolha cobre so' 63,2% do conjunto e repete o resto. Aqui a lista e' permutada e
+    percorrida ate' o orcamento de TOKENS fechar.
+
+    ⚠️ O corte e' por TOKEN, nao por exemplo — e o ultimo exemplo entra inteiro, nunca
+    truncado. Exemplo truncado no meio da resposta ensina a parar no meio da resposta.
+    """
+    import random
+    rnd = random.Random(semente)
+    linhas, resumo = [], {}
+    for d in dominios:
+        orcamento = int(base * razao) if d == alvo else base
+        regs = carregar(d)
+        ordem = list(range(len(regs)))
+        rnd.shuffle(ordem)
+        somados = 0
+        n = 0
+        for i in ordem:
+            t = tokens_de(regs[i])
+            if somados + t > orcamento:
+                continue
+            linhas.append(regs[i])
+            somados += t
+            n += 1
+            if somados >= orcamento * 0.995:
+                break
+        resumo[d] = {"exemplos": n, "tokens": somados, "orcamento": orcamento}
+    rnd.shuffle(linhas)
+    destino.parent.mkdir(parents=True, exist_ok=True)
+    with destino.open("w", encoding="utf-8") as f:
+        for r in linhas:
+            f.write(json.dumps({k: v for k, v in r.items()
+                                if k in ("messages", "prompt", "completion", "kind")},
+                               ensure_ascii=False) + chr(10))
+    return resumo
 
 
 def main() -> int:
@@ -118,13 +177,11 @@ def main() -> int:
         except FileNotFoundError:
             falta.append(f"{d} (arquivo ausente)")
             continue
-        tk = sum(tokens_de(r) for r in regs)
-        if not tk:
-            # o dado do Bee nao tem contagem; estima por caracteres (4 chars/token)
-            tk = sum(len(" ".join((m.get("content") or "")
-                                  for m in (r.get("messages")
-                                            or (r.get("prompt", []) + r.get("completion", [])))))
-                     for r in regs) // 4
+        try:
+            tk = sum(tokens_de(r) for r in regs)
+        except SemContagem as e:
+            falta.append(f"{d}: {e}")
+            continue
         inventario[d] = {"exemplos": len(regs), "tokens": tk}
         preciso = int(a.base_tokens * max(RAZOES))
         if tk < preciso:
