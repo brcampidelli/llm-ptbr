@@ -1,0 +1,207 @@
+"""E4 — otimização da mistura por perturbação por domínio (arXiv:2508.11953).
+
+⭐ O MÉTODO, E A ADAPTAÇÃO QUE O BEE PODE FAZER E O PAPER NÃO PODIA
+
+O paper ajusta, por domínio, uma lei de escala de fine-tuning:
+
+    L(D_i^val) ≈ C_i · (N_i + k_i · |D_∖i|^α_i)^(−β_i) + E_i
+
+onde `N_i` são os **tokens** do domínio i e `|D_∖i|` os tokens de todos os outros — o termo
+`k_i·|D_∖i|^α_i` é a **transferência** entre domínios. Ajusta-se com **5 perturbações por
+domínio** (razões 0,5 · 0,67 · 1,0 · 2,0 · 3,0 sobre a alocação base, com os outros fixos) e
+resolve-se o mínimo por SLSQP sob simplex. Em **Qwen2.5-0.5B** o resultado fica a **0,66%** da
+busca exaustiva por 1/4 do custo.
+
+🔴 **MAS O PAPER OTIMIZA LOSS DE VALIDAÇÃO, E ELE MESMO AVISA QUE ISSO PODE NÃO TRANSFERIR:**
+no Tulu3 a correlação com desempenho downstream foi positiva; no Orca houve *"discrepância
+importante"*. Para o Bee isso é grave — todo veredito deste projeto vem de métrica downstream
+(`exec_ok` 64,7%, IFEval 32,0%, BLEU), e a lição §2d já registra perplexidade plana enquanto o
+modelo muda.
+
+⭐ **O Bee tem um ativo que os autores não tinham: avaliação downstream barata.** O E2 mediu
+27 braços em 7 réguas em **57 minutos**. Então aqui a MESMA forma funcional é ajustada duas
+vezes — contra a loss de validação **e** contra a métrica da régua — e os dois ótimos são
+comparados. Se discordarem, a discordância **é o resultado**, e o projeto já tem regra sobre
+qual dos dois vale.
+
+⚠️ **MISTURA EM TOKENS, NUNCA EM EXEMPLOS.** Medido no inventário: tradução tem 15% dos
+exemplos e **4%** dos tokens; código tem 13% dos exemplos e **30%**. Pesar por exemplo daria a
+tradução 7× o peso pretendido. O gradiente vê token.
+
+⚠️ **A MISTURA ÓTIMA DEPENDE DO ORÇAMENTO** — é a razão de não herdar proporção do Tulu3 ou do
+SmolTalk. Por isso o orçamento-alvo é declarado aqui e o ajuste é feito perto dele, não numa
+escala arbitrária.
+
+Uso:
+    python comeia/train/grid_e4.py --dry-run
+    python comeia/train/grid_e4.py --base-tokens 1000000
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import subprocess
+import sys
+import time
+from datetime import date
+from pathlib import Path
+
+RAIZ = Path(__file__).resolve().parent.parent.parent
+COMEIA = RAIZ / "comeia"
+PROC = COMEIA / "data" / "processed"
+PY = sys.executable
+MODELO = "BrCamp/bee-350m-pt-base"
+SAIDA = RAIZ / "docs" / "grid-e4-resultado.json"
+
+# dominio -> (arquivo, filtro opcional)
+DOMINIOS = {
+    "traducao": ("gigaverbo_translation.jsonl", None),
+    "resumo": ("gigaverbo_summarization.jsonl", None),
+    "estruturado": ("gigaverbo_structured.jsonl", None),
+    "codigo": ("gigaverbo_code.jsonl", None),
+    "agentico_pos": ("gigaverbo_ferramenta.jsonl", "tool_call"),
+    "agentico_neg": ("negativos_com_recusa.jsonl", None),
+    "texto": ("sft_grupo_texto.jsonl", None),
+    "simbolico": ("sft_grupo_simbolico.jsonl", None),
+}
+
+# 🔴 AS RAZOES SAO AS DO PAPER, NAO INVENTADAS. Cobrem meia ordem de grandeza para baixo e
+#    meia para cima, que e' o minimo para o expoente beta_i ficar identificavel. Menos que
+#    isso ajusta uma curva que passa por qualquer coisa.
+RAZOES = [0.5, 0.67, 1.0, 2.0, 3.0]
+
+
+def carregar(nome: str) -> list[dict]:
+    arq, filtro = DOMINIOS[nome]
+    p = PROC / arq
+    regs = [json.loads(l) for l in p.read_text(encoding="utf-8").split(chr(10)) if l.strip()]
+    if filtro:
+        regs = [r for r in regs if r.get("kind") == filtro]
+    return regs
+
+
+def tokens_de(r: dict) -> int:
+    """Tokens do exemplo — do campo medido com o NOSSO tokenizador quando existe.
+
+    ⚠️ `token_count` do gigaverbo e' do tokenizador do Qwen e subestima o nosso em ~12% no
+    codigo. `tokens_bee` foi medido com o tokenizador do Bee no E3 e e' o que vale.
+    """
+    return r.get("tokens_bee") or r.get("token_count") or 0
+
+
+def main() -> int:
+    for s in (sys.stdout, sys.stderr):
+        try:
+            s.reconfigure(encoding="utf-8")
+        except Exception:
+            pass
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--model", default=MODELO)
+    ap.add_argument("--base-tokens", type=int, default=450_000,
+                    help="tokens por dominio na alocacao BASE (razao 1.0)")
+    ap.add_argument("--dominios", nargs="*", default=list(DOMINIOS))
+    ap.add_argument("--semente", type=int, default=20260821)
+    ap.add_argument("--dry-run", action="store_true")
+    a = ap.parse_args()
+
+    print("=" * 78)
+    print("E4 — OTIMIZACAO DE MISTURA POR PERTURBACAO")
+    print("=" * 78)
+
+    # ---- guarda 1: os dominios existem e tem token suficiente para a maior razao
+    inventario = {}
+    falta = []
+    for d in a.dominios:
+        try:
+            regs = carregar(d)
+        except FileNotFoundError:
+            falta.append(f"{d} (arquivo ausente)")
+            continue
+        tk = sum(tokens_de(r) for r in regs)
+        if not tk:
+            # o dado do Bee nao tem contagem; estima por caracteres (4 chars/token)
+            tk = sum(len(" ".join((m.get("content") or "")
+                                  for m in (r.get("messages")
+                                            or (r.get("prompt", []) + r.get("completion", [])))))
+                     for r in regs) // 4
+        inventario[d] = {"exemplos": len(regs), "tokens": tk}
+        preciso = int(a.base_tokens * max(RAZOES))
+        if tk < preciso:
+            falta.append(f"{d}: {tk:,} tokens, precisa de {preciso:,} para a razao "
+                         f"{max(RAZOES)}")
+
+    print(f"orcamento base : {a.base_tokens:,} tokens/dominio (razao 1,0)")
+    print(f"razoes         : {RAZOES}")
+    print(f"mini-runs      : {len(a.dominios)} dominios x {len(RAZOES)} = "
+          f"{len(a.dominios) * len(RAZOES)}")
+    print()
+    print(f"{'dominio':16}{'exemplos':>10}{'tokens':>13}{'epocas na razao 3,0':>22}")
+    print("-" * 62)
+    for d, v in inventario.items():
+        ep = a.base_tokens * 3.0 / max(1, v["tokens"])
+        print(f"  {d:14}{v['exemplos']:>10,}{v['tokens']:>13,}{ep:>21.2f}x")
+
+    if falta:
+        print()
+        print("🔴 ABORTA: dominio sem token suficiente para a maior razao —")
+        print("   (o default de 450k tokens/dominio existe justamente porque `texto` e")
+        print("    `simbolico`, o dado original do Bee, tem 1,6M e 1,5M — a base tem de caber")
+        print("    3x dentro do MENOR dominio, senao a razao 3,0 repete exemplo.)")
+        print("   perturbar 3x um dominio que nao tem 3x de dado significa REPETIR exemplo,")
+        print("   e ai' a curva ajustada mede repeticao e nao volume (licao 2c-6).")
+        for f in falta:
+            print(f"     {f}")
+        return 2
+    print()
+    print("  ✅ guarda 1/2: todo dominio tem token para a razao maxima sem repetir exemplo")
+
+    # ---- guarda 2: a mistura e' em TOKENS
+    tot = sum(v["tokens"] for v in inventario.values())
+    print("  ✅ guarda 2/2: pesos em TOKENS, nao em exemplos "
+          f"(tradução = {100*inventario.get('traducao',{}).get('tokens',0)/tot:.1f}% dos "
+          f"tokens contra "
+          f"{100*inventario.get('traducao',{}).get('exemplos',0)/sum(v['exemplos'] for v in inventario.values()):.1f}% "
+          "dos exemplos)")
+
+    # ⭐ TETO POR DOMINIO — a restricao de simplex NAO basta. `texto` e `simbolico` sao o dado
+    #    ORIGINAL do Bee (3.267 e 2.267 exemplos) e nao crescem: o otimizador pode querer dar
+    #    a eles um peso que o disco nao tem. Sem o teto, a "mistura otima" e' uma receita
+    #    impossivel de cozinhar — e isso so' apareceria na hora de montar o conjunto final.
+    #    E' um achado do E4, nao um obstaculo: dois dominios estao LIMITADOS POR OFERTA, e o
+    #    E3 seguinte sabe onde gerar dado.
+    print()
+    print("teto por dominio (fracao maxima do orcamento-alvo, sem repetir exemplo):")
+    for alvo_tot in (10_000_000, 20_000_000):
+        linha = []
+        for d, v in inventario.items():
+            linha.append(f"{d[:9]} {100*min(1.0, v['tokens']/alvo_tot):.0f}%")
+        print(f"  alvo {alvo_tot//1_000_000:>3}M tok: " + " · ".join(linha))
+    print("  ⚠️ dominio com teto abaixo de 100% nao pode receber peso arbitrario do otimizador")
+
+    runs = [{"dominio": d, "razao": r,
+             "tag": f"e4-{d}-r{str(r).replace('.', 'p')}"}
+            for d in a.dominios for r in RAZOES]
+    print(f"\n{len(runs)} mini-runs planejados:")
+    for r in runs[:3] + [runs[-1]]:
+        alvo = int(a.base_tokens * r["razao"])
+        outros = a.base_tokens * (len(a.dominios) - 1)
+        print(f"  {r['tag']:30} {alvo:>9,} tok no alvo + {outros:>10,} nos outros")
+    if len(runs) > 4:
+        print(f"  … e mais {len(runs) - 4}")
+
+    if a.dry_run:
+        print("\n✅ DRY-RUN: nada treinado.")
+        return 0
+
+    print("\n⚠️ A montagem dos conjuntos e o laco de treino entram no proximo commit.")
+    SAIDA.parent.mkdir(parents=True, exist_ok=True)
+    SAIDA.write_text(json.dumps({"data": date.today().isoformat(),
+                                 "base_tokens": a.base_tokens, "razoes": RAZOES,
+                                 "inventario": inventario}, ensure_ascii=False, indent=1),
+                     encoding="utf-8")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
