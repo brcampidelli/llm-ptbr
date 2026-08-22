@@ -106,6 +106,21 @@ existe porque eu não parei para olhar.
 
 ---
 
+## 5b. Onde o corpus está guardado
+
+Backup em `BrCamp/bee-sft-corpus-ptbr` no HuggingFace (**privado**), enviado em 2026-08-22:
+os 8 arquivos do E3 em `e3/` mais o conjunto de SFT anterior em `sft_v1/`, comprimidos
+(632 MB → 167 MB) e com `SHA256SUMS`.
+
+⚠️ Antes disso o corpus existia **numa cópia só**, no volume de rede do RunPod. A licença dos
+componentes não é uniforme — por isso privado, e por isso a procedência tem de ser conferida
+na origem antes de qualquer uso público.
+
+Contagem que fecha: **269.505 linhas** = os 263.971 das seis classes contadas na §1 mais 5.534
+de `texto` e `simbolico`, que a tabela da §1 não inclui.
+
+---
+
 ## 6. O que fica para o E4
 
 1. **A mistura.** 263.971 exemplos é muito mais do que o Bee precisa por época; a proporção
