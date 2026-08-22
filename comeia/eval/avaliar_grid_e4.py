@@ -11,12 +11,18 @@ enquanto o modelo muda.
 Como aqui a avaliação downstream custa minutos (o E2 mediu 27 braços em 7 réguas em 57 min),
 dá para medir **as duas** e comparar os ótimos. Se discordarem, a discordância é o resultado.
 
-⚠️ **A loss por domínio precisa de holdout POR DOMÍNIO, e ele não pode ter entrado no treino.**
-As misturas foram montadas por amostragem sem reposição de cada arquivo; este avaliador
-reserva as **últimas N linhas** de cada domínio e a montagem nunca as usa, porque a permutação
-é semeada e o orçamento fecha muito antes de esgotar o arquivo. ⚠️ Isso vale para os domínios
-grandes; para `texto` e `simbolico`, que a razão 3,0 consome quase inteiros, a reserva é
-verificada explicitamente e o domínio é marcado se houver sobreposição.
+🔴 **E A LOSS TEM UM PROBLEMA QUE A RÉGUA NÃO TEM.** Ela precisa de holdout por domínio que
+não tenha entrado em treino nenhum. A montagem PERMUTA os índices, então nenhuma faixa do
+arquivo é segura por posição — o holdout é obtido **reconstruindo** o que os 40 runs
+consumiram e tomando o complemento. Medido:
+
+    estruturado 69,0% livre · codigo 62,1% · resumo 43,3%
+    traducao     3,0%       · agentico_pos 2,6% · agentico_neg 2,4%
+    texto        0,0%       · simbolico     0,0%   ← consumidos INTEIROS
+
+⭐ Ou seja: **para 2 dos 8 domínios não existe loss honesta**, e a régua é a única medida
+limpa — porque IFEval, FLORES e o holdout agêntico nunca entraram em mistura alguma. A
+adaptação que eu defendi por princípio acabou sendo, para esses dois, a única possível.
 
 Uso:
     python comeia/eval/avaliar_grid_e4.py --so-loss      # rapido, so' a loss por dominio
