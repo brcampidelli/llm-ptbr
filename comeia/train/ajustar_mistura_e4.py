@@ -112,8 +112,28 @@ def qualidade(N, D_out, y, p):
             "n_pontos": len(y)}
 
 
+# regua -> dominio que ela mede. Regua que nao mapeia um dominio (instrucao e' geral) nao
+# serve de alvo proprio de dominio nenhum: ajustar L_i com ela mede transferencia, nao a lei.
+REGUA_DO_DOMINIO = {"traducao": "traducao", "resumo": "resumo", "codigo": "codigo",
+                    "atendimento": "estruturado", "agentico": "agentico_pos"}
+
+
+def alvo_do_dominio(metricas: dict, metrica: str, dominio: str):
+    """O alvo de L_i TEM de ser a metrica DO DOMINIO i.
+
+    🔴 A versao anterior usava metricas[metrica] — a loss AGREGADA — como y dos 8 dominios.
+    Ajustava o MESMO vetor oito vezes, variando so' N_i e D_out, e imprimia oito R2
+    diferentes que pareciam oito leis. Nao eram: era uma curva so', vista de oito angulos.
+    A mistura que saiu dali nao media o que dizia medir.
+    """
+    if metrica == "loss":
+        return metricas.get(f"loss_{dominio}")
+    return metricas.get(metrica) if REGUA_DO_DOMINIO.get(metrica) == dominio else None
+
+
 def otimizar(params: dict, alvo_tokens: int, tetos: dict, maximizar: bool,
-             escala: dict | None = None, importancia: dict | None = None):
+             escala: dict | None = None, importancia: dict | None = None,
+             reservado: float = 0.0):
     """Resolve os pesos por SLSQP sob simplex + teto por dominio.
 
     🔴 SOMAR METRICA CRUA ENTRE DOMINIOS DEIXA A DECISAO COM A REGUA DE MAIOR NUMERO.
@@ -152,15 +172,19 @@ def otimizar(params: dict, alvo_tokens: int, tetos: dict, maximizar: bool,
             total += imp * ((-v if maximizar else v) / amp)
         return total
 
-    restr = [{"type": "eq", "fun": lambda w: float(np.sum(w) - 1.0)}]
-    limites = [(0.0, min(1.0, tetos.get(d, 1.0))) for d in doms]
-    # ⚠️ se a soma dos tetos for < 1 o simplex e' inviavel — e' sinal de que falta DADO, nao
-    #    de que o otimizador falhou.
-    if sum(hi for _, hi in limites) < 1.0:
-        return None, ("a soma dos tetos e' menor que 1: nao ha' dado suficiente para "
-                      "preencher o orcamento-alvo. Reduza --alvo-tokens ou gere dado.")
-    w0 = np.array([min(1.0 / k, tetos.get(d, 1.0)) for d in doms])
-    w0 = w0 / w0.sum()
+    # 🔴 dominio SEM holdout limpo nao entra no objetivo — e se ele simplesmente sair da
+    #    conta, o otimizador o zera por FALTA DE MEDIDA e o zero se disfarca de conclusao.
+    #    Ele fica com uma fatia RESERVADA (a do baseline) e o simplex fecha no que sobra.
+    livre = 1.0 - reservado
+    restr = [{"type": "eq", "fun": lambda w: float(np.sum(w) - livre)}]
+    limites = [(0.0, min(livre, tetos.get(d, 1.0))) for d in doms]
+    # ⚠️ se a soma dos tetos for < o orcamento livre o simplex e' inviavel — e' sinal de que
+    #    falta DADO, nao de que o otimizador falhou.
+    if sum(hi for _, hi in limites) < livre - 1e-9:
+        return None, ("a soma dos tetos e' menor que o orcamento livre: nao ha' dado "
+                      "suficiente para preencher o alvo. Reduza --alvo-tokens ou gere dado.")
+    w0 = np.array([min(livre / k, tetos.get(d, 1.0)) for d in doms])
+    w0 = w0 * (livre / w0.sum())
     r = minimize(objetivo, w0, method="SLSQP", bounds=limites, constraints=restr,
                  options={"maxiter": 1000, "ftol": 1e-12})
     return {d: float(w) for d, w in zip(doms, r.x)}, None
@@ -277,21 +301,36 @@ def main() -> int:
     print("=" * 78)
     maximizar = a.metrica != "loss"
     params, diag = {}, {}
+    sem_medida = []
     for d in doms:
         N, D_out, y = [], [], []
         for v in runs.values():
-            if "erro" in v or a.metrica not in (v.get("metricas") or {}):
+            if "erro" in v:
+                continue
+            alvo = alvo_do_dominio(v.get("metricas") or {}, a.metrica, d)
+            if alvo is None:
                 continue
             comp = v["composicao"]
             n_i = comp.get(d, {}).get("tokens", 0)
             N.append(n_i)
             D_out.append(sum(c["tokens"] for k2, c in comp.items() if k2 != d))
-            y.append(v["metricas"][a.metrica])
+            y.append(alvo)
         if len(y) < 8:
-            print(f"  ⚠️ {d}: so' {len(y)} pontos — pulado")
+            print(f"  ⚠️ {d:14} sem alvo proprio em '{a.metrica}' ({len(y)} pontos) "
+                  f"— NAO otimizavel")
+            sem_medida.append(d)
+            continue
+        if max(y) - min(y) < 1e-9:
+            print(f"  🔴 {d:14} alvo CONSTANTE em {y[0]:.4g} nos {len(y)} bracos — "
+                  f"amplitude zero nao ajusta lei. NAO otimizavel.")
+            sem_medida.append(d)
             continue
         N, D_out, y = np.array(N, float), np.array(D_out, float), np.array(y, float)
         fit = ajustar(N, D_out, y)
+        if fit is None:
+            print(f"  🔴 {d:14} o ajuste NAO convergiu — NAO otimizavel")
+            sem_medida.append(d)
+            continue
         params[d] = fit.x
         q = qualidade(N, D_out, y, fit.x)
         diag[d] = q
@@ -309,11 +348,25 @@ def main() -> int:
     # mini-runs. E' a normalizacao que impede a regua de maior escala de decidir a mistura.
     escala = {}
     for d in params:
-        ys = [v["metricas"][a.metrica] for v in runs.values()
-              if "erro" not in v and a.metrica in (v.get("metricas") or {})]
+        ys = [x for x in (alvo_do_dominio(v.get("metricas") or {}, a.metrica, d)
+                          for v in runs.values() if "erro" not in v) if x is not None]
         escala[d] = (max(ys) - min(ys)) or 1.0
     importancia = json.loads(a.importancia) if a.importancia else None
-    pesos, erro = otimizar(params, a.alvo_tokens, tetos, maximizar, escala, importancia)
+
+    # fatia reservada: o que os dominios sem alvo proprio tinham no braco de referencia
+    base = next((v for k2, v in runs.items() if k2.endswith("-r1p0")), None)
+    reserva = {}
+    if base and sem_medida:
+        tot = sum(c["tokens"] for c in base["composicao"].values())
+        for d in sem_medida:
+            reserva[d] = base["composicao"].get(d, {}).get("tokens", 0) / tot if tot else 0.0
+    reservado = sum(reserva.values())
+    if not params:
+        print()
+        print("nenhum dominio tem alvo proprio nesta metrica — nada a otimizar.")
+        return 2
+    pesos, erro = otimizar(params, a.alvo_tokens, tetos, maximizar, escala, importancia,
+                           reservado)
     print()
     if erro:
         print(f"🔴 {erro}")
@@ -323,8 +376,12 @@ def main() -> int:
         no_teto = " ← NO TETO (falta dado)" if abs(w - tetos[d]) < 1e-4 else ""
         print(f"  {d:14} {100*w:>6.2f}%  ({int(w*a.alvo_tokens):>10,} tokens)"
               f"{no_teto}")
+    for d, w in sorted(reserva.items(), key=lambda kv: -kv[1]):
+        print(f"  {d:14} {100*w:>6.2f}%  ({int(w*a.alvo_tokens):>10,} tokens)"
+              f"  ← RESERVADO (sem holdout limpo — nao otimizado)")
     SAIDA.write_text(json.dumps({"metrica": a.metrica, "alvo_tokens": a.alvo_tokens,
                                  "pesos": pesos, "tetos": tetos,
+                                 "reservado": reserva, "sem_medida": sem_medida,
                                  "diagnostico": diag,
                                  "parametros": {d: dict(zip(NOMES, map(float, v)))
                                                 for d, v in params.items()}},

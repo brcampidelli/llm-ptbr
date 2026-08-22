@@ -1,0 +1,2599 @@
+{
+ "modelo": "BrCamp/bee-350m-pt-base",
+ "inventario": {
+  "traducao": {
+   "exemplos": 41647,
+   "tokens": 5656256
+  },
+  "resumo": {
+   "exemplos": 40267,
+   "tokens": 22948046
+  },
+  "estruturado": {
+   "exemplos": 123469,
+   "tokens": 51131035
+  },
+  "codigo": {
+   "exemplos": 34856,
+   "tokens": 39854821
+  },
+  "agentico_pos": {
+   "exemplos": 13925,
+   "tokens": 5507909
+  },
+  "agentico_neg": {
+   "exemplos": 9729,
+   "tokens": 5410705
+  },
+  "texto": {
+   "exemplos": 3267,
+   "tokens": 1794523
+  },
+  "simbolico": {
+   "exemplos": 2267,
+   "tokens": 1816872
+  }
+ },
+ "runs": {
+  "e4-agentico_neg-r0p5": {
+   "dominio": "agentico_neg",
+   "razao": 0.5,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e4-agentico_neg-r0p5",
+   "minutos": 12.2,
+   "tokens": 3360493,
+   "composicao": {
+    "traducao": {
+     "exemplos": 3315,
+     "tokens": 447805,
+     "orcamento": 450000
+    },
+    "resumo": {
+     "exemplos": 779,
+     "tokens": 448080,
+     "orcamento": 450000
+    },
+    "estruturado": {
+     "exemplos": 1081,
+     "tokens": 447872,
+     "orcamento": 450000
+    },
+    "codigo": {
+     "exemplos": 386,
+     "tokens": 448207,
+     "orcamento": 450000
+    },
+    "agentico_pos": {
+     "exemplos": 1125,
+     "tokens": 447897,
+     "orcamento": 450000
+    },
+    "agentico_neg": {
+     "exemplos": 402,
+     "tokens": 224205,
+     "orcamento": 225000
+    },
+    "texto": {
+     "exemplos": 806,
+     "tokens": 448647,
+     "orcamento": 450000
+    },
+    "simbolico": {
+     "exemplos": 576,
+     "tokens": 447780,
+     "orcamento": 450000
+    }
+   },
+   "metricas": {
+    "loss_traducao": 1.3585033726682274,
+    "loss_resumo": 1.8765957964123425,
+    "loss_estruturado": 0.8244836536397576,
+    "loss_codigo": 1.6729636302569766,
+    "loss_agentico_pos": 0.5617893276085971,
+    "loss_agentico_neg": 1.549394977177107,
+    "loss": 1.307288459627168,
+    "instrucao": 28.971962616822427,
+    "agentico": 0.0,
+    "codigo": 0.0,
+    "traducao": 21.704835787930907,
+    "resumo": 0.0,
+    "atendimento": 0.0
+   }
+  },
+  "e4-agentico_neg-r0p67": {
+   "dominio": "agentico_neg",
+   "razao": 0.67,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e4-agentico_neg-r0p67",
+   "minutos": 12.3,
+   "tokens": 3435834,
+   "composicao": {
+    "traducao": {
+     "exemplos": 3256,
+     "tokens": 447757,
+     "orcamento": 450000
+    },
+    "resumo": {
+     "exemplos": 795,
+     "tokens": 448269,
+     "orcamento": 450000
+    },
+    "estruturado": {
+     "exemplos": 1084,
+     "tokens": 447771,
+     "orcamento": 450000
+    },
+    "codigo": {
+     "exemplos": 390,
+     "tokens": 448110,
+     "orcamento": 450000
+    },
+    "agentico_pos": {
+     "exemplos": 1133,
+     "tokens": 448038,
+     "orcamento": 450000
+    },
+    "agentico_neg": {
+     "exemplos": 543,
+     "tokens": 300197,
+     "orcamento": 301500
+    },
+    "texto": {
+     "exemplos": 867,
+     "tokens": 447802,
+     "orcamento": 450000
+    },
+    "simbolico": {
+     "exemplos": 536,
+     "tokens": 447890,
+     "orcamento": 450000
+    }
+   },
+   "metricas": {
+    "loss_traducao": 1.3413176932414803,
+    "loss_resumo": 1.8752366509654075,
+    "loss_estruturado": 0.8263381289810436,
+    "loss_codigo": 1.6711610274404431,
+    "loss_agentico_pos": 0.5781477657761777,
+    "loss_agentico_neg": 1.5061148601671819,
+    "loss": 1.2997193544286223,
+    "instrucao": 26.635514018691588,
+    "agentico": 0.0,
+    "codigo": 0.0,
+    "traducao": 28.649578999697923,
+    "resumo": 0.0,
+    "atendimento": 0.0
+   }
+  },
+  "e4-agentico_neg-r1p0": {
+   "dominio": "agentico_neg",
+   "razao": 1.0,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e4-agentico_neg-r1p0",
+   "minutos": 12.9,
+   "tokens": 3584824,
+   "composicao": {
+    "traducao": {
+     "exemplos": 3315,
+     "tokens": 447796,
+     "orcamento": 450000
+    },
+    "resumo": {
+     "exemplos": 810,
+     "tokens": 448871,
+     "orcamento": 450000
+    },
+    "estruturado": {
+     "exemplos": 1084,
+     "tokens": 448054,
+     "orcamento": 450000
+    },
+    "codigo": {
+     "exemplos": 385,
+     "tokens": 448085,
+     "orcamento": 450000
+    },
+    "agentico_pos": {
+     "exemplos": 1145,
+     "tokens": 447997,
+     "orcamento": 450000
+    },
+    "agentico_neg": {
+     "exemplos": 806,
+     "tokens": 448230,
+     "orcamento": 450000
+    },
+    "texto": {
+     "exemplos": 853,
+     "tokens": 447859,
+     "orcamento": 450000
+    },
+    "simbolico": {
+     "exemplos": 563,
+     "tokens": 447932,
+     "orcamento": 450000
+    }
+   },
+   "metricas": {
+    "loss_traducao": 1.353241019589915,
+    "loss_resumo": 1.870400276136316,
+    "loss_estruturado": 0.8180630755009048,
+    "loss_codigo": 1.6787451272211869,
+    "loss_agentico_pos": 0.568787422086077,
+    "loss_agentico_neg": 1.4334146082116903,
+    "loss": 1.2871085881243485,
+    "instrucao": 25.233644859813083,
+    "agentico": 0.0,
+    "codigo": 0.0,
+    "traducao": 27.72856114352318,
+    "resumo": 0.0,
+    "atendimento": 0.0
+   }
+  },
+  "e4-agentico_neg-r2p0": {
+   "dominio": "agentico_neg",
+   "razao": 2.0,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e4-agentico_neg-r2p0",
+   "minutos": 13.7,
+   "tokens": 4032377,
+   "composicao": {
+    "traducao": {
+     "exemplos": 3309,
+     "tokens": 447819,
+     "orcamento": 450000
+    },
+    "resumo": {
+     "exemplos": 800,
+     "tokens": 447838,
+     "orcamento": 450000
+    },
+    "estruturado": {
+     "exemplos": 1087,
+     "tokens": 447943,
+     "orcamento": 450000
+    },
+    "codigo": {
+     "exemplos": 388,
+     "tokens": 448593,
+     "orcamento": 450000
+    },
+    "agentico_pos": {
+     "exemplos": 1133,
+     "tokens": 447958,
+     "orcamento": 450000
+    },
+    "agentico_neg": {
+     "exemplos": 1614,
+     "tokens": 895774,
+     "orcamento": 900000
+    },
+    "texto": {
+     "exemplos": 788,
+     "tokens": 447992,
+     "orcamento": 450000
+    },
+    "simbolico": {
+     "exemplos": 577,
+     "tokens": 448460,
+     "orcamento": 450000
+    }
+   },
+   "metricas": {
+    "loss_traducao": 1.3523117464894954,
+    "loss_resumo": 1.8774972232420346,
+    "loss_estruturado": 0.8131967070152859,
+    "loss_codigo": 1.6709979995060267,
+    "loss_agentico_pos": 0.5725868587900516,
+    "loss_agentico_neg": 1.2767575642534794,
+    "loss": 1.2605580165493955,
+    "instrucao": 27.102803738317753,
+    "agentico": 0.0,
+    "codigo": 0.0,
+    "traducao": 27.184367525739365,
+    "resumo": 0.0,
+    "atendimento": 0.0
+   }
+  },
+  "e4-agentico_neg-r3p0": {
+   "dominio": "agentico_neg",
+   "razao": 3.0,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e4-agentico_neg-r3p0",
+   "minutos": 14.7,
+   "tokens": 4482893,
+   "composicao": {
+    "traducao": {
+     "exemplos": 3308,
+     "tokens": 447848,
+     "orcamento": 450000
+    },
+    "resumo": {
+     "exemplos": 766,
+     "tokens": 448271,
+     "orcamento": 450000
+    },
+    "estruturado": {
+     "exemplos": 1082,
+     "tokens": 447990,
+     "orcamento": 450000
+    },
+    "codigo": {
+     "exemplos": 385,
+     "tokens": 449202,
+     "orcamento": 450000
+    },
+    "agentico_pos": {
+     "exemplos": 1125,
+     "tokens": 448092,
+     "orcamento": 450000
+    },
+    "agentico_neg": {
+     "exemplos": 2425,
+     "tokens": 1343735,
+     "orcamento": 1350000
+    },
+    "texto": {
+     "exemplos": 795,
+     "tokens": 448586,
+     "orcamento": 450000
+    },
+    "simbolico": {
+     "exemplos": 572,
+     "tokens": 449169,
+     "orcamento": 450000
+    }
+   },
+   "metricas": {
+    "loss_traducao": 1.3629351642221634,
+    "loss_resumo": 1.8822332399115989,
+    "loss_estruturado": 0.8217459537936431,
+    "loss_codigo": 1.6727832950014563,
+    "loss_agentico_pos": 0.5837957556787791,
+    "loss_agentico_neg": 1.1916940738174486,
+    "loss": 1.2525312470708483,
+    "instrucao": 28.504672897196258,
+    "agentico": 0.0,
+    "codigo": 0.0,
+    "traducao": 29.042349938003202,
+    "resumo": 0.0,
+    "atendimento": 0.0
+   }
+  },
+  "e4-agentico_pos-r0p5": {
+   "dominio": "agentico_pos",
+   "razao": 0.5,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e4-agentico_pos-r0p5",
+   "minutos": 11.9,
+   "tokens": 3360426,
+   "composicao": {
+    "traducao": {
+     "exemplos": 3291,
+     "tokens": 447840,
+     "orcamento": 450000
+    },
+    "resumo": {
+     "exemplos": 776,
+     "tokens": 447967,
+     "orcamento": 450000
+    },
+    "estruturado": {
+     "exemplos": 1081,
+     "tokens": 447757,
+     "orcamento": 450000
+    },
+    "codigo": {
+     "exemplos": 394,
+     "tokens": 448069,
+     "orcamento": 450000
+    },
+    "agentico_pos": {
+     "exemplos": 564,
+     "tokens": 224307,
+     "orcamento": 225000
+    },
+    "agentico_neg": {
+     "exemplos": 804,
+     "tokens": 447797,
+     "orcamento": 450000
+    },
+    "texto": {
+     "exemplos": 832,
+     "tokens": 448652,
+     "orcamento": 450000
+    },
+    "simbolico": {
+     "exemplos": 564,
+     "tokens": 448037,
+     "orcamento": 450000
+    }
+   },
+   "metricas": {
+    "loss_traducao": 1.3538904193041228,
+    "loss_resumo": 1.8728899771341678,
+    "loss_estruturado": 0.8220807061512754,
+    "loss_codigo": 1.6749587468080476,
+    "loss_agentico_pos": 0.7244342508427096,
+    "loss_agentico_neg": 1.4324446635098023,
+    "loss": 1.3134497939583543,
+    "instrucao": 27.102803738317753,
+    "agentico": 0.0,
+    "codigo": 0.0,
+    "traducao": 29.19310860742247,
+    "resumo": 0.0,
+    "atendimento": 0.0
+   }
+  },
+  "e4-agentico_pos-r0p67": {
+   "dominio": "agentico_pos",
+   "razao": 0.67,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e4-agentico_pos-r0p67",
+   "minutos": 12.2,
+   "tokens": 3436261,
+   "composicao": {
+    "traducao": {
+     "exemplos": 3304,
+     "tokens": 447908,
+     "orcamento": 450000
+    },
+    "resumo": {
+     "exemplos": 757,
+     "tokens": 447965,
+     "orcamento": 450000
+    },
+    "estruturado": {
+     "exemplos": 1076,
+     "tokens": 447775,
+     "orcamento": 450000
+    },
+    "codigo": {
+     "exemplos": 389,
+     "tokens": 448527,
+     "orcamento": 450000
+    },
+    "agentico_pos": {
+     "exemplos": 759,
+     "tokens": 300205,
+     "orcamento": 301500
+    },
+    "agentico_neg": {
+     "exemplos": 811,
+     "tokens": 447787,
+     "orcamento": 450000
+    },
+    "texto": {
+     "exemplos": 817,
+     "tokens": 447785,
+     "orcamento": 450000
+    },
+    "simbolico": {
+     "exemplos": 560,
+     "tokens": 448309,
+     "orcamento": 450000
+    }
+   },
+   "metricas": {
+    "loss_traducao": 1.343962257053334,
+    "loss_resumo": 1.879656416900601,
+    "loss_estruturado": 0.8177635253952028,
+    "loss_codigo": 1.676060740528523,
+    "loss_agentico_pos": 0.6551115009450477,
+    "loss_agentico_neg": 1.4184671408916247,
+    "loss": 1.2985035969523888,
+    "instrucao": 31.308411214953267,
+    "agentico": 0.0,
+    "codigo": 0.0,
+    "traducao": 29.56585313320875,
+    "resumo": 0.0,
+    "atendimento": 0.0
+   }
+  },
+  "e4-agentico_pos-r1p0": {
+   "dominio": "agentico_pos",
+   "razao": 1.0,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e4-agentico_pos-r1p0",
+   "minutos": 12.7,
+   "tokens": 3584316,
+   "composicao": {
+    "traducao": {
+     "exemplos": 3317,
+     "tokens": 447934,
+     "orcamento": 450000
+    },
+    "resumo": {
+     "exemplos": 789,
+     "tokens": 447843,
+     "orcamento": 450000
+    },
+    "estruturado": {
+     "exemplos": 1079,
+     "tokens": 447975,
+     "orcamento": 450000
+    },
+    "codigo": {
+     "exemplos": 400,
+     "tokens": 448644,
+     "orcamento": 450000
+    },
+    "agentico_pos": {
+     "exemplos": 1124,
+     "tokens": 447903,
+     "orcamento": 450000
+    },
+    "agentico_neg": {
+     "exemplos": 806,
+     "tokens": 448177,
+     "orcamento": 450000
+    },
+    "texto": {
+     "exemplos": 814,
+     "tokens": 447796,
+     "orcamento": 450000
+    },
+    "simbolico": {
+     "exemplos": 565,
+     "tokens": 448044,
+     "orcamento": 450000
+    }
+   },
+   "metricas": {
+    "loss_traducao": 1.3616585757995923,
+    "loss_resumo": 1.8767684719638682,
+    "loss_estruturado": 0.8163522350663568,
+    "loss_codigo": 1.6740955359086915,
+    "loss_agentico_pos": 0.5601642103931638,
+    "loss_agentico_neg": 1.4206962773372578,
+    "loss": 1.2849558844114883,
+    "instrucao": 31.775700934579437,
+    "agentico": 0.0,
+    "codigo": 0.0,
+    "traducao": 25.563644716989792,
+    "resumo": 0.0,
+    "atendimento": 0.0
+   }
+  },
+  "e4-agentico_pos-r2p0": {
+   "dominio": "agentico_pos",
+   "razao": 2.0,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e4-agentico_pos-r2p0",
+   "minutos": 14.2,
+   "tokens": 4031938,
+   "composicao": {
+    "traducao": {
+     "exemplos": 3308,
+     "tokens": 447808,
+     "orcamento": 450000
+    },
+    "resumo": {
+     "exemplos": 789,
+     "tokens": 447920,
+     "orcamento": 450000
+    },
+    "estruturado": {
+     "exemplos": 1080,
+     "tokens": 448088,
+     "orcamento": 450000
+    },
+    "codigo": {
+     "exemplos": 389,
+     "tokens": 448407,
+     "orcamento": 450000
+    },
+    "agentico_pos": {
+     "exemplos": 2246,
+     "tokens": 895760,
+     "orcamento": 900000
+    },
+    "agentico_neg": {
+     "exemplos": 798,
+     "tokens": 447756,
+     "orcamento": 450000
+    },
+    "texto": {
+     "exemplos": 827,
+     "tokens": 447754,
+     "orcamento": 450000
+    },
+    "simbolico": {
+     "exemplos": 550,
+     "tokens": 448445,
+     "orcamento": 450000
+    }
+   },
+   "metricas": {
+    "loss_traducao": 1.3487500174034643,
+    "loss_resumo": 1.8775751666097142,
+    "loss_estruturado": 0.8194354849713674,
+    "loss_codigo": 1.6741444950449698,
+    "loss_agentico_pos": 0.48850181585239283,
+    "loss_agentico_neg": 1.4029308304418133,
+    "loss": 1.2685563017206203,
+    "instrucao": 26.168224299065418,
+    "agentico": 0.0,
+    "codigo": 0.0,
+    "traducao": 27.331754852699657,
+    "resumo": 0.0,
+    "atendimento": 0.0
+   }
+  },
+  "e4-agentico_pos-r3p0": {
+   "dominio": "agentico_pos",
+   "razao": 3.0,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e4-agentico_pos-r3p0",
+   "minutos": 15.4,
+   "tokens": 4479952,
+   "composicao": {
+    "traducao": {
+     "exemplos": 3306,
+     "tokens": 447820,
+     "orcamento": 450000
+    },
+    "resumo": {
+     "exemplos": 786,
+     "tokens": 447820,
+     "orcamento": 450000
+    },
+    "estruturado": {
+     "exemplos": 1079,
+     "tokens": 447866,
+     "orcamento": 450000
+    },
+    "codigo": {
+     "exemplos": 390,
+     "tokens": 448273,
+     "orcamento": 450000
+    },
+    "agentico_pos": {
+     "exemplos": 3388,
+     "tokens": 1343612,
+     "orcamento": 1350000
+    },
+    "agentico_neg": {
+     "exemplos": 812,
+     "tokens": 447915,
+     "orcamento": 450000
+    },
+    "texto": {
+     "exemplos": 807,
+     "tokens": 448284,
+     "orcamento": 450000
+    },
+    "simbolico": {
+     "exemplos": 557,
+     "tokens": 448362,
+     "orcamento": 450000
+    }
+   },
+   "metricas": {
+    "loss_traducao": 1.339564168290681,
+    "loss_resumo": 1.869468322654929,
+    "loss_estruturado": 0.8129824892523657,
+    "loss_codigo": 1.6666120755195355,
+    "loss_agentico_pos": 0.434243679950497,
+    "loss_agentico_neg": 1.3797267913586122,
+    "loss": 1.2504329211711034,
+    "instrucao": 29.439252336448597,
+    "agentico": 0.0,
+    "codigo": 0.0,
+    "traducao": 27.890480101657847,
+    "resumo": 0.0,
+    "atendimento": 0.0
+   }
+  },
+  "e4-codigo-r0p5": {
+   "dominio": "codigo",
+   "razao": 0.5,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e4-codigo-r0p5",
+   "minutos": 12.1,
+   "tokens": 3360515,
+   "composicao": {
+    "traducao": {
+     "exemplos": 3304,
+     "tokens": 447772,
+     "orcamento": 450000
+    },
+    "resumo": {
+     "exemplos": 772,
+     "tokens": 448546,
+     "orcamento": 450000
+    },
+    "estruturado": {
+     "exemplos": 1079,
+     "tokens": 448075,
+     "orcamento": 450000
+    },
+    "codigo": {
+     "exemplos": 202,
+     "tokens": 224592,
+     "orcamento": 225000
+    },
+    "agentico_pos": {
+     "exemplos": 1132,
+     "tokens": 447905,
+     "orcamento": 450000
+    },
+    "agentico_neg": {
+     "exemplos": 807,
+     "tokens": 447783,
+     "orcamento": 450000
+    },
+    "texto": {
+     "exemplos": 838,
+     "tokens": 447937,
+     "orcamento": 450000
+    },
+    "simbolico": {
+     "exemplos": 566,
+     "tokens": 447905,
+     "orcamento": 450000
+    }
+   },
+   "metricas": {
+    "loss_traducao": 1.3390066119021022,
+    "loss_resumo": 1.8794604820789733,
+    "loss_estruturado": 0.815716667235651,
+    "loss_codigo": 1.7683320778858924,
+    "loss_agentico_pos": 0.562939328837806,
+    "loss_agentico_neg": 1.3726819230542155,
+    "loss": 1.2896895151657735,
+    "instrucao": 32.242990654205606,
+    "agentico": 0.0,
+    "codigo": 0.0,
+    "traducao": 21.382275311278477,
+    "resumo": 0.0,
+    "atendimento": 0.0
+   }
+  },
+  "e4-codigo-r0p67": {
+   "dominio": "codigo",
+   "razao": 0.67,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e4-codigo-r0p67",
+   "minutos": 12.3,
+   "tokens": 3438868,
+   "composicao": {
+    "traducao": {
+     "exemplos": 3252,
+     "tokens": 447776,
+     "orcamento": 450000
+    },
+    "resumo": {
+     "exemplos": 790,
+     "tokens": 447887,
+     "orcamento": 450000
+    },
+    "estruturado": {
+     "exemplos": 1080,
+     "tokens": 448172,
+     "orcamento": 450000
+    },
+    "codigo": {
+     "exemplos": 262,
+     "tokens": 300913,
+     "orcamento": 301500
+    },
+    "agentico_pos": {
+     "exemplos": 1143,
+     "tokens": 448300,
+     "orcamento": 450000
+    },
+    "agentico_neg": {
+     "exemplos": 805,
+     "tokens": 447852,
+     "orcamento": 450000
+    },
+    "texto": {
+     "exemplos": 815,
+     "tokens": 449738,
+     "orcamento": 450000
+    },
+    "simbolico": {
+     "exemplos": 550,
+     "tokens": 448230,
+     "orcamento": 450000
+    }
+   },
+   "metricas": {
+    "loss_traducao": 1.3503160214642502,
+    "loss_resumo": 1.8775450473877486,
+    "loss_estruturado": 0.8169455262178777,
+    "loss_codigo": 1.7240866579783365,
+    "loss_agentico_pos": 0.5780396937405831,
+    "loss_agentico_neg": 1.4130029740053733,
+    "loss": 1.293322653465695,
+    "instrucao": 28.504672897196258,
+    "agentico": 0.0,
+    "codigo": 0.0,
+    "traducao": 22.506785012541588,
+    "resumo": 0.0,
+    "atendimento": 0.0
+   }
+  },
+  "e4-codigo-r1p0": {
+   "dominio": "codigo",
+   "razao": 1.0,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e4-codigo-r1p0",
+   "minutos": 12.6,
+   "tokens": 3586396,
+   "composicao": {
+    "traducao": {
+     "exemplos": 3297,
+     "tokens": 447781,
+     "orcamento": 450000
+    },
+    "resumo": {
+     "exemplos": 812,
+     "tokens": 448415,
+     "orcamento": 450000
+    },
+    "estruturado": {
+     "exemplos": 1082,
+     "tokens": 448004,
+     "orcamento": 450000
+    },
+    "codigo": {
+     "exemplos": 395,
+     "tokens": 447791,
+     "orcamento": 450000
+    },
+    "agentico_pos": {
+     "exemplos": 1124,
+     "tokens": 447927,
+     "orcamento": 450000
+    },
+    "agentico_neg": {
+     "exemplos": 807,
+     "tokens": 448095,
+     "orcamento": 450000
+    },
+    "texto": {
+     "exemplos": 810,
+     "tokens": 449318,
+     "orcamento": 450000
+    },
+    "simbolico": {
+     "exemplos": 553,
+     "tokens": 449065,
+     "orcamento": 450000
+    }
+   },
+   "metricas": {
+    "loss_traducao": 1.3458635435004616,
+    "loss_resumo": 1.8754663097319104,
+    "loss_estruturado": 0.8176899602295249,
+    "loss_codigo": 1.679506265542847,
+    "loss_agentico_pos": 0.5952967132687709,
+    "loss_agentico_neg": 1.4033612045850463,
+    "loss": 1.2861973328097602,
+    "instrucao": 28.037383177570092,
+    "agentico": 0.0,
+    "codigo": 0.0,
+    "traducao": 24.708781349564383,
+    "resumo": 0.0,
+    "atendimento": 0.0
+   }
+  },
+  "e4-codigo-r2p0": {
+   "dominio": "codigo",
+   "razao": 2.0,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e4-codigo-r2p0",
+   "minutos": 13.6,
+   "tokens": 4034972,
+   "composicao": {
+    "traducao": {
+     "exemplos": 3314,
+     "tokens": 447805,
+     "orcamento": 450000
+    },
+    "resumo": {
+     "exemplos": 786,
+     "tokens": 448335,
+     "orcamento": 450000
+    },
+    "estruturado": {
+     "exemplos": 1081,
+     "tokens": 447854,
+     "orcamento": 450000
+    },
+    "codigo": {
+     "exemplos": 772,
+     "tokens": 896169,
+     "orcamento": 900000
+    },
+    "agentico_pos": {
+     "exemplos": 1116,
+     "tokens": 448005,
+     "orcamento": 450000
+    },
+    "agentico_neg": {
+     "exemplos": 809,
+     "tokens": 448163,
+     "orcamento": 450000
+    },
+    "texto": {
+     "exemplos": 818,
+     "tokens": 449023,
+     "orcamento": 450000
+    },
+    "simbolico": {
+     "exemplos": 571,
+     "tokens": 449618,
+     "orcamento": 450000
+    }
+   },
+   "metricas": {
+    "loss_traducao": 1.3560634360374955,
+    "loss_resumo": 1.8755381289976298,
+    "loss_estruturado": 0.8278709321576143,
+    "loss_codigo": 1.5851915903780773,
+    "loss_agentico_pos": 0.5772832548663126,
+    "loss_agentico_neg": 1.4171610661467144,
+    "loss": 1.273184734763974,
+    "instrucao": 26.168224299065418,
+    "agentico": 0.0,
+    "codigo": 0.0,
+    "traducao": 26.54357029728268,
+    "resumo": 0.0,
+    "atendimento": 0.0
+   }
+  },
+  "e4-codigo-r3p0": {
+   "dominio": "codigo",
+   "razao": 3.0,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e4-codigo-r3p0",
+   "minutos": 14.5,
+   "tokens": 4479302,
+   "composicao": {
+    "traducao": {
+     "exemplos": 3292,
+     "tokens": 447800,
+     "orcamento": 450000
+    },
+    "resumo": {
+     "exemplos": 798,
+     "tokens": 448349,
+     "orcamento": 450000
+    },
+    "estruturado": {
+     "exemplos": 1078,
+     "tokens": 448003,
+     "orcamento": 450000
+    },
+    "codigo": {
+     "exemplos": 1156,
+     "tokens": 1343655,
+     "orcamento": 1350000
+    },
+    "agentico_pos": {
+     "exemplos": 1140,
+     "tokens": 447932,
+     "orcamento": 450000
+    },
+    "agentico_neg": {
+     "exemplos": 805,
+     "tokens": 447757,
+     "orcamento": 450000
+    },
+    "texto": {
+     "exemplos": 843,
+     "tokens": 447907,
+     "orcamento": 450000
+    },
+    "simbolico": {
+     "exemplos": 561,
+     "tokens": 447899,
+     "orcamento": 450000
+    }
+   },
+   "metricas": {
+    "loss_traducao": 1.3671850401173027,
+    "loss_resumo": 1.8786071258202417,
+    "loss_estruturado": 0.8335416217151461,
+    "loss_codigo": 1.5319334864841614,
+    "loss_agentico_pos": 0.6112472031261105,
+    "loss_agentico_neg": 1.4183140388825013,
+    "loss": 1.2734714193575771,
+    "instrucao": 31.308411214953267,
+    "agentico": 0.0,
+    "codigo": 0.0,
+    "traducao": 25.507185778540787,
+    "resumo": 0.0,
+    "atendimento": 0.0
+   }
+  },
+  "e4-estruturado-r0p5": {
+   "dominio": "estruturado",
+   "razao": 0.5,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e4-estruturado-r0p5",
+   "minutos": 11.8,
+   "tokens": 3360223,
+   "composicao": {
+    "traducao": {
+     "exemplos": 3288,
+     "tokens": 447758,
+     "orcamento": 450000
+    },
+    "resumo": {
+     "exemplos": 792,
+     "tokens": 448141,
+     "orcamento": 450000
+    },
+    "estruturado": {
+     "exemplos": 544,
+     "tokens": 224278,
+     "orcamento": 225000
+    },
+    "codigo": {
+     "exemplos": 389,
+     "tokens": 448300,
+     "orcamento": 450000
+    },
+    "agentico_pos": {
+     "exemplos": 1122,
+     "tokens": 447772,
+     "orcamento": 450000
+    },
+    "agentico_neg": {
+     "exemplos": 807,
+     "tokens": 448159,
+     "orcamento": 450000
+    },
+    "texto": {
+     "exemplos": 841,
+     "tokens": 447802,
+     "orcamento": 450000
+    },
+    "simbolico": {
+     "exemplos": 556,
+     "tokens": 448013,
+     "orcamento": 450000
+    }
+   },
+   "metricas": {
+    "loss_traducao": 1.3604513914025793,
+    "loss_resumo": 1.8826088913458596,
+    "loss_estruturado": 0.8670219572159862,
+    "loss_codigo": 1.6799392204237626,
+    "loss_agentico_pos": 0.5578907853748016,
+    "loss_agentico_neg": 1.3996596403050285,
+    "loss": 1.2912619810113364,
+    "instrucao": 27.570093457943923,
+    "agentico": 0.0,
+    "codigo": 0.0,
+    "traducao": 28.119634790406604,
+    "resumo": 0.0,
+    "atendimento": 0.0
+   }
+  },
+  "e4-estruturado-r0p67": {
+   "dominio": "estruturado",
+   "razao": 0.67,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e4-estruturado-r0p67",
+   "minutos": 12.2,
+   "tokens": 3436510,
+   "composicao": {
+    "traducao": {
+     "exemplos": 3336,
+     "tokens": 447811,
+     "orcamento": 450000
+    },
+    "resumo": {
+     "exemplos": 773,
+     "tokens": 448451,
+     "orcamento": 450000
+    },
+    "estruturado": {
+     "exemplos": 726,
+     "tokens": 300291,
+     "orcamento": 301500
+    },
+    "codigo": {
+     "exemplos": 388,
+     "tokens": 447879,
+     "orcamento": 450000
+    },
+    "agentico_pos": {
+     "exemplos": 1133,
+     "tokens": 447930,
+     "orcamento": 450000
+    },
+    "agentico_neg": {
+     "exemplos": 806,
+     "tokens": 447778,
+     "orcamento": 450000
+    },
+    "texto": {
+     "exemplos": 836,
+     "tokens": 448027,
+     "orcamento": 450000
+    },
+    "simbolico": {
+     "exemplos": 566,
+     "tokens": 448343,
+     "orcamento": 450000
+    }
+   },
+   "metricas": {
+    "loss_traducao": 1.3434331328247509,
+    "loss_resumo": 1.8845706272422802,
+    "loss_estruturado": 0.846038011928607,
+    "loss_codigo": 1.6747691331300418,
+    "loss_agentico_pos": 0.5852948498762792,
+    "loss_agentico_neg": 1.4155682150663158,
+    "loss": 1.2916123283447125,
+    "instrucao": 31.308411214953267,
+    "agentico": 0.0,
+    "codigo": 0.0,
+    "traducao": 29.648059567162086,
+    "resumo": 0.0,
+    "atendimento": 0.0
+   }
+  },
+  "e4-estruturado-r1p0": {
+   "dominio": "estruturado",
+   "razao": 1.0,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e4-estruturado-r1p0",
+   "minutos": 12.8,
+   "tokens": 3583802,
+   "composicao": {
+    "traducao": {
+     "exemplos": 3306,
+     "tokens": 447819,
+     "orcamento": 450000
+    },
+    "resumo": {
+     "exemplos": 808,
+     "tokens": 448009,
+     "orcamento": 450000
+    },
+    "estruturado": {
+     "exemplos": 1082,
+     "tokens": 448044,
+     "orcamento": 450000
+    },
+    "codigo": {
+     "exemplos": 380,
+     "tokens": 448036,
+     "orcamento": 450000
+    },
+    "agentico_pos": {
+     "exemplos": 1129,
+     "tokens": 448494,
+     "orcamento": 450000
+    },
+    "agentico_neg": {
+     "exemplos": 802,
+     "tokens": 447779,
+     "orcamento": 450000
+    },
+    "texto": {
+     "exemplos": 846,
+     "tokens": 447852,
+     "orcamento": 450000
+    },
+    "simbolico": {
+     "exemplos": 539,
+     "tokens": 447769,
+     "orcamento": 450000
+    }
+   },
+   "metricas": {
+    "loss_traducao": 1.3514732087370656,
+    "loss_resumo": 1.8669726951083718,
+    "loss_estruturado": 0.8224312731427464,
+    "loss_codigo": 1.678596091839461,
+    "loss_agentico_pos": 0.5860994524181873,
+    "loss_agentico_neg": 1.4060266301528794,
+    "loss": 1.285266558566452,
+    "instrucao": 27.570093457943923,
+    "agentico": 0.0,
+    "codigo": 0.0,
+    "traducao": 20.547126788656662,
+    "resumo": 0.0,
+    "atendimento": 0.0
+   }
+  },
+  "e4-estruturado-r2p0": {
+   "dominio": "estruturado",
+   "razao": 2.0,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e4-estruturado-r2p0",
+   "minutos": 14.0,
+   "tokens": 4033537,
+   "composicao": {
+    "traducao": {
+     "exemplos": 3324,
+     "tokens": 448026,
+     "orcamento": 450000
+    },
+    "resumo": {
+     "exemplos": 769,
+     "tokens": 447997,
+     "orcamento": 450000
+    },
+    "estruturado": {
+     "exemplos": 2174,
+     "tokens": 895909,
+     "orcamento": 900000
+    },
+    "codigo": {
+     "exemplos": 395,
+     "tokens": 448472,
+     "orcamento": 450000
+    },
+    "agentico_pos": {
+     "exemplos": 1124,
+     "tokens": 447818,
+     "orcamento": 450000
+    },
+    "agentico_neg": {
+     "exemplos": 804,
+     "tokens": 448324,
+     "orcamento": 450000
+    },
+    "texto": {
+     "exemplos": 815,
+     "tokens": 448254,
+     "orcamento": 450000
+    },
+    "simbolico": {
+     "exemplos": 566,
+     "tokens": 448737,
+     "orcamento": 450000
+    }
+   },
+   "metricas": {
+    "loss_traducao": 1.35083629405568,
+    "loss_resumo": 1.86911137845581,
+    "loss_estruturado": 0.7682013533388348,
+    "loss_codigo": 1.6680722019886924,
+    "loss_agentico_pos": 0.5720827946755683,
+    "loss_agentico_neg": 1.4101366451811093,
+    "loss": 1.273073444615949,
+    "instrucao": 29.906542056074763,
+    "agentico": 0.0,
+    "codigo": 0.0,
+    "traducao": 27.7009714010018,
+    "resumo": 0.0,
+    "atendimento": 0.0
+   }
+  },
+  "e4-estruturado-r3p0": {
+   "dominio": "estruturado",
+   "razao": 3.0,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e4-estruturado-r3p0",
+   "minutos": 15.4,
+   "tokens": 4480076,
+   "composicao": {
+    "traducao": {
+     "exemplos": 3323,
+     "tokens": 447807,
+     "orcamento": 450000
+    },
+    "resumo": {
+     "exemplos": 783,
+     "tokens": 447770,
+     "orcamento": 450000
+    },
+    "estruturado": {
+     "exemplos": 3258,
+     "tokens": 1343638,
+     "orcamento": 1350000
+    },
+    "codigo": {
+     "exemplos": 393,
+     "tokens": 447995,
+     "orcamento": 450000
+    },
+    "agentico_pos": {
+     "exemplos": 1116,
+     "tokens": 447919,
+     "orcamento": 450000
+    },
+    "agentico_neg": {
+     "exemplos": 805,
+     "tokens": 448310,
+     "orcamento": 450000
+    },
+    "texto": {
+     "exemplos": 834,
+     "tokens": 447836,
+     "orcamento": 450000
+    },
+    "simbolico": {
+     "exemplos": 557,
+     "tokens": 448801,
+     "orcamento": 450000
+    }
+   },
+   "metricas": {
+    "loss_traducao": 1.3446935330277974,
+    "loss_resumo": 1.8642516145174488,
+    "loss_estruturado": 0.7520102234996157,
+    "loss_codigo": 1.6691112590624266,
+    "loss_agentico_pos": 0.5717734446186783,
+    "loss_agentico_neg": 1.4206485715588086,
+    "loss": 1.2704147743807959,
+    "instrucao": 29.439252336448597,
+    "agentico": 0.0,
+    "codigo": 0.0,
+    "traducao": 11.884496350395883,
+    "resumo": 0.0,
+    "atendimento": 0.0
+   }
+  },
+  "e4-resumo-r0p5": {
+   "dominio": "resumo",
+   "razao": 0.5,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e4-resumo-r0p5",
+   "minutos": 12.1,
+   "tokens": 3360273,
+   "composicao": {
+    "traducao": {
+     "exemplos": 3323,
+     "tokens": 447897,
+     "orcamento": 450000
+    },
+    "resumo": {
+     "exemplos": 415,
+     "tokens": 224012,
+     "orcamento": 225000
+    },
+    "estruturado": {
+     "exemplos": 1086,
+     "tokens": 448147,
+     "orcamento": 450000
+    },
+    "codigo": {
+     "exemplos": 391,
+     "tokens": 448758,
+     "orcamento": 450000
+    },
+    "agentico_pos": {
+     "exemplos": 1131,
+     "tokens": 447929,
+     "orcamento": 450000
+    },
+    "agentico_neg": {
+     "exemplos": 811,
+     "tokens": 447802,
+     "orcamento": 450000
+    },
+    "texto": {
+     "exemplos": 836,
+     "tokens": 447808,
+     "orcamento": 450000
+    },
+    "simbolico": {
+     "exemplos": 562,
+     "tokens": 447920,
+     "orcamento": 450000
+    }
+   },
+   "metricas": {
+    "loss_traducao": 1.3459025937986315,
+    "loss_resumo": 1.9142719335142582,
+    "loss_estruturado": 0.8235093444365881,
+    "loss_codigo": 1.6730459920295104,
+    "loss_agentico_pos": 0.5781255562873205,
+    "loss_agentico_neg": 1.4218014834955828,
+    "loss": 1.2927761505936486,
+    "instrucao": 28.971962616822427,
+    "agentico": 0.0,
+    "codigo": 0.0,
+    "traducao": 26.50131394644127,
+    "resumo": 0.0,
+    "atendimento": 0.0
+   }
+  },
+  "e4-resumo-r0p67": {
+   "dominio": "resumo",
+   "razao": 0.67,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e4-resumo-r0p67",
+   "minutos": 12.3,
+   "tokens": 3436102,
+   "composicao": {
+    "traducao": {
+     "exemplos": 3321,
+     "tokens": 447813,
+     "orcamento": 450000
+    },
+    "resumo": {
+     "exemplos": 505,
+     "tokens": 300384,
+     "orcamento": 301500
+    },
+    "estruturado": {
+     "exemplos": 1070,
+     "tokens": 447976,
+     "orcamento": 450000
+    },
+    "codigo": {
+     "exemplos": 390,
+     "tokens": 448070,
+     "orcamento": 450000
+    },
+    "agentico_pos": {
+     "exemplos": 1134,
+     "tokens": 447814,
+     "orcamento": 450000
+    },
+    "agentico_neg": {
+     "exemplos": 806,
+     "tokens": 448267,
+     "orcamento": 450000
+    },
+    "texto": {
+     "exemplos": 817,
+     "tokens": 447896,
+     "orcamento": 450000
+    },
+    "simbolico": {
+     "exemplos": 549,
+     "tokens": 447882,
+     "orcamento": 450000
+    }
+   },
+   "metricas": {
+    "loss_traducao": 1.350722585521719,
+    "loss_resumo": 1.900900341761857,
+    "loss_estruturado": 0.8226075237703313,
+    "loss_codigo": 1.674343141897253,
+    "loss_agentico_pos": 0.5795988981910752,
+    "loss_agentico_neg": 1.397649465389455,
+    "loss": 1.2876369927552818,
+    "instrucao": 29.906542056074763,
+    "agentico": 0.0,
+    "codigo": 0.0,
+    "traducao": 23.95691344431137,
+    "resumo": 0.0,
+    "atendimento": 0.0
+   }
+  },
+  "e4-resumo-r1p0": {
+   "dominio": "resumo",
+   "razao": 1.0,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e4-resumo-r1p0",
+   "minutos": 12.7,
+   "tokens": 3584519,
+   "composicao": {
+    "traducao": {
+     "exemplos": 3287,
+     "tokens": 447780,
+     "orcamento": 450000
+    },
+    "resumo": {
+     "exemplos": 798,
+     "tokens": 447811,
+     "orcamento": 450000
+    },
+    "estruturado": {
+     "exemplos": 1080,
+     "tokens": 447833,
+     "orcamento": 450000
+    },
+    "codigo": {
+     "exemplos": 401,
+     "tokens": 448030,
+     "orcamento": 450000
+    },
+    "agentico_pos": {
+     "exemplos": 1120,
+     "tokens": 448049,
+     "orcamento": 450000
+    },
+    "agentico_neg": {
+     "exemplos": 799,
+     "tokens": 447957,
+     "orcamento": 450000
+    },
+    "texto": {
+     "exemplos": 829,
+     "tokens": 447904,
+     "orcamento": 450000
+    },
+    "simbolico": {
+     "exemplos": 541,
+     "tokens": 449155,
+     "orcamento": 450000
+    }
+   },
+   "metricas": {
+    "loss_traducao": 1.360864526971393,
+    "loss_resumo": 1.8711719127777655,
+    "loss_estruturado": 0.8190648480874204,
+    "loss_codigo": 1.6739507429964082,
+    "loss_agentico_pos": 0.5587901450201588,
+    "loss_agentico_neg": 1.4147765764080311,
+    "loss": 1.283103125376863,
+    "instrucao": 30.373831775700932,
+    "agentico": 0.0,
+    "codigo": 0.0,
+    "traducao": 27.67963249248145,
+    "resumo": 0.0,
+    "atendimento": 0.0
+   }
+  },
+  "e4-resumo-r2p0": {
+   "dominio": "resumo",
+   "razao": 2.0,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e4-resumo-r2p0",
+   "minutos": 14.0,
+   "tokens": 4031936,
+   "composicao": {
+    "traducao": {
+     "exemplos": 3302,
+     "tokens": 447821,
+     "orcamento": 450000
+    },
+    "resumo": {
+     "exemplos": 1602,
+     "tokens": 895788,
+     "orcamento": 900000
+    },
+    "estruturado": {
+     "exemplos": 1082,
+     "tokens": 448142,
+     "orcamento": 450000
+    },
+    "codigo": {
+     "exemplos": 405,
+     "tokens": 448046,
+     "orcamento": 450000
+    },
+    "agentico_pos": {
+     "exemplos": 1137,
+     "tokens": 447813,
+     "orcamento": 450000
+    },
+    "agentico_neg": {
+     "exemplos": 801,
+     "tokens": 448305,
+     "orcamento": 450000
+    },
+    "texto": {
+     "exemplos": 837,
+     "tokens": 448017,
+     "orcamento": 450000
+    },
+    "simbolico": {
+     "exemplos": 553,
+     "tokens": 448004,
+     "orcamento": 450000
+    }
+   },
+   "metricas": {
+    "loss_traducao": 1.3601701818127419,
+    "loss_resumo": 1.823492619711167,
+    "loss_estruturado": 0.8188457201137217,
+    "loss_codigo": 1.6734850378524726,
+    "loss_agentico_pos": 0.5683546057761699,
+    "loss_agentico_neg": 1.412360199729488,
+    "loss": 1.2761180608326268,
+    "instrucao": 29.439252336448597,
+    "agentico": 0.0,
+    "codigo": 0.0,
+    "traducao": 23.951664728560033,
+    "resumo": 0.0,
+    "atendimento": 0.0
+   }
+  },
+  "e4-resumo-r3p0": {
+   "dominio": "resumo",
+   "razao": 3.0,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e4-resumo-r3p0",
+   "minutos": 14.7,
+   "tokens": 4480832,
+   "composicao": {
+    "traducao": {
+     "exemplos": 3304,
+     "tokens": 447822,
+     "orcamento": 450000
+    },
+    "resumo": {
+     "exemplos": 2351,
+     "tokens": 1343257,
+     "orcamento": 1350000
+    },
+    "estruturado": {
+     "exemplos": 1083,
+     "tokens": 448021,
+     "orcamento": 450000
+    },
+    "codigo": {
+     "exemplos": 399,
+     "tokens": 448633,
+     "orcamento": 450000
+    },
+    "agentico_pos": {
+     "exemplos": 1126,
+     "tokens": 448232,
+     "orcamento": 450000
+    },
+    "agentico_neg": {
+     "exemplos": 809,
+     "tokens": 447976,
+     "orcamento": 450000
+    },
+    "texto": {
+     "exemplos": 787,
+     "tokens": 447794,
+     "orcamento": 450000
+    },
+    "simbolico": {
+     "exemplos": 575,
+     "tokens": 449097,
+     "orcamento": 450000
+    }
+   },
+   "metricas": {
+    "loss_traducao": 1.351310194748377,
+    "loss_resumo": 1.8010351855880726,
+    "loss_estruturado": 0.8089531525755029,
+    "loss_codigo": 1.6669707513637346,
+    "loss_agentico_pos": 0.5689208257530447,
+    "loss_agentico_neg": 1.3857454440909562,
+    "loss": 1.2638225923532813,
+    "instrucao": 30.373831775700932,
+    "agentico": 0.0,
+    "codigo": 0.0,
+    "traducao": 26.28281366277932,
+    "resumo": 0.0,
+    "atendimento": 0.0
+   }
+  },
+  "e4-simbolico-r0p5": {
+   "dominio": "simbolico",
+   "razao": 0.5,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e4-simbolico-r0p5",
+   "minutos": 12.0,
+   "tokens": 3360636,
+   "composicao": {
+    "traducao": {
+     "exemplos": 3284,
+     "tokens": 447824,
+     "orcamento": 450000
+    },
+    "resumo": {
+     "exemplos": 795,
+     "tokens": 448013,
+     "orcamento": 450000
+    },
+    "estruturado": {
+     "exemplos": 1078,
+     "tokens": 447818,
+     "orcamento": 450000
+    },
+    "codigo": {
+     "exemplos": 388,
+     "tokens": 448854,
+     "orcamento": 450000
+    },
+    "agentico_pos": {
+     "exemplos": 1122,
+     "tokens": 448010,
+     "orcamento": 450000
+    },
+    "agentico_neg": {
+     "exemplos": 802,
+     "tokens": 447875,
+     "orcamento": 450000
+    },
+    "texto": {
+     "exemplos": 811,
+     "tokens": 448039,
+     "orcamento": 450000
+    },
+    "simbolico": {
+     "exemplos": 274,
+     "tokens": 224203,
+     "orcamento": 225000
+    }
+   },
+   "metricas": {
+    "loss_traducao": 1.3508265263197028,
+    "loss_resumo": 1.8690884379743893,
+    "loss_estruturado": 0.8226647003608719,
+    "loss_codigo": 1.676137656690789,
+    "loss_agentico_pos": 0.5827705014545365,
+    "loss_agentico_neg": 1.4254433217602984,
+    "loss": 1.2878218574267646,
+    "instrucao": 29.439252336448597,
+    "agentico": 0.0,
+    "codigo": 0.0,
+    "traducao": 26.676444599198216,
+    "resumo": 0.0,
+    "atendimento": 0.0
+   }
+  },
+  "e4-simbolico-r0p67": {
+   "dominio": "simbolico",
+   "razao": 0.67,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e4-simbolico-r0p67",
+   "minutos": 12.2,
+   "tokens": 3437879,
+   "composicao": {
+    "traducao": {
+     "exemplos": 3330,
+     "tokens": 447769,
+     "orcamento": 450000
+    },
+    "resumo": {
+     "exemplos": 775,
+     "tokens": 447883,
+     "orcamento": 450000
+    },
+    "estruturado": {
+     "exemplos": 1087,
+     "tokens": 448098,
+     "orcamento": 450000
+    },
+    "codigo": {
+     "exemplos": 384,
+     "tokens": 448834,
+     "orcamento": 450000
+    },
+    "agentico_pos": {
+     "exemplos": 1135,
+     "tokens": 448037,
+     "orcamento": 450000
+    },
+    "agentico_neg": {
+     "exemplos": 807,
+     "tokens": 448031,
+     "orcamento": 450000
+    },
+    "texto": {
+     "exemplos": 821,
+     "tokens": 448724,
+     "orcamento": 450000
+    },
+    "simbolico": {
+     "exemplos": 385,
+     "tokens": 300503,
+     "orcamento": 301500
+    }
+   },
+   "metricas": {
+    "loss_traducao": 1.3554538061204897,
+    "loss_resumo": 1.8760826791954683,
+    "loss_estruturado": 0.8226504708439071,
+    "loss_codigo": 1.673677218145281,
+    "loss_agentico_pos": 0.5745163355264286,
+    "loss_agentico_neg": 1.413474608226928,
+    "loss": 1.2859758530097505,
+    "instrucao": 29.906542056074763,
+    "agentico": 0.0,
+    "codigo": 0.0,
+    "traducao": 28.449423517859618,
+    "resumo": 0.0,
+    "atendimento": 0.0
+   }
+  },
+  "e4-simbolico-r1p0": {
+   "dominio": "simbolico",
+   "razao": 1.0,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e4-simbolico-r1p0",
+   "minutos": 12.5,
+   "tokens": 3584057,
+   "composicao": {
+    "traducao": {
+     "exemplos": 3320,
+     "tokens": 447996,
+     "orcamento": 450000
+    },
+    "resumo": {
+     "exemplos": 785,
+     "tokens": 447924,
+     "orcamento": 450000
+    },
+    "estruturado": {
+     "exemplos": 1085,
+     "tokens": 447759,
+     "orcamento": 450000
+    },
+    "codigo": {
+     "exemplos": 402,
+     "tokens": 448583,
+     "orcamento": 450000
+    },
+    "agentico_pos": {
+     "exemplos": 1130,
+     "tokens": 447795,
+     "orcamento": 450000
+    },
+    "agentico_neg": {
+     "exemplos": 803,
+     "tokens": 447809,
+     "orcamento": 450000
+    },
+    "texto": {
+     "exemplos": 795,
+     "tokens": 447892,
+     "orcamento": 450000
+    },
+    "simbolico": {
+     "exemplos": 562,
+     "tokens": 448299,
+     "orcamento": 450000
+    }
+   },
+   "metricas": {
+    "loss_traducao": 1.3488068805695772,
+    "loss_resumo": 1.8751164509242113,
+    "loss_estruturado": 0.8242650732889041,
+    "loss_codigo": 1.6711750157760508,
+    "loss_agentico_pos": 0.5926814832546713,
+    "loss_agentico_neg": 1.4287590000010628,
+    "loss": 1.2901339839690795,
+    "instrucao": 26.635514018691588,
+    "agentico": 0.0,
+    "codigo": 0.0,
+    "traducao": 20.050820268578367,
+    "resumo": 0.0,
+    "atendimento": 0.0
+   }
+  },
+  "e4-simbolico-r2p0": {
+   "dominio": "simbolico",
+   "razao": 2.0,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e4-simbolico-r2p0",
+   "minutos": 13.7,
+   "tokens": 4033179,
+   "composicao": {
+    "traducao": {
+     "exemplos": 3283,
+     "tokens": 447837,
+     "orcamento": 450000
+    },
+    "resumo": {
+     "exemplos": 768,
+     "tokens": 447819,
+     "orcamento": 450000
+    },
+    "estruturado": {
+     "exemplos": 1081,
+     "tokens": 448159,
+     "orcamento": 450000
+    },
+    "codigo": {
+     "exemplos": 390,
+     "tokens": 448871,
+     "orcamento": 450000
+    },
+    "agentico_pos": {
+     "exemplos": 1128,
+     "tokens": 448114,
+     "orcamento": 450000
+    },
+    "agentico_neg": {
+     "exemplos": 805,
+     "tokens": 448130,
+     "orcamento": 450000
+    },
+    "texto": {
+     "exemplos": 816,
+     "tokens": 448330,
+     "orcamento": 450000
+    },
+    "simbolico": {
+     "exemplos": 1106,
+     "tokens": 895919,
+     "orcamento": 900000
+    }
+   },
+   "metricas": {
+    "loss_traducao": 1.3498207485422702,
+    "loss_resumo": 1.8756283864823065,
+    "loss_estruturado": 0.8244032484262935,
+    "loss_codigo": 1.665434109453801,
+    "loss_agentico_pos": 0.5857458674603686,
+    "loss_agentico_neg": 1.4085819318312345,
+    "loss": 1.2849357153660457,
+    "instrucao": 28.037383177570092,
+    "agentico": 0.0,
+    "codigo": 0.0,
+    "traducao": 29.139589698854305,
+    "resumo": 0.0,
+    "atendimento": 0.0
+   }
+  },
+  "e4-simbolico-r3p0": {
+   "dominio": "simbolico",
+   "razao": 3.0,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e4-simbolico-r3p0",
+   "minutos": 14.9,
+   "tokens": 4479720,
+   "composicao": {
+    "traducao": {
+     "exemplos": 3285,
+     "tokens": 447848,
+     "orcamento": 450000
+    },
+    "resumo": {
+     "exemplos": 791,
+     "tokens": 447801,
+     "orcamento": 450000
+    },
+    "estruturado": {
+     "exemplos": 1086,
+     "tokens": 447882,
+     "orcamento": 450000
+    },
+    "codigo": {
+     "exemplos": 400,
+     "tokens": 447975,
+     "orcamento": 450000
+    },
+    "agentico_pos": {
+     "exemplos": 1133,
+     "tokens": 447944,
+     "orcamento": 450000
+    },
+    "agentico_neg": {
+     "exemplos": 799,
+     "tokens": 447992,
+     "orcamento": 450000
+    },
+    "texto": {
+     "exemplos": 825,
+     "tokens": 448772,
+     "orcamento": 450000
+    },
+    "simbolico": {
+     "exemplos": 1661,
+     "tokens": 1343506,
+     "orcamento": 1350000
+    }
+   },
+   "metricas": {
+    "loss_traducao": 1.3664038491549342,
+    "loss_resumo": 1.8778504922537,
+    "loss_estruturado": 0.8252044318255701,
+    "loss_codigo": 1.6673096531197444,
+    "loss_agentico_pos": 0.6017464336396616,
+    "loss_agentico_neg": 1.4368719334498465,
+    "loss": 1.2958977989072429,
+    "instrucao": 29.439252336448597,
+    "agentico": 0.0,
+    "codigo": 0.0,
+    "traducao": 30.554278320315525,
+    "resumo": 0.0,
+    "atendimento": 0.0
+   }
+  },
+  "e4-texto-r0p5": {
+   "dominio": "texto",
+   "razao": 0.5,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e4-texto-r0p5",
+   "minutos": 12.0,
+   "tokens": 3361856,
+   "composicao": {
+    "traducao": {
+     "exemplos": 3294,
+     "tokens": 447762,
+     "orcamento": 450000
+    },
+    "resumo": {
+     "exemplos": 783,
+     "tokens": 447984,
+     "orcamento": 450000
+    },
+    "estruturado": {
+     "exemplos": 1081,
+     "tokens": 448066,
+     "orcamento": 450000
+    },
+    "codigo": {
+     "exemplos": 394,
+     "tokens": 449128,
+     "orcamento": 450000
+    },
+    "agentico_pos": {
+     "exemplos": 1138,
+     "tokens": 447869,
+     "orcamento": 450000
+    },
+    "agentico_neg": {
+     "exemplos": 807,
+     "tokens": 447830,
+     "orcamento": 450000
+    },
+    "texto": {
+     "exemplos": 414,
+     "tokens": 224649,
+     "orcamento": 225000
+    },
+    "simbolico": {
+     "exemplos": 558,
+     "tokens": 448568,
+     "orcamento": 450000
+    }
+   },
+   "metricas": {
+    "loss_traducao": 1.3538999514069585,
+    "loss_resumo": 1.8749269240888549,
+    "loss_estruturado": 0.8234822130158828,
+    "loss_codigo": 1.6739784040462347,
+    "loss_agentico_pos": 0.5826373316945052,
+    "loss_agentico_neg": 1.4146770897864083,
+    "loss": 1.2872669856731407,
+    "instrucao": 31.775700934579437,
+    "agentico": 0.0,
+    "codigo": 0.0,
+    "traducao": 25.76594818573287,
+    "resumo": 0.0,
+    "atendimento": 0.0
+   }
+  },
+  "e4-texto-r0p67": {
+   "dominio": "texto",
+   "razao": 0.67,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e4-texto-r0p67",
+   "minutos": 12.2,
+   "tokens": 3436461,
+   "composicao": {
+    "traducao": {
+     "exemplos": 3292,
+     "tokens": 447862,
+     "orcamento": 450000
+    },
+    "resumo": {
+     "exemplos": 776,
+     "tokens": 447984,
+     "orcamento": 450000
+    },
+    "estruturado": {
+     "exemplos": 1081,
+     "tokens": 447811,
+     "orcamento": 450000
+    },
+    "codigo": {
+     "exemplos": 397,
+     "tokens": 448433,
+     "orcamento": 450000
+    },
+    "agentico_pos": {
+     "exemplos": 1142,
+     "tokens": 447771,
+     "orcamento": 450000
+    },
+    "agentico_neg": {
+     "exemplos": 808,
+     "tokens": 448086,
+     "orcamento": 450000
+    },
+    "texto": {
+     "exemplos": 532,
+     "tokens": 300439,
+     "orcamento": 301500
+    },
+    "simbolico": {
+     "exemplos": 568,
+     "tokens": 448075,
+     "orcamento": 450000
+    }
+   },
+   "metricas": {
+    "loss_traducao": 1.3462973074874314,
+    "loss_resumo": 1.8802531527635038,
+    "loss_estruturado": 0.8198148369127188,
+    "loss_codigo": 1.6674996975829994,
+    "loss_agentico_pos": 0.5787158931016851,
+    "loss_agentico_neg": 1.4297506199064298,
+    "loss": 1.2870552512924613,
+    "instrucao": 28.504672897196258,
+    "agentico": 0.0,
+    "codigo": 0.0,
+    "traducao": 25.952298825343398,
+    "resumo": 0.0,
+    "atendimento": 0.0
+   }
+  },
+  "e4-texto-r1p0": {
+   "dominio": "texto",
+   "razao": 1.0,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e4-texto-r1p0",
+   "minutos": 12.5,
+   "tokens": 3584638,
+   "composicao": {
+    "traducao": {
+     "exemplos": 3275,
+     "tokens": 447881,
+     "orcamento": 450000
+    },
+    "resumo": {
+     "exemplos": 787,
+     "tokens": 447797,
+     "orcamento": 450000
+    },
+    "estruturado": {
+     "exemplos": 1078,
+     "tokens": 448098,
+     "orcamento": 450000
+    },
+    "codigo": {
+     "exemplos": 403,
+     "tokens": 448546,
+     "orcamento": 450000
+    },
+    "agentico_pos": {
+     "exemplos": 1127,
+     "tokens": 448050,
+     "orcamento": 450000
+    },
+    "agentico_neg": {
+     "exemplos": 801,
+     "tokens": 448244,
+     "orcamento": 450000
+    },
+    "texto": {
+     "exemplos": 795,
+     "tokens": 448206,
+     "orcamento": 450000
+    },
+    "simbolico": {
+     "exemplos": 575,
+     "tokens": 447816,
+     "orcamento": 450000
+    }
+   },
+   "metricas": {
+    "loss_traducao": 1.356141366585655,
+    "loss_resumo": 1.8786842671802395,
+    "loss_estruturado": 0.8142940839735544,
+    "loss_codigo": 1.6768119343355508,
+    "loss_agentico_pos": 0.590009799224922,
+    "loss_agentico_neg": 1.4298653306235718,
+    "loss": 1.2909677969872488,
+    "instrucao": 29.439252336448597,
+    "agentico": 0.0,
+    "codigo": 0.0,
+    "traducao": 24.7926709133375,
+    "resumo": 0.0,
+    "atendimento": 0.0
+   }
+  },
+  "e4-texto-r2p0": {
+   "dominio": "texto",
+   "razao": 2.0,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e4-texto-r2p0",
+   "minutos": 14.0,
+   "tokens": 4033139,
+   "composicao": {
+    "traducao": {
+     "exemplos": 3325,
+     "tokens": 447814,
+     "orcamento": 450000
+    },
+    "resumo": {
+     "exemplos": 793,
+     "tokens": 448687,
+     "orcamento": 450000
+    },
+    "estruturado": {
+     "exemplos": 1083,
+     "tokens": 447890,
+     "orcamento": 450000
+    },
+    "codigo": {
+     "exemplos": 393,
+     "tokens": 448741,
+     "orcamento": 450000
+    },
+    "agentico_pos": {
+     "exemplos": 1145,
+     "tokens": 447996,
+     "orcamento": 450000
+    },
+    "agentico_neg": {
+     "exemplos": 803,
+     "tokens": 447836,
+     "orcamento": 450000
+    },
+    "texto": {
+     "exemplos": 1620,
+     "tokens": 895975,
+     "orcamento": 900000
+    },
+    "simbolico": {
+     "exemplos": 576,
+     "tokens": 448200,
+     "orcamento": 450000
+    }
+   },
+   "metricas": {
+    "loss_traducao": 1.3542077341717944,
+    "loss_resumo": 1.8806080139567185,
+    "loss_estruturado": 0.8290902398972495,
+    "loss_codigo": 1.6831913025270273,
+    "loss_agentico_pos": 0.5928049267045626,
+    "loss_agentico_neg": 1.4247974879357197,
+    "loss": 1.2941166175321788,
+    "instrucao": 27.102803738317753,
+    "agentico": 0.0,
+    "codigo": 0.0,
+    "traducao": 19.923736505184827,
+    "resumo": 0.0,
+    "atendimento": 0.0
+   }
+  },
+  "e4-texto-r3p0": {
+   "dominio": "texto",
+   "razao": 3.0,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e4-texto-r3p0",
+   "minutos": 15.2,
+   "tokens": 4479749,
+   "composicao": {
+    "traducao": {
+     "exemplos": 3333,
+     "tokens": 447872,
+     "orcamento": 450000
+    },
+    "resumo": {
+     "exemplos": 808,
+     "tokens": 448198,
+     "orcamento": 450000
+    },
+    "estruturado": {
+     "exemplos": 1080,
+     "tokens": 448012,
+     "orcamento": 450000
+    },
+    "codigo": {
+     "exemplos": 397,
+     "tokens": 448101,
+     "orcamento": 450000
+    },
+    "agentico_pos": {
+     "exemplos": 1141,
+     "tokens": 447839,
+     "orcamento": 450000
+    },
+    "agentico_neg": {
+     "exemplos": 804,
+     "tokens": 448043,
+     "orcamento": 450000
+    },
+    "texto": {
+     "exemplos": 2467,
+     "tokens": 1343433,
+     "orcamento": 1350000
+    },
+    "simbolico": {
+     "exemplos": 546,
+     "tokens": 448251,
+     "orcamento": 450000
+    }
+   },
+   "metricas": {
+    "loss_traducao": 1.3675381011398606,
+    "loss_resumo": 1.8840417513090535,
+    "loss_estruturado": 0.826146619599235,
+    "loss_codigo": 1.6721748379732084,
+    "loss_agentico_pos": 0.5798684704943367,
+    "loss_agentico_neg": 1.4296432540493689,
+    "loss": 1.2932355057608438,
+    "instrucao": 28.037383177570092,
+    "agentico": 0.0,
+    "codigo": 0.0,
+    "traducao": 29.315041716854388,
+    "resumo": 0.0,
+    "atendimento": 0.0
+   }
+  },
+  "e4-traducao-r0p5": {
+   "dominio": "traducao",
+   "razao": 0.5,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e4-traducao-r0p5",
+   "minutos": 10.7,
+   "tokens": 3360132,
+   "composicao": {
+    "traducao": {
+     "exemplos": 1695,
+     "tokens": 224011,
+     "orcamento": 225000
+    },
+    "resumo": {
+     "exemplos": 805,
+     "tokens": 448041,
+     "orcamento": 450000
+    },
+    "estruturado": {
+     "exemplos": 1085,
+     "tokens": 448150,
+     "orcamento": 450000
+    },
+    "codigo": {
+     "exemplos": 390,
+     "tokens": 447867,
+     "orcamento": 450000
+    },
+    "agentico_pos": {
+     "exemplos": 1126,
+     "tokens": 448131,
+     "orcamento": 450000
+    },
+    "agentico_neg": {
+     "exemplos": 804,
+     "tokens": 447872,
+     "orcamento": 450000
+    },
+    "texto": {
+     "exemplos": 798,
+     "tokens": 448133,
+     "orcamento": 450000
+    },
+    "simbolico": {
+     "exemplos": 551,
+     "tokens": 447927,
+     "orcamento": 450000
+    }
+   },
+   "metricas": {
+    "loss_traducao": 1.400794132650643,
+    "loss_resumo": 1.874959488427544,
+    "loss_estruturado": 0.8215844282481549,
+    "loss_codigo": 1.674879194659721,
+    "loss_agentico_pos": 0.5830922824119762,
+    "loss_agentico_neg": 1.420981881898323,
+    "loss": 1.2960485680493938,
+    "instrucao": 33.64485981308411,
+    "agentico": 0.0,
+    "codigo": 0.0,
+    "traducao": 27.590571063587568,
+    "resumo": 0.0,
+    "atendimento": 0.0
+   }
+  },
+  "e4-traducao-r0p67": {
+   "dominio": "traducao",
+   "razao": 0.67,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e4-traducao-r0p67",
+   "minutos": 11.4,
+   "tokens": 3436216,
+   "composicao": {
+    "traducao": {
+     "exemplos": 2214,
+     "tokens": 300078,
+     "orcamento": 301500
+    },
+    "resumo": {
+     "exemplos": 798,
+     "tokens": 447939,
+     "orcamento": 450000
+    },
+    "estruturado": {
+     "exemplos": 1087,
+     "tokens": 447940,
+     "orcamento": 450000
+    },
+    "codigo": {
+     "exemplos": 380,
+     "tokens": 448479,
+     "orcamento": 450000
+    },
+    "agentico_pos": {
+     "exemplos": 1138,
+     "tokens": 448106,
+     "orcamento": 450000
+    },
+    "agentico_neg": {
+     "exemplos": 805,
+     "tokens": 447806,
+     "orcamento": 450000
+    },
+    "texto": {
+     "exemplos": 804,
+     "tokens": 448086,
+     "orcamento": 450000
+    },
+    "simbolico": {
+     "exemplos": 565,
+     "tokens": 447782,
+     "orcamento": 450000
+    }
+   },
+   "metricas": {
+    "loss_traducao": 1.3786564341914544,
+    "loss_resumo": 1.8794343662688724,
+    "loss_estruturado": 0.824303386402921,
+    "loss_codigo": 1.673043116238249,
+    "loss_agentico_pos": 0.5638389991231719,
+    "loss_agentico_neg": 1.4275067082911956,
+    "loss": 1.291130501752644,
+    "instrucao": 28.971962616822427,
+    "agentico": 0.0,
+    "codigo": 0.0,
+    "traducao": 28.877322779179377,
+    "resumo": 0.0,
+    "atendimento": 0.0
+   }
+  },
+  "e4-traducao-r1p0": {
+   "dominio": "traducao",
+   "razao": 1.0,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e4-traducao-r1p0",
+   "minutos": 12.6,
+   "tokens": 3584374,
+   "composicao": {
+    "traducao": {
+     "exemplos": 3307,
+     "tokens": 447893,
+     "orcamento": 450000
+    },
+    "resumo": {
+     "exemplos": 802,
+     "tokens": 448392,
+     "orcamento": 450000
+    },
+    "estruturado": {
+     "exemplos": 1087,
+     "tokens": 448025,
+     "orcamento": 450000
+    },
+    "codigo": {
+     "exemplos": 400,
+     "tokens": 448231,
+     "orcamento": 450000
+    },
+    "agentico_pos": {
+     "exemplos": 1136,
+     "tokens": 448063,
+     "orcamento": 450000
+    },
+    "agentico_neg": {
+     "exemplos": 808,
+     "tokens": 448123,
+     "orcamento": 450000
+    },
+    "texto": {
+     "exemplos": 829,
+     "tokens": 447830,
+     "orcamento": 450000
+    },
+    "simbolico": {
+     "exemplos": 534,
+     "tokens": 447817,
+     "orcamento": 450000
+    }
+   },
+   "metricas": {
+    "loss_traducao": 1.3469234845049673,
+    "loss_resumo": 1.881072107603695,
+    "loss_estruturado": 0.8243418422793597,
+    "loss_codigo": 1.672240788649722,
+    "loss_agentico_pos": 0.5756409770802524,
+    "loss_agentico_neg": 1.3956154653560797,
+    "loss": 1.282639110912346,
+    "instrucao": 26.635514018691588,
+    "agentico": 0.0,
+    "codigo": 0.0,
+    "traducao": 25.9628574961765,
+    "resumo": 0.0,
+    "atendimento": 0.0
+   }
+  },
+  "e4-traducao-r2p0": {
+   "dominio": "traducao",
+   "razao": 2.0,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e4-traducao-r2p0",
+   "minutos": 16.9,
+   "tokens": 4032256,
+   "composicao": {
+    "traducao": {
+     "exemplos": 6590,
+     "tokens": 895591,
+     "orcamento": 900000
+    },
+    "resumo": {
+     "exemplos": 804,
+     "tokens": 448673,
+     "orcamento": 450000
+    },
+    "estruturado": {
+     "exemplos": 1085,
+     "tokens": 447794,
+     "orcamento": 450000
+    },
+    "codigo": {
+     "exemplos": 384,
+     "tokens": 448401,
+     "orcamento": 450000
+    },
+    "agentico_pos": {
+     "exemplos": 1135,
+     "tokens": 447772,
+     "orcamento": 450000
+    },
+    "agentico_neg": {
+     "exemplos": 807,
+     "tokens": 447840,
+     "orcamento": 450000
+    },
+    "texto": {
+     "exemplos": 776,
+     "tokens": 448411,
+     "orcamento": 450000
+    },
+    "simbolico": {
+     "exemplos": 547,
+     "tokens": 447774,
+     "orcamento": 450000
+    }
+   },
+   "metricas": {
+    "loss_traducao": 1.2852289620026958,
+    "loss_resumo": 1.8751591111905215,
+    "loss_estruturado": 0.8191298879707514,
+    "loss_codigo": 1.6770126974391175,
+    "loss_agentico_pos": 0.5682939718508179,
+    "loss_agentico_neg": 1.3834293367383816,
+    "loss": 1.268042327865381,
+    "instrucao": 29.906542056074763,
+    "agentico": 0.0,
+    "codigo": 0.0,
+    "traducao": 25.604982511760518,
+    "resumo": 0.0,
+    "atendimento": 0.0
+   }
+  },
+  "e4-traducao-r3p0": {
+   "dominio": "traducao",
+   "razao": 3.0,
+   "adapter": "/workspace/llm-ptbr/comeia/models/e4-traducao-r3p0",
+   "minutos": 21.2,
+   "tokens": 4480771,
+   "composicao": {
+    "traducao": {
+     "exemplos": 9855,
+     "tokens": 1343315,
+     "orcamento": 1350000
+    },
+    "resumo": {
+     "exemplos": 801,
+     "tokens": 448537,
+     "orcamento": 450000
+    },
+    "estruturado": {
+     "exemplos": 1082,
+     "tokens": 448028,
+     "orcamento": 450000
+    },
+    "codigo": {
+     "exemplos": 399,
+     "tokens": 448876,
+     "orcamento": 450000
+    },
+    "agentico_pos": {
+     "exemplos": 1136,
+     "tokens": 448120,
+     "orcamento": 450000
+    },
+    "agentico_neg": {
+     "exemplos": 807,
+     "tokens": 448031,
+     "orcamento": 450000
+    },
+    "texto": {
+     "exemplos": 822,
+     "tokens": 447754,
+     "orcamento": 450000
+    },
+    "simbolico": {
+     "exemplos": 562,
+     "tokens": 448110,
+     "orcamento": 450000
+    }
+   },
+   "metricas": {
+    "loss_traducao": 1.2547923351803192,
+    "loss_resumo": 1.874639674139019,
+    "loss_estruturado": 0.8128160317436915,
+    "loss_codigo": 1.6687876753525557,
+    "loss_agentico_pos": 0.5327061483766092,
+    "loss_agentico_neg": 1.3812690072434626,
+    "loss": 1.2541684786726095,
+    "instrucao": 28.037383177570092,
+    "agentico": 0.0,
+    "codigo": 0.0,
+    "traducao": 31.938810586597178,
+    "resumo": 0.0,
+    "atendimento": 0.0
+   }
+  }
+ }
+}
