@@ -29,7 +29,56 @@ cravado; um treinador sem controle de semente não permite medir a própria vari
 
 ---
 
-## 2. Os braços, e por que o quadro não sustenta veredito
+## 1b. ⭐ Com TRÊS sementes o gate volta a decidir — e decide NÃO
+
+Cada semente é uma réplica **completa**: o DPO da semente 43 parte do controle da semente 43.
+Ramificar os quatro braços de um controle único mediria só a variância do DPO e esconderia a
+do SFT que veio antes — que é a maior das duas.
+
+| braço | s42 | s43 | s44 | média | ampl | over médio |
+|---|---:|---:|---:|---:|---:|---:|
+| SFT sem RS | 49 | 45 | 48 | 47,3 | 4 | 15,3 |
+| **controle SFT+RS** | 50 | 52 | 50 | **50,7** | **2** | **9,7** |
+| + DPO | 55 | 53 | 50 | 52,7 | 5 | 12,3 |
+| + IPO | 55 | 54 | 50 | 53,0 | 5 | 12,0 |
+| + KTO restrito | 51 | 50 | 47 | 49,3 | 4 | 9,0 |
+| + KTO completo | 53 | 51 | 47 | 50,3 | 6 | 12,7 |
+
+Folga **pareada contra o controle da mesma semente** — o único pareamento válido, porque
+comparar médias entre braços misturaria a variância de semente de volta:
+
+| braço | s42 | s43 | s44 | média | veredito |
+|---|---:|---:|---:|---:|---|
+| + DPO | +5 | +1 | +0 | **+2,4 pp** | NÃO ADOTAR |
+| + IPO | +5 | +2 | +0 | **+2,7 pp** | NÃO ADOTAR |
+| + KTO restrito | +1 | −2 | −3 | **−1,6 pp** | NÃO ADOTAR |
+| + KTO completo | +3 | −1 | −3 | **−0,4 pp** | NÃO ADOTAR |
+
+🔴 **Os +5,9 pp da §2 eram a mais sortuda de três rodadas.** Na semente 44 o efeito do DPO é
+exatamente **zero**, e os dois KTO viram negativos em duas das três.
+
+⭐ **A expectativa escrita no plano acertou:** *"0 a +3 pp, com probabilidade real de sinal
+negativo"*. DPO/IPO em +2,4/+2,7; KTO negativo. Vale registrar que a previsão honesta feita
+antes do experimento bateu melhor que o resultado de uma semente só.
+
+### E duas coisas que a réplica revelou, invertendo o que eu tinha dito
+
+⭐ **O rejection sampling AJUDA.** sem-RS 47,3 → controle 50,7 = **+3,4 pp de média**, e o
+controle tem a **menor amplitude entre sementes** (2 contra 4). Eu tinha reportado que o RS
+"custou 5 casos" comparando contra o artefato errado (§3); com o controle certo e três
+sementes, ele ganha ~3 casos e estabiliza o treino.
+
+⭐ **E ajuda mais ainda no over-calling:** 15,3 → **9,7**, quase seis casos. É o eixo que o
+projeto já mediu que se desloca quando se colhe só um lado — aqui a colheita simétrica
+(`--incluir-text`) fez o que prometia.
+
+⚠️ **O que continua valendo:** com amplitudes de 4 a 6 casos entre sementes, este holdout de 85
+itens não resolve efeito menor que ~7 pp. Três sementes deram poder sobre o **ruído de treino**,
+não sobre **itens novos** — o intervalo de Wilson segue ±10 pp.
+
+---
+
+## 2. Os braços com UMA semente, e por que o quadro não sustentava veredito
 
 | braço | estrito | harness | over-call | folga vs controle | McNemar |
 |---|---:|---:|---:|---:|---:|
