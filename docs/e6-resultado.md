@@ -1,9 +1,15 @@
-# Estágio 6 — o gate de preferência não pode ser decidido: o ruído de treino é maior que o limiar
+# Estágio 6 — o gate decide NÃO, e só decidiu porque passou a rodar três sementes
 
-> **2026-08-23.** US$ 0 de GPU paga — rodou inteiro na RTX 5070 de 8 GB. O E6 é um **gate**:
-> quatro braços de preferência contra um controle SFT+RS, com critério de adoção declarado
-> antes (≥5 pp de folga absoluta). Os braços rodaram. O gate **não decide** — e o motivo é o
-> resultado.
+> **2026-08-23.** US$ 0 de GPU paga — rodou inteiro na RTX 5070 de 8 GB, 22 treinos. O E6 é um
+> **gate**: quatro braços de preferência contra um controle SFT+RS, critério declarado antes
+> (≥5 pp de folga absoluta).
+>
+> Com **uma** semente por braço, DPO e IPO davam +5,9 pp e teriam sido adotados. Com **três**,
+> a média cai para +2,4/+2,7 pp e os dois KTO ficam **negativos** — porque a mesma receita, só
+> trocando a semente, move até 6 casos. **Veredito: não adotar nenhum.**
+>
+> ⭐ E a expectativa escrita no plano antes do experimento — *"0 a +3 pp, com probabilidade real
+> de sinal negativo"* — bateu melhor que o resultado de uma semente só.
 
 ---
 
