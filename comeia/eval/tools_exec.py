@@ -291,7 +291,18 @@ def executar(chamada: dict) -> tuple[bool, Any]:
     args = chamada.get("args") or {}
     fn = FERRAMENTAS.get(nome)
     if fn is None:
-        return False, f"ferramenta inexistente: {nome!r}"
+        # ⭐ MUNDO ABERTO: fora das 14 simuladas, cai no `mundo_aberto`, que executa qualquer
+        #    uma das 747 ferramentas do gigaverbo. Ele devolve a CLASSE junto (semantica x eco)
+        #    e so' conta como semantica a ferramenta cuja formula foi VALIDADA contra o
+        #    resultado registrado no proprio dataset.
+        #    ⚠️ Sem este fallback, "ferramenta inexistente" contava como erro do MODELO — e o
+        #    modelo tinha escolhido a ferramenta certa. E' o mundo fechado do §2c #4 em escala.
+        try:
+            from mundo_aberto import executar_aberto
+        except ImportError:
+            return False, f"ferramenta inexistente: {nome!r}"
+        ok, r, _classe = executar_aberto(chamada)
+        return ok, r
     if not isinstance(args, dict):
         return False, "args nao e objeto"
     try:

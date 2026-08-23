@@ -26,6 +26,7 @@ import argparse
 import importlib.util
 import json
 import math
+import re
 import sys
 import time
 from pathlib import Path
@@ -59,6 +60,48 @@ def mensagens(row: dict) -> list[dict]:
     if row.get("messages"):
         return row["messages"]
     return list(row.get("prompt") or []) + list(row.get("completion") or [])
+
+
+RX_FERRAMENTA_NO_PROMPT = re.compile(r"^\s*[-*]\s*([A-Za-z_][A-Za-z0-9_]*)\s*:", re.M)
+
+
+def catalogo_do_prompt(sistema: str | None) -> set[str] | None:
+    """Ferramentas listadas no system prompt DO PROPRIO exemplo.
+
+    🔴 `json_ok` validava contra o catalogo FIXO de 14 ferramentas (`load_tools()`). No holdout
+    aberto, cujas 747 ferramentas vem descritas no proprio prompt, isso lia 5/600 = 0,8% — como
+    se o modelo emitisse lixo, quando ele acertava a ferramenta em 66% dos casos. Regua que
+    valida contra um catalogo que nao e' o do exemplo mede o catalogo, nao o modelo.
+    """
+    if not sistema:
+        return None
+    nomes = set(RX_FERRAMENTA_NO_PROMPT.findall(sistema))
+    return nomes or None
+
+
+def valores_equivalentes(a: dict | None, b: dict | None) -> bool:
+    """Compara args por VALOR, nao por tipo.
+
+    🔴 O modelo emite `{"original_price": "200"}` onde a referencia tem `200`. Um `==` cru em
+    dict devolve False para os 600 casos e a regua imprime "argumentos identicos 0,0%" — que
+    parece falha total e e' incompatibilidade de tipo. No holdout antigo o mesmo modelo lia
+    37,6%, porque ali ele emitia inteiros: a regua media o FORMATO do numero.
+    """
+    a, b = a or {}, b or {}
+    if set(a) != set(b):
+        return False
+    for k in a:
+        x, y = a[k], b[k]
+        if x == y:
+            continue
+        try:
+            if abs(float(str(x).replace(",", ".")) - float(str(y).replace(",", "."))) < 1e-9:
+                continue
+        except (TypeError, ValueError):
+            pass
+        if str(x).strip().lower() != str(y).strip().lower():
+            return False
+    return True
 
 
 def partes(row: dict) -> tuple[str | None, str, str, str]:
@@ -361,11 +404,21 @@ def main() -> int:
                     else:
                         under += 1
                 else:
-                    if _d7.validate_call(obj, catalogo) is None:
-                        json_ok += 1
+                    # ⚠️ ORDEM IMPORTA, e a v1 disto AFROUXOU a regua: validar so' pelo nome
+                    #    e' mais fraco que validar o SCHEMA. Onde o schema existe (as 14
+                    #    ferramentas de tools_exec) ele continua valendo; o nome do catalogo do
+                    #    prompt e' o recurso de ULTIMO caso, para as 747 do gigaverbo, cujo
+                    #    schema nao esta' disponivel em forma verificavel.
+                    cat_local = catalogo_do_prompt(sistema)
+                    if obj.get("tool") in catalogo:
+                        if _d7.validate_call(obj, catalogo) is None:
+                            json_ok += 1
+                    elif cat_local is not None:
+                        if obj.get("tool") in cat_local:
+                            json_ok += 1
                     if ref_obj and obj.get("tool") == ref_obj.get("tool"):
                         tool_right += 1
-                        if (obj.get("args") or {}) == (ref_obj.get("args") or {}):
+                        if valores_equivalentes(obj.get("args"), ref_obj.get("args")):
                             args_exact += 1
                 primeira = False
 
