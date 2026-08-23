@@ -105,8 +105,14 @@ def parse_args() -> argparse.Namespace:
     return ap.parse_args()
 
 
-def check_data(path: Path) -> int:
-    """Valida o formato do jsonl de preferência. Retorna nº de linhas válidas."""
+def check_data(path: Path, kto: bool = False) -> int:
+    """Valida o formato do jsonl. Retorna nº de linhas válidas.
+
+    ⚠️ Esta funcao so' conhecia PARES (prompt/chosen/rejected). Com --kto ela contava 0 e o
+    script saia dizendo "0 pares válidos" — mensagem que descreve o validador, nao o dado. O
+    arquivo do KTO estava perfeito; a regua e' que so' sabia contar uma forma.
+    """
+    exigidas = ("prompt", "completion", "label") if kto else ("prompt", "chosen", "rejected")
     if not path.exists():
         print(f"ERRO: dados de preferência não encontrados: {path}", file=sys.stderr)
         print("      Falta gerar os pares chosen/rejected (ver docstring). Nada para treinar.",
@@ -123,7 +129,7 @@ def check_data(path: Path) -> int:
             except json.JSONDecodeError:
                 bad += 1
                 continue
-            if all(k in row for k in ("prompt", "chosen", "rejected")):
+            if all(k in row for k in exigidas):
                 n += 1
             else:
                 bad += 1
@@ -174,32 +180,66 @@ class GuardaDeslocamento(TrainerCallback):
     Pares vindos de verificador tem DISTANCIA DE EDICAO MINIMA: mesma trajetoria, um
     argumento trocado. E' o gatilho exato do deslocamento de verossimilhanca, confirmado ate'
     OLMo-1B (arXiv:2410.08847): a margem chosen-rejected sobe bonito no log **enquanto as
-    duas log-probs CAEM**, e a massa migra para respostas de sentido oposto.
+    duas log-probs CAEM**, e a massa migra para respostas de sentido oposto. Nada disso da'
+    erro: o log fica lindo e o modelo piora.
 
-    ⚠️ Nada disso da' erro. O log fica lindo — `rewards/margins` subindo — e o modelo piora.
-    A unica leitura que denuncia e' `logps/chosen` ABSOLUTO: se ele cai abaixo do valor do
-    primeiro passo, a margem esta' sendo comprada empurrando o CERTO para baixo.
+    🔴 A v1 DESTA GUARDA DAVA FALSO POSITIVO, e abortou DPO e IPO no passo 3. Ela comparava o
+    `logps/chosen` BRUTO de um lote contra o de outro lote — e `logps` e' SOMA por sequencia,
+    entao um lote com completions mais longas derruba o numero sem nada ter acontecido. O log
+    que a desmascarou:
+
+        passo   logps/chosen   logps/rejected   margins
+          1        -8,364         -30,16          0
+          3       -14,95         -69,97          0,0016   <- abortou aqui
+
+    As DUAS cairam juntas, ~2x. Deslocamento e' o chosen afundando ENQUANTO A MARGEM SOBE;
+    queda conjunta e' composicao de lote. E o LR ainda estava em warmup.
+
+    ⭐ A v2 exige as TRES condicoes do fenomeno, nao uma:
+      1. `logps/chosen` abaixo da MEDIANA das primeiras leituras (nao de uma leitura so');
+      2. de forma SUSTENTADA (N leituras seguidas), nao num pico;
+      3. com a margem SUBINDO — sem isso e' so' o lote, ou o modelo piorando por igual.
+    E so' depois do warmup, porque antes dele o passo mal moveu os pesos.
     """
 
-    def __init__(self, folga: float = 0.0):
-        self.inicial: float | None = None
-        self.folga = folga
-        self.pior = None
+    LEITURAS_BASE = 5        # mediana das primeiras N vira o marco zero
+    SEGUIDAS = 3             # quantas leituras consecutivas abaixo para abortar
+    GRACA = 8                # passos de warmup ignorados
+
+    def __init__(self):
+        self.base: list[float] = []
+        self.marco: float | None = None
+        self.margem0: float | None = None
+        self.ruins = 0
 
     def on_log(self, args, state, control, logs=None, **kw):
         if not logs or "logps/chosen" not in logs:
             return
         v = float(logs["logps/chosen"])
-        if self.inicial is None:
-            self.inicial = v
-            print(f"  [guarda] logps/chosen inicial = {v:.4f} — abortar se cair abaixo disso")
+        m = float(logs.get("rewards/margins", 0.0))
+        if state.global_step <= self.GRACA:
+            self.base.append(v)
+            if self.margem0 is None:
+                self.margem0 = m
             return
-        self.pior = v if self.pior is None else min(self.pior, v)
-        if v < self.inicial - self.folga:
+        if self.marco is None:
+            self.base.sort()
+            self.marco = self.base[len(self.base) // 2] if self.base else v
+            print(f"  [guarda] marco = mediana das {len(self.base)} primeiras leituras = "
+                  f"{self.marco:.4f} (nao de uma leitura so')")
+        caiu = v < self.marco
+        margem_sobe = m > (self.margem0 or 0.0)
+        if caiu and margem_sobe:
+            self.ruins += 1
+            print(f"  [guarda] {self.ruins}/{self.SEGUIDAS} — logps/chosen {v:.3f} < marco "
+                  f"{self.marco:.3f} COM margem subindo ({m:+.4f})")
+        else:
+            self.ruins = 0
+        if self.ruins >= self.SEGUIDAS:
             print()
-            print(f"🔴 ABORTANDO: logps/chosen caiu de {self.inicial:.4f} para {v:.4f}.")
-            print("   A margem esta' subindo porque o CHOSEN esta' sendo empurrado para baixo")
-            print("   (likelihood displacement). Continuar so' produziria um log bonito.")
+            print(f"🔴 ABORTANDO: logps/chosen abaixo do marco por {self.SEGUIDAS} leituras")
+            print("   seguidas E com a margem subindo. E' deslocamento: a margem esta' sendo")
+            print("   comprada empurrando o CERTO para baixo, nao empurrando o errado.")
             control.should_training_stop = True
 
 
@@ -214,12 +254,13 @@ def main() -> int:
     args = parse_args()
     guarda_modelo_do_projeto(args.model, args.permitir_modelo_de_terceiros)
 
-    n_valid = check_data(args.data)
+    n_valid = check_data(args.data, kto=args.kto)
     effective_batch = args.batch_size * args.grad_accum
     print("=== Config DPO QLoRA ===")
     print(f"  modelo        : {args.model}")
     print(f"  sft-adapter   : {args.sft_adapter or '(nenhum — DPO direto no base)'}")
-    print(f"  dados         : {args.data} ({n_valid} pares válidos)")
+    print(f"  dados         : {args.data} "
+          f"({n_valid} {'exemplos KTO' if args.kto else 'pares'} válidos)")
     print(f"  saida         : {args.out}")
     print(f"  max_seq/prompt: {args.max_seq_len} / {args.max_prompt_len}")
     print(f"  epochs        : {args.epochs} | beta: {args.beta} | lr: {args.lr}")
@@ -313,7 +354,13 @@ def main() -> int:
                  "undesirable_weight": args.peso_indesejavel}
     else:
         extra = {"loss_type": args.loss_type}
-    cfg = Config(
+    # 🔴 A TRL renomeia/remove parametros entre versoes e o script quebra no construtor.
+    #    `max_prompt_length` sumiu na 1.9 e este arquivo nunca tinha rodado nela. Filtrar pela
+    #    assinatura INSTALADA, mas IMPRIMINDO o que caiu — descartar em silencio seria a mesma
+    #    familia de "o dado some e nada reclama".
+    import inspect as _insp
+    _validos = set(_insp.signature(Config).parameters)
+    _pedidos = dict(
         output_dir=str(args.out),
         num_train_epochs=args.epochs,
         max_steps=args.max_steps,
@@ -323,7 +370,10 @@ def main() -> int:
         learning_rate=args.lr,
         lr_scheduler_type="cosine",
         warmup_ratio=0.1,
-        logging_steps=10,
+        # 🔴 logging_steps=1 e' REQUISITO da GuardaDeslocamento, nao preferencia de log:
+        #    ela ancora no PRIMEIRO valor logado, e com 10 o marco zero ja' seria o passo 10 —
+        #    depois de 10 passos de deslocamento possivel. Com ~58 passos o custo e' nulo.
+        logging_steps=1,
         save_steps=args.save_steps,
         save_total_limit=2,
         bf16=True,
@@ -336,6 +386,11 @@ def main() -> int:
         seed=42,
         **extra,
     )
+    _fora = {k: v for k, v in _pedidos.items() if k not in _validos}
+    if _fora:
+        print(f"aviso  : {Config.__name__} da TRL {__import__('trl').__version__} nao aceita "
+              f"{sorted(_fora)} — descartados")
+    cfg = Config(**{k: v for k, v in _pedidos.items() if k in _validos})
 
     trainer = Trainer(
         model=model,

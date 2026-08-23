@@ -79,6 +79,10 @@ def parse_args() -> argparse.Namespace:
                          "691 MB e a quantizacao custaria 20-30%% de throughput a toa")
     ap.add_argument("--permitir-modelo-de-terceiros", action="store_true",
                     help="desarma a guarda que exige um modelo do projeto Bee")
+    ap.add_argument("--seed", type=int, default=42,
+                    help="⚠️ existe para MEDIR variancia de rodada. Duas rodadas com a mesma "
+                         "receita podem diferir mais que o efeito que se quer detectar — sem "
+                         "esse numero, nenhuma comparacao entre adapters e' interpretavel.")
     ap.add_argument("--dry-run", action="store_true")
     return ap.parse_args()
 
@@ -283,7 +287,7 @@ def main() -> int:
         packing=args.packing,
         optim="paged_adamw_8bit",
         report_to="none",
-        seed=42,
+        seed=args.seed,
     )
 
     trainer = SFTTrainer(model=model, args=cfg, train_dataset=dataset, processing_class=tokenizer)
