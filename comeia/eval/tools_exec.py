@@ -204,7 +204,10 @@ def _run_sql(a: dict) -> Any:
     (q,) = _exigir(a, "query")
     if not str(q).strip().lower().startswith("select"):
         raise ErroFerramenta("apenas SELECT e permitido")
-    return {"linhas": [{"n": 1}]}
+    # 🔴 A v1 devolvia {"linhas": [{"n": 1}]} — CONSTANTE. Qualquer SELECT "acertava", e o
+    #    rejection sampling colheu 101 exemplos assim como reforco valido. Discriminacao zero
+    #    nao e' leniencia: e' ausencia de medida disfarcada de acerto.
+    return {"linhas": [{"n": 1}], "consulta_id": _det("sql", q)}
 
 
 def _run_python(a: dict) -> Any:
@@ -213,7 +216,14 @@ def _run_python(a: dict) -> Any:
         compile(str(c), "<tool>", "exec")
     except SyntaxError as e:
         raise ErroFerramenta(f"codigo nao compila: {e.msg}") from e
-    return {"compila": True}
+    # 🔴 idem: {"compila": True} era constante, e `{"code": "f"}` — um nome solto, sintaxe
+    #    valida — foi colhido como CORRETO pelo rejection sampling.
+    #    ⚠️ O conserto move a ferramenta de "sem discriminacao" para "igualdade exata do
+    #    codigo", que e' a classe ECO (§ PONTUADAS_POR_ECO). Isso e' pior para o modelo e
+    #    MELHOR para a medicao: severo e mensuravel bate frouxo e invisivel. Executar o
+    #    codigo de verdade daria equivalencia funcional, e e' o conserto certo — custa um
+    #    sandbox, que este avaliador nao tem.
+    return {"compila": True, "codigo_id": _det("py", c)}
 
 
 def _calculator(a: dict) -> Any:
@@ -362,4 +372,6 @@ if __name__ == "__main__":
 # Piora o caso: as referencias do holdout sao inconsistentes quanto a `max_results` (umas
 # trazem, outras nao, sem nada no pedido que decida), e em pelo menos um caso a referencia e'
 # MENOS fiel ao pedido que a previsao (a ref inventou "IBGE", que o usuario nao pediu).
-PONTUADAS_POR_ECO = {"web_search", "http_get", "summarize_url"}
+PONTUADAS_POR_ECO = {"web_search", "http_get", "summarize_url",
+                     # movidas de CONSTANTE para ECO no E6 — ver comentarios acima
+                     "run_python", "run_sql"}
