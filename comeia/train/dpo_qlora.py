@@ -38,6 +38,8 @@ import json
 import sys
 from pathlib import Path
 
+from transformers import TrainerCallback
+
 ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_OUT = ROOT / "models" / "bee-dpo-adapter"   # era "qwen3.5-4b-ptbr-dpo"
 
@@ -74,6 +76,11 @@ def parse_args() -> argparse.Namespace:
     ap.add_argument("--max-prompt-len", type=int, default=1536)
     ap.add_argument("--epochs", type=float, default=1.0)
     ap.add_argument("--lr", type=float, default=5e-6, help="DPO usa LR bem menor que SFT")
+    ap.add_argument("--loss-type", default="sigmoid",
+                    choices=["sigmoid", "ipo", "hinge", "robust"],
+                    help="'sigmoid' = DPO classico. 'ipo' = IPO (arXiv:2310.12036): "
+                         "preferencia vinda de VERIFICADOR e' deterministica, e esse e' o "
+                         "regime exato em que o DPO degenera qualquer que seja o beta.")
     ap.add_argument("--beta", type=float, default=0.1,
                     help="força do KO ao ref: menor=mais livre, maior=mais conservador")
     ap.add_argument("--batch-size", type=int, default=1)
@@ -155,6 +162,41 @@ def guarda_modelo_do_projeto(nome: str, permitir_terceiro: bool) -> None:
           file=sys.stderr)
     print("   --permitir-modelo-de-terceiros e assuma a escolha.", file=sys.stderr)
     raise SystemExit(1)
+
+class GuardaDeslocamento(TrainerCallback):
+    """🔴 GUARDA OBRIGATORIA — likelihood displacement (arXiv:2402.13228).
+
+    Pares vindos de verificador tem DISTANCIA DE EDICAO MINIMA: mesma trajetoria, um
+    argumento trocado. E' o gatilho exato do deslocamento de verossimilhanca, confirmado ate'
+    OLMo-1B (arXiv:2410.08847): a margem chosen-rejected sobe bonito no log **enquanto as
+    duas log-probs CAEM**, e a massa migra para respostas de sentido oposto.
+
+    ⚠️ Nada disso da' erro. O log fica lindo — `rewards/margins` subindo — e o modelo piora.
+    A unica leitura que denuncia e' `logps/chosen` ABSOLUTO: se ele cai abaixo do valor do
+    primeiro passo, a margem esta' sendo comprada empurrando o CERTO para baixo.
+    """
+
+    def __init__(self, folga: float = 0.0):
+        self.inicial: float | None = None
+        self.folga = folga
+        self.pior = None
+
+    def on_log(self, args, state, control, logs=None, **kw):
+        if not logs or "logps/chosen" not in logs:
+            return
+        v = float(logs["logps/chosen"])
+        if self.inicial is None:
+            self.inicial = v
+            print(f"  [guarda] logps/chosen inicial = {v:.4f} — abortar se cair abaixo disso")
+            return
+        self.pior = v if self.pior is None else min(self.pior, v)
+        if v < self.inicial - self.folga:
+            print()
+            print(f"🔴 ABORTANDO: logps/chosen caiu de {self.inicial:.4f} para {v:.4f}.")
+            print("   A margem esta' subindo porque o CHOSEN esta' sendo empurrado para baixo")
+            print("   (likelihood displacement). Continuar so' produziria um log bonito.")
+            control.should_training_stop = True
+
 
 def main() -> int:
     # O console do Windows usa cp1252 e explode ao imprimir emoji. Os scripts do projeto ja
@@ -262,6 +304,7 @@ def main() -> int:
         save_total_limit=2,
         bf16=True,
         beta=args.beta,
+        loss_type=args.loss_type,
         max_length=args.max_seq_len,
         max_prompt_length=args.max_prompt_len,
         max_grad_norm=args.max_grad_norm,
@@ -278,6 +321,7 @@ def main() -> int:
         processing_class=tokenizer,
         peft_config=peft_config,  # None se partimos do adapter SFT
     )
+    trainer.add_callback(GuardaDeslocamento())
 
     print("\ntreinando DPO... (Ctrl+C interrompe; checkpoints em save_steps)")
     trainer.train()

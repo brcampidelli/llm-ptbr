@@ -250,11 +250,23 @@ def main() -> int:
 
     pares: list[dict] = []
     for (msgs, ref_obj, res_ref), saidas in zip(validos, saidas_tool):
+        # ⚠️ DOIS TIPOS DE NEGATIVO, e eles ensinam coisas diferentes:
+        #   "quase" — parseou, executou, resultado errado. Distancia de edicao MINIMA
+        #             (mesma chamada, um argumento trocado). E' o sinal de PRECISAO — e e'
+        #             tambem o gatilho exato do likelihood displacement (arXiv:2402.13228).
+        #   "lixo"  — nao parseou. Distancia de edicao MAXIMA. Ensina "emitir JSON valido".
+        # A v1 descartava o segundo, porque guardava so' a forma ja' parseada e nao sobrava
+        # texto para usar como `rejected`. Perdia justamente o negativo mais facil de
+        # aprender. Agora os dois entram, ROTULADOS — misturar sem rotulo esconderia qual
+        # deles fez efeito.
         certas, erradas, vistos = [], [], set()
         for bruto in saidas:
             obj = ler_chamada(bruto)
             if obj is None:
-                erradas.append(None)                  # nao parseou: negativo valido
+                cru = cortar_no_controle(strip_think(limpar_especiais(bruto))[0]).strip()
+                if cru and cru not in vistos:
+                    vistos.add(cru)
+                    erradas.append(("lixo", cru[:1200]))
                 continue
             chave = json.dumps(obj, sort_keys=True, ensure_ascii=False)
             if chave in vistos:
@@ -264,7 +276,7 @@ def main() -> int:
             if ok_p and TE.resultados_batem(res_p, res_ref):
                 certas.append(chave)
             else:
-                erradas.append(chave)
+                erradas.append(("quase", chave))
 
         # ⭐ 5a — FILTRO ALL-WRONG (arXiv:2504.11343). A ablacao isola que a vantagem inteira
         #    do GRPO sobre o RAFT vem de DESCARTAR prompts cujas amostras sairam todas
@@ -288,10 +300,16 @@ def main() -> int:
 
         # pares de preferencia: exige os DOIS lados no MESMO prompt
         if args.pares and certas and erradas:
-            for c, e in zip(certas[: args.max_por_exemplo],
-                            [x for x in erradas if x][: args.max_por_exemplo]):
+            # "quase" primeiro: e' o negativo dificil, o que carrega sinal de precisao
+            ordenadas = ([e for e in erradas if e[0] == "quase"]
+                         + [e for e in erradas if e[0] == "lixo"])
+            for n_par in range(min(args.max_por_exemplo, len(certas) * len(ordenadas))):
+                c = certas[n_par % len(certas)]
+                tipo, e = ordenadas[n_par % len(ordenadas)]
                 pares.append({"prompt": msgs, "chosen": c, "rejected": e,
-                              "kind": "tool_call", "origem": "rejection_sampling"})
+                              "tipo_negativo": tipo, "kind": "tool_call",
+                              "origem": "rejection_sampling"})
+                stats[f"par_{tipo}"] += 1
 
     # ── colheita SIMETRICA: reforcar a decisao de NAO chamar ──────────────────
     n_text_ok = 0
@@ -352,6 +370,14 @@ def main() -> int:
         print(f"  {rot:12} {v:5}/{tot5a} = {v/max(1,tot5a):6.1%}")
     print("  (all_wrong: o modelo nao acha a solucao nem em k tentativas — nada a reforcar")
     print("   all_right: acha sempre — nada a corrigir, e nenhum par de preferencia)")
+    if args.pares:
+        print()
+        print("composicao dos pares (negativos diferentes ensinam coisas diferentes):")
+        for t in ("quase", "lixo"):
+            v = stats[f"par_{t}"]
+            print(f"  {t:6} {v:5}  " + ("(distancia minima — precisao, e o gatilho do "
+                                        "likelihood displacement)" if t == "quase"
+                                        else "(distancia maxima — 'emita JSON valido')"))
     print(f"amostras de reforco colhidas {len(reforco)}")
     if stats["ref_nao_executa"]:
         print(f"⚠️ referencias descartadas (nao executam): {stats['ref_nao_executa']}")
