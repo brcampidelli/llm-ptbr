@@ -76,6 +76,11 @@ def parse_args() -> argparse.Namespace:
     ap.add_argument("--max-prompt-len", type=int, default=1536)
     ap.add_argument("--epochs", type=float, default=1.0)
     ap.add_argument("--lr", type=float, default=5e-6, help="DPO usa LR bem menor que SFT")
+    ap.add_argument("--kto", action="store_true",
+                    help="usa KTOTrainer (dado DESPAREADO: prompt/completion/label). "
+                         "O unico braco que alcanca os prompts all_right, que nao formam par.")
+    ap.add_argument("--peso-desejavel", type=float, default=1.0)
+    ap.add_argument("--peso-indesejavel", type=float, default=1.0)
     ap.add_argument("--loss-type", default="sigmoid",
                     choices=["sigmoid", "ipo", "hinge", "robust"],
                     help="'sigmoid' = DPO classico. 'ipo' = IPO (arXiv:2310.12036): "
@@ -235,7 +240,7 @@ def main() -> int:
     from datasets import load_dataset
     from peft import LoraConfig, PeftModel, prepare_model_for_kbit_training
     from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
-    from trl import DPOConfig, DPOTrainer
+    from trl import DPOConfig, DPOTrainer, KTOConfig, KTOTrainer
 
     # 🔴 4-bit e' OPT-IN. Ver a mesma nota em sft_qlora.py: o Bee-350M em bf16 sao 691 MB;
     #    quantizar economiza ~0,5 GB que nao fazem falta e custa 20-30% de throughput.
@@ -288,8 +293,27 @@ def main() -> int:
     ref_model = None
 
     dataset = load_dataset("json", data_files=str(args.data), split="train")
+    # 🔴 GUARDA DE FORMATO. KTO quer prompt/completion/label; DPO quer prompt/chosen/rejected.
+    #    Passar um ao outro nao da' erro claro — da' erro de coluna la' dentro, ou pior, treina
+    #    em algo que nao e' o que se pensa. Abortar aqui e' barato.
+    cols = set(dataset.column_names)
+    if args.kto and not {"prompt", "completion", "label"} <= cols:
+        print(f"ERRO: --kto exige prompt/completion/label; o arquivo tem {sorted(cols)}",
+              file=sys.stderr)
+        return 2
+    if not args.kto and not {"prompt", "chosen", "rejected"} <= cols:
+        print(f"ERRO: DPO/IPO exige prompt/chosen/rejected; o arquivo tem {sorted(cols)}",
+              file=sys.stderr)
+        return 2
 
-    cfg = DPOConfig(
+    Config, Trainer = (KTOConfig, KTOTrainer) if args.kto else (DPOConfig, DPOTrainer)
+    extra = {}
+    if args.kto:
+        extra = {"desirable_weight": args.peso_desejavel,
+                 "undesirable_weight": args.peso_indesejavel}
+    else:
+        extra = {"loss_type": args.loss_type}
+    cfg = Config(
         output_dir=str(args.out),
         num_train_epochs=args.epochs,
         max_steps=args.max_steps,
@@ -304,16 +328,16 @@ def main() -> int:
         save_total_limit=2,
         bf16=True,
         beta=args.beta,
-        loss_type=args.loss_type,
         max_length=args.max_seq_len,
         max_prompt_length=args.max_prompt_len,
         max_grad_norm=args.max_grad_norm,
         optim="paged_adamw_8bit",
         report_to="none",
         seed=42,
+        **extra,
     )
 
-    trainer = DPOTrainer(
+    trainer = Trainer(
         model=model,
         ref_model=ref_model,
         args=cfg,
@@ -322,6 +346,7 @@ def main() -> int:
         peft_config=peft_config,  # None se partimos do adapter SFT
     )
     trainer.add_callback(GuardaDeslocamento())
+    print(f"perda  : {'KTO' if args.kto else args.loss_type.upper()}")
 
     print("\ntreinando DPO... (Ctrl+C interrompe; checkpoints em save_steps)")
     trainer.train()
