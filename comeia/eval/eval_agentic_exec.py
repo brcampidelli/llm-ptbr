@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import argparse
 import importlib.util
+from collections import Counter
 import json
 import math
 import re
@@ -333,6 +334,8 @@ def main() -> int:
     exec_ok_h = 0            # regua HARNESS: primeira chamada completa (ver paradas.py)
     servidas_ok = 0          # E5b: acerto da politica "primeira executavel" (realizavel)
     servidas_n = 0           # casos em que alguma amostra executou
+    votadas_ok = 0           # votacao por maioria (structural consensus)
+    votadas_n = 0
     passou_alguma_h = 0
     soma_taxa_h = 0.0
     over_h = 0
@@ -392,6 +395,13 @@ def main() -> int:
         #    O acerto dessa politica e' o que o E5b pode entregar; pass@k e' o teto, nao a
         #    entrega.
         servida = None                           # 1a amostra que EXECUTA (sem olhar a ref)
+        # ⭐ VOTACAO POR MAIORIA (structural consensus, arXiv:2604.17450) — agregacao DIFERENTE
+        #    da "1a executavel", que o E5 mediu e reprovou (62,4% contra 65,9% do greedy).
+        #    Aqui vota-se o NOME DA FERRAMENTA entre as k amostras e depois os ARGUMENTOS entre
+        #    as que escolheram a vencedora. Ataca substituicao de ferramenta, que e' 51% das
+        #    falhas medidas. Decidivel sem gabarito, logo REALIZAVEL em runtime.
+        votos_tool: Counter = Counter()
+        votos_args: dict = {}
         for bruto in saidas:
             pred, _ = strip_think(bruto)
             obj = _d7.extract_json(pred)
@@ -428,6 +438,11 @@ def main() -> int:
                     acertos += 1
 
             obj_h = parse_harness(bruto)
+            if obj_h is not None:
+                nm = obj_h.get("tool")
+                votos_tool[nm] += 1
+                ch = json.dumps(obj_h.get("args") or {}, sort_keys=True, ensure_ascii=False)
+                votos_args.setdefault(nm, Counter())[ch] += 1
             if obj_h is not None and ok_ref:
                 ok_h, res_h = TE.executar(obj_h)
                 if ok_h and servida is None:
@@ -449,6 +464,13 @@ def main() -> int:
         if servida is not None:
             servidas_n += 1
             servidas_ok += 1 if servida else 0
+        if votos_tool:
+            nm = votos_tool.most_common(1)[0][0]
+            arg = json.loads(votos_args[nm].most_common(1)[0][0])
+            ok_v, res_v = TE.executar({"tool": nm, "args": arg})
+            votadas_n += 1
+            if ok_ref and ok_v and TE.resultados_batem(res_v, res_ref):
+                votadas_ok += 1
         por_ferramenta.setdefault(nome_ref, []).append(1 if acertos else 0)
         if args.dump:
             despejo.append({
@@ -541,6 +563,8 @@ def main() -> int:
         print("E5b — POLITICA REALIZAVEL: retentar ate' a chamada EXECUTAR, servir a 1a")
         print(f"  alguma amostra executou   {servidas_n}/{n_tool} = {servidas_n/max(1,n_tool):6.1%}")
         print(f"  e a servida estava certa  {servidas_ok}/{n_tool} = {servidas_ok/max(1,n_tool):6.1%}")
+        print(f"  ⭐ VOTACAO POR MAIORIA     {votadas_ok}/{n_tool} = {votadas_ok/max(1,n_tool):6.1%}"
+              f"   (em {votadas_n} casos com voto)")
         print("  ⚠️ pass@k acima usa a REFERENCIA para escolher a melhor das k — em producao")
         print("     nao ha' referencia. pass@k e' o TETO; esta linha e' a ENTREGA.")
         print()
@@ -553,6 +577,7 @@ def main() -> int:
             print("          rejection sampling teria pouco o que colher.")
         resultado.update({"pass_1": round(p1, 4), f"pass_{args.k}": round(pk, 4),
                           "servidas_ok": servidas_ok, "servidas_n": servidas_n,
+                          "votadas_ok": votadas_ok, "votadas_n": votadas_n,
                           "pass_1_harness": round(p1h, 4),
                           f"pass_{args.k}_harness": round(pkh, 4)})
 

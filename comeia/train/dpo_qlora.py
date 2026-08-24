@@ -211,9 +211,36 @@ class GuardaDeslocamento(TrainerCallback):
         self.marco: float | None = None
         self.margem0: float | None = None
         self.ruins = 0
+        self.reverter = False
+        self.ultimo_bom: dict | None = None      # copia dos treinaveis antes do deslocamento
+
+    def _guardar(self, model):
+        if model is None:
+            return
+        self.ultimo_bom = {n: p.detach().clone().cpu()
+                           for n, p in model.named_parameters() if p.requires_grad}
 
     def on_log(self, args, state, control, logs=None, **kw):
-        if not logs or "logps/chosen" not in logs:
+        if not logs:
+            return
+        # 🔴 GUARDA DE OVERFLOW (arXiv:2607.25091, medido em SmolLM2-135M/360M — a faixa do
+        #    Bee): em bf16 as razoes de log-prob estouram e o treino segue produzindo NaN/inf
+        #    sem erro. O conserto do paper e' float32 nas atualizacoes; a TRL nao expoe esse
+        #    dtype, entao aqui NAO se finge ter prevenido — se DETECTA e se aborta.
+        #    ⚠️ Aplicar uma flag que nao endereca o problema seria pior que nao aplicar nada:
+        #    daria a impressao de guarda onde nao ha'.
+        import math as _m
+        for k in ("logps/chosen", "logps/rejected", "rewards/margins", "loss"):
+            v = logs.get(k)
+            if isinstance(v, (int, float)) and (_m.isnan(v) or _m.isinf(v)):
+                print()
+                print(f"🔴 ABORTANDO: {k} = {v} no passo {state.global_step}.")
+                print("   Overflow numerico em bf16 (arXiv:2607.25091). O treino seguiria sem")
+                print("   erro produzindo pesos invalidos.")
+                control.should_training_stop = True
+                self.reverter = True
+                return
+        if "logps/chosen" not in logs:
             return
         v = float(logs["logps/chosen"])
         m = float(logs.get("rewards/margins", 0.0))
@@ -235,12 +262,25 @@ class GuardaDeslocamento(TrainerCallback):
                   f"{self.marco:.3f} COM margem subindo ({m:+.4f})")
         else:
             self.ruins = 0
+            self._guardar(kw.get("model"))       # estado bom mais recente
         if self.ruins >= self.SEGUIDAS:
             print()
             print(f"🔴 ABORTANDO: logps/chosen abaixo do marco por {self.SEGUIDAS} leituras")
             print("   seguidas E com a margem subindo. E' deslocamento: a margem esta' sendo")
             print("   comprada empurrando o CERTO para baixo, nao empurrando o errado.")
+            # ⚠️ PARAR NAO BASTA — o checkpoint ja' salvo carrega o dano, e e' ele que sera'
+            #    avaliado. arXiv:2607.25091 usa ROLLBACK DE PESO na mesma situacao. Aqui o
+            #    rollback e' pedir ao Trainer o melhor estado anterior; sem isso a guarda so'
+            #    economiza GPU e nao protege o artefato.
             control.should_training_stop = True
+            self.reverter = True
+
+    def on_train_end(self, args, state, control, model=None, **kw):
+        if getattr(self, "reverter", False) and self.ultimo_bom is not None:
+            print("  [guarda] revertendo os pesos para o ultimo estado antes do deslocamento")
+            for n, p_ in model.named_parameters():
+                if p_.requires_grad and n in self.ultimo_bom:
+                    p_.data.copy_(self.ultimo_bom[n].to(p_.device, p_.dtype))
 
 
 def main() -> int:
