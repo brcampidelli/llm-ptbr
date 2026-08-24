@@ -137,6 +137,50 @@ schema (75 → 76) e voltei atrás: onde o schema existe ele tem prioridade sobr
 
 ---
 
+## 4b. 🔴 O rejection sampling amplifica o que o modelo já faz — medido
+
+Rodado nos 1.206 casos de catálogo inédito (+837 de texto, proporção 1,44:1 preservada para
+não deslocar a decisão). k=8, 4 h de GPU local, US$ 0.
+
+| ferramenta | entrada | reforço | **rendimento** | pares |
+|---|---:|---:|---:|---:|
+| `calculate_discount` | 710 | 589 | **83%** | 1.528 |
+| **`calculate_tip`** | **374** | **0** | **0%** | **0** |
+| `calculate_bmi` | 14 | 9 | 64% | 23 |
+| `calculate_tax` | 35 | 5 | 14% | 18 |
+| `calculate_sales_tax` | 40 | 2 | 5% | 6 |
+| **total** | **1.206** | **848** | 70% | **2.129** |
+
+🔴 **374 prompts de gorjeta entraram e zero saíram** — nenhum exemplo de reforço, nenhum par,
+em 2.992 amostras. A aritmética é idêntica à do desconto (`base × taxa / 100`); o que separa
+83% de 0% é o modelo associar "gorjeta" a `calculator`, ferramenta que ele memorizou, em vez
+de ler o catálogo do prompt.
+
+⭐ **Consequência estrutural: o RS concentra em vez de preencher.** A entrada era 58,9%
+desconto; o reforço saiu **69,5%**, e os pares **71,8%**. Treinar nele empurraria o modelo
+ainda mais para a ferramenta que ele já domina, sem tocar no buraco.
+
+⚠️ **Isso não é falha da execução — é o método.** RS colhe da cauda existente; onde a
+capacidade é 0%, não há cauda. O `all_wrong` (664 prompts, 55,1%) é exatamente onde está a
+capacidade que falta, e é de onde o RS não tira nada por construção.
+
+### O que a rodada refutou da minha própria previsão
+
+Eu tinha registrado que a colheita seria "quase vazia". Não foi: **2.129 pares** contra 930 no
+mundo fechado, e `misto` subiu de 32,7% para **44,9%**. O que mudou foi a outra ponta —
+`all_right` desabou de 335 prompts para **1**. Em catálogo inédito o modelo quase nunca acerta
+*sempre*, mas acerta *às vezes* com mais frequência: é o regime de mais sinal de preferência,
+não menos. A previsão errou o sinal e acertou o efeito prático.
+
+### E o lado do texto funcionou
+
+Reforço final **848 tool / 601 text = 58,5%**, contra os 59,3% do original — a colheita
+simétrica manteve a proporção quase exata. ⚠️ Mas a razão de rejeição diz algo: 3.264 amostras
+de texto foram descartadas por **"chamou ferramenta"** quando não devia. O over-calling não é
+só alto na régua; é o modo dominante nas amostras.
+
+---
+
 ## 5. O que fica
 
 1. **Toda comparação agêntica futura roda nos dois holdouts.** O antigo mede dentro da
