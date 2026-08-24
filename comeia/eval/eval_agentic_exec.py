@@ -135,6 +135,11 @@ def main() -> int:
     ap.add_argument("--lote", type=int, default=24,
                     help="exemplos por lote de geracao (so' vale para k=1)")
     ap.add_argument("--tag", default=None)
+    ap.add_argument("--por-argumento", action="store_true",
+                    help="pontua ARGUMENTO A ARGUMENTO (ver argumentos.py) em vez de por "
+                         "execucao. Destrava as 149 ferramentas diversas, cujas formulas nao "
+                         "dao para implementar. ⚠️ Recusa caso sem nenhum argumento pontuavel "
+                         "— contar como acerto quem so' tem argumento formulado inflaria tudo.")
     ap.add_argument("--parar-controle", action="store_true",
                     help="E5b: tambem parar nos ids de byte C0, onde o terminador do adapter "
                          "cai sob amostragem. Intervencao de runtime, zero treino.")
@@ -167,6 +172,15 @@ def main() -> int:
             continue
         obj = _d7.extract_json(ref)
         ok, motivo = TE.executar(obj) if obj else (False, "referencia sem JSON")
+        if not ok and obj and args.por_argumento:
+            # ⚠️ referencia que nao executa NAO e' impossivel quando ha' criterio POR
+            #    ARGUMENTO: e' so' uma ferramenta cuja formula nao se aplica. Reprova-la aqui
+            #    descartaria 176 de 1.000 casos perfeitamente mensuraveis.
+            import argumentos as _ARG
+            _pf = _ARG.carregar()
+            if any(_ARG.classe_de(_pf, obj.get("tool", ""), k) in ("extraido", "temporal")
+                   for k in (obj.get("args") or {})):
+                ok = True
         if not ok:
             impossiveis.append(((obj or {}).get("tool", "?"), str(motivo)[:70]))
     if impossiveis:
@@ -191,6 +205,19 @@ def main() -> int:
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     from paradas import (ids_de_parada, terminador_correto, limpar,
                          cortar_no_controle, primeiro_objeto, ids_de_controle)
+    import argumentos as ARG
+    try:
+        import mundo_aberto as MA
+        APROVADAS_MA = set(json.loads(
+            (Path(__file__).resolve().parent / "mundo_aberto_aprovadas.json")
+            .read_text(encoding="utf-8")))
+    except Exception:
+        MA, APROVADAS_MA = None, set()
+    perfil_arg = ARG.carregar() if args.por_argumento else {}
+    if args.por_argumento and not perfil_arg:
+        print("ERRO: --por-argumento exige o perfil; rode "
+              "`python comeia/eval/argumentos.py --perfilar`", file=sys.stderr)
+        return 2
 
     dispositivo = "cuda" if torch.cuda.is_available() else "cpu"
     tok = AutoTokenizer.from_pretrained(args.model)
@@ -324,6 +351,45 @@ def main() -> int:
                   f"resta ~{dt / i2 * (len(textos) - i2):.1f} min", flush=True)
         return fora
 
+    def pontuar(obj, ref_obj, res_ref, ok_ref, contar):
+        """HIERARQUIA de criterios, do mais forte ao mais fraco. Devolve (acertou, modo).
+
+        1. formula validada  -> equivalencia FUNCIONAL (executa os dois e compara resultado)
+        2. por argumento     -> so' os argumentos EXTRAIDOS/TEMPORAIS, os formulados de fora
+        3. recusa            -> nenhum criterio aplicavel; NAO conta como acerto
+
+        ⚠️ Nunca alternativa, sempre hierarquia: usar o criterio fraco onde o forte existe
+        rebaixaria a regua em silencio.
+        """
+        nonlocal arg_pontuados, arg_excluidos
+        nome = obj.get("tool")
+        # 🔴 COLISAO DE NOME. `send_email` existe nas 14 simuladas E no gigaverbo, com esquemas
+        #    DIFERENTES (`to`/`body` contra `recipient`/`message`). "esta' em TE.FERRAMENTAS"
+        #    nao e' o mesmo que "e' aquela ferramenta": a v1 disto mandava 176 de 1.000
+        #    referencias para a formula errada e elas nao executavam.
+        #    ⭐ O criterio certo e' a REFERENCIA: so' se ela propria executa sob a formula e'
+        #    que a formula descreve esta chamada.
+        tem_formula = ok_ref and ((nome in TE.FERRAMENTAS) or (
+            MA is not None and nome in APROVADAS_MA))
+        if tem_formula:
+            ok_p, res_p = TE.executar(obj)
+            return bool(ok_p and TE.resultados_batem(res_p, res_ref)), "formula"
+        # ⚠️ ROTULO PRECISO. A v1 chamava tudo isto de "recusado", o que se le' como "a regua
+        #    nao soube julgar" — quando na maioria das vezes significa "o modelo escolheu OUTRA
+        #    ferramenta", que e' erro do modelo, nao limite do instrumento. Sao coisas
+        #    diferentes e precisam de nomes diferentes.
+        if ref_obj and obj.get("tool") != ref_obj.get("tool"):
+            return False, "ferramenta_errada"
+        if perfil_arg:
+            bate, npt, nex = ARG.comparar(obj, ref_obj or {}, perfil_arg)
+            if contar:
+                arg_pontuados += npt
+                arg_excluidos += nex
+            if npt > 0:
+                return bate, "argumento"
+        return False, "sem_criterio"
+
+    modos = Counter()
     n_tool = n_text = 0
     json_ok = tool_right = args_exact = exec_ok = 0
     over = under = trunc = 0
@@ -336,6 +402,7 @@ def main() -> int:
     servidas_n = 0           # casos em que alguma amostra executou
     votadas_ok = 0           # votacao por maioria (structural consensus)
     votadas_n = 0
+    arg_pontuados = arg_excluidos = 0   # cobertura da pontuacao por argumento
     passou_alguma_h = 0
     soma_taxa_h = 0.0
     over_h = 0
@@ -405,6 +472,8 @@ def main() -> int:
         for bruto in saidas:
             pred, _ = strip_think(bruto)
             obj = _d7.extract_json(pred)
+            e_primeira = primeira                # ⚠️ `primeira` vira False logo abaixo; sem
+                                                 #    guardar, o contador de modos nunca conta
 
             if primeira:                         # metricas classicas: so a 1a amostra
                 obj0 = obj
@@ -432,23 +501,30 @@ def main() -> int:
                             args_exact += 1
                 primeira = False
 
-            if obj is not None and ok_ref:
-                ok_p, res_p = TE.executar(obj)
-                if ok_p and TE.resultados_batem(res_p, res_ref):
+            if obj is not None:
+                ok_p, modo = pontuar(obj, ref_obj, res_ref, ok_ref, e_primeira)
+                if ok_p:
                     acertos += 1
+                if e_primeira:
+                    modos[modo] += 1
 
             obj_h = parse_harness(bruto)
+            if obj_h is not None:
+                pass
             if obj_h is not None:
                 nm = obj_h.get("tool")
                 votos_tool[nm] += 1
                 ch = json.dumps(obj_h.get("args") or {}, sort_keys=True, ensure_ascii=False)
                 votos_args.setdefault(nm, Counter())[ch] += 1
-            if obj_h is not None and ok_ref:
-                ok_h, res_h = TE.executar(obj_h)
-                if ok_h and servida is None:
-                    # primeira que EXECUTA — decidido sem olhar a referencia
+            if obj_h is not None:
+                ok_h_exec, res_h = TE.executar(obj_h)
+                if ok_h_exec and servida is None and ok_ref:
                     servida = TE.resultados_batem(res_h, res_ref)
-                if ok_h and TE.resultados_batem(res_h, res_ref):
+                # ⚠️ MESMO comparador do caminho estrito. A v1 desta integracao usava
+                #    por-argumento so' no estrito e execucao no harness — as duas colunas
+                #    passavam a medir coisas diferentes, que e' mudar o instrumento entre os
+                #    grupos (§2g) dentro da propria tabela.
+                if pontuar(obj_h, ref_obj, res_ref, ok_ref, False)[0]:
                     acertos_h += 1
 
         if acertos and saidas:
@@ -517,6 +593,13 @@ def main() -> int:
         print(f"  {'terminou com especial ERRADO':34} {errado}/{len(terminadores)}")
         print(f"  {'nao terminou (foi ao teto)':34} {nunca}/{len(terminadores)}")
     print("-" * 72)
+    if args.por_argumento:
+        tot_a = arg_pontuados + arg_excluidos
+        print(f"  {'cobertura da pontuacao':34} {arg_pontuados}/{tot_a} argumentos = "
+              f"{arg_pontuados/max(1,tot_a):.1%}")
+        print(f"  {'':34} (os excluidos sao FORMULADOS: subject, body, task —")
+        print(f"  {'':34}  nao ha' criterio exato, e ignora-los facilita o escore)")
+        print(f"  {'como cada caso foi pontuado':34} {dict(modos)}")
     print(f"CASOS QUE NAO EXIGEM FERRAMENTA: {n_text}")
     print(linha("⚠️ over-calling (estrito)", over, n_text))
     print(linha("⚠️ over-calling (harness)", over_h, n_text))
