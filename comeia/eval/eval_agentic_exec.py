@@ -142,6 +142,12 @@ def main() -> int:
     ap.add_argument("--temp", type=float, default=0.8, help="so usado quando k>1")
     ap.add_argument("--max-new", type=int, default=320)
     ap.add_argument("--limit", type=int, default=0)
+    ap.add_argument("--max-len", type=int, default=1536,
+                    help="truncamento do prompt em tokens. ⚠️ Subir isto muda a "
+                         "rodada: prompt+geracao tem de caber em max_position_"
+                         "embeddings (2048 no bee-350m), senao a geracao passa do "
+                         "limite posicional e a saida vira lixo — que se le como "
+                         "falha do modelo.")
     ap.add_argument("--lote", type=int, default=24,
                     help="exemplos por lote de geracao (so' vale para k=1)")
     ap.add_argument("--tag", default=None)
@@ -356,7 +362,7 @@ def main() -> int:
         while i2 < len(textos):
             bloco = textos[i2:i2 + b]
             ent = tok(bloco, return_tensors="pt", padding=True, truncation=True,
-                      max_length=1536).to(dispositivo)
+                      max_length=args.max_len).to(dispositivo)
             cfg = dict(max_new_tokens=args.max_new, eos_token_id=PARADAS,
                        pad_token_id=tok.pad_token_id or tok.eos_token_id)
             if restringe:
@@ -713,7 +719,7 @@ def main() -> int:
         #    LOTE: o padding muda, a numerica muda. lote 8/16/32 dao saidas diferentes em
         #    ~5-7% dos itens, e foi `--lote 32` que reproduziu a rodada antiga em 21/21.
         #    ⚠️ Comparacao pareada entre rodadas exige MESMO lote dos dois lados.
-        "config": {"lote": args.lote, "max_new": args.max_new, "chat": bool(args.chat),
+        "config": {"lote": args.lote, "max_new": args.max_new, "max_len": args.max_len, "chat": bool(args.chat),
                    "parar_controle": bool(args.parar_controle),
                    "por_argumento": bool(args.por_argumento),
                    "restrito": bool(getattr(args, "restrito", False)),
