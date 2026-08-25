@@ -106,6 +106,15 @@ def valores_equivalentes(a: dict | None, b: dict | None) -> bool:
     return True
 
 
+def _sha_perfil() -> str | None:
+    """SHA-256 (12 hex) do perfil de argumentos — a identidade da regua."""
+    import hashlib
+    p = Path(__file__).with_name("argumentos_perfil.json")
+    if not p.exists():
+        return None
+    return hashlib.sha256(p.read_bytes()).hexdigest()[:12]
+
+
 def partes(row: dict) -> tuple[str | None, str, str, str]:
     sistema = usuario = ref = None
     for m in mensagens(row):
@@ -426,7 +435,8 @@ def main() -> int:
         return False, "sem_criterio"
 
     modos = Counter()
-    n_tool = n_text = 0
+    n_tool = n_text = n_sem_criterio = 0
+    identicas_reprovadas: list[str] = []
     json_ok = tool_right = args_exact = exec_ok = 0
     over = under = trunc = 0
     passou_alguma = 0          # pass@k
@@ -484,9 +494,38 @@ def main() -> int:
                                 "over_call": chamou, "bruto": saidas[0][:1200]})
             continue
 
-        n_tool += 1
         nome_ref = (ref_obj or {}).get("tool", "?")
         ok_ref, res_ref = TE.executar(ref_obj) if ref_obj else (False, None)
+
+        # 🔴 SEM CRITERIO E' DECIDIDO PELA REFERENCIA, NUNCA PELA PREVISAO. Se o gabarito
+        #    nao executa sob formula nenhuma E nao tem argumento pontuavel, o caso e'
+        #    IMENSURAVEL e sai do denominador. Decidir isto pela previsao excluiria o modelo
+        #    que nao gerou chamada — que e' falha DELE, nao limite do instrumento.
+        #    ⚠️ A v1 desta mudanca IMPRIMIA "ficam FORA do denominador" e nao excluia nada:
+        #    os casos voltavam False e contavam como falha. A regua caiu 22 pp por isso, e o
+        #    texto da guarda afirmava o que o codigo nao fazia.
+        # ⚠️ A condicao TEM DE SER A MESMA de `pontuar`. A v1 desta guarda usava `not
+        #    ok_ref` enquanto `pontuar` decide por `tem_formula` (que exige tambem estar na
+        #    lista aprovada). Na diferenca entre as duas, 113 casos com criterio NENHUM
+        #    caiam como FALHA — inclusive previsoes IDENTICAS a referencia:
+        #        add_task  ref/previu {"task_name": "Buy groceries", "due_date": "tomorrow"}
+        #        classes:  task_name=raro · due_date=temporal_ambiguo  -> npt=0 -> False
+        #    Duas condicoes que deveriam ser a mesma, escritas duas vezes, divergiram.
+        _tem_formula = ok_ref and ((nome_ref in TE.FERRAMENTAS)
+                                   or (MA is not None and nome_ref in APROVADAS_MA))
+        if perfil_arg and not _tem_formula:
+            _npt_ref = sum(1 for _k in ((ref_obj or {}).get("args") or {})
+                           if ARG.classe_de(perfil_arg, nome_ref, _k)
+                           in ("extraido", "temporal"))
+            if _npt_ref == 0:
+                n_sem_criterio += 1
+                modos["sem_criterio"] += 1
+                if args.dump:
+                    despejo.append({"i": i, "tipo": "sem_criterio",
+                                    "ferramenta_ref": nome_ref, "usuario": usuario,
+                                    "args_ref": (ref_obj or {}).get("args")})
+                continue
+        n_tool += 1
 
         acertos = acertos_h = 0
         primeira = True
@@ -583,6 +622,15 @@ def main() -> int:
             votadas_n += 1
             if ok_ref and ok_v and TE.resultados_batem(res_v, res_ref):
                 votadas_ok += 1
+        # 🔴 INVARIANTE: previsao IDENTICA a referencia NAO PODE FALHAR. Se falha, o defeito
+        #    e' da regua, nao do modelo — foi assim que 113 casos com criterio nenhum
+        #    apareceram como falha (`add_task` previu exatamente o gabarito e contou 0).
+        #    Custa uma comparacao por caso e teria pego o bug na primeira rodada.
+        if (obj0 and ref_obj and obj0.get("tool") == ref_obj.get("tool")
+                and (obj0.get("args") or {}) == (ref_obj.get("args") or {})
+                and not acertos):
+            identicas_reprovadas.append(nome_ref)
+        por_ferramenta.setdefault(nome_ref, []).append(1 if acertos else 0)
         por_ferramenta.setdefault(nome_ref, []).append(1 if acertos else 0)
         if args.dump:
             despejo.append({
@@ -618,6 +666,15 @@ def main() -> int:
             print("  ZERO mascaramentos — a restricao NAO agiu. Ou o parser nao leu o "
                   "esquema, ou o estado nunca reconheceu chave de args. Numero sem efeito "
                   "medido nao e' evidencia de nada.")
+    if identicas_reprovadas:
+        from collections import Counter as _C2
+        print(f"🔴 REGUA QUEBRADA: {len(identicas_reprovadas)} casos em que a previsao "
+              f"e' IDENTICA a referencia e mesmo assim REPROVARAM — "
+              f"{dict(_C2(identicas_reprovadas).most_common(4))}")
+        print("   Isto e' defeito do instrumento. Nao leia os numeros abaixo.")
+    if n_sem_criterio:
+        print(f"SEM CRITERIO (fora do denominador): {n_sem_criterio} casos — o "
+              f"gabarito nao executa sob formula e nao tem argumento pontuavel")
     print(f"CASOS QUE EXIGEM FERRAMENTA: {n_tool}")
     print(linha("JSON valido (catalogo)", json_ok, n_tool))
     print(linha("ferramenta certa", tool_right, n_tool))
@@ -649,6 +706,22 @@ def main() -> int:
     print(linha("⚠️ over-calling (harness)", over_h, n_text))
 
     resultado = {
+        # 🔴 A CONFIG DA RODADA VAI NO ARTEFATO, NUNCA nos defaults do script. Custou uma
+        #    investigacao inteira: duas rodadas "iguais" divergiam em 6,8% dos itens e eu
+        #    cheguei a anunciar um piso de ruido que NAO EXISTE. A regua e' deterministica com
+        #    lote fixo (0/440 ao repetir) — mas inferencia batelada em bf16 e' SENSIVEL AO
+        #    LOTE: o padding muda, a numerica muda. lote 8/16/32 dao saidas diferentes em
+        #    ~5-7% dos itens, e foi `--lote 32` que reproduziu a rodada antiga em 21/21.
+        #    ⚠️ Comparacao pareada entre rodadas exige MESMO lote dos dois lados.
+        "config": {"lote": args.lote, "max_new": args.max_new, "chat": bool(args.chat),
+                   "parar_controle": bool(args.parar_controle),
+                   "por_argumento": bool(args.por_argumento),
+                   "restrito": bool(getattr(args, "restrito", False)),
+                   "limit": args.limit, "data": str(args.data)},
+        # ⭐ E o HASH DO PERFIL: e' ele que define a REGUA. Sem isto, "esta regua e' outra"
+        #    depende de alguem lembrar de avisar — e hoje eu precisei avisar cinco vezes.
+        "perfil_argumentos_sha": _sha_perfil(),
+        "n_sem_criterio": n_sem_criterio,
         "modelo": args.model, "peft": args.peft, "k": args.k, "temp": args.temp if amostrado else None,
         "n_tool": n_tool, "n_text": n_text, "json_ok": json_ok, "tool_right": tool_right,
         "args_exact": args_exact, "exec_ok": exec_ok if args.k == 1 else None,
