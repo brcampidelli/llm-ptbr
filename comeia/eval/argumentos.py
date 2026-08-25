@@ -46,6 +46,7 @@ PERFIL = Path(__file__).with_name("argumentos_perfil.json")
 CORTE_EXTRAIDO = 0.80        # >= isto e' extraido
 CORTE_FORMULADO = 0.10       # <= isto e' formulado (e nao temporal)
 MIN_AMOSTRAS = 5             # abaixo disto nao se classifica: fica "raro"
+CORTE_CONVENCAO = 0.90       # <- abaixo disto o par temporal e' AMBIGUO e sai do escore
 
 RX_TEMPORAL = re.compile(r"(date|time|data|hora|dia|prazo|deadline|due|start|end|when)", re.I)
 RX_ISO = re.compile(r"(\d{4})-(\d{1,2})-(\d{1,2})")
@@ -90,12 +91,49 @@ def temporal_norm(v: object) -> str | None:
     return " ".join(partes)
 
 
-def _classificar(taxa: float, nome: str, n: int) -> str:
+RX_FORMA_DT = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$")
+RX_FORMA_D = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+RX_FORMA_H = re.compile(r"^\d{1,2}:\d{2}(:\d{2})?\s*(AM|PM|am|pm)?$")
+
+
+def forma_de(v: object) -> str:
+    """Em que CONVENCAO a referencia escreveu este valor temporal."""
+    t = str(v).strip()
+    if RX_FORMA_DT.match(t):
+        return "ISO_DATETIME"
+    if RX_FORMA_D.match(t):
+        return "ISO_DATE"
+    if RX_FORMA_H.match(t):
+        return "HORA"
+    return "TEXTO_LIVRE"
+
+
+def _classificar(taxa: float, nome: str, n: int, formas: Counter | None = None) -> str:
+    """
+    🔴 `temporal` era decidido por REGEX NO NOME — declarado, nao medido. E' justamente a
+    regra que este projeto ja' pagou para aprender (a classe e' MEDIDA), e o temporal tinha
+    ficado de fora dela.
+
+    Medido em 2026-08-24: este corpus **nao tem convencao temporal**. Por par (tool,arg), so'
+    12,1% das referencias do holdout e 18,9% das do treino seguem uma forma unica.
+    `schedule_meeting.date` tem 32 referencias em ISO e 29 em frase crua — cara ou coroa.
+    Com igualdade de string, isso reprova o modelo pela escolha do corpus, e nenhum treino
+    conserta: o dado de treino tem o mesmo defeito, entao **nao ha' convencao a aprender**.
+
+    Par temporal de convencao MISTA vira `temporal_ambiguo` e sai do escore, do mesmo jeito
+    que `formulado`. ⚠️ Isso ENCOLHE o escopo da regua — e' o preco de nao inventar um
+    criterio. Declarar "estas duas datas sao a mesma" seria escolher o limiar que da' o
+    numero desejado.
+    """
     if n < MIN_AMOSTRAS:
         return "raro"
     if taxa >= CORTE_EXTRAIDO:
         return "extraido"
     if RX_TEMPORAL.search(nome):
+        if formas and sum(formas.values()) >= MIN_AMOSTRAS:
+            dom = formas.most_common(1)[0][1] / sum(formas.values())
+            if dom < CORTE_CONVENCAO:
+                return "temporal_ambiguo"
         return "temporal"
     return "formulado"
 
@@ -103,6 +141,7 @@ def _classificar(taxa: float, nome: str, n: int) -> str:
 def perfilar(caminho: Path) -> dict:
     """Deriva, do corpus, a taxa de extração de cada (ferramenta, argumento)."""
     cont: dict[tuple[str, str], list[int]] = defaultdict(lambda: [0, 0])
+    formas: dict[tuple[str, str], Counter] = defaultdict(Counter)
     for ln in caminho.read_text(encoding="utf-8").splitlines():
         if not ln.strip():
             continue
@@ -128,8 +167,12 @@ def perfilar(caminho: Path) -> dict:
             cont[(o["tool"], k)][1] += 1
             if val in ctx:
                 cont[(o["tool"], k)][0] += 1
-    return {f"{t}\t{k}": {"achou": a, "n": n,
-                          "classe": _classificar(a / n if n else 0.0, k, n)}
+            if RX_TEMPORAL.search(k):
+                formas[(o["tool"], k)][forma_de(v)] += 1
+    return {f"{t}	{k}": {"achou": a, "n": n,
+                          "formas": dict(formas.get((t, k), {})),
+                          "classe": _classificar(a / n if n else 0.0, k, n,
+                                                 formas.get((t, k)))}
             for (t, k), (a, n) in cont.items()}
 
 
@@ -158,7 +201,7 @@ def comparar(pred: dict, ref: dict, perfil: dict) -> tuple[bool, int, int]:
     bate = True
     for k, vr in ar.items():
         c = classe_de(perfil, t, k)
-        if c in ("formulado", "raro"):
+        if c in ("formulado", "raro", "temporal_ambiguo"):
             excluidos += 1
             continue
         if k not in ap:
@@ -246,8 +289,15 @@ def main() -> int:
         inst[v["classe"]] += v["n"]
     print()
     print(f"{'classe':12}{'pares (tool,arg)':>18}{'instancias':>13}")
-    for k in ("extraido", "temporal", "formulado", "raro"):
+    for k in ("extraido", "temporal", "temporal_ambiguo", "formulado", "raro"):
         print(f"{k:12}{c[k]:18}{inst[k]:13}")
+    amb = c["temporal_ambiguo"]
+    if amb:
+        print()
+        print(f"⚠️  {amb} pares temporais de convencao MISTA sairam do escore "
+              f"({inst['temporal_ambiguo']} instancias).")
+        print("   O corpus nao tem convencao ali: nao ha' criterio nem para o modelo "
+              "aprender, nem para a regua cobrar. Ver _classificar().")
     pont = inst["extraido"] + inst["temporal"]
     print(f"{'PONTUAVEL':12}{c['extraido']+c['temporal']:18}{pont:13}  "
           f"= {pont/max(1,sum(inst.values())):.1%} das instancias")

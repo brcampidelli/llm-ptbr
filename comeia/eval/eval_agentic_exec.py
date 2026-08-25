@@ -170,6 +170,7 @@ def main() -> int:
     # avaliador. Foi exatamente o que aconteceu na v1 deste script: mundo simulado
     # fechado, 35/85 referencias falhando, taxa de sucesso "23,5%" que nao existia.
     impossiveis = []
+    sem_criterio_ref: list[str] = []
     for row in linhas:
         _, _, ref, tipo = partes(row)
         if tipo != "tool_call":
@@ -186,7 +187,19 @@ def main() -> int:
                    for k in (obj.get("args") or {})):
                 ok = True
         if not ok:
-            impossiveis.append(((obj or {}).get("tool", "?"), str(motivo)[:70]))
+            # 🔴 DUAS COISAS DIFERENTES, e so' UMA e' defeito do avaliador:
+            #  (a) a formula descreve esta chamada e ela falha -> avaliador quebrado, ABORTA;
+            #  (b) colisao de NOME: a formula pertence a uma homonima de esquema disjunto
+            #      (o `create_calendar_event` do mundo simulado quer `title`/`start`; o do
+            #      gigaverbo manda `event_title`/`start_time`) e nao ha' criterio por
+            #      argumento -> NAO ha' criterio, EXCLUI com rotulo visivel.
+            #  Criterio de (b): o que a formula cobra nao existe na referencia.
+            _falta = (re.findall(r"'([A-Za-z_]\w*)'", str(motivo))
+                      if "faltando" in str(motivo) else [])
+            if _falta and not (set(_falta) & set((obj or {}).get("args") or {})):
+                sem_criterio_ref.append((obj or {}).get("tool", "?"))
+            else:
+                impossiveis.append(((obj or {}).get("tool", "?"), str(motivo)[:70]))
     if impossiveis:
         n_ref = sum(1 for r in linhas if r.get("kind") == "tool_call")
         print(f"ERRO: {len(impossiveis)}/{n_ref} chamadas de REFERENCIA nao executam.",
@@ -195,8 +208,16 @@ def main() -> int:
         for t, m in impossiveis[:6]:
             print(f"  {t}: {m}", file=sys.stderr)
         return 1
-    print(f"guarda: as {sum(1 for r in linhas if r.get('kind') == 'tool_call')} "
-          f"referencias executam [OK]\n")
+    _nref = sum(1 for r in linhas if r.get("kind") == "tool_call")
+    if sem_criterio_ref:
+        from collections import Counter as _C
+        print(f"⚠️  {len(sem_criterio_ref)}/{_nref} referencias SEM CRITERIO "
+              f"(homonima de esquema disjunto + argumento temporal ambiguo): "
+              f"{dict(_C(sem_criterio_ref).most_common(4))}")
+        print("   Entram na tabela como `sem_criterio` e ficam FORA do denominador — "
+              "zerar em silencio faz o zero se disfarcar de conclusao.")
+    print(f"guarda: as {_nref - len(sem_criterio_ref)} referencias restantes executam "
+          f"ou tem criterio por argumento [OK]\n")
 
     if args.dry_run:
         # a guarda acima ja' e' o dry-run inteiro: executar todos os gabaritos ANTES de
