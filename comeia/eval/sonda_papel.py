@@ -54,6 +54,14 @@ import argumentos as ARG      # noqa: E402
 PROC = RAIZ / "data" / "processed"
 
 
+def _numerico(v: str) -> bool:
+    try:
+        float(str(v).replace(",", "."))
+        return True
+    except Exception:
+        return False
+
+
 def _uma_ocorrencia(texto: str, v: str) -> int | None:
     """Posicao da unica ocorrencia de `v` como token inteiro, ou None."""
     if not v:
@@ -130,6 +138,17 @@ def montar(fonte: Path, perfil: dict, excluir: Path | None = None) -> int:
             for ib in range(ia + 1, len(ext)):
                 x, y = str(args[ext[ia]]).strip(), str(args[ext[ib]]).strip()
                 if not x or not y or x == y:
+                    continue
+                # 🔴 SO' PARES DO MESMO TIPO. A v1 trocava valores de tipos diferentes e
+                #    gerava gabarito absurdo — `{"name": 25, "age": "John Doe"}`,
+                #    `{"car_model": 200, "distance": "Prius"}`. Isso nao testa ligacao de
+                #    papel: testa se o modelo aceita escrever besteira. E ele NAO aceita —
+                #    devolveu a atribuicao correta, que a minha referencia trocada dava por
+                #    errada. A queda de 14 pp medida assim era SANIDADE do modelo, nao vies
+                #    posicional. So' com valores do mesmo tipo o rotulo e' o unico
+                #    desambiguador, que e' exatamente a pergunta.
+                if not (_numerico(x) and _numerico(y)):
+                    st["par nao e' numerico dos dois lados"] += 1
                     continue
                 m0 = next((m for m in alvo
                            if _uma_ocorrencia(m["content"], x) is not None
