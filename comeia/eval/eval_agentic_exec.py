@@ -38,6 +38,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from common import read_jsonl, strip_think           # noqa: E402
 import tools_exec as TE                               # noqa: E402
+import esquema as ESQ                                 # noqa: E402
 
 _spec = importlib.util.spec_from_file_location("d7", RAIZ / "data" / "07_distill_agentic.py")
 _d7 = importlib.util.module_from_spec(_spec)
@@ -143,6 +144,9 @@ def main() -> int:
     ap.add_argument("--parar-controle", action="store_true",
                     help="E5b: tambem parar nos ids de byte C0, onde o terminador do adapter "
                          "cai sob amostragem. Intervencao de runtime, zero treino.")
+    ap.add_argument("--restrito", action="store_true",
+                    help="decodificacao restrita ao esquema: a CHAVE de args so' pode vir "
+                         "do catalogo do proprio prompt (ver comeia/eval/esquema.py)")
     ap.add_argument("--dump", action="store_true",
                     help="grava um JSONL por caso (ref, previsto, veredito, saida crua). "
                          "Sem isto so' sobram agregados, e nenhuma analise de MODO DE FALHA "
@@ -249,6 +253,11 @@ def main() -> int:
     #    "truncado" e o parser recebia cinco chamadas concatenadas -> 0%.
     print(f"paradas: {PARADAS} (<|im_end|> primeiro = terminador correto)")
     terminadores: list[bool | None] = []
+    restringe = bool(args.restrito)
+    restritores: list = []
+    if restringe:
+        print("restrito: a CHAVE de args so' pode vir do catalogo do prompt "
+              "(risco medido = 0 casos que passam tem chave fora do esquema)")
 
     def gerar(sistema: str | None, usuario: str, k: int) -> list[str]:
         msgs = ([{"role": "system", "content": sistema}] if sistema else []) \
@@ -320,6 +329,12 @@ def main() -> int:
                       max_length=1536).to(dispositivo)
             cfg = dict(max_new_tokens=args.max_new, eos_token_id=PARADAS,
                        pad_token_id=tok.pad_token_id or tok.eos_token_id)
+            if restringe:
+                from transformers import LogitsProcessorList
+                cats = ESQ.catalogos_de(rows[i2:i2 + b], partes)
+                rest = ESQ.RestritorDeEsquema(tok, cats, ent["input_ids"].shape[1], k=k)
+                cfg["logits_processor"] = LogitsProcessorList([rest])
+                restritores.append(rest)
             if k > 1:
                 cfg.update(do_sample=True, temperature=args.temp, top_p=0.95,
                            num_return_sequences=k)
@@ -574,6 +589,14 @@ def main() -> int:
         return f"  {rot:<34} {k}/{n} = {k/n:6.1%}   [{lo:.1%}–{hi:.1%}]"
 
     print("\n" + "=" * 72)
+    if restritores:
+        mm = sum(r.n_mascarou for r in restritores)
+        pp = sum(r.n_passos for r in restritores)
+        print(f"RESTRICAO AO ESQUEMA: {mm} mascaramentos em {pp} passos de decodificacao")
+        if mm == 0:
+            print("  ZERO mascaramentos — a restricao NAO agiu. Ou o parser nao leu o "
+                  "esquema, ou o estado nunca reconheceu chave de args. Numero sem efeito "
+                  "medido nao e' evidencia de nada.")
     print(f"CASOS QUE EXIGEM FERRAMENTA: {n_tool}")
     print(linha("JSON valido (catalogo)", json_ok, n_tool))
     print(linha("ferramenta certa", tool_right, n_tool))
