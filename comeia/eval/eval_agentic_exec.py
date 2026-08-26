@@ -162,6 +162,11 @@ def main() -> int:
     ap.add_argument("--restrito", action="store_true",
                     help="decodificacao restrita ao esquema: a CHAVE de args so' pode vir "
                          "do catalogo do proprio prompt (ver comeia/eval/esquema.py)")
+    ap.add_argument("--restrito-valor", action="store_true",
+                    help="alem da chave, restringe o VALOR de argumento `extraido` a um "
+                         "TRECHO do pedido. Ataca o mecanismo medido: o modelo SINTETIZA "
+                         "e-mail em vez de copiar (so' o @ muda -> copia cai 18,5 pp). "
+                         "Exige --por-argumento (precisa do perfil de classes).")
     ap.add_argument("--dump", action="store_true",
                     help="grava um JSONL por caso (ref, previsto, veredito, saida crua). "
                          "Sem isto so' sobram agregados, e nenhuma analise de MODO DE FALHA "
@@ -289,7 +294,11 @@ def main() -> int:
     #    "truncado" e o parser recebia cinco chamadas concatenadas -> 0%.
     print(f"paradas: {PARADAS} (<|im_end|> primeiro = terminador correto)")
     terminadores: list[bool | None] = []
-    restringe = bool(args.restrito)
+    restringe = bool(args.restrito or args.restrito_valor)
+    if args.restrito_valor and not args.por_argumento:
+        print("ERRO: --restrito-valor exige --por-argumento (precisa do perfil de classes)",
+              file=sys.stderr)
+        return 2
     restritores: list = []
     if restringe:
         print("restrito: a CHAVE de args so' pode vir do catalogo do prompt "
@@ -367,8 +376,14 @@ def main() -> int:
                        pad_token_id=tok.pad_token_id or tok.eos_token_id)
             if restringe:
                 from transformers import LogitsProcessorList
-                cats = ESQ.catalogos_de(rows[i2:i2 + b], partes)
-                rest = ESQ.RestritorDeEsquema(tok, cats, ent["input_ids"].shape[1], k=k)
+                bloco_rows = rows[i2:i2 + b]
+                cats = ESQ.catalogos_de(bloco_rows, partes)
+                ctxs = ([partes(r)[1] for r in bloco_rows]
+                        if args.restrito_valor else None)
+                rest = ESQ.RestritorDeEsquema(tok, cats, ent["input_ids"].shape[1], k=k,
+                                              contextos=ctxs,
+                                              perfil=perfil_arg if args.restrito_valor
+                                              else None)
                 cfg["logits_processor"] = LogitsProcessorList([rest])
                 restritores.append(rest)
             if k > 1:
@@ -667,7 +682,11 @@ def main() -> int:
     if restritores:
         mm = sum(r.n_mascarou for r in restritores)
         pp = sum(r.n_passos for r in restritores)
-        print(f"RESTRICAO AO ESQUEMA: {mm} mascaramentos em {pp} passos de decodificacao")
+        vv = sum(getattr(r, "n_valor", 0) for r in restritores)
+        print(f"RESTRICAO: {mm} mascaramentos de CHAVE · {vv} de VALOR · {pp} passos")
+        if args.restrito_valor and vv == 0:
+            print("  " + chr(0x26A0) + chr(0xFE0F) + " ZERO mascaramentos de VALOR com "
+                  "--restrito-valor ligado: a restricao NAO agiu. Nao leia o numero.")
         if mm == 0:
             print("  ZERO mascaramentos — a restricao NAO agiu. Ou o parser nao leu o "
                   "esquema, ou o estado nunca reconheceu chave de args. Numero sem efeito "
@@ -723,6 +742,7 @@ def main() -> int:
                    "parar_controle": bool(args.parar_controle),
                    "por_argumento": bool(args.por_argumento),
                    "restrito": bool(getattr(args, "restrito", False)),
+                   "restrito_valor": bool(getattr(args, "restrito_valor", False)),
                    "limit": args.limit, "data": str(args.data)},
         # ⭐ E o HASH DO PERFIL: e' ele que define a REGUA. Sem isto, "esta regua e' outra"
         #    depende de alguem lembrar de avisar — e hoje eu precisei avisar cinco vezes.

@@ -177,11 +177,28 @@ class EstadoJson:
                 self.tool = self.buf
         self.esperando_chave = False
 
+    def escrevendo_valor_de_args(self) -> str | None:
+        """Se estamos dentro do VALOR (nao da chave) de um argumento, devolve a chave."""
+        if not (self.em_str and not self.str_e_chave):
+            return None
+        if self.prof_args is None or self.str_prof != self.prof_args:
+            return None
+        if not (self.pilha and self.pilha[-1] == "{"):
+            return None
+        return self.ultima_chave
+
     def escrevendo_chave_de_args(self) -> bool:
         return (self.em_str and self.str_e_chave
                 and self.prof_args is not None
                 and self.str_prof == self.prof_args
                 and bool(self.pilha) and self.pilha[-1] == "{")
+
+
+def nz(v: object) -> str:
+    """Mesma normalizacao do avaliador: sem acento, minusculas, espaco colapsado."""
+    import unicodedata
+    t = unicodedata.normalize("NFKD", str(v)).encode("ascii", "ignore").decode().lower()
+    return re.sub(r"\s+", " ", t).strip()
 
 
 def _cabe(prefixo: str, s: str, chaves: frozenset[str]) -> bool:
@@ -206,7 +223,8 @@ class RestritorDeEsquema:
     """
 
     def __init__(self, tok, catalogos: list[dict[str, frozenset[str]]], plen: int,
-                 k: int = 1) -> None:
+                 k: int = 1, contextos: list[str] | None = None,
+                 perfil: dict | None = None) -> None:
         import torch
         self.torch = torch
         self.tok = tok
@@ -217,6 +235,17 @@ class RestritorDeEsquema:
         self._cache: dict[tuple[frozenset[str], str], object] = {}
         self.n_mascarou = 0
         self.n_passos = 0
+        # ── restricao de VALOR (opcional): so' age se contextos E perfil vierem juntos
+        self.contextos = [nz(c) for c in contextos] if contextos else None
+        self.perfil = perfil or {}
+        self._cache_val: dict[tuple[int, str], object] = {}
+        self.n_valor = 0
+        self._por_char: dict[str, list[int]] = {}
+        if self.contextos is not None:
+            for i, t in enumerate(self.textos):
+                z = nz(t)
+                if z:
+                    self._por_char.setdefault(z[0], []).append(i)
 
     def __call__(self, input_ids, scores):
         torch = self.torch
@@ -227,6 +256,8 @@ class RestritorDeEsquema:
                 continue
             est = self._estado(input_ids[linha])
             if not est.escrevendo_chave_de_args():
+                if self.contextos is not None:
+                    self._passo_valor(linha, est, scores)
                 continue
             chaves = cat.get(est.tool or "")
             if not chaves:
@@ -242,6 +273,86 @@ class RestritorDeEsquema:
             scores[linha] = scores[linha] + mascara
             self.n_mascarou += 1
         return scores
+
+    def _passo_valor(self, linha, est, scores):
+        """🔴 O VALOR de um argumento `extraido` tem de ser um TRECHO do pedido.
+
+        Medido: o modelo nao copia e-mail, **sintetiza** um. Com tudo igual e so' o `@`
+        mudando, a copia cai de 60,2% para 41,7% (108 casos pareados, McNemar p=0,0000), e o
+        que ele escreve denuncia o mecanismo:
+
+            alvo   Zorak.Vintel@Quandrix-7739.com
+            previu Zorak@Quandrix-7739.com    16x   <- descartou o que nao cabe no molde
+
+        `Zorak@Quandrix-7739.com` NAO e' trecho do pedido, entao a restricao o torna
+        impossivel. E toda referencia literal E' trecho — medido 0 de 985 inalcancaveis, o
+        que a lista de candidatos nao conseguia garantir (9,4% ficavam impossiveis).
+
+        ⚠️ O que ela NAO impede e' TRUNCAR: `Zorak` sozinho e' trecho valido. Por isso o
+        ganho tem de ser medido, nao deduzido.
+
+        🔴 MEDIDO E REPROVADO (2026-08-25). NAO LIGAR SEM RELER ISTO.
+
+            sonda d5 (com @, onde o mecanismo vive)  +5,5 pp · p=0,125   nao significativo
+            sonda d6 (sem @, controle)               +1,8 pp · p=0,219
+            HOLDOUT, 2 sementes                      -9,0 pp · p=0,0000
+                                                     ganhou 5, PERDEU 54
+
+        E eu tinha medido "risco zero" antes de implementar: conferi se o VALOR PREVISTO
+        estava no pedido nos casos que passavam, e estava em 100%. **Medi o destino e conclui
+        sobre o caminho.** A restricao age token a token: um valor pode ser trecho do pedido
+        sem que todo prefixo ate' ele seja permitido, e a mascara desvia a trajetoria.
+        Terceira roupa do §2r — a verificacao rodava sobre saidas geradas SEM a restricao,
+        entao nao podia exibir efeito de trajetoria.
+
+        ⭐ Onde ela AGE (`extraido`) o comportamento e' o prometido: zero sintese, so'
+        truncagem. Os `Zorak@Quandrix-7739.com` que sobram estao em chaves `formulado` e
+        `raro`, fora do escopo por desenho. O problema e' que trocar sintese por truncagem
+        (12 -> 15 casos) nao e' progresso, e a trajetoria mascarada estraga casos que iam bem.
+
+        ⚠️ Uma versao que funcionasse teria de forcar SPAN MAXIMAL — terminar onde termina no
+        pedido, nao em qualquer ponto. Implementavel; mas medir o risco **com a intervencao
+        ligada**, em subconjunto pequeno, vem ANTES de propor.
+        """
+        chave = est.escrevendo_valor_de_args()
+        if chave is None or not est.tool:
+            return False
+        if self.perfil.get(f"{est.tool}	{chave}", {}).get("classe") != "extraido":
+            return False
+        ctx = self.contextos[linha // self.k]
+        pref = nz(est.buf)
+        ch = (linha // self.k, pref)
+        if ch not in self._cache_val:
+            # caracteres que podem seguir o prefixo, em QUALQUER ocorrencia dele no pedido
+            seguintes = set()
+            if pref:
+                i = ctx.find(pref)
+                while i >= 0:
+                    if i + len(pref) < len(ctx):
+                        seguintes.add(ctx[i + len(pref)])
+                    i = ctx.find(pref, i + 1)
+            else:
+                seguintes = set(ctx)
+            ids = []
+            for c in seguintes:
+                for tid in self._por_char.get(c, ()):
+                    z = nz(self.textos[tid])
+                    if z and (pref + z) in ctx:
+                        ids.append(tid)
+            # fechar a string e' sempre permitido: o valor pode terminar em qualquer ponto
+            for tid, t in enumerate(self.textos):
+                if t.startswith('"'):
+                    ids.append(tid)
+            self._cache_val[ch] = (self.torch.tensor(sorted(set(ids)),
+                                                     dtype=self.torch.long) if ids else None)
+        perm = self._cache_val[ch]
+        if perm is None or perm.numel() == 0:
+            return False
+        mascara = self.torch.full_like(scores[linha], float("-inf"))
+        mascara[perm] = 0.0
+        scores[linha] = scores[linha] + mascara
+        self.n_valor += 1
+        return True
 
     def _estado(self, ids) -> EstadoJson:
         est = EstadoJson()
@@ -260,8 +371,8 @@ class RestritorDeEsquema:
         return v.to("cpu") if v is None else v
 
     def relatorio(self) -> str:
-        return (f"restricao: {self.n_mascarou} mascaramentos em {self.n_passos} passos · "
-                f"{len(self._cache)} prefixos distintos em cache")
+        return (f"restricao: {self.n_mascarou} em chave · {self.n_valor} em valor · "
+                f"{self.n_passos} passos")
 
 
 def _textos_de_token(tok) -> list[str]:
@@ -343,6 +454,31 @@ def _autoteste() -> int:
         if got != (esp_chave, esp_buf, esp_tool):
             print(f"🔴 {txt!r}\n   esperado {(esp_chave, esp_buf, esp_tool)} · obtido {got}")
             falhas += 1
+    # ⭐ estado de VALOR — o metodo novo precisa de teste proprio, senao repito o buraco
+    #    de array que o autoteste da v1 nao cobria.
+    valor = [
+        ('{"tool": "x", "args": {"a": "bos', "a"),
+        ('{"tool": "x", "args": {"a": "boss@x.com", "b": "ze', "b"),
+        ('{"tool": "x", "args": {"a', None),          # escrevendo CHAVE, nao valor
+        ('{"tool": "x", "args": {"a": "v"}}', None),  # fora de string
+        ('{"tool": "x", "args": {"a": ["um", "do', None),  # dentro de ARRAY
+        ('{"tool": "x", "args": {"a": {"n": "v', None),    # objeto aninhado
+        ('{"tool": "x", "arg', None),
+    ]
+    for txt, esp in valor:
+        e = EstadoJson()
+        for c in txt:
+            e.passo(c)
+        got = e.escrevendo_valor_de_args()
+        if got != esp:
+            print(f"🔴 valor {txt!r}: esperado {esp}, obtido {got}")
+            falhas += 1
+    e = EstadoJson()
+    for c in '{"tool": "x", "args": {"a": "bos':
+        e.passo(c)
+    if e.buf != "bos":
+        print(f"🔴 buffer do valor = {e.buf!r}, esperado 'bos'")
+        falhas += 1
     ch = frozenset({"recipient", "subject", "content"})
     for prefixo, s, esp in [("rec", "ipient", True), ("rec", "eptor", False),
                             ("recipient", '":', True), ("recip", '":', False),
