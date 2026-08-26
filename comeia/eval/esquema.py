@@ -194,6 +194,37 @@ class EstadoJson:
                 and bool(self.pilha) and self.pilha[-1] == "{")
 
 
+FIM_DE_TOKEN = set(chr(46)+chr(44)+chr(59)+chr(58)+chr(33)+chr(63)+chr(41)+chr(93)+chr(125)+chr(34)+chr(39))
+
+
+def pode_fechar(ctx: str, pref: str) -> bool:
+    """O valor pode TERMINAR aqui, ou ainda esta' no meio de uma sequencia do pedido?
+
+    🔴 A v1 permitia fechar em qualquer ponto — `zorak` e' trecho valido de
+    `zorak.vintel@quandrix-7739.com`, entao o modelo, impedido de SINTETIZAR, passou a
+    TRUNCAR (12 -> 15 casos) e o saldo ficou -9,0 pp.
+
+    A sequencia CONTINUA se o proximo char for alfanumerico, ou um ligador (. - @ _)
+    seguido de alfanumerico. Qualquer outra coisa e' fronteira.
+    ⚠️ A v2 desta funcao listava a pontuacao "que fecha" e esqueceu `%` e `"`, tornando
+    39,3% das referencias impossiveis por descuido meu — `20` em `20%`, `SAVE20` em
+    `"SAVE20"`. Enumerar o que FECHA e' fragil; enumerar o que CONTINUA e' fechado.
+    """
+    if not pref:
+        return False
+    i = ctx.find(pref)
+    while i >= 0:
+        j = i + len(pref)
+        if j >= len(ctx):
+            return True
+        c = ctx[j]
+        continua = c.isalnum() or (c in ".-@_" and j + 1 < len(ctx) and ctx[j + 1].isalnum())
+        if not continua:
+            return True
+        i = ctx.find(pref, i + 1)
+    return False
+
+
 def nz(v: object) -> str:
     """Mesma normalizacao do avaliador: sem acento, minusculas, espaco colapsado."""
     import unicodedata
@@ -224,7 +255,7 @@ class RestritorDeEsquema:
 
     def __init__(self, tok, catalogos: list[dict[str, frozenset[str]]], plen: int,
                  k: int = 1, contextos: list[str] | None = None,
-                 perfil: dict | None = None) -> None:
+                 perfil: dict | None = None, span_maximal: bool = False) -> None:
         import torch
         self.torch = torch
         self.tok = tok
@@ -237,6 +268,7 @@ class RestritorDeEsquema:
         self.n_passos = 0
         # ── restricao de VALOR (opcional): so' age se contextos E perfil vierem juntos
         self.contextos = [nz(c) for c in contextos] if contextos else None
+        self.span_maximal = span_maximal
         self.perfil = perfil or {}
         self._cache_val: dict[tuple[int, str], object] = {}
         self.n_valor = 0
@@ -310,9 +342,19 @@ class RestritorDeEsquema:
         `raro`, fora do escopo por desenho. O problema e' que trocar sintese por truncagem
         (12 -> 15 casos) nao e' progresso, e a trajetoria mascarada estraga casos que iam bem.
 
-        ⚠️ Uma versao que funcionasse teria de forcar SPAN MAXIMAL — terminar onde termina no
-        pedido, nao em qualquer ponto. Implementavel; mas medir o risco **com a intervencao
-        ligada**, em subconjunto pequeno, vem ANTES de propor.
+        🔴 E O SPAN MAXIMAL (`--span-maximal`) FOI TENTADO E E' PIOR: -15,8 pp no teste vivo
+        (152 casos), ganhou 1 e perdeu 25, p=0,0000.
+
+        ⭐ A pre-checagem de DESTINO previa ganho 24 / perda 18 = saldo +6. Errou os DOIS
+        lados na mesma direcao: o ganho virou 1 (bloquear a previsao errada nao faz o modelo
+        produzir a certa — ele acha outro span valido) e a perda subiu para 25 (a mascara
+        desvia trajetoria de casos que a pre-checagem dava como intocados).
+        **Verificacao de destino e' otimista nos dois sentidos, nao so' num.**
+
+        ⭐⭐ E o span maximal ser PIOR reinterpreta o achado do `@`: o modelo nao estava
+        truncando por preguica, estava truncando porque NAO CONSEGUE transcrever a cadeia
+        inteira. Sintetizar e' o que sobra. **Restricao de decodificacao nao conserta
+        incapacidade — so' troca a forma do erro.** O `@` e' problema de TREINO.
         """
         chave = est.escrevendo_valor_de_args()
         if chave is None or not est.tool:
@@ -339,10 +381,17 @@ class RestritorDeEsquema:
                     z = nz(self.textos[tid])
                     if z and (pref + z) in ctx:
                         ids.append(tid)
-            # fechar a string e' sempre permitido: o valor pode terminar em qualquer ponto
-            for tid, t in enumerate(self.textos):
-                if t.startswith('"'):
-                    ids.append(tid)
+            # ⭐ fechar so' e' permitido em FRONTEIRA (span maximal) — ver pode_fechar()
+            if self.span_maximal:
+                if pode_fechar(ctx, pref):
+                    ids.extend(tid for tid, t in enumerate(self.textos) if t.startswith('"'))
+            else:
+                ids.extend(tid for tid, t in enumerate(self.textos) if t.startswith('"'))
+            # 🔴 token que CONTEM aspa no meio tambem fecha a string. Se ele nao for
+            #    permitido explicitamente, o modelo o usa e escapa da restricao.
+            ids = [t for t in ids
+                   if '"' not in self.textos[t][1:] or not self.span_maximal
+                   or pode_fechar(ctx, pref + nz(self.textos[t].split(chr(34))[0]))]
             self._cache_val[ch] = (self.torch.tensor(sorted(set(ids)),
                                                      dtype=self.torch.long) if ids else None)
         perm = self._cache_val[ch]

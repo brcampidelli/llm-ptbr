@@ -167,6 +167,10 @@ def main() -> int:
                          "TRECHO do pedido. Ataca o mecanismo medido: o modelo SINTETIZA "
                          "e-mail em vez de copiar (so' o @ muda -> copia cai 18,5 pp). "
                          "Exige --por-argumento (precisa do perfil de classes).")
+    ap.add_argument("--span-maximal", action="store_true",
+                    help="com --restrito-valor: o valor tem de terminar em FRONTEIRA do "
+                         "pedido, nao em qualquer ponto. Sem isto o modelo troca sintese "
+                         "por TRUNCAGEM e o saldo fica negativo (-9,0 pp medido).")
     ap.add_argument("--dump", action="store_true",
                     help="grava um JSONL por caso (ref, previsto, veredito, saida crua). "
                          "Sem isto so' sobram agregados, e nenhuma analise de MODO DE FALHA "
@@ -383,7 +387,8 @@ def main() -> int:
                 rest = ESQ.RestritorDeEsquema(tok, cats, ent["input_ids"].shape[1], k=k,
                                               contextos=ctxs,
                                               perfil=perfil_arg if args.restrito_valor
-                                              else None)
+                                              else None,
+                                              span_maximal=bool(args.span_maximal))
                 cfg["logits_processor"] = LogitsProcessorList([rest])
                 restritores.append(rest)
             if k > 1:
