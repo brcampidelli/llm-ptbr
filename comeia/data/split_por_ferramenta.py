@@ -143,17 +143,85 @@ def main() -> int:
     for k, v in sorted(multi.items(), key=lambda x: -len(por_raiz[x[0]]))[:6]:
         print(f"    {k:22} {sorted(v)}")
 
-    # ── estratificar por frequencia: o holdout nao pode ser so' de ferramenta rara
+    # ── estratificar por FREQUENCIA **e por TIPO DE VALOR**
+    #
+    # 🔴 A v1 estratificava so por frequencia, e isso criou um confundidor nao declarado.
+    #    `send_email` concentra 479 dos 732 argumentos de e-mail do corpus e e UMA raiz —
+    #    mandando-a para o holdout, 65% de toda a copia de cadeia densa foi junto.
+    #    Medido: treino com 2,4% de e-mail, holdout com 26,6%.
+    #
+    #    O holdout media "ferramenta inedita" E "tipo de valor inedito" ao mesmo tempo, e o
+    #    acerto de copia acompanhava o TIPO, nao a novidade da ferramenta:
+    #        numero 94,0% · frase 89,4% · palavra 79,6% · E-MAIL 35,6%
+    #    Sem separar os eixos, qualquer intervencao aposta em qual deles e a causa.
+    #
+    # ⚠️ E a explicacao simples NAO fecha: `frase` e mais rara que `palavra unica`
+    #    (8,7% x 11,9%) e acerta MAIS. O que distingue o e-mail e ser cadeia arbitraria sem
+    #    estrutura linguistica — o modelo REGENERA linguagem, mas e-mail tem de ser
+    #    TRANSCRITO. Raridade e comprimento agravam; nao sao o mecanismo.
+    def tipo_do_valor(s):
+        s = str(s)
+        if "@" in s:
+            return "email"
+        if re.match(r"^-?[\d.,]+$", s.strip()):
+            return "numero"
+        return "palavra" if len(s.split()) == 1 else "frase"
+
+    tipo_raiz = {}
+    for rz, its in por_raiz.items():
+        c = Counter()
+        for it in its:
+            o = json.loads(it["completion"][0]["content"])
+            for k2, v2 in (o.get("args") or {}).items():
+                if ARG.classe_de(perfil, o["tool"], k2) == "extraido":
+                    c[tipo_do_valor(v2)] += 1
+        tipo_raiz[rz] = c.most_common(1)[0][0] if c else "sem_extraido"
+    print("tipo de valor dominante por raiz: "
+          + str(dict(Counter(tipo_raiz.values()).most_common())))
+
+    def perfil_tipo(raizes):
+        """distribuicao de tipo de valor dos argumentos EXTRAIDOS dessas raizes"""
+        c = Counter()
+        for rz in raizes:
+            for it in por_raiz[rz]:
+                o = json.loads(it["completion"][0]["content"])
+                for k2, v2 in (o.get("args") or {}).items():
+                    if ARG.classe_de(perfil, o["tool"], k2) == "extraido":
+                        c[tipo_do_valor(v2)] += 1
+        n = max(1, sum(c.values()))
+        return {t: c[t] / n for t in ("numero", "palavra", "frase", "email")}
+
+    def desalinho(hold):
+        """maior diferenca de proporcao entre treino e holdout, em pp"""
+        a1 = perfil_tipo(hold)
+        a2 = perfil_tipo([r for r in por_raiz if r not in hold])
+        return max(abs(a1[t] - a2[t]) for t in a1)
+
+    # ⭐ Estratificar por tipo DOMINANTE nao basta: cada raiz e' uma MISTURA, e a primeira
+    #    versao disto trocou o desalinhamento de e-mail (24,2 pp) por um de frase (19,7 pp).
+    #    Entao otimiza-se DIRETAMENTE a propriedade desejada: sortear varias atribuicoes
+    #    validas (respeitando a faixa de frequencia) e ficar com a de menor desalinho.
+    #    ⚠️ Isto NAO e' escolher o split que da' o numero desejado: o criterio otimizado e'
+    #    alinhamento treino/teste, que independe do desempenho de qualquer modelo.
     ordem = sorted(por_raiz, key=lambda r: -len(por_raiz[r]))
-    rnd = random.Random(a.seed)
-    hold_raiz: set[str] = set()
     faixa = max(1, len(ordem) // 4)
-    for ini in range(0, len(ordem), faixa):
-        bloco = ordem[ini:ini + faixa]
-        k = max(1, round(len(bloco) * a.frac_holdout))
-        hold_raiz.update(rnd.sample(bloco, k))
-    print(f"\nraizes no holdout: {len(hold_raiz)}/{len(por_raiz)} "
-          f"({len(hold_raiz)/len(por_raiz):.0%}) — estratificadas por frequencia")
+    melhor, melhor_d = None, 9.9
+    for tentativa in range(60):
+        rnd = random.Random(a.seed + tentativa)
+        h = set()
+        for ini in range(0, len(ordem), faixa):
+            bloco = ordem[ini:ini + faixa]
+            k = max(1, round(len(bloco) * a.frac_holdout))
+            h.update(rnd.sample(bloco, k))
+        d = desalinho(h)
+        if d < melhor_d:
+            melhor, melhor_d = h, d
+    hold_raiz = melhor
+    rnd = random.Random(a.seed)
+    print("")
+    print(f"raizes no holdout: {len(hold_raiz)}/{len(por_raiz)} "
+          f"({len(hold_raiz)/len(por_raiz):.0%}) — melhor de 60 sorteios, "
+          f"desalinho de tipo {melhor_d*100:.1f} pp")
 
     hold_raw = [it for it in itens if it["_raiz"] in hold_raiz]
     treino = [it for it in itens if it["_raiz"] not in hold_raiz]
@@ -164,7 +232,9 @@ def main() -> int:
     #    que agora no eixo da ferramenta em vez do eixo da tupla.
     rnd.shuffle(hold_raw)
     vistas, hold, por_f = set(), [], Counter()
-    teto = max(20, int(len(hold_raw) * a.teto_por_ferramenta))
+    # 🔴 o teto era % do POOL (178 casos) e deixou uma ferramenta com 19,8% do
+    #    holdout. Agora e' % do holdout ALVO, medido por iteracao.
+    teto = max(15, int(min(len(hold_raw), 1000) * a.teto_por_ferramenta))
     for it in hold_raw:
         if it["_tupla"] in vistas or por_f[it["ferramenta"]] >= teto:
             continue
