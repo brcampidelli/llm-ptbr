@@ -1,6 +1,6 @@
-# Relatório — capacidade agêntica do Bee-350M (E8 → E14)
+# Relatório — capacidade agêntica do Bee-350M (E8 → E16)
 
-> **2026-08-24 a 26.** US$ 0 de GPU paga (RTX 5070 local). Sete estágios, quatro intervenções
+> **2026-08-24 a 27.** US$ 0 de GPU paga (RTX 5070 local). Sete estágios, quatro intervenções
 > adotadas, **cinco reprovadas por medição**, e sete defeitos de instrumento encontrados — três
 > deles em números que eu já havia reportado como resultado.
 >
@@ -199,6 +199,74 @@ objetivos que competem.**
 
 ---
 
+## 6b. Onde a investigação parou — e o que fechou o caminho
+
+Depois do e13, o resíduo se decompõe assim (1.072 casos, duas sementes):
+
+| modo de falha | % |
+|---|---:|
+| **recusou quando devia chamar** | **9,2%** |
+| **ferramenta errada** | **8,5%** |
+| referência temporal não está no pedido | 6,1% |
+| valor errado (extraído) | 6,0% |
+| ✅ acertou | 72,3% |
+
+Mais **16,8% de over-calling**. ⭐ **A decisão binária "chamar ou não" custa 26% — mais que
+todos os erros de argumento somados.** Três hipóteses foram testadas e **as três caíram**:
+
+| hipótese | teste | veredito |
+|---|---|---|
+| quantidade de negativos | varredura de razão tool:text | ❌ **já está no ótimo** |
+| diversidade dos negativos | contagem de distintos | ❌ 4.228 pedidos distintos em 4.421 |
+| capacidade de comparar com o catálogo | curva de catálogo até 15 | ❌ **recusa é plana** |
+
+### Varredura tool:text — a razão atual já é a certa
+
+Total constante (8.842), 4 razões, 1 semente. Métrica **macro** (média de execução e recusa
+correta), porque o agregado pesaria as chamadas mais que as recusas e embutiria a resposta.
+
+| razão | exec | recusa ok | **macro** |
+|---|---:|---:|---:|
+| 1,0:1 | 67,2% | 82,8% | 75,0% |
+| **1,5:1** | 70,3% | **85,8%** | **78,1%** |
+| 2,0:1 | 71,8% | 81,3% | 76,6% |
+| 3,0:1 | **75,7%** | 76,5% | 76,1% |
+
+Trade-off monotônico: de 1,0 a 3,0 a execução sobe **8,5 pp** e a recusa cai **6,3 pp**. O
+treino está em **1,52:1** — no pico. ⚠️ A amplitude do macro (3,1 pp) quase cabe no desvio de
+semente (2,53 pp): **alerta, não decide**.
+
+⭐ Uso real disto: **a razão escolhe o ponto de operação, não melhora o modelo.** Custo alto de
+ação indevida → 1,0:1 (recusa 82,8%); não perder pedido → 3,0:1 (execução 75,7%). Nenhuma
+melhora os dois.
+
+### ⭐⭐ Duas capacidades, e só uma escala com o catálogo
+
+| catálogo | 350M ferram | 150M ferram | 350M recusa | 150M recusa |
+|---:|---:|---:|---:|---:|
+| 1–6 | 80,0% | 71,8% | 82,5% | 78,4% |
+| 5 | 77,2% | 62,5% | 82,8% | 78,4% |
+| 10 | 64,0% | 48,3% | 82,1% | 78,0% |
+| **15** | **48,5%** | **39,4%** | **82,5%** | **78,4%** |
+
+*"Alguma ferramenta serve?"* é **plano** — 0,7 pp de amplitude em quinze pontos de catálogo,
+**nos dois modelos**. *"Qual delas?"* desaba **31,5 pp**. Não é propriedade deste modelo; é da
+tarefa.
+
+🔴 **E escalar não conserta:** queda relativa **39%** (350M) contra **45%** (150M), com queda
+absoluta praticamente igual (31,5 × 32,5 pp). A vantagem do modelo maior **sobe e volta**:
+8,2 → 14,7 → 15,7 → **9,1 pp**.
+
+⚠️ **Erro de leitura registrado:** com três pontos (8,2 → 14,7 → 15,7) declarei *"a vantagem
+cresce, logo seleção escala com parâmetro"*. O quarto mostrou uma **corcova**, não uma
+tendência. **Três pontos monotônicos não são tendência quando a curva pode virar.**
+
+⚠️ E os `holdout_cat*` do estágio anterior estavam **contaminados** (27 de 37 ferramentas no
+treino do e13) por terem sido construídos contra um split antigo — reconstruídos antes de usar.
+**Artefato de avaliação envelhece quando o treino muda, e não avisa.**
+
+---
+
 ## 7. O que fica aberto
 
 1. ✅ **RESOLVIDO com a terceira semente (2026-08-27).** Com duas, o e13 dava 70,1% e 74,4% —
@@ -211,6 +279,11 @@ objetivos que competem.**
    dobrar a régua exigiria queimar 20% do treino.
 2. **A extração de valor segue sendo o gargalo** — e nenhuma restrição de decodificação a
    alcança, porque o problema é capacidade, não escolha.
-3. **Catálogo acima de 6 é extrapolação:** os negativos só podem ser subamostrados, então o
-   treino não contém catálogos maiores.
-4. **A proporção tool:text (1,44:1) segue herdada, não otimizada** — declarado desde o E7.
+3. 🔴 **O gargalo real é seleção em catálogo grande:** 48,5% de acerto com 15 ferramentas, e
+   escalar 2,3× o parâmetro não conserta. É o regime de uso real — um agente de produção tem
+   dezenas de rotas. **Sem caminho conhecido no dado ou no tamanho atuais.**
+4. ✅ **A proporção tool:text foi medida (§6b): 1,52:1 já é o ótimo.** Deixa de ser pergunta
+   aberta e vira parâmetro de ponto de operação.
+5. ⚠️ **RETIRADO o apoio à escala como próximo degrau.** A curva de catálogo era o teste barato
+   que a justificaria, e deu o contrário. 2 h de medição evitaram uma decisão de US$ 300 tomada
+   por analogia.
