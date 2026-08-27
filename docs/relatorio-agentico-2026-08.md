@@ -17,7 +17,7 @@
 | e8 (ferramenta inédita) | 96,9%\* | 58,9% | 0,0%\* | 1,5 pp |
 | e11 (catálogo balanceado) | 74,2% | 54,3% | 13,3% | 0,5 pp |
 | e12 (split estratificado) | 79,9% | 69,4% | 16,8% | 1,1 pp |
-| **e13 (+ e-mail diverso) — ADOTADO** | **82,1%** | **72,3%** | 16,0% | 4,3 pp |
+| **e13 (+ e-mail diverso) — ADOTADO** | **82,6%** | **73,1%** | 17,3% | dp 2,53 pp (3 sementes) |
 | e14 (+ vocabulário coberto) | 81,3% | 68,6% | 16,1% | 1,7 pp |
 
 \* ⚠️ **Os números do e8 estão marcados porque são artefato.** Ver §3.1: o catálogo tinha 1–2
@@ -201,9 +201,14 @@ objetivos que competem.**
 
 ## 7. O que fica aberto
 
-1. **A folga do e13 sobre o e12 (+2,9 pp) está dentro da própria amplitude de semente
-   (4,3 pp).** Só a sonda de e-mail tem significância. Para adotar com confiança seria preciso
-   uma terceira semente ou um holdout maior.
+1. ✅ **RESOLVIDO com a terceira semente (2026-08-27).** Com duas, o e13 dava 70,1% e 74,4% —
+   amplitude 4,3 pp — e eu reportei que a folga cabia dentro dela. A s44 deu **74,6%**, junto
+   da s43: a s42 era a ponta baixa de três, não instabilidade. **Média 73,1%, desvio 2,53 pp,
+   folga real +3,7 pp** — eu tinha subestimado o modelo por causa de uma amostra de dois.
+   ⚠️ Ainda assim não chamo de significativo: 3 sementes contra as 2 do e12 é comparação
+   assimétrica. Ver §2x da regra global.
+   ⚠️ E **ampliar o holdout não era a solução**: sobravam 35 tuplas nas raízes reservadas, e
+   dobrar a régua exigiria queimar 20% do treino.
 2. **A extração de valor segue sendo o gargalo** — e nenhuma restrição de decodificação a
    alcança, porque o problema é capacidade, não escolha.
 3. **Catálogo acima de 6 é extrapolação:** os negativos só podem ser subamostrados, então o
