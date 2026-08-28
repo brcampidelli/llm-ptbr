@@ -177,6 +177,33 @@ class EstadoJson:
                 self.tool = self.buf
         self.esperando_chave = False
 
+    def escrevendo_nome_da_ferramenta(self) -> bool:
+        """Estamos escrevendo o VALOR de `"tool"`, no nivel de cima do objeto?
+
+        🔴 Medido em 2026-08-27: o modelo emite ferramenta que NAO ESTA no catalogo em
+        3,0% dos casos com catalogo 1-6 e **10,1% com catalogo 15** — e isso e' de 24% a
+        41% de TODOS os erros de selecao, em toda condicao medida.
+
+        Os nomes inventados denunciam o mecanismo, e e' o mesmo do `recipient` -> `receptor`:
+
+            executar_program  9x   <- inventou em PORTUGUES
+            search_livros     2x   <- metade ingles, metade portugues
+            restaurant_hotel  3x   <- fundiu duas ferramentas do catalogo
+            get_movies        3x   <- plural onde o catalogo tem singular
+
+        ⚠️ No E9 eu afirmei que "o modelo nunca emitiu ferramenta fora do catalogo em 728
+        casos" e descartei esta extensao. Era falso ate' naquele holdout (3,0% no mesmo
+        regime) — a contagem de entao nao separava nome invalido de chamada ausente.
+
+        ⭐ E aqui, ao contrario da restricao de VALOR, **nao existe caso legitimo que a
+        restricao bloqueie**: a referencia e' sempre uma ferramenta do catalogo.
+        """
+        return (self.em_str and not self.str_e_chave
+                and self.ultima_chave == "tool"
+                and self.prof_args is None
+                and self.str_prof == 1
+                and bool(self.pilha) and self.pilha[-1] == "{")
+
     def escrevendo_valor_de_args(self) -> str | None:
         """Se estamos dentro do VALOR (nao da chave) de um argumento, devolve a chave."""
         if not (self.em_str and not self.str_e_chave):
@@ -255,7 +282,8 @@ class RestritorDeEsquema:
 
     def __init__(self, tok, catalogos: list[dict[str, frozenset[str]]], plen: int,
                  k: int = 1, contextos: list[str] | None = None,
-                 perfil: dict | None = None, span_maximal: bool = False) -> None:
+                 perfil: dict | None = None, span_maximal: bool = False,
+                 restringir_ferramenta: bool = False) -> None:
         import torch
         self.torch = torch
         self.tok = tok
@@ -269,6 +297,8 @@ class RestritorDeEsquema:
         # ── restricao de VALOR (opcional): so' age se contextos E perfil vierem juntos
         self.contextos = [nz(c) for c in contextos] if contextos else None
         self.span_maximal = span_maximal
+        self.restringir_ferramenta = restringir_ferramenta
+        self.n_ferramenta = 0
         self.perfil = perfil or {}
         self._cache_val: dict[tuple[int, str], object] = {}
         self.n_valor = 0
@@ -287,6 +317,15 @@ class RestritorDeEsquema:
             if not cat:
                 continue
             est = self._estado(input_ids[linha])
+            if self.restringir_ferramenta and est.escrevendo_nome_da_ferramenta():
+                nomes = frozenset(cat)
+                perm = self._permitidos(nomes, est.buf, scores.shape[-1])
+                if perm is not None and perm.numel():
+                    mascara = torch.full_like(scores[linha], float("-inf"))
+                    mascara[perm] = 0.0
+                    scores[linha] = scores[linha] + mascara
+                    self.n_ferramenta += 1
+                continue
             if not est.escrevendo_chave_de_args():
                 if self.contextos is not None:
                     self._passo_valor(linha, est, scores)
@@ -420,8 +459,8 @@ class RestritorDeEsquema:
         return v.to("cpu") if v is None else v
 
     def relatorio(self) -> str:
-        return (f"restricao: {self.n_mascarou} em chave · {self.n_valor} em valor · "
-                f"{self.n_passos} passos")
+        return (f"restricao: {self.n_mascarou} chave · {self.n_valor} valor · "
+                f"{self.n_ferramenta} ferramenta · {self.n_passos} passos")
 
 
 def _textos_de_token(tok) -> list[str]:

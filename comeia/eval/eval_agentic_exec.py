@@ -171,6 +171,11 @@ def main() -> int:
                     help="com --restrito-valor: o valor tem de terminar em FRONTEIRA do "
                          "pedido, nao em qualquer ponto. Sem isto o modelo troca sintese "
                          "por TRUNCAGEM e o saldo fica negativo (-9,0 pp medido).")
+    ap.add_argument("--restrito-ferramenta", action="store_true",
+                    help="restringe tambem o NOME DA FERRAMENTA ao catalogo do prompt. "
+                         "Medido: o modelo emite ferramenta inexistente em 3,0% dos casos "
+                         "(cat 1-6) e 10,1% (cat 15) — de 24%% a 41%% de todos os erros de "
+                         "selecao. Nomes inventados: `executar_program`, `search_livros`.")
     ap.add_argument("--dump", action="store_true",
                     help="grava um JSONL por caso (ref, previsto, veredito, saida crua). "
                          "Sem isto so' sobram agregados, e nenhuma analise de MODO DE FALHA "
@@ -298,7 +303,8 @@ def main() -> int:
     #    "truncado" e o parser recebia cinco chamadas concatenadas -> 0%.
     print(f"paradas: {PARADAS} (<|im_end|> primeiro = terminador correto)")
     terminadores: list[bool | None] = []
-    restringe = bool(args.restrito or args.restrito_valor)
+    restringe = bool(args.restrito or args.restrito_valor
+                     or args.restrito_ferramenta)
     if args.restrito_valor and not args.por_argumento:
         print("ERRO: --restrito-valor exige --por-argumento (precisa do perfil de classes)",
               file=sys.stderr)
@@ -388,7 +394,9 @@ def main() -> int:
                                               contextos=ctxs,
                                               perfil=perfil_arg if args.restrito_valor
                                               else None,
-                                              span_maximal=bool(args.span_maximal))
+                                              span_maximal=bool(args.span_maximal),
+                                              restringir_ferramenta=bool(
+                                                  args.restrito_ferramenta))
                 cfg["logits_processor"] = LogitsProcessorList([rest])
                 restritores.append(rest)
             if k > 1:
@@ -688,6 +696,10 @@ def main() -> int:
         mm = sum(r.n_mascarou for r in restritores)
         pp = sum(r.n_passos for r in restritores)
         vv = sum(getattr(r, "n_valor", 0) for r in restritores)
+        ff = sum(getattr(r, "n_ferramenta", 0) for r in restritores)
+        if args.restrito_ferramenta:
+            print(f"  mascaramentos de NOME DE FERRAMENTA: {ff}"
+                  + ("   ⚠️ ZERO — a restricao NAO agiu" if ff == 0 else ""))
         print(f"RESTRICAO: {mm} mascaramentos de CHAVE · {vv} de VALOR · {pp} passos")
         if args.restrito_valor and vv == 0:
             print("  " + chr(0x26A0) + chr(0xFE0F) + " ZERO mascaramentos de VALOR com "
