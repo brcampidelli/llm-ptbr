@@ -101,7 +101,20 @@ def main() -> int:
     resultados, falhas = {}, []
     t_total = time.time()
 
+    # 🔴 A TAG TEM DE SEGUIR O ARTEFATO, senao cada regua sobrescreve o relatorio da rodada
+    #    anterior. Medido em 2026-08-28: rodar com `--peft e13-email-s42` gravou os numeros do
+    #    adapter dentro de `docs/ifeval-pt-base350m.json`, `sentimento-pt-base350m.json` e
+    #    outros quatro — arquivos cujo NOME afirma serem do modelo base. O campo `peft` de
+    #    dentro era a unica coisa que os desmentia. Mesmo defeito do caminho fixo da saida
+    #    consolidada, um nivel abaixo.
+    sufixo = Path(a.peft).name if a.peft else None
+
     for capacidade, script, extras, relatorio in reguas:
+        if sufixo:
+            extras = [f"{e}-{sufixo}" if i and extras[i - 1] == "--tag" else e
+                      for i, e in enumerate(extras)]
+            relatorio = relatorio.with_name(
+                relatorio.name.replace("base350m", f"base350m-{sufixo}"))
         cmd = [PY, str(AQUI / script), "--model", a.model, *extras]
         if a.peft:
             cmd += ["--peft", a.peft]
@@ -141,15 +154,39 @@ def main() -> int:
         print(f"✅ as {len(reguas)} reguas passam no dry-run. Pode medir.")
         return 0
 
+    # 🔴 A MATEMATICA E' LIDA, NAO MEDIDA — e ate' 2026-08-28 isso nao aparecia no arquivo.
+    #
+    # Rodar o consolidador com `--peft X` copiava para dentro do relatorio de X a matematica do
+    # modelo ANTERIOR (`peft: None`, `minutos: 270.7`), sem marca nenhuma. Lida na tabela, a
+    # celula dizia "matematica inalterada" — uma afirmacao sobre uma medicao que nao aconteceu.
+    # A unica coisa que separava as duas leituras era abrir o campo e reparar no `peft` de
+    # dentro. Agora a procedencia vai explicita, e a celula so' e' comparavel se o `peft` do
+    # relatorio lido bater com o desta rodada.
     if MATEMATICA.exists():
-        resultados["matematica"] = json.loads(MATEMATICA.read_text(encoding="utf-8"))
+        mat = json.loads(MATEMATICA.read_text(encoding="utf-8"))
+        mesmo = (mat.get("peft") or None) == (a.peft or None)
+        resultados["matematica"] = {
+            **mat,
+            "_procedencia": f"LIDA de {MATEMATICA.name}, nao medida nesta rodada",
+            "_peft_do_relatorio": mat.get("peft"),
+            "_comparavel_a_esta_rodada": mesmo,
+        }
         print(f"\n   + matematica lida de {MATEMATICA.name} (gate de k=256, roda separado)")
+        if not mesmo:
+            print(f"   🔴 e ela e' de OUTRO artefato (peft={mat.get('peft')!r} contra "
+                  f"{a.peft!r}). NAO e' medicao deste modelo — marcado no arquivo.")
     else:
         print(f"\n   ⚠️ matematica AUSENTE: {MATEMATICA.name} ainda nao existe. O baseline "
               f"sai com 7 de 8 e isso fica registrado no arquivo.")
 
-    SAIDA.parent.mkdir(parents=True, exist_ok=True)
-    SAIDA.write_text(json.dumps({
+    # 🔴 O NOME DE SAIDA DERIVA DO ARTEFATO MEDIDO. A v1 gravava sempre no mesmo arquivo, entao
+    # a primeira rodada com `--peft` SOBRESCREVEU o baseline do modelo base (recuperado do
+    # commit f79e01b). Comparacao antes/depois nao sobrevive a um caminho fixo.
+    alvo = SAIDA
+    if a.peft:
+        alvo = SAIDA.with_name(f"baseline-350m-{Path(a.peft).name}.json")
+    alvo.parent.mkdir(parents=True, exist_ok=True)
+    alvo.write_text(json.dumps({
         "data": date.today().isoformat(),
         "modelo": a.model,
         "revisao_hub": revisao_do_modelo(a.model),
@@ -161,7 +198,7 @@ def main() -> int:
     }, ensure_ascii=False, indent=1), encoding="utf-8")
 
     print(f"\n{'=' * 78}")
-    print(f"✅ {len(resultados)} capacidades gravadas em {SAIDA}")
+    print(f"✅ {len(resultados)} capacidades gravadas em {alvo}")
     if falhas:
         print(f"🔴 faltaram: {falhas}")
         return 1
