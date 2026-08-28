@@ -1,6 +1,11 @@
 # Prompt para a sessão do Chimera-agent
 
 > Copie deste bloco até o fim do arquivo.
+>
+> **v2 (2026-08-27)** — a v1 foi executada e encontrou `recall@3 = 0%`. A causa era uma
+> **precondição que eu não havia enunciado**: o recuperador exige que a **descrição** da
+> ferramenta esteja no **idioma do usuário**. O catálogo do Chimera é EN, os pedidos são PT.
+> Medi a precondição dos dois lados e a seção **"Precondição de idioma"** abaixo é nova.
 
 ---
 
@@ -64,6 +69,57 @@ da mesma forma**, e é plausível que não degradem.
 queda relativa foi de 45% para 39% — melhorou pouco e o formato da curva não mudou. Isso é um
 indício fraco de que o problema não some só com tamanho, mas **dois pontos não fazem lei de
 escala** e eu não extrapolo daí.
+
+## 🔴 Precondição de idioma (achada pela execução da v1 deste prompt)
+
+A sessão anterior mediu `recall@3 = 0%` e diagnosticou corretamente: catálogo em inglês,
+pedidos em português, sobreposição lexical vazia por construção. **Confirmei do meu lado
+decompondo o meu próprio catálogo** (nomes EN, descrições PT):
+
+| variante | recall@1 |
+|---|---:|
+| completo | 90,1% |
+| **só descrição (PT)** | **90,1%** |
+| **só nomes e args (EN)** | **6,3%** |
+
+**Todo o sinal vem da descrição; os nomes contribuem zero.**
+
+E medi o que a sessão anterior declarou em aberto — **o modelo, no mesmo regime**:
+
+| catálogo | descrição no idioma do usuário | só nomes em outro idioma |
+|---:|---:|---:|
+| 1–6 | 80,0% | **41,2%** |
+| 15 | 48,5% | **17,4%** |
+
+⭐ **O modelo sobrevive ao cross-language; o recuperador não.** Ele tira 41,2% de nomes em
+inglês onde o léxico tira 6,3%. Mas cai pela metade, e os danos de **idioma** e **tamanho**
+compõem: 80,0% → **17,4%**.
+
+### 🔴 E a armadilha de monitoramento
+
+```
+recusa correta:  PT 82,5%  →  EN 90,3%   (nos dois tamanhos de catálogo)
+```
+
+**A recusa MELHORA 7,8 pp exatamente quando a seleção desaba 38,8 pp.** Um painel de *"o agente
+chamou ferramenta indevidamente?"* mostraria **melhora** enquanto o sistema perde metade da
+capacidade de acertar qual usar. Se o Chimera tem essa métrica, ela pode estar bonita pelo
+motivo errado — **confira a gêmea de "deixou de chamar quando devia".**
+
+### O que isso muda na recomendação
+
+⭐ **A intervenção de maior retorno no Chimera não é o filtro — é descrever as ferramentas em
+português.** Isso destrava recuperador (6,3% → ~90%) e modelo (41,2% → ~80%) de uma vez, e é
+pré-requisito de qualquer filtro lexical.
+
+⚠️ Ressalva do meu desenho: remover a descrição tira idioma **e** informação juntos, então parte
+dos 38,8 pp é "menos texto" e não "outra língua". O que está limpo é a comparação **modelo ×
+recuperador na mesma condição**.
+
+⚠️ E segue valendo a ressalva maior: **345M**. O Chimera roda modelos grandes, que podem não
+degradar assim.
+
+---
 
 ## O que eu peço que você faça — nesta ordem
 
