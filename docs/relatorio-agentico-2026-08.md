@@ -1,6 +1,6 @@
-# Relatório — capacidade agêntica do Bee-350M (E8 → E16)
+# Relatório — capacidade agêntica do Bee-350M (E8 → E17)
 
-> **2026-08-24 a 27.** US$ 0 de GPU paga (RTX 5070 local). Sete estágios, quatro intervenções
+> **2026-08-24 a 28.** US$ 0 de GPU paga (RTX 5070 local). Sete estágios, quatro intervenções
 > adotadas, **cinco reprovadas por medição**, e sete defeitos de instrumento encontrados — três
 > deles em números que eu já havia reportado como resultado.
 >
@@ -37,6 +37,8 @@ justamente para isso não depender de alguém lembrar de avisar.
 | **catálogo balanceado (dado)** | **+30 pp** | ✅ **adotada** |
 | **split estratificado por tipo de valor** | régua honesta | ✅ **adotada** |
 | **e-mail diversificado (dado)** | **+12,0 pp de cópia** · p=0,0024 | ✅ **adotada** |
+| **restrição do NOME DA FERRAMENTA** | **+2,3 pp** · 38×2 · p=1,5e-09 | ✅ **adotada** |
+| **recuperação em dois passos (harness)** | **+26,7 pp** · +150/−21 | ✅ **adotada** |
 | retentativa em runtime (E5, anterior) | +1,2 pp | ❌ abaixo do ruído |
 | preferência DPO/IPO/KTO (E6, anterior) | +2,4 pp | ❌ abaixo do ruído |
 | ligação de papel (hipótese) | 2,9% de assinatura | ❌ refutada por sonda |
@@ -298,6 +300,80 @@ supera a perda do filtro mais agressivo. O ponto de operação é **filtrar fort
 
 ⚠️ E isto **não** é o "catálogo hierárquico com o modelo escolhendo a categoria" — aquilo
 exigiria treinar o modelo para emitir categoria. São experimentos diferentes.
+
+---
+
+## 6d. ⭐ Restrição do nome da ferramenta — e a afirmação minha que ela desmentiu
+
+O modelo emite ferramenta **inexistente no catálogo**:
+
+| catálogo | nomes inválidos | % de todos os erros de seleção |
+|---:|---:|---:|
+| 1–6 | 3,0% | 41,2% |
+| 10 | 5,4% | 24,0% |
+| **15** | **10,1%** | 32,5% |
+
+E os nomes denunciam o mecanismo — **o mesmo do `recipient` → `receptor`** (§3.2), agora no
+identificador da ferramenta:
+
+```
+executar_program  9x   ← inventou em PORTUGUÊS
+search_livros     2x   ← metade inglês, metade português
+restaurant_hotel  3x   ← fundiu duas ferramentas do catálogo
+get_movies        3x   ← plural onde o catálogo tem singular
+```
+
+⚠️ **No E9 eu escrevi que "o modelo nunca emitiu ferramenta fora do catálogo em 728 casos" e
+usei isso para descartar esta extensão.** Era falso já naquele regime (3,0%): a contagem de
+então **não separava nome inválido de chamada ausente**. §2q em versão pior — a refutação não
+valia nem para o holdout que eu tinha, porque o instrumento contava errado.
+
+**Resultado — 4 células (2 sementes × 2 catálogos), todas positivas:**
+
+| braço | nomes inválidos | ferramenta | folga |
+|---|---:|---:|---:|
+| s43 · 1–6 | 1,4% | 84,1 → 85,1% | **+0,9 pp** |
+| s42 · 1–6 | 3,0% | 80,0 → 82,3% | +2,2 pp |
+| s42 · 15 | 10,1% | 48,5 → 51,7% | +3,2 pp |
+| s43 · 15 | 10,1% | 47,9 → 50,9% | +3,0 pp |
+
+Média **+2,3 pp** · pareado agregado **38×2, p = 1,5e-09** · **0 ferramentas fora do catálogo em
+1.730 chamadas**.
+
+⭐⭐ **O que sustenta um efeito menor que o ruído de semente (4,1 pp):** a folga **acompanha a
+incidência do defeito, célula a célula** — 1,4% → +0,9 pp; 10,1% → +3,0 e +3,2 pp. Ruído não se
+alinha assim com uma variável medida por outro caminho. E o desenho pareado remove o ruído de
+semente por construção: mesmo modelo, mesmos itens, só a restrição muda.
+
+⚠️ **E o motivo de adotar não é o acerto.** A saída passa a ser **sempre executável**: emitir
+`executar_program` quebra o executor, escolher a ferramenta errada apenas erra — gravidades
+diferentes em produção. Risco zero por construção, porque a referência é sempre uma ferramenta
+do catálogo (diferente da restrição de **valor**, §6c, reprovada duas vezes).
+
+⚠️ **Correção da minha expectativa:** previ que isto atacaria "1/4 a 2/5 dos erros de seleção".
+**Ataca a forma deles, não a quantidade** — dos 13 nomes inválidos num subconjunto, 4 viraram
+acerto e 9 viraram outra escolha errada. Mesmo padrão do span maximal: **bloquear a saída
+errada não faz o modelo produzir a certa.**
+
+### O resíduo, decomposto (catálogo 15 → top-3)
+
+| | % |
+|---|---:|
+| ✅ acertou | 66,8% |
+| escolheu outra das 3 | 10,4% |
+| recusou com a correta na lista | 9,3% |
+| argumento errado | 8,4% |
+| o filtro cortou a correta | 5,0% |
+
+⚠️ **A recusa indevida foi investigada e abandonada:** três hipóteses testadas (o modelo ignora
+os argumentos — **refutada**, recusa *menos* quando o arg casa; literalidade — construída de um
+exemplo e não sustentada; multi-turno — **sustentada**, 14,9% × 6,5%). Fora de uma ferramenta
+anômala (`calculate_shipping_cost`, 72,7%), o resíduo é **7,0%** — sem causa identificada e
+abaixo do que a régua separa.
+
+⭐ **Multi-turno é o único fator que separa os dois modos de falha** (recusa indevida e escolha
+errada), e foi o único que veio de uma **contagem** em vez de um exemplo lido. Quatro hipóteses
+geradas a partir de exemplos foram refutadas em sequência.
 
 ---
 
