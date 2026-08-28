@@ -267,6 +267,40 @@ treino do e13) por terem sido construídos contra um split antigo — reconstru�
 
 ---
 
+## 6c. ⭐⭐ Recuperação em dois passos — e o índice que ganha do modelo
+
+Se o gargalo é *selecionar entre muitos*, reduzir os candidatos antes de perguntar deveria
+devolver o desempenho. Recuperador **lexical e determinístico** (~30 linhas): sobreposição de
+palavras entre pedido e declaração, com peso IDF sobre o próprio catálogo.
+
+| condição (catálogo 15) | teto | ferramenta | exec |
+|---|---:|---:|---:|
+| completo | — | 48,5% | 42,7% |
+| top-5 (IDF) | 96,3% | 73,5% | 65,9% |
+| **top-3 (IDF)** | 95,0% | **75,2%** | **66,8%** |
+| cat5 aleatório (referência) | — | 77,2% | 68,7% |
+
+**+26,7 pp**, pareado **+150/−21**, p = 3,3e-25, **sem treinar nada**.
+
+⭐⭐ **O recuperador acerta 90,1% no top-1** — contra 48,5% do modelo de 345M com o catálogo
+inteiro. **A informação para escolher está no texto de forma quase trivialmente lexical, e o
+modelo não a usa.** Isso reinterpreta a curva de catálogo: a tarefa não fica mais difícil com
+15 opções; o modelo é que degrada.
+
+⭐ **Top-3 bate top-5** apesar do recall menor (95,0% × 96,3%): o ganho de ter menos opções
+supera a perda do filtro mais agressivo. O ponto de operação é **filtrar forte**.
+
+⚠️ **Dois impostos, ambos declarados:**
+1. a lista filtrada é **mais difícil** que a aleatória do mesmo tamanho (73,5% × 77,2%) — o
+   recuperador remove os fáceis e deixa os confundíveis;
+2. o gargalo do modelo **não sumiu, mudou de escala**: com a resposta na lista em 95% dos casos
+   e **três** candidatos, ele ainda perde **19,8 pp** para o teto.
+
+⚠️ E isto **não** é o "catálogo hierárquico com o modelo escolhendo a categoria" — aquilo
+exigiria treinar o modelo para emitir categoria. São experimentos diferentes.
+
+---
+
 ## 7. O que fica aberto
 
 1. ✅ **RESOLVIDO com a terceira semente (2026-08-27).** Com duas, o e13 dava 70,1% e 74,4% —
@@ -279,9 +313,9 @@ treino do e13) por terem sido construídos contra um split antigo — reconstru�
    dobrar a régua exigiria queimar 20% do treino.
 2. **A extração de valor segue sendo o gargalo** — e nenhuma restrição de decodificação a
    alcança, porque o problema é capacidade, não escolha.
-3. 🔴 **O gargalo real é seleção em catálogo grande:** 48,5% de acerto com 15 ferramentas, e
-   escalar 2,3× o parâmetro não conserta. É o regime de uso real — um agente de produção tem
-   dezenas de rotas. **Sem caminho conhecido no dado ou no tamanho atuais.**
+3. ⭐ **Seleção em catálogo grande TEM caminho, e é de harness:** recuperar antes de perguntar
+   dá +26,7 pp sem treinar (§6c). ⚠️ Mas resolve só metade — restam 19,8 pp que o modelo perde
+   mesmo com três candidatos e a resposta certa na lista.
 4. ✅ **A proporção tool:text foi medida (§6b): 1,52:1 já é o ótimo.** Deixa de ser pergunta
    aberta e vira parâmetro de ponto de operação.
 5. ⚠️ **RETIRADO o apoio à escala como próximo degrau.** A curva de catálogo era o teste barato
