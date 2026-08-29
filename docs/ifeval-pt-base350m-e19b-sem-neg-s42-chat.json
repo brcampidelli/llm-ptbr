@@ -1,0 +1,30 @@
+{
+ "modelo": "BrCamp/bee-350m-pt-base",
+ "peft": "comeia/models/e19b-sem-neg-s42",
+ "tag": "base350m-e19b-sem-neg-s42-chat",
+ "n_prompts": 541,
+ "n_instrucoes": 1002,
+ "estrito_prompt": 0.12939001848428835,
+ "estrito_instrucao": 0.32335329341317365,
+ "frouxo_prompt": 0.12939001848428835,
+ "frouxo_instrucao": 0.32335329341317365,
+ "falhas_por_tipo": {
+  "tudo_minusculo": 9,
+  "n_marcadores": 55,
+  "tem_titulo_markdown": 44,
+  "sem_numeros": 38,
+  "contem_palavra": 64,
+  "n_palavras": 55,
+  "envolvido_em_aspas": 45,
+  "tudo_maiusculo": 42,
+  "n_frases": 55,
+  "e_json_valido": 27,
+  "termina_com": 62,
+  "duas_respostas": 51,
+  "comeca_com": 40,
+  "sem_virgula": 29,
+  "n_paragrafos": 55,
+  "nao_contem": 6,
+  "idioma_portugues": 1
+ }
+}

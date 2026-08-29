@@ -1,0 +1,42 @@
+{
+ "modelo": "BrCamp/bee-350m-pt-base",
+ "peft": "comeia/models/e19b-sem-neg-s42",
+ "modelo_r": {
+  "nome": "MODELO bee-350m-pt-base",
+  "en->pt": {
+   "chrf2": 13.937374582057766,
+   "bleu": 1.3330367176545204,
+   "idioma_alvo": 0.06,
+   "numeros_ok": 0.86,
+   "vazio": 0.0,
+   "n": 300
+  },
+  "pt->en": {
+   "chrf2": 12.630135797039538,
+   "bleu": 3.8594508121352784,
+   "idioma_alvo": 0.20666666666666667,
+   "numeros_ok": 0.8166666666666667,
+   "vazio": 0.0,
+   "n": 300
+  }
+ },
+ "piso_copiar": {
+  "nome": "PISO copiar a fonte",
+  "en->pt": {
+   "chrf2": 21.54301286691898,
+   "bleu": 2.498576146619684,
+   "idioma_alvo": 0.0,
+   "numeros_ok": 0.95,
+   "vazio": 0.0,
+   "n": 300
+  },
+  "pt->en": {
+   "chrf2": 22.720911455533592,
+   "bleu": 2.4939525804995544,
+   "idioma_alvo": 0.0,
+   "numeros_ok": 0.9466666666666667,
+   "vazio": 0.0,
+   "n": 300
+  }
+ }
+}

@@ -665,7 +665,6 @@ def main() -> int:
                 and not acertos):
             identicas_reprovadas.append(nome_ref)
         por_ferramenta.setdefault(nome_ref, []).append(1 if acertos else 0)
-        por_ferramenta.setdefault(nome_ref, []).append(1 if acertos else 0)
         if args.dump:
             despejo.append({
                 "i": i, "tipo": "tool", "usuario": usuario,
