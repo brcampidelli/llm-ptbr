@@ -68,6 +68,12 @@ REGUAS = [
 # com k=256 e leva ~4,6 h. O consolidador so' LE o relatorio dela, se ja' existir.
 MATEMATICA = AQUI / "results" / "aritmetica_passk_gate-matematica.json"
 
+# reguas que aceitam `--chat`. `eval_sentimento_pt.py` NAO aceita e nao precisa: ele pergunta
+# por verossimilhanca (logprob de " positivo" contra " negativo") no mesmo molde para os dois
+# modelos, entao nao ha' parser nem formato a acertar.
+SUPORTA_CHAT = {"eval_ifeval_pt.py", "eval_resumo_pt.py", "eval_traducao_pt.py",
+                "eval_atendimento_pt.py", "eval_coder.py", "eval_agentic_exec.py"}
+
 
 def revisao_do_modelo(nome: str) -> str:
     """SHA do commit do modelo no Hub. Sem isto, 'baseline do Bee-350M' não identifica nada:
@@ -91,7 +97,26 @@ def main() -> int:
     ap.add_argument("--peft", default=None)
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--so", default="", help="roda so' esta capacidade")
+    ap.add_argument("--chat-nao-precisa", action="store_true",
+                    help="declara que este artefato NAO usa chat template (raro)")
+    ap.add_argument("--chat", action="store_true",
+                    help="aplica o chat template nas reguas que suportam (ver SUPORTA_CHAT). "
+                         "OBRIGATORIO para modelo pos-treinado em ChatML.")
     a = ap.parse_args()
+
+    # 🔴 §2e NO CONSOLIDADOR INTEIRO, nao so' na celula agentica. Medido em 2026-08-28: seis
+    #    das nove reguas aceitam `--chat` e o consolidador NAO passava em nenhuma. O primeiro
+    #    run com `--peft` mediu um adapter treinado em ChatML inteiramente em texto cru, e
+    #    produziu uma tabela de "o que o pos-treino quebrou" onde cada numero negativo podia
+    #    ser formato. **Medir cada modelo no formato em que foi treinado** — base em cru,
+    #    pos-treinado em chat — e' a unica leitura valida, e e' a excecao a "mesma regua" que
+    #    a §2e justifica explicitamente.
+    if a.peft and not a.chat and not a.chat_nao_precisa and not a.dry_run:
+        print("\n🔴 ABORTANDO: --peft sem --chat.\n"
+              "   O adapter foi treinado em ChatML; medi-lo em texto cru mede o formato, nao\n"
+              "   o modelo (§2e). Rode com --chat, ou com --chat-nao-precisa se este adapter\n"
+              "   realmente nao usa chat template.")
+        return 1
 
     print("=" * 78)
     print(f"BASELINE DAS 8 CAPACIDADES — {a.model}")
@@ -107,7 +132,7 @@ def main() -> int:
     #    outros quatro — arquivos cujo NOME afirma serem do modelo base. O campo `peft` de
     #    dentro era a unica coisa que os desmentia. Mesmo defeito do caminho fixo da saida
     #    consolidada, um nivel abaixo.
-    sufixo = Path(a.peft).name if a.peft else None
+    sufixo = (Path(a.peft).name + ("-chat" if a.chat else "")) if a.peft else None
 
     for capacidade, script, extras, relatorio in reguas:
         if sufixo:
@@ -118,6 +143,8 @@ def main() -> int:
         cmd = [PY, str(AQUI / script), "--model", a.model, *extras]
         if a.peft:
             cmd += ["--peft", a.peft]
+        if a.chat and script in SUPORTA_CHAT:
+            cmd += ["--chat"]
         if a.dry_run:
             cmd += ["--dry-run"]
         print(f"\n{'=' * 78}\n>> {capacidade}  ({script})\n{'=' * 78}", flush=True)

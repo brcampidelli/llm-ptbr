@@ -4,134 +4,99 @@
 > de ferramenta. O E2 já havia medido que *"o SFT entrega UMA capacidade"*. O que ele custou nas
 > outras oito?
 >
-> **Resposta em uma frase:** ⭐ **quase nada do que a tabela agregada diz.** O único número
-> claramente negativo (−4,0 pp em seguimento de instrução) decompõe-se em três colapsos que
-> medem **estilo de saída degenerada**, não capacidade — e o maior deles é o modelo base
-> perdendo a habilidade de **copiar o enunciado**. O único movimento grande e limpo é
-> **positivo**: sentimento de 49,7% para 81,8%.
-
-Comparação: `docs/baseline-350m-BASE.json` (2026-08-20, modelo base) contra
-`docs/baseline-350m-e13.json` (2026-08-28, base + adapter). Mesmos itens, mesmas réguas,
-mesmo n.
+> **Resposta:** 🔴 **usado no formato em que foi treinado, ele quebrou praticamente todas** — e
+> a tradução caiu **abaixo do piso de copiar a fonte sem traduzir**. A causa está no corpus:
+> **91,1% dos exemplos negativos são recusas**, 36% do treino inteiro. O modelo não aprendeu
+> "quando não há ferramenta, responda em texto"; aprendeu "quando não há ferramenta, recuse".
+>
+> ⭐ Uma capacidade **subiu**, e é a única medida sem parser: sentimento, 49,7% → 81,8%.
 
 ---
 
-## A tabela das nove
+## ⚠️ A primeira versão deste documento estava errada, e o defeito é instrutivo
+
+A primeira medição rodou o consolidador **sem `--chat`**. Seis das nove réguas aceitam a flag e
+o consolidador não passava em nenhuma: um adapter treinado em ChatML foi medido inteiro em texto
+cru. É a **§2e no run todo**, não só na célula agêntica onde eu a tinha identificado.
+
+E o efeito não é sutil — **o formato decide se o adapter está ligado**:
+
+| | e13 em texto cru | e13 em ChatML |
+|---|---|---|
+| tradução en→pt (chrF2) | 48,12 | **18,75** |
+| resumo — cobertura | 95,9% | **0,0%** |
+| código — sem código emitido | 839/877 | **876/877** |
+
+Em texto cru o modelo base **vaza por baixo do adapter** e faz a tarefa. Em ChatML o adapter
+manda, e ele recusa. A primeira tabela media o base com o adapter por cima, e eu li isso como
+"o e13 quase não quebrou nada".
+
+**Lição de método:** *"medir cada modelo no formato em que foi treinado"* não é detalhe de
+higiene — aqui ela é a diferença entre `quase nada quebrou` e `quebrou tudo`. A guarda agora
+**aborta** o consolidador se receber `--peft` sem `--chat`.
+
+---
+
+## A tabela das nove — cada modelo no seu formato
+
+Base em texto cru (o único que ele conhece), e13 em ChatML.
+`docs/baseline-350m-BASE.json` × `docs/baseline-350m-e13-email-s42.json`.
 
 | capacidade | régua | base | e13 | piso | Δ |
 |---|---|---:|---:|---:|---:|
-| **sentimento** | acurácia (verossimilhança) | 49,7% | **81,8%** | 79,0% léxico · 50,0% majoritária | ⭐ **+32,2 pp** |
-| resumo | cobertura | 84,0% | 95,9% | — | +11,9 pp |
-| resumo | sem invenção | 72,0% | 82,7% | — | +10,7 pp |
-| resumo | **útil** | 0,0% | 0,0% | 51,3% (lead-2) | 0 — já quebrado |
-| tradução pt→en | idioma-alvo | 86,0% | **98,0%** | 0,0% | +12,0 pp |
-| tradução pt→en | chrF2 | 43,30 | 44,26 | 22,72 | +0,96 |
-| tradução en→pt | chrF2 | 51,12 | 48,12 | 21,54 | −3,00 |
-| tradução en→pt | idioma-alvo | 97,0% | 92,0% | 0,0% | −5,0 pp |
-| **instrução (IFEval-PT)** | estrito / instrução | 30,4% | 26,5% | — | −4,0 pp ⚠️ |
-| instrução (IFEval-PT) | estrito / prompt | 12,8% | 9,6% | — | −3,1 pp ⚠️ |
-| atendimento | útil | 0,0% | 0,0% | 60,4% (regra) | 0 — já quebrado |
-| código interno | pass@1 | 0,0% | 0,0% | — | 0 — já quebrado |
-| código HumanEval-XL | pass@1 | 0,0% | 0,0% | — | 0 — já quebrado |
-| agêntico | ferramenta certa | 0,0% | **80,0%** | — | o alvo |
+| **sentimento** | acurácia (verossimilhança) | 49,7% | **81,8%** | 79,0% léxico | ⭐ **+32,2 pp** |
+| **agêntico** (holdout próprio) | ferramenta certa | 0,0% | **80,0%** | — | o alvo |
+| instrução (IFEval-PT) | estrito / instrução | 30,4% | 28,9% | — | −1,5 pp |
+| instrução (IFEval-PT) | estrito / prompt | 12,8% | 10,5% | — | −2,2 pp |
+| **tradução en→pt** | chrF2 | 51,12 | **18,75** | **21,54** (copiar) | 🔴 **−32,4, abaixo do piso** |
+| **tradução pt→en** | chrF2 | 43,30 | **13,18** | **22,72** (copiar) | 🔴 **−30,1, abaixo do piso** |
+| tradução pt→en | idioma-alvo | 86,0% | **0,0%** | 0,0% | −86,0 pp |
+| **resumo** | cobertura | 84,0% | **0,0%** | — | 🔴 **−84,0 pp** |
+| resumo | útil | 0,0% | 0,0% | 51,3% (lead-2) | 0 — já quebrado |
+| atendimento | JSON válido / útil | 0,0% | 0,0% | 60,4% (regra) | 0 — já quebrado |
+| código interno | emitiu código | 192/877 | **1/877** | — | 🔴 −191 casos |
+| código HumanEval-XL | emitiu código | 3/80 | **0/80** | — | −3 casos |
 | matemática | pass@256 | 22,0% | **não medido** | — | ⚠️ ver abaixo |
 
----
+🔴 **Tradução abaixo do piso é o número mais duro da tabela.** O piso é *copiar a fonte sem
+traduzir*: 21,54 chrF2. O e13 faz **18,75**. Ele é pior que não fazer nada.
 
-## ⚠️ Duas células do arquivo NÃO são medição — e uma delas quase virou número
-
-### 1. Matemática não foi medida
-
-O consolidador **não roda** a matemática: ela é o gate separado de k=256, que leva 4,6 h. O
-código diz isso explicitamente e o consolidador apenas **lê o relatório anterior se existir**.
-
-🔴 Consequência: o campo `matematica` do arquivo do e13 traz `peft: None`, `minutos: 270.7` e os
-mesmos 44/200 do base. **É o número do modelo base com o rótulo do e13 em cima.** Se eu tivesse
-lido a tabela sem abrir o campo, teria reportado "matemática inalterada" — uma afirmação sobre
-uma medição que não aconteceu.
-
-### 2. A régua agêntica do consolidador não serve para modelo pós-treinado
-
-O consolidador chama `eval_agentic_exec.py --k 1` **sem `--chat`, sem `--parar-controle`, sem
-`--restrito`**. O artefato registra `chat: false`, `terminador_errado: 116/150`, e imprime
-**0/85**.
-
-⚠️ É a **§2e literal**: a régua foi escrita contra o modelo base, que não sabe ChatML nem sabe
-parar. Ela está certa enquanto o modelo é ruim e **passa a mentir quando ele melhora**. O e13
-faz **80,0%** no holdout próprio (536 casos, 3 sementes).
-
-⭐ E rodá-la com as flags certas **também** não conserta, por outro motivo: o holdout velho
-apresenta **14 ferramentas** (o e13 treinou em 1–6) e de outro domínio (CLI: `read_file`,
-`run_python`) contra o consumidor do treino. Resultado 7,1%, com 84,7% de recusa. As três
-perguntas da §2g — mesmos itens? mesma régua? mesmo n? — falham nas três.
-
-🔴 **Mas a leitura crua desse run é achado, não descarte.** O e13 recusa **oferecendo
-ferramentas que não estão no catálogo apresentado**:
-
-| pedido | o catálogo do prompt tem | e13 respondeu |
-|---|---|---|
-| *"Como está o clima em Brasília?"* | `get_weather` | *"não consigo… posso verificar a temperatura"* |
-| *"preço da ação AAPL"* | `get_stock_price` | *"não tenho acesso… posso calcular custo de combustível, área, números aleatórios"* |
-
-Combustível, área e agenda vêm do **corpus de treino**, não do prompt. Fora da distribuição de
-tamanho de catálogo, o modelo para de ler o catálogo e recita o que decorou — a memorização de
-catálogo já documentada, agora com a recusa como veículo.
+Em `resumo`, a condição `respondeu` falha **150 de 150** — não é um resumo ruim, é ausência de
+resposta.
 
 ---
 
-## 🔴 O achado principal: o agregado do IFEval é ininterpretável
+## A causa: o corpus ensina a recusar, não a responder
 
-O agregado moveu **−4,0 pp**. Decomposto por verificador, ele contém dois colapsos e um ganho
-grande, todos maiores que o agregado:
-
-| verificador | n | base | e13 | Δ |
-|---|---:|---:|---:|---:|
-| `contem_palavra` ("use a palavra X") | 67 | 35,8% | **1,5%** | **−34,3 pp** |
-| `sem_virgula` ("não use vírgula") | 56 | 50,0% | **0,0%** | **−50,0 pp** |
-| `sem_numeros` ("não use números") | 58 | 69,0% | **94,8%** | **+25,8 pp** |
-| `n_marcadores` | 55 | 7,3% | 1,8% | −5,5 pp |
-
-McNemar em `sem_virgula`: discordância 28×0, **p = 3,7e-09**.
-
-### E os três movimentos têm **a mesma causa**, que não é seguir instrução
-
-Lidas as saídas cruas (§2e), a mudança é de **estilo de degeneração**:
+O treino tem 11.160 exemplos: 6.739 com chamada de ferramenta e **4.421 negativos**. Os
+negativos existem para conter o *over-calling* — objetivo correto. Mas a classe foi
+**construída como recusa**:
 
 ```
-base → lista numerada quebrada:  "\n-\n2\nLeia o texto e responda as questões.\n-\n3\nLeia novamente..."
-e13  → prosa de assistente:      " Se precisar de ajuda com alguma das questões, estou à disposição!"
+negativos que recusam:  4029 / 4421 = 91,1%
+                     =  36,1% do corpus inteiro
 ```
 
-- **`sem_numeros` melhora +25,8 pp** porque o e13 parou de emitir `\n-\n2\n\n-\n3\n`.
-- **`sem_virgula` desaba −50,0 pp** porque prosa tem vírgula e fragmento de lista não tem.
+E sempre a mesma forma: *"Desculpe, mas com as ferramentas disponíveis não consigo… Posso ajudar
+apenas com…"*. O que o modelo generalizou:
 
-⭐ **Os dois maiores movimentos são o mesmo fato, com o sinal trocado pela polaridade da
-restrição.** Uma restrição negativa é mais fácil de satisfazer com saída quebrada.
+| pedido (em ChatML) | e13 respondeu |
+|---|---|
+| *"Traduza para o português: The committee approved the new budget."* | *"Desculpe, mas não consigo traduzir o documento com as ferramentas disponíveis."* |
+| *"Resuma o texto em duas frases."* | *"Desculpe, mas não disponho de uma ferramenta para realizar esse cálculo."* |
+| *"Cliente quer reembolso do pedido 88213."* | *"não tenho uma ferramenta para realizar esse tipo de cálculo."* |
 
-### E o colapso de `contem_palavra` é o base perdendo o plágio
-
-Medido nos 67 prompts, com detector de eco (fração dos 4-gramas da saída presentes no prompt):
-
-| | passa | eco médio | eco > 50% | **passou COPIANDO** |
-|---|---:|---:|---:|---:|
-| base | 30/67 = 44,8% | 35,9% | 28/67 | **27 de 30** |
-| e13 | 5/67 = 7,5% | 1,4% | **0/67** | **0 de 5** |
-
-🔴 **90% dos acertos do base vinham de repetir o enunciado** — que contém a palavra exigida.
-Descontado o eco: base **3/67**, e13 **5/67**. Na parte não-plagiada o e13 é ligeiramente
-melhor.
-
-⚠️ Este run próprio dá 44,8% onde o oficial deu 35,8% no mesmo verificador: `max_new` e lote
-diferentes. É a sensibilidade a tamanho de lote já medida no projeto (~5–7% de troca de itens);
-a direção e a magnitude do achado não dependem disso, mas o número absoluto sim.
-
-**Conclusão: os −4,0 pp não medem seguimento de instrução, porque nenhum dos dois modelos tem
-seguimento de instrução para perder.** O 30,4% do base era eco mais conformidade acidental com
-restrições negativas.
+⚠️ É a **§2j medida do outro lado**. Lá o achado foi *"recusar é alvo fácil e o over-call leria
+0%"*. Aqui está o preço: a fórmula barata que o modelo aprendeu **não fica confinada ao eixo
+agêntico** — ela vira a resposta para tudo.
 
 ---
 
-## ⭐ O ganho que eu não esperava: sentimento, 49,7% → 81,8%
+## ⭐ O que sobreviveu à correção de formato
+
+**Sentimento, 49,7% → 81,8%** — e o número é **idêntico nos dois runs** (0,8183), porque
+`eval_sentimento_pt.py` pergunta por **verossimilhança**: compara o logprob de `" positivo"`
+contra `" negativo"` no mesmo molde. Não há parser nem formato a acertar.
 
 | | acurácia | revocação + | revocação − | distribuição | IC95 |
 |---|---:|---:|---:|---|---|
@@ -139,68 +104,58 @@ restrições negativas.
 | **e13** | **81,8%** | 82,3% | 81,3% | 303 / 297 | [78,5 – 84,7] |
 | piso léxico (60 palavras) | 79,0% | 92,7% | 65,3% | 382 / 218 | [75,6 – 82,1] |
 
-⭐ **A régua é por verossimilhança, não por geração** — compara o logprob de `" positivo"` contra
-`" negativo"` no mesmo prompt. **Formato não pode contribuir**, o que elimina a explicação mais
-provável ("o e13 ficou legível para o parser").
+O base era **degenerado**: 554 de 600 respostas "positivo". O e13 é simétrico.
 
-O base era **degenerado**: 554 de 600 respostas "positivo", revocação negativa de 7,3% — o piso
-de classe majoritária com ruído. O e13 é simétrico.
+⚠️ **Três ressalvas:** (1) pode ser des-enviesamento que **qualquer** SFT produziria — não medi
+outro adapter; (2) o IC se sobrepõe ao do piso léxico, então o correto é *"cruzou de muito
+abaixo para o nível do piso"*, não *"bateu o piso"*; (3) o piso carrega 73,2% só com a palavra
+*"não"*.
 
-⚠️ **Três ressalvas, nesta ordem de importância:**
+### E o achado de eco, que é sobre o base
 
-1. **Isto pode ser des-enviesamento, não compreensão.** O mecanismo mais simples é que o SFT
-   removeu um prior de frequência sobre `" positivo"`. **Qualquer** SFT talvez fizesse o mesmo.
-   Para atribuir ao e13 seria preciso medir outro adapter — não foi feito.
-2. **Contra o piso léxico o intervalo se sobrepõe** (81,8% [78,5–84,7] × 79,0% [75,6–82,1]). O
-   correto é *"cruzou de muito abaixo para o nível do piso"*, **não** *"bateu o piso"*. Os itens
-   são os mesmos, então um teste pareado seria muito mais apertado — as previsões por item não
-   foram salvas.
-3. O piso léxico carrega 73,2% só com a palavra *"não"*. Ficar em 81,8% é fazer melhor que
-   detectar negação, e nada mais forte que isso.
+No run em texto cru, `contem_palavra` do IFEval caía de 35,8% para 1,5%. Medindo eco (fração dos
+4-gramas da saída presentes no prompt) nos 67 prompts:
+
+| | passa | eco médio | **passou COPIANDO** |
+|---|---:|---:|---:|
+| base | 30/67 = 44,8% | 35,9% | **27 de 30** |
+| e13 | 5/67 = 7,5% | 1,4% | **0 de 5** |
+
+🔴 **90% dos acertos do base vinham de repetir o enunciado**, que contém a palavra exigida.
+Descontado o eco: base 3/67, e13 5/67. O achado é sobre o **base**, e vale independente do
+formato: `contem_palavra` sozinho não mede seguimento de instrução, mede propensão a plagiar.
+
+⚠️ Este run próprio dá 44,8% onde o oficial deu 35,8%: `max_new` e lote diferentes — a
+sensibilidade a tamanho de lote já medida no projeto.
 
 ---
 
-## O que de fato piorou
+## ⚠️ E uma célula que continua não sendo medição
 
-**Código.** `pass@1` era 0,0% e continua 0,0% nos dois benchmarks — mas o e13 **emite código em
-4× menos casos**:
+O consolidador **não roda** a matemática (gate de k=256, 4,6 h) — ele **lê** o relatório
+anterior. Rodando com `--peft`, o arquivo saía com a matemática do modelo **anterior** dentro
+(`peft: None`, `minutos: 270.7`) e a célula lia-se como "inalterada".
 
-| | com código | sem código |
-|---|---:|---:|
-| base, interno (n=877) | 192 | 685 |
-| e13, interno | **38** | 839 |
-| base, HumanEval-XL (n=80) | 3 | 77 |
-| e13, HumanEval-XL | **0** | 80 |
+Corrigido: a célula agora carrega `_procedencia` e `_comparavel_a_esta_rodada: false`, e o
+script avisa em vermelho.
 
-Ninguém passa em nada, então nenhuma capacidade foi destruída. Mas a tendência é a mesma dos
-outros eixos: o modelo virou conversacional e responde em prosa onde antes tentava código.
-
-**Tradução en→pt** cai 3,0 chrF2 e 5 pp de idioma-alvo; **pt→en sobe** 12 pp de idioma-alvo.
-Líquido próximo de zero, com sinal trocado por direção.
-
-**Resumo e atendimento** estavam em 0,0% de utilidade **antes** do e13 e continuam. No resumo o
-gargalo é compressão: 150/150 falham em `comprimiu` nos dois modelos (0,878 → 0,899 contra o
-limite de 0,35). Cobertura e ausência de invenção **melhoraram** ~11 pp cada — o modelo ficou
-mais fiel e continua não resumindo.
+⚠️ A célula agêntica **do consolidador** também não é comparável, por um motivo diferente: o
+holdout velho apresenta **14 ferramentas** (o e13 treinou em 1–6) e de outro domínio. O número
+válido do e13 — **80,0%** — vem do holdout próprio de 536 casos, 3 sementes.
 
 ---
 
 ## Guardas que saem daqui
 
-1. 🔴 **Consolidador que reaproveita relatório de outra rodada tem de imprimir a procedência de
-   cada célula.** `peft: None` dentro do arquivo do e13 é a única coisa que separou "não mudou"
-   de "não mediu".
-2. 🔴 **Toda régua do consolidador precisa declarar contra qual modelo foi escrita.** As que
-   foram escritas contra o base (formato cru, sem token de parada) não são aplicáveis a
-   pós-treinado — §2e.
-3. ⭐ **Agregado de verificadores heterogêneos não é métrica de capacidade.** Aqui um agregado
-   de −4,0 pp continha −50,0, −34,3 e +25,8. Reportar só o agregado teria produzido uma
-   afirmação falsa nas duas direções.
-4. ⭐ **Todo verificador de restrição negativa exige o par positivo.** "Não use vírgula" é
-   satisfeito por saída quebrada; sozinho, ele premia degeneração.
-5. ⭐ **Benchmark cujo enunciado contém a resposta precisa de detector de eco.** 90% dos acertos
-   do base em `contem_palavra` eram cópia. Sem medir eco, um modelo que para de plagiar aparece
-   como regressão de 34 pp.
-6. ⚠️ **O consolidador sobrescreveu o arquivo do baseline anterior.** `--peft` grava no mesmo
-   `docs/baseline-pre-postreino-350m.json`; o do modelo base foi recuperado do commit `f79e01b`.
-   O nome de saída tem de derivar do artefato medido.
+1. 🔴 **O consolidador aborta se receber `--peft` sem `--chat`.** Medir adapter ChatML em texto
+   cru mede o formato, e o erro é invisível: produz números plausíveis e uma conclusão invertida.
+2. 🔴 **Célula reaproveitada de outra rodada carrega procedência no próprio JSON**, e o script
+   avisa quando o artefato lido não é o desta rodada.
+3. 🔴 **Nome de saída e `--tag` derivam do artefato medido.** O caminho fixo sobrescreveu o
+   baseline do base (recuperado de `f79e01b`) e os cinco relatórios por régua.
+4. ⭐ **Todo piso trivial vai ao lado do número.** Sem o piso de *copiar a fonte*, "chrF2 18,75"
+   é um número ruim; com ele, é **pior que não traduzir**, que é uma afirmação diferente.
+5. ⭐ **Benchmark cujo enunciado contém a resposta precisa de detector de eco**, senão um modelo
+   que para de plagiar aparece como regressão de 34 pp.
+6. ⭐ **Proporção de negativos é decisão de treino, mas a FORMA deles também é.** 91,1% de
+   recusas ensinam a recusar; conter over-calling não exige que a classe negativa seja recusa.
