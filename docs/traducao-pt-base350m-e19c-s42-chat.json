@@ -1,0 +1,42 @@
+{
+ "modelo": "BrCamp/bee-350m-pt-base",
+ "peft": "comeia/models/e19c-s42",
+ "modelo_r": {
+  "nome": "MODELO bee-350m-pt-base",
+  "en->pt": {
+   "chrf2": 33.95864028658057,
+   "bleu": 13.004752708655225,
+   "idioma_alvo": 0.6666666666666666,
+   "numeros_ok": 0.8966666666666666,
+   "vazio": 0.0,
+   "n": 300
+  },
+  "pt->en": {
+   "chrf2": 20.476714049591045,
+   "bleu": 4.682253298215164,
+   "idioma_alvo": 0.4,
+   "numeros_ok": 0.8466666666666667,
+   "vazio": 0.0,
+   "n": 300
+  }
+ },
+ "piso_copiar": {
+  "nome": "PISO copiar a fonte",
+  "en->pt": {
+   "chrf2": 21.54301286691898,
+   "bleu": 2.498576146619684,
+   "idioma_alvo": 0.0,
+   "numeros_ok": 0.95,
+   "vazio": 0.0,
+   "n": 300
+  },
+  "pt->en": {
+   "chrf2": 22.720911455533592,
+   "bleu": 2.4939525804995544,
+   "idioma_alvo": 0.0,
+   "numeros_ok": 0.9466666666666667,
+   "vazio": 0.0,
+   "n": 300
+  }
+ }
+}

@@ -455,8 +455,16 @@ class RestritorDeEsquema:
             ids = [i for i, s in enumerate(self.textos)
                    if i < vocab and s and _cabe(prefixo, s, chaves)]
             self._cache[ch] = self.torch.tensor(ids, dtype=self.torch.long) if ids else None
-        v = self._cache[ch]
-        return v.to("cpu") if v is None else v
+        # 🔴 `None` significa "nenhum token do vocabulario serve para este prefixo", e o
+        #    chamador ja' trata isso (`if perm is None ... continue`). A v1 tinha aqui
+        #    `return v.to("cpu") if v is None else v` — a condicao INVERTIDA, que chama `.to()`
+        #    justamente no caso None e estoura AttributeError.
+        #
+        #    O bug ficou latente desde b8c285d porque nenhum modelo avaliado ate' 2026-08-29
+        #    chegou a um prefixo de chave sem continuacao valida. O primeiro que chegou
+        #    (e19c500) derrubou a avaliacao inteira. **Guarda que nunca disparou pode estar
+        #    inerte OU pode estar quebrada — e as duas so' se descobrem quando ela dispara.**
+        return self._cache[ch]
 
     def relatorio(self) -> str:
         return (f"restricao: {self.n_mascarou} chave · {self.n_valor} valor · "

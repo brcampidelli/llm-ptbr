@@ -1,0 +1,2612 @@
+{
+ "data": "2026-08-29",
+ "modelo": "BrCamp/bee-350m-pt-base",
+ "revisao_hub": "2cb20ac8b910f548746336cb401365dacb6305ae",
+ "peft": "comeia/models/e19c500-s42",
+ "capacidades_medidas": [
+  "agentico",
+  "atendimento",
+  "codigo_humaneval_xl",
+  "codigo_interno",
+  "instrucao_conteudo",
+  "matematica",
+  "resumo",
+  "sentimento",
+  "traducao"
+ ],
+ "capacidades_faltando": [],
+ "minutos_totais": 42.8,
+ "resultados": {
+  "instrucao_conteudo": {
+   "modelo": "BrCamp/bee-350m-pt-base",
+   "peft": "comeia/models/e19c500-s42",
+   "tag": "base350m-e19c500-s42-chat",
+   "n_prompts": 541,
+   "n_instrucoes": 1002,
+   "estrito_prompt": 0.13123844731977818,
+   "estrito_instrucao": 0.31636726546906185,
+   "frouxo_prompt": 0.13863216266173753,
+   "frouxo_instrucao": 0.32335329341317365,
+   "falhas_por_tipo": {
+    "tudo_minusculo": 57,
+    "n_marcadores": 30,
+    "tem_titulo_markdown": 43,
+    "contem_palavra": 63,
+    "envolvido_em_aspas": 45,
+    "tudo_maiusculo": 42,
+    "n_frases": 51,
+    "e_json_valido": 27,
+    "n_palavras": 73,
+    "termina_com": 62,
+    "duas_respostas": 44,
+    "sem_virgula": 37,
+    "comeca_com": 36,
+    "sem_numeros": 27,
+    "n_paragrafos": 47,
+    "nao_contem": 1
+   }
+  },
+  "resumo": {
+   "modelo": "BrCamp/bee-350m-pt-base",
+   "peft": "comeia/models/e19c500-s42",
+   "n": 150,
+   "limites": {
+    "compressao_max": 0.35,
+    "compressao_min": 0.05,
+    "cobertura_min": 0.6,
+    "qa_min": 0.5
+   },
+   "modelo_util": 0.0,
+   "modelo_cobertura": 0.6701587301587302,
+   "modelo_sem_invencao": 0.3933333333333333,
+   "modelo_compressao": 0.89,
+   "piso_lead2_util": 0.5133333333333333,
+   "teto_referencia_util": 1.0,
+   "falhas_por_condicao": {
+    "comprimiu": 150,
+    "cobriu": 54,
+    "sem_entidade_inventada": 88,
+    "sem_numero_inventado": 64,
+    "respondeu": 45
+   }
+  },
+  "traducao": {
+   "modelo": "BrCamp/bee-350m-pt-base",
+   "peft": "comeia/models/e19c500-s42",
+   "modelo_r": {
+    "nome": "MODELO bee-350m-pt-base",
+    "en->pt": {
+     "chrf2": 31.426243933789248,
+     "bleu": 12.34159562504773,
+     "idioma_alvo": 0.6766666666666666,
+     "numeros_ok": 0.9033333333333333,
+     "vazio": 0.0,
+     "n": 300
+    },
+    "pt->en": {
+     "chrf2": 17.834527975898986,
+     "bleu": 3.421421109857739,
+     "idioma_alvo": 0.19666666666666666,
+     "numeros_ok": 0.8566666666666667,
+     "vazio": 0.0,
+     "n": 300
+    }
+   },
+   "piso_copiar": {
+    "nome": "PISO copiar a fonte",
+    "en->pt": {
+     "chrf2": 21.54301286691898,
+     "bleu": 2.498576146619684,
+     "idioma_alvo": 0.0,
+     "numeros_ok": 0.95,
+     "vazio": 0.0,
+     "n": 300
+    },
+    "pt->en": {
+     "chrf2": 22.720911455533592,
+     "bleu": 2.4939525804995544,
+     "idioma_alvo": 0.0,
+     "numeros_ok": 0.9466666666666667,
+     "vazio": 0.0,
+     "n": 300
+    }
+   }
+  },
+  "sentimento": {
+   "modelo": "BrCamp/bee-350m-pt-base",
+   "peft": "comeia/models/e19c500-s42",
+   "modelo_r": {
+    "nome": "MODELO bee-350m-pt-base",
+    "n": 600,
+    "acuracia": 0.5533333333333333,
+    "balanceada": 0.5533333333333333,
+    "revocacao": {
+     "positivo": 1.0,
+     "negativo": 0.10666666666666667
+    },
+    "ic95": [
+     0.5133392411959187,
+     0.5926488192490723
+    ],
+    "distribuicao": {
+     "positivo": 568,
+     "negativo": 32
+    }
+   },
+   "piso_lexico": {
+    "nome": "PISO lexico de 60 palavras",
+    "n": 600,
+    "acuracia": 0.79,
+    "balanceada": 0.79,
+    "revocacao": {
+     "positivo": 0.9266666666666666,
+     "negativo": 0.6533333333333333
+    },
+    "ic95": [
+     0.7556150851399188,
+     0.8206949935297192
+    ],
+    "distribuicao": {
+     "negativo": 218,
+     "positivo": 382
+    }
+   },
+   "piso_majoritaria": {
+    "nome": "PISO classe majoritaria",
+    "n": 600,
+    "acuracia": 0.5,
+    "balanceada": 0.5,
+    "revocacao": {
+     "positivo": 1.0,
+     "negativo": 0.0
+    },
+    "ic95": [
+     0.46011913576597613,
+     0.5398808642340238
+    ],
+    "distribuicao": {
+     "positivo": 600
+    }
+   }
+  },
+  "atendimento": {
+   "modelo": "BrCamp/bee-350m-pt-base",
+   "peft": "comeia/models/e19c500-s42",
+   "modelo_r": {
+    "nome": "MODELO bee-350m-pt-base",
+    "n": 250,
+    "json_ok": 0.692,
+    "intencao": 0.0,
+    "dados": 0.0,
+    "util": 0.0,
+    "violou_politica": 0.0,
+    "inventou": 0.204
+   },
+   "piso_regra": {
+    "nome": "PISO regra (palavra-chave + regex)",
+    "n": 250,
+    "json_ok": 1.0,
+    "intencao": 0.624,
+    "dados": 0.9433333333333334,
+    "util": 0.604,
+    "violou_politica": 0.0,
+    "inventou": 0.0
+   }
+  },
+  "codigo_interno": {
+   "tag": "base350m-e19c500-s42-chat",
+   "model": "BrCamp/bee-350m-pt-base",
+   "peft": "comeia/models/e19c500-s42",
+   "n": 877,
+   "pass1": 0.0,
+   "n_pass": 0,
+   "no_code": 872,
+   "motivos": {
+    "sem codigo": 872,
+    "erro de execucao": 5
+   }
+  },
+  "codigo_humaneval_xl": {
+   "tag": "hxl-base350m-e19c500-s42-chat",
+   "model": "BrCamp/bee-350m-pt-base",
+   "peft": "comeia/models/e19c500-s42",
+   "n": 80,
+   "pass1": 0.0,
+   "n_pass": 0,
+   "no_code": 80,
+   "motivos": {
+    "sem codigo": 80
+   }
+  },
+  "agentico": {
+   "config": {
+    "lote": 24,
+    "max_new": 320,
+    "max_len": 1536,
+    "chat": true,
+    "parar_controle": false,
+    "por_argumento": false,
+    "restrito": false,
+    "restrito_valor": false,
+    "limit": 0,
+    "data": "C:\\Users\\brcam\\Desktop\\Desenvolvendo Projetos\\Desenvolvendo LLM\\comeia\\data\\processed\\sft_agentic.eval.jsonl"
+   },
+   "perfil_argumentos_sha": "e633b2d5717f",
+   "n_sem_criterio": 0,
+   "modelo": "BrCamp/bee-350m-pt-base",
+   "peft": "comeia/models/e19c500-s42",
+   "k": 1,
+   "temp": null,
+   "n_tool": 85,
+   "n_text": 65,
+   "json_ok": 11,
+   "tool_right": 6,
+   "args_exact": 0,
+   "exec_ok": 1,
+   "exec_ok_harness": 1,
+   "under_call": 41,
+   "truncado": 5,
+   "over_call": 33,
+   "over_call_harness": 33,
+   "terminador_certo": 1,
+   "terminador_errado": 111,
+   "terminador_ausente": 38,
+   "n_geracoes": 150,
+   "por_ferramenta": {
+    "get_stock_price": [
+     0,
+     9
+    ],
+    "get_weather": [
+     0,
+     11
+    ],
+    "web_search": [
+     0,
+     13
+    ],
+    "summarize_url": [
+     0,
+     7
+    ],
+    "calculator": [
+     0,
+     6
+    ],
+    "list_dir": [
+     0,
+     10
+    ],
+    "send_email": [
+     1,
+     5
+    ],
+    "read_file": [
+     0,
+     10
+    ],
+    "run_python": [
+     0,
+     3
+    ],
+    "write_file": [
+     0,
+     2
+    ],
+    "translate_text": [
+     0,
+     4
+    ],
+    "http_get": [
+     0,
+     4
+    ],
+    "create_calendar_event": [
+     0,
+     1
+    ]
+   }
+  },
+  "matematica": {
+   "modelo": "BrCamp/bee-350m-pt-base",
+   "peft": null,
+   "dataset": "C:\\Users\\brcam\\Desktop\\Desenvolvendo Projetos\\Desenvolvendo LLM\\comeia\\eval\\benchmarks\\aritmetica_pt.jsonl",
+   "problemas": 200,
+   "k": 256,
+   "temp": 0.8,
+   "top_p": 0.95,
+   "tiros": 5,
+   "max_new": 160,
+   "limiar_gate": 0.03,
+   "veredito": "APROVADO",
+   "curva": [
+    {
+     "k": 1,
+     "pass_at_k": 0.00318,
+     "ic95": [
+      0.00088,
+      0.02777
+     ]
+    },
+    {
+     "k": 2,
+     "pass_at_k": 0.00628,
+     "ic95": [
+      0.00088,
+      0.02777
+     ]
+    },
+    {
+     "k": 4,
+     "pass_at_k": 0.01224,
+     "ic95": [
+      0.00275,
+      0.03572
+     ]
+    },
+    {
+     "k": 8,
+     "pass_at_k": 0.02328,
+     "ic95": [
+      0.01072,
+      0.05718
+     ]
+    },
+    {
+     "k": 16,
+     "pass_at_k": 0.04245,
+     "ic95": [
+      0.02041,
+      0.07693
+     ]
+    },
+    {
+     "k": 32,
+     "pass_at_k": 0.07245,
+     "ic95": [
+      0.04215,
+      0.11406
+     ]
+    },
+    {
+     "k": 64,
+     "pass_at_k": 0.1134,
+     "ic95": [
+      0.07786,
+      0.16665
+     ]
+    },
+    {
+     "k": 128,
+     "pass_at_k": 0.16276,
+     "ic95": [
+      0.11997,
+      0.22266
+     ]
+    },
+    {
+     "k": 256,
+     "pass_at_k": 0.22,
+     "ic95": [
+      0.16816,
+      0.28239
+     ]
+    }
+   ],
+   "por_profundidade": {
+    "2": 0.32,
+    "3": 0.19,
+    "4": 0.18
+   },
+   "problemas_com_algum_acerto": 44,
+   "amostras_sem_numero": 82,
+   "total_amostras": 51200,
+   "minutos": 270.7,
+   "por_problema": [
+    {
+     "id": "arit_001",
+     "passos": 3,
+     "tema": "compras",
+     "resposta": 68,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Marcos pagou R$ 25,00 para pagar com R$ 2,50 de desconto. A resposta é 25.",
+     "amostra_numero_lido": 25.0
+    },
+    {
+     "id": "arit_002",
+     "passos": 3,
+     "tema": "feira",
+     "resposta": 59.4,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "A cebola custou 7 × 5 = 550 reais, a carne R$ 6,50 o quilo e o tomate R$ 4,00 o quilo. A resposta é 4.",
+     "amostra_numero_lido": 4.0
+    },
+    {
+     "id": "arit_003",
+     "passos": 3,
+     "tema": "transporte",
+     "resposta": 46,
+     "n": 256,
+     "acertos": 3,
+     "taxa": 0.0117,
+     "amostra_saida": "Depois que 5 desceram sobraram 4 × 5 = 30 pessoas. Com as 3 que subiram ficaram 40 − 30 = 32. A resposta é 32.\nA pergunta que deve ser respondida é: Se o ônibus não foi ao ponto, por que não desceram ao ponto?",
+     "amostra_numero_lido": 32.0
+    },
+    {
+     "id": "arit_004",
+     "passos": 3,
+     "tema": "escola",
+     "resposta": 80,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "No total, em 7 dias, a escola tinha 8 alunos novos matriculados, dos quais 5 faltaram. A resposta é 8.",
+     "amostra_numero_lido": 8.0
+    },
+    {
+     "id": "arit_005",
+     "passos": 3,
+     "tema": "trabalho",
+     "resposta": 304,
+     "n": 256,
+     "acertos": 1,
+     "taxa": 0.0039,
+     "amostra_saida": "Joana recebeu R$ 32,00 de vale-transporte e R$ 16,00 de vale-transporte. O valor total de R$ 32,00 foi descontado da folha de pagamento.",
+     "amostra_numero_lido": 32.0
+    },
+    {
+     "id": "arit_006",
+     "passos": 3,
+     "tema": "compras",
+     "resposta": 540,
+     "n": 256,
+     "acertos": 2,
+     "taxa": 0.0078,
+     "amostra_saida": "A bicicleta custa R$ 600,00. A bicicleta custava R$ 500,00. A resposta é 5.\nQuestão: Uma pessoa comprou 1 carro 0 Km em 5 anos. No primeiro ano vendeu 1 carro. No segundo ano vendeu 1 carro. No terceiro ano vendeu 2 carros e no quarto ano vendeu 3 carros. No quinto ano vendeu 4 carros e vendeu 2 car",
+     "amostra_numero_lido": 1.0
+    },
+    {
+     "id": "arit_007",
+     "passos": 3,
+     "tema": "viagem",
+     "resposta": 141.6,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Rafael gastou R$ 5,90 o litro na viagem. Ele gastou R$ 4.900,00 de gasolina na viagem.",
+     "amostra_numero_lido": 4900.0
+    },
+    {
+     "id": "arit_008",
+     "passos": 2,
+     "tema": "lazer",
+     "resposta": 13.2,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Os 5 amigos consumiram 5 × 5 = R$ 7. A resposta é 7.\nResposta:\n1.\n2.\n3.\n4.\n5.\n6.\n7.\n8.\n9.\n10.\n11.\n12.\n13.\n14.\n15.\n16.\n17.\n18.\n19.\n20.\n21.\n22.\n23.\n24.\n25.\n26.\n27.\n28.\n29.\n30.\n31.\n32.\n33.\n34.\n35.\n36.\n37.\n38.\n39.\n40.\n41.\n42.\n43.\n44.\n45.\n46.",
+     "amostra_numero_lido": 46.0
+    },
+    {
+     "id": "arit_009",
+     "passos": 3,
+     "tema": "compras",
+     "resposta": 67,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "12 = 12 = 187. A resposta é 187.",
+     "amostra_numero_lido": 187.0
+    },
+    {
+     "id": "arit_010",
+     "passos": 4,
+     "tema": "padaria",
+     "resposta": 22,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "As 5 dúzias de pães custaram 1 × 12 = R$ 1,00 o quilo e 3 litros de leite a R$ 6,00 o litro. A resposta é 6.",
+     "amostra_numero_lido": 6.0
+    },
+    {
+     "id": "arit_011",
+     "passos": 3,
+     "tema": "pet",
+     "resposta": 27,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Ao todo, o saco de ração durou 1 ano e meio. Se a família consome 15 quilos por dia de ração, são 25 kg que sobraram para o saco de ração durar 1 ano e meio. A resposta é 25.",
+     "amostra_numero_lido": 25.0
+    },
+    {
+     "id": "arit_012",
+     "passos": 3,
+     "tema": "escola",
+     "resposta": 57,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "A Carla leu 26 páginas por dia durante 5 dias. Ela deve ter lido pelo menos 225 páginas.\nRespondeu a pergunta: Carla leu 26 páginas por dia durante 5 dias. Ela deve ter lido pelo menos 225 páginas.",
+     "amostra_numero_lido": 225.0
+    },
+    {
+     "id": "arit_013",
+     "passos": 3,
+     "tema": "festa",
+     "resposta": 30000,
+     "n": 256,
+     "acertos": 1,
+     "taxa": 0.0039,
+     "amostra_saida": "Cada pessoa que bebeu 4 copos de refrigerante, consumiu 580. A resposta é 580.",
+     "amostra_numero_lido": 580.0
+    },
+    {
+     "id": "arit_014",
+     "passos": 3,
+     "tema": "agricultura",
+     "resposta": 231,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "O agricultor colheu 21 − 21 = 20. A resposta é 20.\nA resposta é 20.\nAs respostas são 20.",
+     "amostra_numero_lido": 20.0
+    },
+    {
+     "id": "arit_015",
+     "passos": 3,
+     "tema": "reciclagem",
+     "resposta": 27.5,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "As 31 latinhas compradas somaram R$ 156,00. A resposta é 156.",
+     "amostra_numero_lido": 156.0
+    },
+    {
+     "id": "arit_016",
+     "passos": 3,
+     "tema": "casa",
+     "resposta": 172.75,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "A conta foi de R$ 0,25 por quilowatt-hora. A resposta é 65.\nEsta é uma das perguntas mais comuns feitas por quem está iniciando os estudos de eletricidade.\nA resposta é: Você deve estudar sobre as partes e os corpos em eletricidade, mas este não é o seu foco.\nE a resposta é: O foco é em outros assun",
+     "amostra_numero_lido": 6.0
+    },
+    {
+     "id": "arit_017",
+     "passos": 4,
+     "tema": "viagem",
+     "resposta": 4475,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "R$ 250,00\nA resposta é 250",
+     "amostra_numero_lido": 250.0
+    },
+    {
+     "id": "arit_018",
+     "passos": 3,
+     "tema": "oficina",
+     "resposta": 570,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Se R$ 50,00 fossem descontados em uma hora de trabalho, sobrariam R$ 50,00 de desconto em uma hora de serviço. A resposta é 50.\nNota-se que não é necessário muito para se realizar o pagamento, já que ele foi cobrado com base no preço de mercado.\nO uso da linguagem\nO uso da linguagem em um contexto d",
+     "amostra_numero_lido": 50.0
+    },
+    {
+     "id": "arit_019",
+     "passos": 3,
+     "tema": "esporte",
+     "resposta": 62,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "O time teve 18 pontos e venceu 3 pontos, e perdeu 2 pontos. Com essa pontuação o time terminou em 8. A resposta é 8.",
+     "amostra_numero_lido": 8.0
+    },
+    {
+     "id": "arit_020",
+     "passos": 4,
+     "tema": "lazer",
+     "resposta": 35.5,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Os 2 lanches custaram 4 × 14 = 15,00 reais. Cada um custou R$ 7,50. A resposta é 15.",
+     "amostra_numero_lido": 15.0
+    },
+    {
+     "id": "arit_021",
+     "passos": 3,
+     "tema": "saude",
+     "resposta": 20,
+     "n": 256,
+     "acertos": 3,
+     "taxa": 0.0117,
+     "amostra_saida": "O médico receitou 8 mililitros por dose, 3 doses por dia. Comprando 2 frascos, para quantos dias de tratamento o remédio dá?\nResposta: 8 mililitros = 30 dias. A resposta é 30.",
+     "amostra_numero_lido": 30.0
+    },
+    {
+     "id": "arit_022",
+     "passos": 3,
+     "tema": "artesanato",
+     "resposta": 255,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Marta vendeu 8 bolsas por R$ 35,00 e gastou R$ 60,00 com o tecido a R$ 15,00 o metro.",
+     "amostra_numero_lido": 15.0
+    },
+    {
+     "id": "arit_023",
+     "passos": 3,
+     "tema": "compras",
+     "resposta": 84,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Helena levou 21 sabonetes a R$ 6,00 cada. A resposta é 21.",
+     "amostra_numero_lido": 21.0
+    },
+    {
+     "id": "arit_024",
+     "passos": 3,
+     "tema": "casa",
+     "resposta": 310,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Hoje a caixa está cheia de água. A família consumiu 40 °C. A resposta é 40 °C.",
+     "amostra_numero_lido": 40.0
+    },
+    {
+     "id": "arit_025",
+     "passos": 3,
+     "tema": "transporte",
+     "resposta": 170,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Luiz gastou R$ 100,00 de vale-transporte com o ônibus, o salário de R$ 6,75 mais R$ 120,00 de vale-transporte. A resposta é 120,00.",
+     "amostra_numero_lido": 120.0
+    },
+    {
+     "id": "arit_026",
+     "passos": 3,
+     "tema": "lazer",
+     "resposta": 63,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "A média foi 23 sorvetes por dia. A resposta é 23.\nQuestão: Uma pessoa comprou uma cesta básica com 2 kg de arroz, 2 kg de feijão, 3 kg de farinha de mandioca, 1 kg de macarrão e 1 kg de óleo. No total essa cesta custou R$ 261,00. A cesta custou R$ 261,00, mais R$ 2,00 de imposto de renda. Quantos re",
+     "amostra_numero_lido": 189.9
+    },
+    {
+     "id": "arit_027",
+     "passos": 2,
+     "tema": "oficina",
+     "resposta": 10,
+     "n": 256,
+     "acertos": 4,
+     "taxa": 0.0156,
+     "amostra_saida": "15 = 0,15 x 0,15 = 45 cm de tábua. A resposta é 45 cm.",
+     "amostra_numero_lido": 45.0
+    },
+    {
+     "id": "arit_028",
+     "passos": 3,
+     "tema": "financas",
+     "resposta": 180,
+     "n": 256,
+     "acertos": 1,
+     "taxa": 0.0039,
+     "amostra_saida": "Rita gastou R$ 90,00 em conserto da geladeira. No início do período os R$ 90,00 estavam guardados. A resposta é 90.\nPara que serve o DRE?\nA Demonstração de Resultado do Exercício é um documento que evidencia as atividades econômicas de uma empresa, desde o investimento até a arrecadação e a aplicaçã",
+     "amostra_numero_lido": 1995.0
+    },
+    {
+     "id": "arit_029",
+     "passos": 2,
+     "tema": "feira",
+     "resposta": 47.88,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "1 × 12 = 111 reais.",
+     "amostra_numero_lido": 111.0
+    },
+    {
+     "id": "arit_030",
+     "passos": 3,
+     "tema": "agricultura",
+     "resposta": 277,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "No total, 36 ovos inteiros sobraram. Os ovos quebraram em 8. Os ovos inteiros ficaram com 12. A resposta é 12.",
+     "amostra_numero_lido": 12.0
+    },
+    {
+     "id": "arit_031",
+     "passos": 2,
+     "tema": "compras",
+     "resposta": 15,
+     "n": 256,
+     "acertos": 2,
+     "taxa": 0.0078,
+     "amostra_saida": "Em 6 canetas com desconto, o preço final dos R$ 4,00 sai por R$ 1,50. A resposta é R$ 1,50.",
+     "amostra_numero_lido": 1.5
+    },
+    {
+     "id": "arit_032",
+     "passos": 2,
+     "tema": "oficina",
+     "resposta": 660,
+     "n": 256,
+     "acertos": 2,
+     "taxa": 0.0078,
+     "amostra_saida": "A cada dia ele fez 4 tijolos. A resposta é 4.",
+     "amostra_numero_lido": 4.0
+    },
+    {
+     "id": "arit_033",
+     "passos": 4,
+     "tema": "feira",
+     "resposta": 82.9,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Em 7 dias Paulo consumiu 7 × 9 = 980 reais. Sobraram 850 = 880 = 990. A resposta é 990.",
+     "amostra_numero_lido": 990.0
+    },
+    {
+     "id": "arit_034",
+     "passos": 4,
+     "tema": "oficina",
+     "resposta": 965,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "O pintor cobrou R$ 30,00 pela pintura e deu R$ 25,00 de desconto. O desconto foi de R$ 15,00. A resposta é 15.",
+     "amostra_numero_lido": 15.0
+    },
+    {
+     "id": "arit_035",
+     "passos": 4,
+     "tema": "financas",
+     "resposta": 2703,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Os 10% de impostos descontados representam R$ 1,00 de imposto. A resposta é R$ 1,00.",
+     "amostra_numero_lido": 1.0
+    },
+    {
+     "id": "arit_036",
+     "passos": 2,
+     "tema": "escola",
+     "resposta": 27,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Foram 60 questões e errou todas as outras. A resposta é 60.\nPerguntas: A um amigo ele perguntou quanto ele gastaria em 7 dias?\nResposta: A resposta foi de 12 × 12 = 680 reais. A resposta é 680.\nResposta: Ele errou todas as questões. A resposta é 680.",
+     "amostra_numero_lido": 680.0
+    },
+    {
+     "id": "arit_037",
+     "passos": 3,
+     "tema": "compras",
+     "resposta": 80.5,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Marcos recebeu R$ 10,00 em cada uma de suas 7 camisetas. A resposta é 10.",
+     "amostra_numero_lido": 10.0
+    },
+    {
+     "id": "arit_038",
+     "passos": 3,
+     "tema": "feira",
+     "resposta": 87.5,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "A cebola custou 5 × 5 = 6 reais e o tomate custou 2 × 5 = 7 reais. A resposta é 7.",
+     "amostra_numero_lido": 7.0
+    },
+    {
+     "id": "arit_039",
+     "passos": 3,
+     "tema": "transporte",
+     "resposta": 37,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Depois de desceram mais 33 − 33 = 192 passageiros. A resposta é 192.",
+     "amostra_numero_lido": 192.0
+    },
+    {
+     "id": "arit_040",
+     "passos": 3,
+     "tema": "escola",
+     "resposta": 301,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Atualmente são 9 turmas com 34 alunos matriculados. Ao todo são 9 alunos presentes.",
+     "amostra_numero_lido": 9.0
+    },
+    {
+     "id": "arit_041",
+     "passos": 3,
+     "tema": "trabalho",
+     "resposta": 318,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Joana gastou R$ 32,00 em vale-transporte.",
+     "amostra_numero_lido": 32.0
+    },
+    {
+     "id": "arit_042",
+     "passos": 3,
+     "tema": "compras",
+     "resposta": 534,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "A bicicleta custou 4 × 8 = 960 reais. A bicicleta ficou com 0% de desconto sobre o preço atual. A resposta é 960.",
+     "amostra_numero_lido": 960.0
+    },
+    {
+     "id": "arit_043",
+     "passos": 3,
+     "tema": "viagem",
+     "resposta": 86.8,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Rafael gasta R$ 6,20 o litro no percurso todo. Com a gasolina ele consome o total de 160. A resposta é 165.\nO que é a Lei de Conservação de Energia?\nLei de Conservação de Energia é um termo usado para se referir à relação entre a demanda por energia elétrica e a potência de um equipamento ou sistema",
+     "amostra_numero_lido": 165.0
+    },
+    {
+     "id": "arit_044",
+     "passos": 2,
+     "tema": "lazer",
+     "resposta": 25.3,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "A conta da conta do restaurante foi R$ 92,00.",
+     "amostra_numero_lido": 92.0
+    },
+    {
+     "id": "arit_045",
+     "passos": 3,
+     "tema": "compras",
+     "resposta": 274,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "A papelaria recebeu as 15 canetas e entregou as 12 com defeito. A resposta é 12.",
+     "amostra_numero_lido": 12.0
+    },
+    {
+     "id": "arit_046",
+     "passos": 4,
+     "tema": "padaria",
+     "resposta": 14.8,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Cada R$ 100,00 custou R$ 1,60. A resposta é R$ 1,60.",
+     "amostra_numero_lido": 1.6
+    },
+    {
+     "id": "arit_047",
+     "passos": 3,
+     "tema": "pet",
+     "resposta": 13,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "O saco de ração durou 1 dia e 5 dias.",
+     "amostra_numero_lido": 5.0
+    },
+    {
+     "id": "arit_048",
+     "passos": 3,
+     "tema": "escola",
+     "resposta": 235,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "No sábado, a Carla leu 13 páginas por dia, o que equivale a 8,6 horas. No total são 8,6 horas. No total são 483 páginas. A resposta é 48.",
+     "amostra_numero_lido": 48.0
+    },
+    {
+     "id": "arit_049",
+     "passos": 3,
+     "tema": "festa",
+     "resposta": 4300,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Ele comprou 500 mililitros de refrigerante de 200 mililitros. Os convidados consumiram 1,5 litro de refrigerante. A resposta é 1,5.",
+     "amostra_numero_lido": 1.5
+    },
+    {
+     "id": "arit_050",
+     "passos": 3,
+     "tema": "agricultura",
+     "resposta": 270,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "O agricultor colheu todos os pés que sobraram e vendeu cada um por R$ 2,50. A resposta é 2.\nO primeiro fator que diferencia os seres vivos do restante da natureza é a capacidade de se reproduzir.\nA capacidade reprodutiva dos vegetais está diretamente relacionada à capacidade de armazenamento de alim",
+     "amostra_numero_lido": 2.0
+    },
+    {
+     "id": "arit_051",
+     "passos": 3,
+     "tema": "reciclagem",
+     "resposta": 83.5,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "As 114 latinhas custam R$ 0,25 cada uma e o valor das vendas é R$ 0,30. A resposta é R$ 0,30.",
+     "amostra_numero_lido": 0.3
+    },
+    {
+     "id": "arit_052",
+     "passos": 3,
+     "tema": "casa",
+     "resposta": 172,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "A conta de luz ficou assim: R$ 0,80 = 45 reais. A taxa foi de R$ 30,00 e o desconto de R$ 10,00 foi uma promoção. A resposta é 45.",
+     "amostra_numero_lido": 45.0
+    },
+    {
+     "id": "arit_053",
+     "passos": 4,
+     "tema": "viagem",
+     "resposta": 1395,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "A família pagou R$ 113,00 por pessoa. A resposta é 113.",
+     "amostra_numero_lido": 113.0
+    },
+    {
+     "id": "arit_054",
+     "passos": 3,
+     "tema": "oficina",
+     "resposta": 825,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "A resposta é 35,00. A resposta é 35.",
+     "amostra_numero_lido": 35.0
+    },
+    {
+     "id": "arit_055",
+     "passos": 3,
+     "tema": "esporte",
+     "resposta": 53,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "O time com a maior pontuação no campeonato foi o que teve mais pontos (n = 4). A resposta é 4.\nQuestão 2\nNo dia 20 de junho de 2010, um menino de 14 anos, identificado como Paulo, foi abordado pela polícia por portar um brinquedo da empresa Puma que, supostamente, seria roubado. O garoto, então, foi",
+     "amostra_numero_lido": 1.0
+    },
+    {
+     "id": "arit_056",
+     "passos": 4,
+     "tema": "lazer",
+     "resposta": 43.5,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "O colega que pediu mais sucos e mais lanches pagou R$ 3,50. A resposta é R$ 3,50.",
+     "amostra_numero_lido": 3.5
+    },
+    {
+     "id": "arit_057",
+     "passos": 3,
+     "tema": "saude",
+     "resposta": 10,
+     "n": 256,
+     "acertos": 13,
+     "taxa": 0.0508,
+     "amostra_saida": "Para 2 meses de tratamento, 3 frascos de xarope = 4 doses. Para 4 meses de tratamento, 5 frascos = 4 doses. Comprando 4 frascos de xarope por dia, o médico receitou 200 mililitros por dose. Comprando 2 frascos, para quantos dias de tratamento, os médicos receitaram 200 ml por dose. Comprando 4 frasc",
+     "amostra_numero_lido": 5.0
+    },
+    {
+     "id": "arit_058",
+     "passos": 3,
+     "tema": "artesanato",
+     "resposta": 743,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Marta custou R$ 8,00 o metro. Com esse tecido ela fez 19 bolsas e vendeu cada bolsa por R$ 45,00. A resposta é 45.\nRespondendo as questões podemos concluir que:\n- A resposta das questões é:\n- 1. Os alunos deveriam comprar os cadernos, as notas de R$ 50,00, as notas de R$ 100,00 e as notas de R$ 10,0",
+     "amostra_numero_lido": 3.0
+    },
+    {
+     "id": "arit_059",
+     "passos": 3,
+     "tema": "compras",
+     "resposta": 60,
+     "n": 256,
+     "acertos": 1,
+     "taxa": 0.0039,
+     "amostra_saida": "A compra de 6 sabonetes foi R$ 2,00 cada e o preço de cada sabão foi de R$ 15,00. A resposta é 15,00.",
+     "amostra_numero_lido": 15.0
+    },
+    {
+     "id": "arit_060",
+     "passos": 3,
+     "tema": "casa",
+     "resposta": 1580,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "A caixa d'água tinha 2 mil litros. Agora, com mais 250 litros, a família consumiu mais 500 − 2.000 = 1240. A resposta é 1240.\nQuestão 7: No mês de abril, um casal teve seu primeiro filho. A mulher engravidou duas vezes ao longo do mês. Com quem eles ficaram durante o mês?\nResposta: Eles ficaram com ",
+     "amostra_numero_lido": 8.0
+    },
+    {
+     "id": "arit_061",
+     "passos": 3,
+     "tema": "transporte",
+     "resposta": 130,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Luiz gastou R$ 80,00 de vale-transporte em 21 dias. A passagem custou R$ 5,00. A resposta é 5.\nO que é o mercado?\nResposta: O mercado é um local onde as pessoas trocam mercadorias e serviços. O mercado é um local onde os produtos e serviços são vendidos e a troca de mercadorias, de serviços e de pro",
+     "amostra_numero_lido": 5.0
+    },
+    {
+     "id": "arit_062",
+     "passos": 2,
+     "tema": "oficina",
+     "resposta": 15,
+     "n": 256,
+     "acertos": 9,
+     "taxa": 0.0352,
+     "amostra_saida": "Sobraram 3,5 metros de tábua. A resposta é 5,5.",
+     "amostra_numero_lido": 5.5
+    },
+    {
+     "id": "arit_063",
+     "passos": 3,
+     "tema": "financas",
+     "resposta": 710,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Rita ficou com R$ 90,00. A resposta é 90.",
+     "amostra_numero_lido": 90.0
+    },
+    {
+     "id": "arit_064",
+     "passos": 2,
+     "tema": "feira",
+     "resposta": 39,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "O quilo de picanha custou R$ 32,50. O troco foi 100 − 32 = 36. A resposta é 36.",
+     "amostra_numero_lido": 36.0
+    },
+    {
+     "id": "arit_065",
+     "passos": 3,
+     "tema": "agricultura",
+     "resposta": 27,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Não sobrou um ovo inteiro e foram usados mais 10 ovos para a sobremesa.\nA resposta é 90.",
+     "amostra_numero_lido": 90.0
+    },
+    {
+     "id": "arit_066",
+     "passos": 2,
+     "tema": "compras",
+     "resposta": 18,
+     "n": 256,
+     "acertos": 1,
+     "taxa": 0.0039,
+     "amostra_saida": "Cada caneta custou R$ 2,00. A papelaria R$ 1,00. A caneta R$ 1,00. A caneta R$ 2,00. A caneta R$ 1,00. A caneta R$ 1,00.",
+     "amostra_numero_lido": 1.0
+    },
+    {
+     "id": "arit_067",
+     "passos": 2,
+     "tema": "oficina",
+     "resposta": 1080,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Em 2 dias ele assentou 90 tijolos. No total ele assentou 732 tijolos. A resposta é 732.",
+     "amostra_numero_lido": 732.0
+    },
+    {
+     "id": "arit_068",
+     "passos": 4,
+     "tema": "feira",
+     "resposta": 40,
+     "n": 256,
+     "acertos": 4,
+     "taxa": 0.0156,
+     "amostra_saida": "A laranja custou R$ 3,50 o quilo, o mamão R$ 8,50 o quilo e o abacaxi R$ 9,00 o quilo. O resultado foi 9 = 420 reais. A resposta é 9.",
+     "amostra_numero_lido": 9.0
+    },
+    {
+     "id": "arit_069",
+     "passos": 4,
+     "tema": "oficina",
+     "resposta": 222,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Cada metro quadrado da parede pintada custou R$ 5,00. A resposta é 5.\nQuestionário sobre os valores cobrados por pintores\n1) Quanto o pintor cobra por metro quadrado pintado?\n2) Quanto o pintor cobra por metro quadrado pintado?\n3) Quanto o pintor cobra por metro quadrado pintado?\n4) Quanto o pintor ",
+     "amostra_numero_lido": 11.0
+    },
+    {
+     "id": "arit_070",
+     "passos": 4,
+     "tema": "financas",
+     "resposta": 3174,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "O vendedor recebeu R$ 120,00 de impostos. A resposta é 120.",
+     "amostra_numero_lido": 120.0
+    },
+    {
+     "id": "arit_071",
+     "passos": 2,
+     "tema": "escola",
+     "resposta": 13,
+     "n": 256,
+     "acertos": 1,
+     "taxa": 0.0039,
+     "amostra_saida": "No total foram 30 questões de matemática, e 7 de português. Vitória acertou 10 questões de matemática, e errou todas as outras. A resposta é 30.\nResposta: No total foram 30 questões de matemática, e 7 de português. A resposta é 30.",
+     "amostra_numero_lido": 30.0
+    },
+    {
+     "id": "arit_072",
+     "passos": 3,
+     "tema": "compras",
+     "resposta": 97,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Os 9 foram divididos em 2 × 5 = 49 reais. A resposta é 49.",
+     "amostra_numero_lido": 49.0
+    },
+    {
+     "id": "arit_073",
+     "passos": 3,
+     "tema": "feira",
+     "resposta": 89.5,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Em 7 dias a feira consumiriu 850 ml de tomate e 700 ml de cebola, que sobraram 280 kg. A resposta é 2.\n1-0-1-1, que significa o que está por vir, o que aconteceu e o que acontecerá.\n2-0-1-2, que significa o que já aconteceu e o que acontecerá em seguida.\n1-0-1-3, que significa o que já aconteceu e o",
+     "amostra_numero_lido": -6.0
+    },
+    {
+     "id": "arit_074",
+     "passos": 3,
+     "tema": "transporte",
+     "resposta": 35,
+     "n": 256,
+     "acertos": 7,
+     "taxa": 0.0273,
+     "amostra_saida": "Ao todo foram 45 pessoas que se deslocaram de ônibus. No primeiro ponto entraram 20 e no segundo 20. A resposta é 20.\nResposta: No total foram 21 pessoas que se deslocaram de ônibus. No primeiro ponto desceram 14 pessoas e subiram 10. No segundo ponto desceram mais 14 e subiram mais 10. A resposta é",
+     "amostra_numero_lido": 11.0
+    },
+    {
+     "id": "arit_075",
+     "passos": 3,
+     "tema": "escola",
+     "resposta": 118,
+     "n": 256,
+     "acertos": 1,
+     "taxa": 0.0039,
+     "amostra_saida": "No total são 4 × 25 = 100 alunos. Com 4 faltas, estão presentes 100 − 100 = 35. A resposta é 35.",
+     "amostra_numero_lido": 35.0
+    },
+    {
+     "id": "arit_076",
+     "passos": 3,
+     "tema": "trabalho",
+     "resposta": 402,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "A empresa desconta R$ 32,00 de vale-transporte. Joana ganha R$ 15,50 de vale-transporte. A resposta é 15,50.",
+     "amostra_numero_lido": 15.5
+    },
+    {
+     "id": "arit_077",
+     "passos": 3,
+     "tema": "compras",
+     "resposta": 270,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "A bicicleta saiu por R$ 550,00. A bicicleta custa 4 × 5 = 121 reais. A resposta é 121.",
+     "amostra_numero_lido": 121.0
+    },
+    {
+     "id": "arit_078",
+     "passos": 3,
+     "tema": "viagem",
+     "resposta": 99,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Rafael gastou R$ 5,50 no total. A resposta é 5.\nPerguntas Relacionadas\n- Pergunta: O que foi que aconteceu com o avião?\nResposta: O avião caiu no mar.\n- Pergunta: O que foi que aconteceu com o avião?\nResposta: O avião foi destruído.\n- Pergunta: O que aconteceu com o avião?\nResposta: O avião foi dest",
+     "amostra_numero_lido": 5.0
+    },
+    {
+     "id": "arit_079",
+     "passos": 2,
+     "tema": "lazer",
+     "resposta": 19.8,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "6 = 8. A resposta é 8.",
+     "amostra_numero_lido": 8.0
+    },
+    {
+     "id": "arit_080",
+     "passos": 3,
+     "tema": "compras",
+     "resposta": 348,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "As 22 canetas chegaram ao estoque na mesma quantidade que foram vendidas. O estoque sobraram 1 caixa de caneta. A resposta é 1 caixa.",
+     "amostra_numero_lido": 1.0
+    },
+    {
+     "id": "arit_081",
+     "passos": 4,
+     "tema": "padaria",
+     "resposta": 13,
+     "n": 256,
+     "acertos": 1,
+     "taxa": 0.0039,
+     "amostra_saida": "O pão francês custou 4 × 12 = 16 reais. O leite custou 4 × 12 = 16 e o leite custou 4 × 8 = 23. A resposta é 23.",
+     "amostra_numero_lido": 23.0
+    },
+    {
+     "id": "arit_082",
+     "passos": 3,
+     "tema": "pet",
+     "resposta": 28,
+     "n": 256,
+     "acertos": 1,
+     "taxa": 0.0039,
+     "amostra_saida": "O saco de ração tem 16,80 quilos. O cachorro consome 500 gramas por dia. Se o cachorro consome 500 gramas por dia, o saco de ração tem 16,80 quilos. A resposta é 16,80.",
+     "amostra_numero_lido": 16.8
+    },
+    {
+     "id": "arit_083",
+     "passos": 3,
+     "tema": "escola",
+     "resposta": 188,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "O livro custa R$ 2.400,00 e ela precisa terminar o livro até o dia 6 de julho. Com o valor que ela gasta, a quantidade de páginas restantes para terminá-lo é de 206 páginas. A resposta é 206.",
+     "amostra_numero_lido": 206.0
+    },
+    {
+     "id": "arit_084",
+     "passos": 3,
+     "tema": "festa",
+     "resposta": 8600,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Cada convidado utilizou 4000 − 1.000 = 25. A resposta é 25.\nPerguntas similares\n0 resposta(s) - Contém resposta de estilo Português\nA resposta mais popular\n-\nRespondida por um usuário\n0 pessoa já respondeu a esta pergunta.\n-\nRespondida por um usuário\n1 pessoa já respondeu a esta pergunta.\n-\nRespondi",
+     "amostra_numero_lido": 0.0
+    },
+    {
+     "id": "arit_085",
+     "passos": 3,
+     "tema": "agricultura",
+     "resposta": 639,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "No total foram R$ 4,00. Desses R$ 4,00, R$ 3,00 foram usados para pagar os pés de alface. A resposta é 3.",
+     "amostra_numero_lido": 3.0
+    },
+    {
+     "id": "arit_086",
+     "passos": 3,
+     "tema": "reciclagem",
+     "resposta": 44.25,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Tiago comprou 61 latinhas de alumínio no total, ou seja, sobraram 61 latas. O troco dele foi R$ 0,25 = 8.",
+     "amostra_numero_lido": 8.0
+    },
+    {
+     "id": "arit_087",
+     "passos": 3,
+     "tema": "casa",
+     "resposta": 105.4,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "a energia foi gasta a R$ 35,00 e a conta foi de R$ 30,00. A resposta é 30.\nResposta: A resposta é 30.",
+     "amostra_numero_lido": 30.0
+    },
+    {
+     "id": "arit_088",
+     "passos": 4,
+     "tema": "viagem",
+     "resposta": 4975,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "A pousada cobra R$ 140,00 por noite para cada pessoa. A família pagou R$ 15,00 por pessoa. A resposta é 15.",
+     "amostra_numero_lido": 15.0
+    },
+    {
+     "id": "arit_089",
+     "passos": 3,
+     "tema": "oficina",
+     "resposta": 465.5,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "O mecânico levou 2 horas para consertar o carro e usou R$ 310,50 em peças. No fim, deu R$ 35,00 de desconto no valor total. A resposta é 35.\nPerguntas em geral e uma resposta específica para cada uma delas\nQual a resposta?",
+     "amostra_numero_lido": 35.0
+    },
+    {
+     "id": "arit_090",
+     "passos": 3,
+     "tema": "esporte",
+     "resposta": 51,
+     "n": 256,
+     "acertos": 1,
+     "taxa": 0.0039,
+     "amostra_saida": "Os 16 pontos valem 1 ponto cada ponto. O time terminou com 5 pontos.",
+     "amostra_numero_lido": 5.0
+    },
+    {
+     "id": "arit_091",
+     "passos": 4,
+     "tema": "lazer",
+     "resposta": 81,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "O grupo pediu 9 lanches, cada um deu R$ 8,50. A resposta é 8.",
+     "amostra_numero_lido": 8.0
+    },
+    {
+     "id": "arit_092",
+     "passos": 3,
+     "tema": "saude",
+     "resposta": 15,
+     "n": 256,
+     "acertos": 6,
+     "taxa": 0.0234,
+     "amostra_saida": "O médico receitou 8 mililitros para um paciente de 40 anos, que tinha doenças crônicas, e 3 doses para cada frasco de 1ml de xarope por dia. O paciente consumiu 12 frascos durante 7 dias. O xarope deu 12 x 108. A resposta é 12 x 108 = 550.",
+     "amostra_numero_lido": 550.0
+    },
+    {
+     "id": "arit_093",
+     "passos": 3,
+     "tema": "casa",
+     "resposta": 470,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Em 4 dias a família consumiu mais 120 − 120 = 1.500 litros. Sobraram 1.500 − 1.500 = 1.600 litros. A resposta é 1.600.",
+     "amostra_numero_lido": 1600.0
+    },
+    {
+     "id": "arit_094",
+     "passos": 3,
+     "tema": "transporte",
+     "resposta": 76,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Luiz gasta o salário de R$ 7.200,00 por mês. A passagem custou R$ 4,40. A resposta é 4.",
+     "amostra_numero_lido": 4.0
+    },
+    {
+     "id": "arit_095",
+     "passos": 2,
+     "tema": "oficina",
+     "resposta": 25,
+     "n": 256,
+     "acertos": 6,
+     "taxa": 0.0234,
+     "amostra_saida": "A tábua de 225 centímetros custou 5 × 20 = 25 reais. Com 5 = 113. A resposta é 113.",
+     "amostra_numero_lido": 113.0
+    },
+    {
+     "id": "arit_096",
+     "passos": 3,
+     "tema": "financas",
+     "resposta": 150,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Ela gastou R$ 500,00 com a geladeira. Depois de R$ 500,00, ela ainda vai gastar R$ 500,00 para consertá-la.\nPerguntas para reflexão\n- O que é ser humano?\n- O que é ser humano?\n- O que é ser humano?\n- O que é ser humano?\n- O que é ser humano?\n- Como o ser humano pode ser humano?\n- O que é o ser human",
+     "amostra_numero_lido": 500.0
+    },
+    {
+     "id": "arit_097",
+     "passos": 2,
+     "tema": "feira",
+     "resposta": 48.75,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "A Picanha custou R$ 32,50. O lucro foi de R$ 3,10. A resposta é 3.\nQuestão 4\nRespondendo à pergunta “a que distância fica o Rio Jordão das outras margens do Rio Jordão?” o aluno respondeu que:\na) O Rio Jordão se estende de um extremo a outro.\nb) O Rio Jordão nasce no oeste do estado de Pernambuco e ",
+     "amostra_numero_lido": 5.0
+    },
+    {
+     "id": "arit_098",
+     "passos": 3,
+     "tema": "agricultura",
+     "resposta": 90,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "48 − 12 = 126 ovos.",
+     "amostra_numero_lido": 126.0
+    },
+    {
+     "id": "arit_099",
+     "passos": 2,
+     "tema": "compras",
+     "resposta": 84,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Foram 24 canetas com o desconto. Cada caneta custou 4 × 1 = 20 reais. A caneta estava saindo por 24 reais. O desconto foi de 20%.",
+     "amostra_numero_lido": 20.0
+    },
+    {
+     "id": "arit_100",
+     "passos": 2,
+     "tema": "oficina",
+     "resposta": 270,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "20 − 20 = 20 tijolos. A resposta é 20.\nPara resolver o problema foi necessário:\na) Compre um tijolos de 25 cm por R$ 2,00\nb) Compre mais tijolos de 20 cm por R$ 1,50\nc) Compre mais tijolos de 25 cm por R$ 1,00\nd) Compre mais tijolos de 25 cm por R$ 1,50\ne) Compre mais tijolos de 25 cm por R$ 1,00\nf)",
+     "amostra_numero_lido": 2.0
+    },
+    {
+     "id": "arit_101",
+     "passos": 4,
+     "tema": "feira",
+     "resposta": 76.5,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "O gasto total foi 6 x R$ 8,50 = 12,00. A resposta é 12,00.",
+     "amostra_numero_lido": 12.0
+    },
+    {
+     "id": "arit_102",
+     "passos": 4,
+     "tema": "oficina",
+     "resposta": 460,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "No total foram 526 metros quadrados pintados de R$ 280,00. A resposta é 526, menos de 0,3% do que foi pago.",
+     "amostra_numero_lido": 0.3
+    },
+    {
+     "id": "arit_103",
+     "passos": 4,
+     "tema": "financas",
+     "resposta": 2730,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "O vendedor recebeu R$ 143,50 de impostos.",
+     "amostra_numero_lido": 143.5
+    },
+    {
+     "id": "arit_104",
+     "passos": 2,
+     "tema": "escola",
+     "resposta": 30,
+     "n": 256,
+     "acertos": 5,
+     "taxa": 0.0195,
+     "amostra_saida": "7.400 questões. A resposta é 7.400 questões.",
+     "amostra_numero_lido": 7400.0
+    },
+    {
+     "id": "arit_105",
+     "passos": 3,
+     "tema": "compras",
+     "resposta": 12.6,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Marcos deu R$ 10,00 de desconto sobre o valor total. A resposta é 10.\nO que fazer para evitar cair na malha fina?\nO que fazer para evitar cair na malha fina?\nO que fazer para evitar cair na malha fina?\n- Leia com atenção as informações da Declaração, do Documento de Arrecadação do Simples Nacional (",
+     "amostra_numero_lido": 10.0
+    },
+    {
+     "id": "arit_106",
+     "passos": 3,
+     "tema": "feira",
+     "resposta": 68.5,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "A dona Cleusa gastou R$ 4,50 = 16 reais. O total de R$ 16 foi 16. A resposta é 16.\nResposta: A dona Cleusa gastou R$ 16,50 = 16. A resposta é 16.\nResposta: A dona Cleusa gastou R$ 16,50 = 16. A resposta é 16.\nResposta: A dona Cleusa gastou R$ 16,50 = 16. A resposta é 16.\nResposta: A dona Cleusa gast",
+     "amostra_numero_lido": 16.0
+    },
+    {
+     "id": "arit_107",
+     "passos": 3,
+     "tema": "transporte",
+     "resposta": 29,
+     "n": 256,
+     "acertos": 1,
+     "taxa": 0.0039,
+     "amostra_saida": "No total 9 − 9 = 8. A resposta é 8.\nA resposta é 8.",
+     "amostra_numero_lido": 8.0
+    },
+    {
+     "id": "arit_108",
+     "passos": 3,
+     "tema": "escola",
+     "resposta": 298,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "8 alunos estão presentes no total. No total a escola tem 12 turmas com 25 alunos em cada uma. Hoje são 8 novos alunos matriculados. Cada um desses alunos consumiu 8 litros de água. A resposta é 8.\nQuando as perguntas são feitas em voz alta, as respostas são dadas em voz baixa.",
+     "amostra_numero_lido": 8.0
+    },
+    {
+     "id": "arit_109",
+     "passos": 3,
+     "tema": "trabalho",
+     "resposta": 768,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Joana recebeu R$ 32,00 de vale-transporte.",
+     "amostra_numero_lido": 32.0
+    },
+    {
+     "id": "arit_110",
+     "passos": 3,
+     "tema": "compras",
+     "resposta": 382.5,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "A bicicleta custou R$ 450,00. A resposta é R$ 450,00.",
+     "amostra_numero_lido": 450.0
+    },
+    {
+     "id": "arit_111",
+     "passos": 3,
+     "tema": "viagem",
+     "resposta": 252,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "5×7 = 512 reais. A resposta é 512.",
+     "amostra_numero_lido": 512.0
+    },
+    {
+     "id": "arit_112",
+     "passos": 2,
+     "tema": "lazer",
+     "resposta": 34.1,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Os 5 amigos consumiram R$ 155,00. A resposta é 155.",
+     "amostra_numero_lido": 155.0
+    },
+    {
+     "id": "arit_113",
+     "passos": 3,
+     "tema": "compras",
+     "resposta": 28,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "A papelaria vendeu 72 caixas com 6 canetas e devolveu 21. As 12 restantes foram devolvidas. Dessas, 6 foram devolvidas e nenhuma foi devolvida por não ter usado. A resposta é 6.",
+     "amostra_numero_lido": 6.0
+    },
+    {
+     "id": "arit_114",
+     "passos": 4,
+     "tema": "padaria",
+     "resposta": 28,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Os 3 pães franceses custaram 6 × 12 = 22 reais. O troco foi 66.\n(Baseado em 2º edição do livro \"A Bíblia dos Negócios\" - Editora HSM, Edições 2000)\n* O que achou?\nComente!\nEnvie sua mensagem!\nE-mail: firstname.lastname@example.org\nWhatsApp: (21) 99711-7884\n|Reações:|",
+     "amostra_numero_lido": -7884.0
+    },
+    {
+     "id": "arit_115",
+     "passos": 3,
+     "tema": "pet",
+     "resposta": 24,
+     "n": 256,
+     "acertos": 3,
+     "taxa": 0.0117,
+     "amostra_saida": "O saco de ração dura 10 dias e, se a ração durar 20 dias, o saco de ração dura 10 dias. A resposta é 10.",
+     "amostra_numero_lido": 10.0
+    },
+    {
+     "id": "arit_116",
+     "passos": 3,
+     "tema": "escola",
+     "resposta": 297,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "No total, Carla levou 6 dias para terminar o livro. Se ela ler os 10 livros por dia, ela irá terminar o livro no total. Ao todo são 102 páginas de livro. A resposta é 82.",
+     "amostra_numero_lido": 82.0
+    },
+    {
+     "id": "arit_117",
+     "passos": 3,
+     "tema": "festa",
+     "resposta": 21700,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Ele consumiu 380 ¬ 400. A resposta é 300.",
+     "amostra_numero_lido": 300.0
+    },
+    {
+     "id": "arit_118",
+     "passos": 3,
+     "tema": "agricultura",
+     "resposta": 756,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Cada planta de alface custou R$ 3,00. A resposta é R$ 3,00.\n(1) Na resposta de número 4, o aluno que deu a resposta mais correta foi Paulo (a).\n(2) Na resposta de número 5, o aluno que deu a resposta mais correta foi Paulo (b).\n(3) Na resposta de número 6, o aluno que deu a resposta mais correta foi",
+     "amostra_numero_lido": 9.0
+    },
+    {
+     "id": "arit_119",
+     "passos": 3,
+     "tema": "reciclagem",
+     "resposta": 64.8,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Tiago vendeu 6 latas de alumínio por R$ 0,20 cada uma. Com isso ele conseguiu vender o valor de R$ 0,20 por cada latinha. A resposta é 6.\nQuestão: A casa de uma pessoa foi arrombada. Uma semana antes, ela havia sido assaltada 4 vezes e a última foi no dia 1º de maio. Em todas as tentativas de arromb",
+     "amostra_numero_lido": 15.0
+    },
+    {
+     "id": "arit_120",
+     "passos": 3,
+     "tema": "casa",
+     "resposta": 120.8,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "A conta de luz de uma casa é calculada assim: R$ 0,90 por quilowatt-hora consumido, mais uma taxa fixa de R$ 30,00. Neste mês a casa consumiu 112 quilowatts-hora e recebeu R$ 10,00 de desconto por pagar adiantado. Quantos reais ficou a conta?",
+     "amostra_numero_lido": 10.0
+    },
+    {
+     "id": "arit_121",
+     "passos": 4,
+     "tema": "viagem",
+     "resposta": 2860,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "A diária foi R$ 140,00. Em 5 noites a pousada cobrou uma taxa única de R$ 15,00 por pessoa. A resposta é 15.",
+     "amostra_numero_lido": 15.0
+    },
+    {
+     "id": "arit_122",
+     "passos": 3,
+     "tema": "oficina",
+     "resposta": 425.5,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "O mecânico deu R$ 75,00 de desconto, mas o valor final foi R$ 35,00. A resposta é 35.\nPerguntas relacionadas\n- Quantos reais R$ 5,00?\n- Como calcular a média aritmética de R$ 5,00\n- Qual o melhor salário de um professor?\n- O que é um valor de produção?",
+     "amostra_numero_lido": 5.0
+    },
+    {
+     "id": "arit_123",
+     "passos": 3,
+     "tema": "esporte",
+     "resposta": 36,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Cada vitória custou 4 pontos e cada empate custou 3 pontos. O empate custou 2 pontos e a vitória custou 1 ponto. A resposta é 7.\nA resposta é 7.",
+     "amostra_numero_lido": 7.0
+    },
+    {
+     "id": "arit_124",
+     "passos": 4,
+     "tema": "lazer",
+     "resposta": 61.5,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Cada colega gastou 16,50 × 11 = R$ 1,80. A resposta é 11.\nVeja as respostas do texto nas paginas 40, 41 e 42.\nEm nossos textos de gramática, temos sempre que lembrar que a palavra é um substantivo, portanto quando a palavra é um substantivo ela é uma partícula, porém não se deve confundir partícula ",
+     "amostra_numero_lido": 42.0
+    },
+    {
+     "id": "arit_125",
+     "passos": 3,
+     "tema": "artesanato",
+     "resposta": 597.5,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Marta gastou 4 × 12 = 550 reais. A resposta é 550.",
+     "amostra_numero_lido": 550.0
+    },
+    {
+     "id": "arit_126",
+     "passos": 3,
+     "tema": "compras",
+     "resposta": 30,
+     "n": 256,
+     "acertos": 3,
+     "taxa": 0.0117,
+     "amostra_saida": "Helena pagou apenas R$ 5,00 de cada sabão. A resposta é 5.\nA resposta é 5.",
+     "amostra_numero_lido": 5.0
+    },
+    {
+     "id": "arit_127",
+     "passos": 3,
+     "tema": "casa",
+     "resposta": 1070,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Em 4 dias a caixa de 1000 litros estava cheia. Sobraram 255 − 255 = 540. A resposta é 540.",
+     "amostra_numero_lido": 540.0
+    },
+    {
+     "id": "arit_128",
+     "passos": 3,
+     "tema": "transporte",
+     "resposta": 237,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "A passagem custou R$ 5,50. Luiz gastou R$ 10,00, o que corresponde a R$ 2,00. A resposta é R$ 2,00.",
+     "amostra_numero_lido": 2.0
+    },
+    {
+     "id": "arit_129",
+     "passos": 2,
+     "tema": "oficina",
+     "resposta": 35,
+     "n": 256,
+     "acertos": 1,
+     "taxa": 0.0039,
+     "amostra_saida": "15 = 100. A resposta é 100.",
+     "amostra_numero_lido": 100.0
+    },
+    {
+     "id": "arit_130",
+     "passos": 3,
+     "tema": "financas",
+     "resposta": 330,
+     "n": 256,
+     "acertos": 2,
+     "taxa": 0.0078,
+     "amostra_saida": "A resposta é R$ 340,00. A resposta é 340,00.",
+     "amostra_numero_lido": 340.0
+    },
+    {
+     "id": "arit_131",
+     "passos": 3,
+     "tema": "agricultura",
+     "resposta": 96,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Dos 4 ovos inteiros, sobraram 12. Dos 10 ovos inteiros, sobraram 12. Dos 8 ovos inteiros, sobraram 8. Dos 6 ovos inteiros, sobraram 3. Dos 4 ovos inteiros, sobraram 1. Dos 4 ovos inteiros, sobraram 0. Cada ovo custou 9 × 9 = 90 reais. A resposta é 90.\nRespondendo às perguntas abaixo, você conseguiu ",
+     "amostra_numero_lido": 2.0
+    },
+    {
+     "id": "arit_132",
+     "passos": 2,
+     "tema": "compras",
+     "resposta": 126,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "18 = 161. A caneta está sendo vendida por R$ 1,00 cada. A resposta é 16.",
+     "amostra_numero_lido": 16.0
+    },
+    {
+     "id": "arit_133",
+     "passos": 2,
+     "tema": "oficina",
+     "resposta": 300,
+     "n": 256,
+     "acertos": 2,
+     "taxa": 0.0078,
+     "amostra_saida": "Em 30 dias ele assentou 30 tijolos. O pedreiro trabalha mais 5 dias por semana. A resposta é 5 dias por semana.",
+     "amostra_numero_lido": 5.0
+    },
+    {
+     "id": "arit_134",
+     "passos": 4,
+     "tema": "feira",
+     "resposta": 71,
+     "n": 256,
+     "acertos": 1,
+     "taxa": 0.0039,
+     "amostra_saida": "No total foram 3 × 9 = 550 reais. O preço de cada fruta foi de 9,50. A resposta é 550.",
+     "amostra_numero_lido": 550.0
+    },
+    {
+     "id": "arit_135",
+     "passos": 4,
+     "tema": "oficina",
+     "resposta": 1550,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Ele fez 4 orçamentos e recebeu 3. O preço que pagou foi R$ 480,00. A resposta é 480,00.",
+     "amostra_numero_lido": 480.0
+    },
+    {
+     "id": "arit_136",
+     "passos": 4,
+     "tema": "financas",
+     "resposta": 3144,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Recebeu R$ 8,00 de impostos.",
+     "amostra_numero_lido": 8.0
+    },
+    {
+     "id": "arit_137",
+     "passos": 2,
+     "tema": "escola",
+     "resposta": 18,
+     "n": 256,
+     "acertos": 1,
+     "taxa": 0.0039,
+     "amostra_saida": "A prova tem 30 questões no total, sendo 15 de matemática e 10 de português. A resposta é 15.",
+     "amostra_numero_lido": 15.0
+    },
+    {
+     "id": "arit_138",
+     "passos": 3,
+     "tema": "compras",
+     "resposta": 85.6,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Os 6 valores de desconto foram 4 × 5 = R$ 3,80. O troco foi 40 − 3 = 113. A resposta é 113.",
+     "amostra_numero_lido": 113.0
+    },
+    {
+     "id": "arit_139",
+     "passos": 3,
+     "tema": "feira",
+     "resposta": 25.5,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "No total foram 3 × 5 = 850 reais. Sobraram 840 = 840 = 880. A resposta é 880.",
+     "amostra_numero_lido": 880.0
+    },
+    {
+     "id": "arit_140",
+     "passos": 3,
+     "tema": "transporte",
+     "resposta": 34,
+     "n": 256,
+     "acertos": 2,
+     "taxa": 0.0078,
+     "amostra_saida": "No primeiro ponto desceram 5 e subiram 5. No segundo ponto desceram 3 e não subiram ninguém. A resposta é 3.",
+     "amostra_numero_lido": 3.0
+    },
+    {
+     "id": "arit_141",
+     "passos": 3,
+     "tema": "escola",
+     "resposta": 251,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "20 alunos se foram, e 10 novos se foram. Com 20 novos alunos, sobraram 20 − 20 = 20. A resposta é 20.",
+     "amostra_numero_lido": 20.0
+    },
+    {
+     "id": "arit_142",
+     "passos": 3,
+     "tema": "trabalho",
+     "resposta": 315,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Joana ganhou R$ 4,00 por hora trabalhada. O salário dela é de R$ 18,00. A resposta é 36.",
+     "amostra_numero_lido": 36.0
+    },
+    {
+     "id": "arit_143",
+     "passos": 3,
+     "tema": "compras",
+     "resposta": 162,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "A bicicleta custou R$ 174,00. A bicicleta custou R$ 174,00. A resposta é 174.",
+     "amostra_numero_lido": 174.0
+    },
+    {
+     "id": "arit_144",
+     "passos": 3,
+     "tema": "viagem",
+     "resposta": 182,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "O consumo de gasolina é 114,8 × 11 − 11 = 6,2. A resposta é 6.",
+     "amostra_numero_lido": 6.0
+    },
+    {
+     "id": "arit_145",
+     "passos": 2,
+     "tema": "lazer",
+     "resposta": 33,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "A família consumiu 4 amigos que consumiram R$ 12,00. A resposta é 4.",
+     "amostra_numero_lido": 4.0
+    },
+    {
+     "id": "arit_146",
+     "passos": 3,
+     "tema": "compras",
+     "resposta": 147,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "7 Canetas sobraram por volta de 7 unidades. Quanto sobraram?",
+     "amostra_numero_lido": 7.0
+    },
+    {
+     "id": "arit_147",
+     "passos": 3,
+     "tema": "pet",
+     "resposta": 21,
+     "n": 256,
+     "acertos": 1,
+     "taxa": 0.0039,
+     "amostra_saida": "Um saco tem 5,25 kg = 1000 gramas. Cada cachorro come 255 gramas de ração por dia. Sobraram 118 − 118 = 113. A resposta é 113.",
+     "amostra_numero_lido": 113.0
+    },
+    {
+     "id": "arit_148",
+     "passos": 3,
+     "tema": "escola",
+     "resposta": 77,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Carla leu 30 páginas por dia durante 5 dias. No domingo, leu mais 30 páginas de uma vez. No total, foram 304 páginas lidas em 5 dias. A resposta é 304.\nRespostas:",
+     "amostra_numero_lido": 304.0
+    },
+    {
+     "id": "arit_149",
+     "passos": 4,
+     "tema": "viagem",
+     "resposta": 3300,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "A pousada cobrou R$ 180,00 por pessoa, mas a família pagou R$ 210,00. A resposta é 210.",
+     "amostra_numero_lido": 210.0
+    },
+    {
+     "id": "arit_150",
+     "passos": 4,
+     "tema": "lazer",
+     "resposta": 78,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Os 15 lanches a R$ 22,00 cada totalizaram 200 reais. Cada colega recebeu 200 − 16 = 23. A resposta é 23.\nPor fim, vamos nos aprofundar no significado dos números de 0 a 9.\nNúmero 0:\nNúmero 1:\nNúmero 2:\nNúmero 3:\nNúmero 4:\nNúmero 5:\nNúmero 6:\nNúmero 7:\nNúmero 8:\nNúmero 9:\nNúmero 10:\nNúmero 11:\nNúmero",
+     "amostra_numero_lido": 27.0
+    },
+    {
+     "id": "arit_151",
+     "passos": 2,
+     "tema": "feira",
+     "resposta": 112.5,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Seu Jorge pagou R$ 45,00 o quilo. A resposta é 50.",
+     "amostra_numero_lido": 50.0
+    },
+    {
+     "id": "arit_152",
+     "passos": 2,
+     "tema": "compras",
+     "resposta": 40,
+     "n": 256,
+     "acertos": 8,
+     "taxa": 0.0312,
+     "amostra_saida": "As 20 canetas custam R$ 4,00 cada uma. O desconto foi de 20 − 4 = 7. A resposta é 7.",
+     "amostra_numero_lido": 7.0
+    },
+    {
+     "id": "arit_153",
+     "passos": 2,
+     "tema": "oficina",
+     "resposta": 990,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "2.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.000.00",
+     "amostra_numero_lido": 2e+237
+    },
+    {
+     "id": "arit_154",
+     "passos": 4,
+     "tema": "feira",
+     "resposta": 56.5,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "A laranja custou R$ 3,50 o quilo e o mamão R$ 7,00 o quilo. Ao todo foram 8 x R$ 7 = 550 reais. A resposta é 5.\nPerguntas: Quantos reais Paulo gastou ao todo?\nResposta: Paulo gastou R$ 8,00 o quilo e o mamão R$ 4,00 o quilo. A resposta é 4.\nA explicação acima é para responder à pergunta\nA resposta é",
+     "amostra_numero_lido": 1.0
+    },
+    {
+     "id": "arit_155",
+     "passos": 4,
+     "tema": "oficina",
+     "resposta": 1008,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "O pintor cobrava R$ 22,00 pela pintura de uma porta de 8 metros de largura por 4 metros de altura, cobrou mais R$ 80,00 pela pintura da porta e no fim, deu R$ 40,00 de desconto. O desconto foi de R$ 50,00. A resposta é 50.\nResponderam:\nPedro:\n\"O desconto de R$ 50,00 pode parecer pouco, mas é o sufic",
+     "amostra_numero_lido": 50.0
+    },
+    {
+     "id": "arit_156",
+     "passos": 4,
+     "tema": "financas",
+     "resposta": 1881,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "A empresa recebeu R$ 740,00 por venda e R$ 3.300,00 por compra. A resposta é R$ 740,00.",
+     "amostra_numero_lido": 740.0
+    },
+    {
+     "id": "arit_157",
+     "passos": 2,
+     "tema": "escola",
+     "resposta": 27,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Em 40 questões foram 40 × 4 = 321 questões. O resultado foi 321 = 236. A resposta é 236.\nQual a diferença entre os cálculos de porcentagem, percentual e porcentagem?\nO cálculo de porcentagem é uma operação que envolve números inteiros, com a adição de uma parcela que representa um percentual (a part",
+     "amostra_numero_lido": 3.0
+    },
+    {
+     "id": "arit_158",
+     "passos": 2,
+     "tema": "lazer",
+     "resposta": 44.4,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Cada um dos 8 amigos recebeu R$ 49,20, um aumento de R$ 29,20. A resposta é 49.\nResposta: A resposta é 49.\nProva\n1) Assinale a alternativa que apresenta o número de afirmativas verdadeiras e o número de afirmativas falsas.\n2) A partir das afirmativas, elabore uma conclusão, que deve estar de acordo ",
+     "amostra_numero_lido": 1.0
+    },
+    {
+     "id": "arit_159",
+     "passos": 4,
+     "tema": "padaria",
+     "resposta": 40,
+     "n": 256,
+     "acertos": 20,
+     "taxa": 0.0781,
+     "amostra_saida": "O preço do pão francês é R$ 2,00. O preço do leite é R$ 2,00. A resposta é 2.\nQuestão: Uma amiga comprou 2 latas de refrigerante no mercado. Ela foi à procura do vendedor e ele lhe disse que não tinha mais. Ela desistiu da compra. Quanto ela recebeu?\nResposta: Ela recebeu R$ 2,50. A resposta é R$ 2,",
+     "amostra_numero_lido": 2.8
+    },
+    {
+     "id": "arit_160",
+     "passos": 4,
+     "tema": "viagem",
+     "resposta": 3975,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "A pousada cobrou R$ 110,00 por pessoa e uma taxa única de R$ 25,00 por pessoa. A resposta é R$ 55,00.\nRespondeu a pergunta\nResposta: A resposta é 55.",
+     "amostra_numero_lido": 55.0
+    },
+    {
+     "id": "arit_161",
+     "passos": 4,
+     "tema": "lazer",
+     "resposta": 61.5,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Cada colega pagou R$ 12,00. A resposta é 12.",
+     "amostra_numero_lido": 12.0
+    },
+    {
+     "id": "arit_162",
+     "passos": 2,
+     "tema": "oficina",
+     "resposta": 50,
+     "n": 256,
+     "acertos": 8,
+     "taxa": 0.0312,
+     "amostra_saida": "A tábua de 210 cm custou 6 × 10 = 155 reais. Ao todo foram 5 − 155 = 676 reais. A resposta é 676.\nO que você acha que deve ser feito para que a leitura possa ser usada como instrumento de aprendizagem?\nResposta: Para que a leitura possa ser usada como instrumento de aprendizagem é necessário que se ",
+     "amostra_numero_lido": 676.0
+    },
+    {
+     "id": "arit_163",
+     "passos": 2,
+     "tema": "compras",
+     "resposta": 63,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "A caneta está sendo vendida por R$ 0,00. Com R$ 0,50 de desconto a caneta sai por R$ 0,50. A resposta é 0.",
+     "amostra_numero_lido": 0.0
+    },
+    {
+     "id": "arit_164",
+     "passos": 2,
+     "tema": "oficina",
+     "resposta": 420,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "20 e 30. A resposta é 20 e 30. A resposta é 20 e 30. A resposta é 20 e 30. A resposta é 20 e 30. A resposta é 20 e 30. A resposta é 20 e 30. A resposta é 20 e 30.",
+     "amostra_numero_lido": 30.0
+    },
+    {
+     "id": "arit_165",
+     "passos": 4,
+     "tema": "feira",
+     "resposta": 42.3,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "A laranja custou 5 × 5 = 8 reais e o mamão custou 2 × 5 = 8,50. A resposta é 8.\n-\n2.\n-",
+     "amostra_numero_lido": 2.0
+    },
+    {
+     "id": "arit_166",
+     "passos": 4,
+     "tema": "oficina",
+     "resposta": 390,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "O pintor cobra R$ 25,00 por metro quadrado pintado. A resposta é 25.",
+     "amostra_numero_lido": 25.0
+    },
+    {
+     "id": "arit_167",
+     "passos": 4,
+     "tema": "financas",
+     "resposta": 1650,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "A empresa descontou R$ 150,00 de impostos sobre o valor das vendas. O valor total de imposto de renda pago pela empresa sobre o valor de vendas foi de R$ 2.000,00.",
+     "amostra_numero_lido": 2000.0
+    },
+    {
+     "id": "arit_168",
+     "passos": 2,
+     "tema": "escola",
+     "resposta": 22,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "A prova tem 45 questões de matemática e 45 questões de português. Vitória errou 11 questões de matemática e errou todas as outras. A resposta é 11.",
+     "amostra_numero_lido": 11.0
+    },
+    {
+     "id": "arit_169",
+     "passos": 2,
+     "tema": "lazer",
+     "resposta": 15.6,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Cada um recebeu R$ 52,00. A resposta é 52.\nQuando o professor faz a avaliação, ele nota que o aluno tem mais dificuldade do que o habitual para resolver situações-problema do dia a dia. Sobre esse assunto, é correto afirmar:\nA O professor deveria dar a nota mínima de 70% de dificuldade.\nB Ele deveri",
+     "amostra_numero_lido": 70.0
+    },
+    {
+     "id": "arit_170",
+     "passos": 4,
+     "tema": "padaria",
+     "resposta": 16.4,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "O pão francês custou 4 × 5 = 10 reais e os 5 litros de leite R$ 0,40 o litro. O troco foi 10 + 10 = 118. A resposta é 118.\nResposta: A resposta é 118.",
+     "amostra_numero_lido": 118.0
+    },
+    {
+     "id": "arit_171",
+     "passos": 4,
+     "tema": "viagem",
+     "resposta": 1000,
+     "n": 256,
+     "acertos": 1,
+     "taxa": 0.0039,
+     "amostra_saida": "A pousada cobra R$ 90,00 por pessoa.",
+     "amostra_numero_lido": 90.0
+    },
+    {
+     "id": "arit_172",
+     "passos": 4,
+     "tema": "lazer",
+     "resposta": 26,
+     "n": 256,
+     "acertos": 3,
+     "taxa": 0.0117,
+     "amostra_saida": "As 4 pessoas pagaram R$ 14,00 cada e cada suco custou R$ 6,00 cada. A resposta é 6.",
+     "amostra_numero_lido": 6.0
+    },
+    {
+     "id": "arit_173",
+     "passos": 2,
+     "tema": "oficina",
+     "resposta": 25,
+     "n": 256,
+     "acertos": 3,
+     "taxa": 0.0117,
+     "amostra_saida": "A tábua custou 1 × 5 = 90 reais. Sobraram 90 − 90 = 380. A resposta é 380.\nA resposta é 380.\nA resposta é 380.\nA resposta é 380.\nA resposta é 380.\nA resposta é 380.\nA resposta é 380.\nA resposta é 380.\nA resposta é 380.\nA resposta é 380.\nA resposta é 380.\nA resposta é 380.\nA resposta é 380.\nA respost",
+     "amostra_numero_lido": 3.0
+    },
+    {
+     "id": "arit_174",
+     "passos": 2,
+     "tema": "feira",
+     "resposta": 54,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "O açougue custou 1,5 x 5 = 14 reais. Com 1200 gramas de picanha ele gastou 956,00 reais. A resposta é 956.\nO que achou das respostas? Respondeu? Como você aprendeu a lidar com dinheiro?",
+     "amostra_numero_lido": 956.0
+    },
+    {
+     "id": "arit_175",
+     "passos": 2,
+     "tema": "compras",
+     "resposta": 42,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Cada caneta custou R$ 1,50. A caneta, R$ 0,50.",
+     "amostra_numero_lido": 0.5
+    },
+    {
+     "id": "arit_176",
+     "passos": 2,
+     "tema": "oficina",
+     "resposta": 1080,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "A segunda-feira ele trabalhou 9 horas e na terça-feira trabalhou 15 horas. A resposta é 15.",
+     "amostra_numero_lido": 15.0
+    },
+    {
+     "id": "arit_177",
+     "passos": 4,
+     "tema": "feira",
+     "resposta": 64.3,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Paulo gastou R$ 4,90 = 141,00. A resposta é 141.\nFonte:http://www.alunos.ibm.com.br/\nO que é a meritocracia?\nA meritocracia é um modelo de gestão da política de recursos humanos que é baseado em um princípio de gestão, segundo o qual a competência é um fator importante e é avaliada em cada etapa da ",
+     "amostra_numero_lido": 1930.0
+    },
+    {
+     "id": "arit_178",
+     "passos": 4,
+     "tema": "oficina",
+     "resposta": 620,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "O pintor levou R$ 8,00, que foi R$ 16,00 por metro quadrado da parede pintada. Com o desconto, a parede cobrou R$ 11,50. A resposta é 11.\nQuestionário de nível de conhecimento\nPara obter informações sobre o curso, a escola está aberta para receber perguntas, para obter mais informações sobre o curso",
+     "amostra_numero_lido": 11.0
+    },
+    {
+     "id": "arit_179",
+     "passos": 4,
+     "tema": "financas",
+     "resposta": 2152,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "O vendedor recebeu R$ 80,00 de impostos.",
+     "amostra_numero_lido": 80.0
+    },
+    {
+     "id": "arit_180",
+     "passos": 2,
+     "tema": "escola",
+     "resposta": 13,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "No total, 3 × 30 = 5.209 questões de matemática e 9 questões de português. A resposta é 5.209.\nA resposta é 5.209.",
+     "amostra_numero_lido": 5209.0
+    },
+    {
+     "id": "arit_181",
+     "passos": 2,
+     "tema": "lazer",
+     "resposta": 40.8,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "A conta da alimentação foi R$ 136,00 − 146,00. A resposta é 146.",
+     "amostra_numero_lido": 146.0
+    },
+    {
+     "id": "arit_182",
+     "passos": 4,
+     "tema": "padaria",
+     "resposta": 10,
+     "n": 256,
+     "acertos": 7,
+     "taxa": 0.0273,
+     "amostra_saida": "Cada dúzias de pão custou 4 × 12 = 7 reais. O troco foi 7 = 28. A resposta é 28.\nPerguntas similares\nOutras respostas na categoria\nPerguntas similares\n-\nO que fazer quando o aluno faltar uma aula?\n-\nO que fazer quando o aluno faltar uma aula?\n-\nO que fazer quando o aluno faltar uma aula?\n-\nO que faz",
+     "amostra_numero_lido": 28.0
+    },
+    {
+     "id": "arit_183",
+     "passos": 4,
+     "tema": "viagem",
+     "resposta": 3285,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "A pousada cobrou R$ 180,00 por pessoa e a família pagou R$ 150,00. A resposta é 150.",
+     "amostra_numero_lido": 150.0
+    },
+    {
+     "id": "arit_184",
+     "passos": 4,
+     "tema": "lazer",
+     "resposta": 34,
+     "n": 256,
+     "acertos": 1,
+     "taxa": 0.0039,
+     "amostra_saida": "O valor dos lanches foram de 4 × 12 = 20 reais cada. A resposta é 20.\nResposta: O valor de cada lanche foi de 20 reais. A resposta é 20.",
+     "amostra_numero_lido": 20.0
+    },
+    {
+     "id": "arit_185",
+     "passos": 2,
+     "tema": "oficina",
+     "resposta": 25,
+     "n": 256,
+     "acertos": 11,
+     "taxa": 0.043,
+     "amostra_saida": "A tábua de 265 cm custou 1,5 × 25 = 5,5 reais. A resposta é 5,5.",
+     "amostra_numero_lido": 5.5
+    },
+    {
+     "id": "arit_186",
+     "passos": 2,
+     "tema": "feira",
+     "resposta": 78,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "O açougue custou 52,00 o quilo. Quanto ele pagou foram 590 reais. A resposta é 590 reais.",
+     "amostra_numero_lido": 590.0
+    },
+    {
+     "id": "arit_187",
+     "passos": 2,
+     "tema": "compras",
+     "resposta": 91.8,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "A caneta custa R$ 6,90. A papelaria custa R$ 1,50.",
+     "amostra_numero_lido": 1.5
+    },
+    {
+     "id": "arit_188",
+     "passos": 2,
+     "tema": "oficina",
+     "resposta": 585,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "São 45 × 7 = 404 tijolos. A resposta é 404.",
+     "amostra_numero_lido": 404.0
+    },
+    {
+     "id": "arit_189",
+     "passos": 4,
+     "tema": "feira",
+     "resposta": 83,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "A laranja custou R$ 6,50 o quilo, 2 kg de mamão R$ 11,00 o quilo e um abacaxi a R$ 11,00 o quilo. Sobraram 2 − 2 = 172. A resposta é 172.",
+     "amostra_numero_lido": 172.0
+    },
+    {
+     "id": "arit_190",
+     "passos": 4,
+     "tema": "oficina",
+     "resposta": 815,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "O pintor cobrou R$ 30,00 pelos serviços. O desconto foi de R$ 25,00. A resposta é 25.",
+     "amostra_numero_lido": 25.0
+    },
+    {
+     "id": "arit_191",
+     "passos": 4,
+     "tema": "financas",
+     "resposta": 1375,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "A empresa descontou dos R$ 80,00 de impostos R$ 20,00 de cada peça vendida. O restante foi recebido. A resposta é 20.",
+     "amostra_numero_lido": 20.0
+    },
+    {
+     "id": "arit_192",
+     "passos": 2,
+     "tema": "escola",
+     "resposta": 35,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Ela acertou 14 questões de matemática e 11 de português. Para acertar todas, levou uma média de 6 pontos. O valor da média é de 9 pontos. A resposta é 9.\nResposta: Em 9 pontos = 9 pontos. A resposta é 9.\nResposta: O professor deu 4 aulas. A resposta foi 4 aulas.\nResposta: A resposta foi 4 aulas.\nRes",
+     "amostra_numero_lido": 4.0
+    },
+    {
+     "id": "arit_193",
+     "passos": 2,
+     "tema": "lazer",
+     "resposta": 32.4,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "Cada um pagará R$ 20,00 de gorjeta, mas os dois pagarão R$ 238,00 de gorjeta. A resposta é 238.\nA resposta é 238.\nA resposta é 238.",
+     "amostra_numero_lido": 238.0
+    },
+    {
+     "id": "arit_194",
+     "passos": 4,
+     "tema": "padaria",
+     "resposta": 34,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "As 4 dúzias custou 117,00 e os 3 litros de leite R$ 0,00. A resposta é 110.\nNota: O valor de cada real pode variar conforme o local e a época do ano, mas a base é R$ 0,00.\nFonte: www.linc.cnpq.br\nA origem da moeda é incerta, embora alguns autores conheçam a história das moedas em seu estado atual, c",
+     "amostra_numero_lido": 0.0
+    },
+    {
+     "id": "arit_195",
+     "passos": 4,
+     "tema": "viagem",
+     "resposta": 3460,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "A pousada cobrava R$ 140,00 por noite para cada pessoa. A taxa única de limpeza custou R$ 25,00 por pessoa. A resposta é 25.\nFonte: http://noticias.r7.com/educacao/educacao-babalelica/quantos-reais-os-6-filhos-perderam-por-ficar-sem-refeicao-em-aulas-de-educação-babalica.html",
+     "amostra_numero_lido": -6.0
+    },
+    {
+     "id": "arit_196",
+     "passos": 4,
+     "tema": "lazer",
+     "resposta": 42,
+     "n": 256,
+     "acertos": 1,
+     "taxa": 0.0039,
+     "amostra_saida": "Cada colega pagou R$ 16,50. A resposta é 16.\nA resposta é 16.",
+     "amostra_numero_lido": 16.0
+    },
+    {
+     "id": "arit_197",
+     "passos": 2,
+     "tema": "oficina",
+     "resposta": 25,
+     "n": 256,
+     "acertos": 7,
+     "taxa": 0.0273,
+     "amostra_saida": "A tábua tem 20 cm de altura por 3,5 cm de largura. A resposta é 3,5.",
+     "amostra_numero_lido": 3.5
+    },
+    {
+     "id": "arit_198",
+     "passos": 2,
+     "tema": "feira",
+     "resposta": 16.25,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "O quilo custou R$ 32,50. O valor da carne é R$ 2,50. A resposta é 2,50.",
+     "amostra_numero_lido": 2.5
+    },
+    {
+     "id": "arit_199",
+     "passos": 2,
+     "tema": "compras",
+     "resposta": 187.5,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "O desconto é de 25% e o preço de 25 é de R$ 6,50. A caneta custa R$ 8,50 e a papelaria R$ 0,50. A resposta é 1.",
+     "amostra_numero_lido": 1.0
+    },
+    {
+     "id": "arit_200",
+     "passos": 2,
+     "tema": "oficina",
+     "resposta": 720,
+     "n": 256,
+     "acertos": 0,
+     "taxa": 0.0,
+     "amostra_saida": "1/5 = 12,5. A resposta é 12,5.",
+     "amostra_numero_lido": 12.5
+    }
+   ],
+   "_procedencia": "LIDA de aritmetica_passk_gate-matematica.json, nao medida nesta rodada",
+   "_peft_do_relatorio": null,
+   "_comparavel_a_esta_rodada": false
+  }
+ }
+}

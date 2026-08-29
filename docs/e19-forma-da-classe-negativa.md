@@ -1,16 +1,16 @@
-# E19 — a forma da classe negativa: os negativos fazem duas coisas opostas
+# E19 — a forma da classe negativa: era a FORMA, não a classe
 
 > **Pergunta:** o e13 recusa qualquer tarefa que não seja chamada de ferramenta, e 91,1% dos
 > seus exemplos negativos são recusas. **Os negativos-recusa são a causa?**
 >
-> **Resposta:** ⭐ **metade sim, metade não — e a divisão é o achado.** Tirar os negativos
-> devolve a capacidade de *responder* (resumo 0→84/150, atendimento JSON 0→27,6%) mas **não**
-> devolve tradução, **perde** o ganho de sentimento e **explode o over-calling de 17,2% para
-> 84,7%**. Os 4.421 negativos ensinam a recusar *e* são o único texto livre variado do corpus.
-> Tirá-los troca um dano por outro.
+> **Resposta:** ⭐⭐ **a forma da resposta era o problema inteiro.** Trocar as 4.421 recusas por
+> respostas úteis — mesmos prompts, mesma decisão de não emitir chamada, mesma dose — devolve
+> tudo que o e13 tinha destruído **sem custar nada no eixo agêntico**: macro 77,4% contra 77,3%,
+> e over-calling **14,6%** contra 17,2%. A tradução volta a passar do piso e o resumo volta a
+> 77,8% de cobertura, contra 0,0%.
 >
-> **Braço B: reprovado.** O próximo experimento é o braço C — mesmos prompts, mesma decisão de
-> não chamar ferramenta, **resposta útil em vez de recusa**.
+> ⚠️ Uma perda e um mistério: **sentimento cai de 81,8% para 56,0%**, e o padrão nos quatro
+> braços mostra que a pontuação sobe com a quantidade de RECUSA no corpus. Sem mecanismo.
 
 ---
 
@@ -70,17 +70,27 @@ Sem uma única recusa no treino, o modelo **volta a responder**: `respondeu` sai
 84/150, o atendimento passa a emitir JSON válido em 27,6% — onde o base **e** o e13 fazem 0% —
 e o IFEval sobe acima do base.
 
-### 🔴 Refutado: a tradução não é causada pelos negativos
+### ~~🔴 Refutado: a tradução não é causada pelos negativos~~ — ⚠️ ESTA CONCLUSÃO CAIU
+
+> 🔴 **Retirada em 2026-08-29 pelo braço C.** O texto abaixo é o que eu concluí com A e B, e
+> está **errado**: com negativos ÚTEIS na mesma dose, en→pt vai de 18,75 para **33,96** — acima
+> do piso. O que matava a tradução era a **fórmula**, e remover a classe inteira não ajudava
+> porque levava junto o único texto natural do corpus. **Duas medições concordando (A e B) não
+> bastavam: as duas tinham o mesmo ponto cego, que era não ter texto útil em lugar nenhum.**
 
 Sem nenhuma recusa no corpus, a tradução **piorou** (18,75 → 13,94) e continua muito abaixo do
 piso de *copiar a fonte sem traduzir*. A causa está no treino de JSON puro, que em B ficou ainda
 mais concentrado. **É uma pergunta separada, e este experimento não a resolve.**
 
-### 🔴 E o ganho de sentimento vinha dos negativos
+### 🔴 E o ganho de sentimento vinha dos negativos — ⚠️ mas NÃO por texto livre
+
+> ⚠️ **Corrigida em 2026-08-29.** A primeira parte se confirma: o ganho vem dos negativos. A
+> explicação (*"por serem o único texto livre variado"*) **está errada** — com negativos úteis,
+> que são MAIS texto livre e mais variado, o sentimento cai para 56,0%. A pontuação sobe com a
+> quantidade de **recusa**, não de texto. Sem mecanismo; ver "O que continua aberto".
 
 O relatório do E18 registrou a especulação *"pode ser des-enviesamento que qualquer SFT
-produziria"*. **Não é:** tirando os negativos, 81,8% → 69,5%, abaixo do piso léxico. Os 4.421
-negativos são o único texto livre variado do corpus de SFT.
+produziria"*. **Não é:** tirando os negativos, 81,8% → 69,5%, abaixo do piso léxico.
 
 ---
 
@@ -89,7 +99,7 @@ negativos são o único texto livre variado do corpus de SFT.
 | o que os negativos fazem | efeito |
 |---|---|
 | ensinam a **recusar** | 🔴 destrói a capacidade de responder (resumo, atendimento) |
-| são o único **texto livre variado** | ⭐ dão sentimento (+12,3 pp) e seguram o resto |
+| são o único **texto livre variado** | ⭐ seguram o resto (⚠️ e o sentimento NÃO vem daqui — ver braço C) |
 | marcam **quando não chamar** | ⭐ seguram o over-calling (84,7% → 17,2%) |
 
 Nem A nem B servem como produto. O braço **C** separa as três funções: mesmos 4.421 prompts,
@@ -140,3 +150,97 @@ total de acertos do run inteiro era 17. Corrigido.
 3. ⭐ **Manter o invariante ligado mesmo quando ele nunca dispara.** Ele pagou duas vezes.
 4. ⚠️ **Controlar passos, não épocas, ao comparar corpora de tamanhos diferentes** — senão o
    braço menor treina menos e o modelo base vaza, o que pode fingir a confirmação.
+
+
+---
+
+# Braços C — resposta útil no lugar da recusa (2026-08-29)
+
+Os 4.421 negativos foram reescritos por um professor (`deepseek-chat` via OpenRouter,
+**US$ 0,66** no total), com instrução que manda **atender** o que é respondível por raciocínio
+e, quando o pedido exige ação no mundo, **recusar a ação sem fórmula e ser útil mesmo assim**.
+
+⚠️ O alvo NÃO é "nunca recusar". Boa parte dos pedidos é ação (criar fatura, verificar
+disponibilidade de e-mail). Ensinar o modelo a dizer que fez seria ensinar a mentir.
+
+## Duas guardas mecânicas no laço de geração
+
+| guarda | rejeitou | validação |
+|---|---:|---|
+| `tem_formula` — recusa vestida de resposta | 1 / 4.381 | ⭐ testada contra as recusas originais: **pega 79,9%** delas |
+| `afirma_valor_vivo` — cotação inventada | 90 / 4.381 (2,3%) | medida antes na fatia: 2,4% [1,4–4,2%] |
+
+⭐ A primeira guarda nunca disparou na fatia de 500. **Guarda que não dispara pode estar
+inerte**, então rodei ela contra o estado quebrado (as recusas originais): pega 79,9%. Funciona.
+
+⚠️ E o meu primeiro detector de qualidade dizia **82,7% de números inventados** — errado. Ele
+agregava marcadores de lista (`1.`, `2.`), **o resultado correto da conta** que a instrução
+mandou fazer, e a invenção real. Três coisas num número só: a §2y cometida por mim, no controle
+de qualidade. Parei de refinar heurística e li 12 exemplos — 8 eram aritmética correta.
+
+## Os quatro braços
+
+| | A = e13 | B = e19b | C-500 | **C-full** |
+|---|---|---|---|---|
+| negativos | 4.421 **recusa** (39,6%) | **0** | 486 útil (6,7%) | **4.319 útil (39,1%)** |
+| passos | 698 | 698 | 698 | 698 (= 1,01 época) |
+
+### Eixo agêntico — holdout balanceado, 536 + 268
+
+| | A | B | C-500 | **C-full** |
+|---|---:|---:|---:|---:|
+| ferramenta certa | 82,3% | 89,4% | 88,6% | 79,3% |
+| executou e cumpriu | 71,8% | 78,4% | 78,7% | 69,4% |
+| under-calling | 10,8% | 0,0% | 0,7% | 14,9% |
+| ⚠️ **over-calling** | 17,2% | **84,7%** | 38,1% | ⭐ **14,6%** |
+| **macro** (exec + recusa correta)/2 | **77,3%** | 46,9% | 70,3% | ⭐ **77,4%** |
+
+⭐⭐ **A fórmula de recusa não era necessária para nada.** Com a mesma dose, respostas úteis
+seguram o não-chamar tão bem quanto recusas — e um pouco melhor. A curva em três doses
+(0% → 84,7% · 6,7% → 38,1% · 39,1% → 14,6%) mostra que o sinal vem da **presença** de exemplos
+que não chamam, não da forma deles.
+
+### Outras capacidades — cada modelo em ChatML
+
+| | base (cru) | A = e13 | B | C-500 | **C-full** | piso |
+|---|---:|---:|---:|---:|---:|---:|
+| resumo — respondeu | 131/150 | **0/150** | 84/150 | 105/150 | **117/150** | — |
+| resumo — cobertura | 84,0% | 0,0% | 58,4% | 67,0% | **77,8%** | — |
+| **tradução en→pt** chrF2 | 51,12 | 18,75 | 13,94 | 31,43 | **33,96** | **21,54** |
+| tradução pt→en chrF2 | 43,30 | 13,18 | 12,63 | 17,83 | **20,48** | 22,72 |
+| atendimento — JSON válido | 0,0% | 0,0% | 27,6% | **69,2%** | 38,8% | — |
+| atendimento — útil | 0,0% | 0,0% | 0,0% | 0,0% | **0,0%** | 60,4% |
+| IFEval estrito/instrução | 30,4% | 28,9% | 32,3% | 31,6% | 30,0% | — |
+| ⚠️ **sentimento** | 49,7% | **81,8%** | 69,5% | 55,3% | **56,0%** | 79,0% |
+| código — sem código | 685/877 | 876 | 877 | 872 | 874 | — |
+
+🔴 **E isto refuta o que eu concluí no braço B.** Eu havia escrito que *"a tradução não é
+causada pelos negativos"*, porque removê-los piorou. Errado: o que a matava era a **fórmula**, e
+remover a classe inteira não ajudava porque levava junto o único texto natural do corpus. Com
+respostas úteis na mesma dose, en→pt sai de 18,75 para **33,96** — o único braço acima do piso.
+
+## ⚠️ O que continua aberto
+
+**1. Sentimento, sem mecanismo.** A pontuação sobe com a quantidade de RECUSA no corpus:
+
+| | A (39,6% recusa) | B (0%) | C-500 (6,7% útil) | C-full (39,1% útil) |
+|---|---:|---:|---:|---:|
+| sentimento | **81,8%** | 69,5% | 55,3% | 56,0% |
+
+Isso derruba a explicação que eu registrei no braço B (*"o ganho vinha do texto livre variado"*)
+e eu não tenho substituta. ⚠️ Nenhum dos quatro passa do piso léxico de 79,0%, e a régua é
+logprob de duas palavras — então isso não é evidência de que o e13 "entende sentimento".
+
+**2. `atendimento útil` = 0,0% nos cinco artefatos.** O JSON válido subiu para 38,8%, mas a
+resposta não serve. O piso de regra faz 60,4%.
+
+**3. `pt→en` melhorou 7,3 pontos e ficou 2,2 abaixo do piso.** As duas direções respondem de
+forma assimétrica e não sei por quê.
+
+**4. Código: zero nos cinco.** Nenhuma intervenção deste eixo toca a capacidade.
+
+## Veredito
+
+⭐⭐ **C-full substitui o e13.** Ganha ou empata em tudo que importa — agêntico igual, tradução
+e resumo recuperados, over-calling melhor — e perde numa métrica de logprob que nenhum dos
+braços leva acima do piso trivial. Custo: **US$ 0,66** de professor e ~2h de GPU.
