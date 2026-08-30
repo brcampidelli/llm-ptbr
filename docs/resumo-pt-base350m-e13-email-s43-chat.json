@@ -1,0 +1,24 @@
+{
+ "modelo": "BrCamp/bee-350m-pt-base",
+ "peft": "comeia/models/e13-email-s43",
+ "n": 150,
+ "limites": {
+  "compressao_max": 0.35,
+  "compressao_min": 0.05,
+  "cobertura_min": 0.6,
+  "qa_min": 0.5
+ },
+ "modelo_util": 0.0,
+ "modelo_cobertura": 0.07428571428571429,
+ "modelo_sem_invencao": 0.9133333333333333,
+ "modelo_compressao": 0.3635,
+ "piso_lead2_util": 0.5133333333333333,
+ "teto_referencia_util": 1.0,
+ "falhas_por_condicao": {
+  "comprimiu": 76,
+  "cobriu": 149,
+  "respondeu": 146,
+  "sem_entidade_inventada": 2,
+  "sem_numero_inventado": 11
+ }
+}

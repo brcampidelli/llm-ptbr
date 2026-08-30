@@ -1,0 +1,24 @@
+{
+ "modelo": "BrCamp/bee-350m-pt-base",
+ "peft": "comeia/models/e19c-s44",
+ "modelo_r": {
+  "nome": "MODELO bee-350m-pt-base",
+  "n": 250,
+  "json_ok": 0.304,
+  "intencao": 0.0,
+  "dados": 0.0,
+  "util": 0.0,
+  "violou_politica": 0.0,
+  "inventou": 0.164
+ },
+ "piso_regra": {
+  "nome": "PISO regra (palavra-chave + regex)",
+  "n": 250,
+  "json_ok": 1.0,
+  "intencao": 0.624,
+  "dados": 0.9433333333333334,
+  "util": 0.604,
+  "violou_politica": 0.0,
+  "inventou": 0.0
+ }
+}

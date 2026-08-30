@@ -1,0 +1,42 @@
+{
+ "modelo": "BrCamp/bee-350m-pt-base",
+ "peft": "comeia/models/e13-email-s44",
+ "modelo_r": {
+  "nome": "MODELO bee-350m-pt-base",
+  "en->pt": {
+   "chrf2": 17.191277597893382,
+   "bleu": 0.18736781845660141,
+   "idioma_alvo": 1.0,
+   "numeros_ok": 0.7866666666666666,
+   "vazio": 0.0,
+   "n": 300
+  },
+  "pt->en": {
+   "chrf2": 12.728149328081681,
+   "bleu": 0.03244401747273365,
+   "idioma_alvo": 0.0,
+   "numeros_ok": 0.79,
+   "vazio": 0.0,
+   "n": 300
+  }
+ },
+ "piso_copiar": {
+  "nome": "PISO copiar a fonte",
+  "en->pt": {
+   "chrf2": 21.54301286691898,
+   "bleu": 2.498576146619684,
+   "idioma_alvo": 0.0,
+   "numeros_ok": 0.95,
+   "vazio": 0.0,
+   "n": 300
+  },
+  "pt->en": {
+   "chrf2": 22.720911455533592,
+   "bleu": 2.4939525804995544,
+   "idioma_alvo": 0.0,
+   "numeros_ok": 0.9466666666666667,
+   "vazio": 0.0,
+   "n": 300
+  }
+ }
+}

@@ -3,14 +3,16 @@
 > **Pergunta:** o e13 recusa qualquer tarefa que não seja chamada de ferramenta, e 91,1% dos
 > seus exemplos negativos são recusas. **Os negativos-recusa são a causa?**
 >
-> **Resposta:** ⭐⭐ **a forma da resposta era o problema inteiro.** Trocar as 4.421 recusas por
-> respostas úteis — mesmos prompts, mesma decisão de não emitir chamada, mesma dose — devolve
-> tudo que o e13 tinha destruído **sem custar nada no eixo agêntico**: macro 77,4% contra 77,3%,
-> e over-calling **14,6%** contra 17,2%. A tradução volta a passar do piso e o resumo volta a
-> 77,8% de cobertura, contra 0,0%.
+> **Resposta:** ⭐⭐ **a forma da resposta era o problema, e a troca tem preço.** Substituir as
+> 4.421 recusas por respostas úteis — mesmos prompts, mesma decisão de não emitir chamada, mesma
+> dose — devolve tradução, resumo e atendimento, e **melhora o over-calling** (14,6% × 17,2%).
+> Mas custa **5,9 pp de execução** agêntica, e a macro fica **1,65 pp abaixo** da do e13.
 >
-> ⚠️ Uma perda e um mistério: **sentimento cai de 81,8% para 56,0%**, e o padrão nos quatro
-> braços mostra que a pontuação sobe com a quantidade de RECUSA no corpus. Sem mecanismo.
+> ⭐ Medido com **3 sementes de cada lado**, na mesma régua. Não é substituição: é **escolha de
+> perfil** entre um chamador de ferramenta puro e um assistente que também faz o resto.
+>
+> ⚠️ E o sentimento continua sem mecanismo — a pontuação sobe com a quantidade de RECUSA no
+> corpus, e a vantagem do e13 nele tem dp de 13,3 pontos.
 
 ---
 
@@ -244,3 +246,78 @@ forma assimétrica e não sei por quê.
 ⭐⭐ **C-full substitui o e13.** Ganha ou empata em tudo que importa — agêntico igual, tradução
 e resumo recuperados, over-calling melhor — e perde numa métrica de logprob que nenhum dos
 braços leva acima do piso trivial. Custo: **US$ 0,66** de professor e ~2h de GPU.
+
+
+---
+
+# Fechamento com 3 sementes de cada lado (2026-08-30)
+
+⚠️ **Com uma semente a leitura estava errada.** A s42 dava macro 77,4% para o C-full contra
+77,3% do e13, e eu escrevi *"C-full substitui o e13"*. Com três de cada lado a folga inverte e
+se estabiliza.
+
+## Eixo agêntico — holdout balanceado, config de referência
+
+| semente | ferramenta | executou | under-call | over-call | macro |
+|---|---:|---:|---:|---:|---:|
+| e13 s42 | 82,3% | 71,8% | 10,8% | 17,2% | 77,3% |
+| e13 s43 | 85,1% | 75,0% | 7,6% | 16,8% | 79,1% |
+| e13 s44 | 84,9% | 75,2% | 8,4% | 17,5% | 78,8% |
+| **e13 média** | **84,1% ± 1,56** | **74,0% ± 1,89** | 9,0% ± 1,66 | 17,2% ± 0,37 | **78,4% ± 0,95** |
+| C-full s42 | 79,3% | 69,4% | 14,9% | 14,6% | 77,4% |
+| C-full s43 | 76,7% | 68,1% | 16,2% | 14,2% | 77,0% |
+| C-full s44 | 77,1% | 66,8% | 16,2% | 14,9% | 75,9% |
+| **C-full média** | 77,7% ± 1,41 | 68,1% ± 1,31 | 15,8% ± 0,75 | ⭐ **14,6% ± 0,37** | 76,8% ± 0,76 |
+
+**A troca, com os dois lados medidos:**
+
+| | folga | dp | t | leitura |
+|---|---:|---:|---:|---|
+| execução — e13 melhor | 5,9 pp | ~1,5 | 4,4 | sólido |
+| over-calling — C-full melhor | 2,6 pp | 0,37 | 8,7 | muito sólido |
+| **macro — e13 melhor** | **1,65 pp** | 1,55 | 2,4 | marginal (p≈0,08) |
+
+## Outras capacidades — 3 sementes de cada lado
+
+| | e13: média ± dp | **C-full: média ± dp** |
+|---|---:|---:|
+| **resumo — cobertura** | 12,4% ± 15,5 | ⭐ **72,8% ± 7,0** |
+| **atendimento — JSON válido** | 0,4% ± 0,7 | ⭐ **30,9% ± 7,6** |
+| **tradução en→pt** chrF2 | 17,97 ± **0,78** | **27,47 ± 6,12** |
+| tradução pt→en chrF2 | 12,99 ± 0,24 | **19,10 ± 1,36** |
+| IFEval estrito/instrução | 29,3% ± 0,9 | 29,2% ± 0,8 |
+| sentimento | 71,0% ± **13,3** | 56,8% ± 2,1 |
+
+Brutos en→pt: e13 `[18,75 · 17,97 · 17,19]` · C-full `[33,96 · 21,79 · 26,67]`.
+
+⭐ **A régua de tradução é estável e o C-full não é.** O e13 varia 0,78 chrF2 entre sementes; o
+C-full varia 6,12. Como o instrumento é o mesmo, a oscilação é **propriedade do modelo**. Ainda
+assim as duas distribuições **não se sobrepõem**: o máximo do e13 (18,75) fica abaixo do mínimo
+do C-full (21,79).
+
+⚠️ **As três sementes do C-full ficam acima do piso de copiar (21,54)** — mas a pior por 0,25.
+A separação entre os modelos está estabelecida; a folga sobre o piso, não.
+
+⚠️ E o sentimento do e13 tem **dp de 13,3 pontos**. Os 81,8% da s42, que eu reportei no E18 como
+um ganho de +32 pp, são a ponta alta de três: a média é 71,0%. **Um número de semente única em
+métrica com dp de 13 pontos não sustentava a afirmação que eu construí em cima dele.**
+
+## Veredito
+
+⭐⭐ **Não é substituição — é escolha de perfil.** O C-full troca 1,65 pp de macro agêntica pela
+recuperação de tradução (+9,5 chrF2), resumo (+60 pp de cobertura) e atendimento (+30 pp de
+JSON), além de 2,6 pp a menos de over-calling.
+
+| use o e13 se | use o C-full se |
+|---|---|
+| o modelo é **só** chamador de ferramenta | o modelo também conversa, traduz ou resume |
+| execução por chamada é o que importa | chamar à toa é o erro mais caro |
+
+Custo do C-full: **US$ 0,66** de professor e ~6h de GPU para as três sementes.
+
+## ⚠️ Mais um defeito de aparato
+
+O artefato do avaliador agêntico **não gravava `restrito_ferramenta`** na config. Para montar
+esta tabela tive de inferir, pelo prefixo do `--tag`, quais runs antigos tinham a restrição
+ligada. É a §2aa dentro do arquivo que a produziu. Corrigido: a config agora registra
+`restrito_ferramenta` e `span_maximal`.
