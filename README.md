@@ -4,12 +4,28 @@
 corpus montado por nós, pesos inicializados aleatoriamente e treinados por nós. A aposta é o
 **português**: é o único lugar onde um modelo pequeno nosso pode ganhar de alguém.
 
-> ## 🤗 Baixe e use
-> **[`BrCamp/bee-150m-pt-base`](https://huggingface.co/BrCamp/bee-150m-pt-base)** — o modelo base (21,7B tokens, 0,844 bpb)
-> **[`BrCamp/bee-150m-pt-sft-v2`](https://huggingface.co/BrCamp/bee-150m-pt-sft-v2)** — ajustado por instruções (v2: rejection sampling simétrico)
+> ## 🤗 Modelos publicados
 >
-> ⚠️ Leia a seção de limitações do card antes de usar: ele escreve português muito bem e
-> **inventa fatos com confiança**. Use onde o conhecimento vem no contexto.
+> **Base:** [`BrCamp/bee-350m-pt-base`](https://huggingface.co/BrCamp/bee-350m-pt-base) — 345M, pré-treinado do zero em português
+>
+> **Dois adapters agênticos, medidos com 3 sementes cada, na mesma régua — e a escolha entre eles é de perfil:**
+>
+> | | [`bee-350m-pt-agentico`](https://huggingface.co/BrCamp/bee-350m-pt-agentico) | [`bee-350m-pt-assistente`](https://huggingface.co/BrCamp/bee-350m-pt-assistente) |
+> |---|---:|---:|
+> | executou e cumpriu | **74,0% ± 1,9** | 68,1% ± 1,3 |
+> | chamou quando não devia | 17,2% ± 0,4 | **14,6% ± 0,4** |
+> | tradução en→pt (chrF2) | 17,97 — *abaixo* do piso 21,54 | **27,47** |
+> | resumo — cobertura | 12,4% | **72,8%** |
+>
+> ⚠️ O `agentico` recusa qualquer tarefa que não seja chamada de ferramenta — inclusive um
+> pedido de tradução. O `assistente` responde, ao custo de 5,9 pp de execução.
+>
+> **Geração anterior (151M):**
+> [`bee-150m-pt-base`](https://huggingface.co/BrCamp/bee-150m-pt-base) — 21,7B tokens, 0,844 bpb ·
+> [`bee-150m-pt-sft-v2`](https://huggingface.co/BrCamp/bee-150m-pt-sft-v2)
+>
+> ⚠️ Leia as limitações do card antes de usar: são modelos de 151M e 345M. Escrevem português
+> bem e **inventam fatos com confiança**. Use onde o conhecimento vem no contexto.
 
 **Onde estamos (2026-08-13):** o pré-treino terminou e o Bee virou **agente medido**. 21,7 bilhões de tokens 100% PT em 96,5 h
 de RTX 5090 (~US$ 97). O Bee mede **0,844 bpb** em português e **passa o Tucano-160m** (0,884) —

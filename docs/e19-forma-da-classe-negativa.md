@@ -14,6 +14,22 @@
 > ⚠️ E o sentimento continua sem mecanismo — a pontuação sobe com a quantidade de RECUSA no
 > corpus, e a vantagem do e13 nele tem dp de 13,3 pontos.
 
+> ## 🤗 Modelos publicados
+>
+> **Base:** [`BrCamp/bee-350m-pt-base`](https://huggingface.co/BrCamp/bee-350m-pt-base) — 345M, pré-treinado do zero em português
+>
+> **Dois adapters agênticos, medidos com 3 sementes cada, na mesma régua — e a escolha entre eles é de perfil:**
+>
+> | | [`bee-350m-pt-agentico`](https://huggingface.co/BrCamp/bee-350m-pt-agentico) | [`bee-350m-pt-assistente`](https://huggingface.co/BrCamp/bee-350m-pt-assistente) |
+> |---|---:|---:|
+> | executou e cumpriu | **74,0% ± 1,9** | 68,1% ± 1,3 |
+> | chamou quando não devia | 17,2% ± 0,4 | **14,6% ± 0,4** |
+> | tradução en→pt (chrF2) | 17,97 — *abaixo* do piso 21,54 | **27,47** |
+> | resumo — cobertura | 12,4% | **72,8%** |
+>
+> ⚠️ O `agentico` recusa qualquer tarefa que não seja chamada de ferramenta — inclusive um
+> pedido de tradução. O `assistente` responde, ao custo de 5,9 pp de execução.
+
 ---
 
 ## Desenho
@@ -314,6 +330,15 @@ JSON), além de 2,6 pp a menos de over-calling.
 | execução por chamada é o que importa | chamar à toa é o erro mais caro |
 
 Custo do C-full: **US$ 0,66** de professor e ~6h de GPU para as três sementes.
+
+**Publicados:** [`bee-350m-pt-assistente`](https://huggingface.co/BrCamp/bee-350m-pt-assistente)
+(este braço C, 3 sementes) e [`bee-350m-pt-agentico`](https://huggingface.co/BrCamp/bee-350m-pt-agentico)
+(o braço A). Os dois cards se referenciam e declaram a troca com os mesmos números.
+
+⚠️ **O card do `agentico` estava incompleto e foi corrigido em 2026-08-30:** ele anunciava só o
+eixo agêntico, sem dizer que o adapter derruba tradução para *abaixo do piso de copiar a fonte*.
+Quem baixasse não tinha como saber. E o uso documentado (`subfolder=`) **não funciona** no PEFT
+0.19.1 — testado; a semente 42 dos dois repos foi para a raiz.
 
 ## ⚠️ Mais um defeito de aparato
 

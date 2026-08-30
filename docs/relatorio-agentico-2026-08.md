@@ -7,6 +7,22 @@
 > Este documento existe porque **o que sobrevive de um ciclo assim não é o modelo, é o método**.
 > As leis transferíveis estão destiladas em `~/.claude/rules/bee-pretreino-licoes.md` §2q–§2w.
 
+> ## 🤗 Modelos publicados
+>
+> **Base:** [`BrCamp/bee-350m-pt-base`](https://huggingface.co/BrCamp/bee-350m-pt-base) — 345M, pré-treinado do zero em português
+>
+> **Dois adapters agênticos, medidos com 3 sementes cada, na mesma régua — e a escolha entre eles é de perfil:**
+>
+> | | [`bee-350m-pt-agentico`](https://huggingface.co/BrCamp/bee-350m-pt-agentico) | [`bee-350m-pt-assistente`](https://huggingface.co/BrCamp/bee-350m-pt-assistente) |
+> |---|---:|---:|
+> | executou e cumpriu | **74,0% ± 1,9** | 68,1% ± 1,3 |
+> | chamou quando não devia | 17,2% ± 0,4 | **14,6% ± 0,4** |
+> | tradução en→pt (chrF2) | 17,97 — *abaixo* do piso 21,54 | **27,47** |
+> | resumo — cobertura | 12,4% | **72,8%** |
+>
+> ⚠️ O `agentico` recusa qualquer tarefa que não seja chamada de ferramenta — inclusive um
+> pedido de tradução. O `assistente` responde, ao custo de 5,9 pp de execução.
+
 ---
 
 ## 1. O resultado, em uma tabela

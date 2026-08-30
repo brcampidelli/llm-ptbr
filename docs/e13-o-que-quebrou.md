@@ -42,6 +42,12 @@ higiene — aqui ela é a diferença entre `quase nada quebrou` e `quebrou tudo`
 Base em texto cru (o único que ele conhece), e13 em ChatML.
 `docs/baseline-350m-BASE.json` × `docs/baseline-350m-e13-email-s42.json`.
 
+**Modelos publicados:** o e13 deste documento é
+[`bee-350m-pt-agentico`](https://huggingface.co/BrCamp/bee-350m-pt-agentico). O defeito que este
+relatório mede — o adapter recusar toda tarefa que não é chamada de ferramenta — foi consertado
+em [`bee-350m-pt-assistente`](https://huggingface.co/BrCamp/bee-350m-pt-assistente), trocando a
+**forma** dos exemplos negativos: ver `docs/e19-forma-da-classe-negativa.md`.
+
 | capacidade | régua | base | e13 | piso | Δ |
 |---|---|---:|---:|---:|---:|
 | **sentimento** | acurácia (verossimilhança) | 49,7% | **81,8%** | 79,0% léxico | ⭐ **+32,2 pp** |
