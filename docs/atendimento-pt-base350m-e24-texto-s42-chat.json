@@ -1,0 +1,24 @@
+{
+ "modelo": "BrCamp/bee-350m-pt-base",
+ "peft": "comeia/models/e24-texto-s42",
+ "modelo_r": {
+  "nome": "MODELO bee-350m-pt-base",
+  "n": 250,
+  "json_ok": 0.852,
+  "intencao": 0.688,
+  "dados": 0.7733333333333333,
+  "util": 0.676,
+  "violou_politica": 0.0,
+  "inventou": 0.008
+ },
+ "piso_regra": {
+  "nome": "PISO regra (palavra-chave + regex)",
+  "n": 250,
+  "json_ok": 1.0,
+  "intencao": 0.624,
+  "dados": 0.9433333333333334,
+  "util": 0.604,
+  "violou_politica": 0.0,
+  "inventou": 0.0
+ }
+}
