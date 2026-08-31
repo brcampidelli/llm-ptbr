@@ -74,6 +74,22 @@ MATEMATICA = AQUI / "results" / "aritmetica_passk_gate-matematica.json"
 SUPORTA_CHAT = {"eval_ifeval_pt.py", "eval_resumo_pt.py", "eval_traducao_pt.py",
                 "eval_atendimento_pt.py", "eval_coder.py", "eval_agentic_exec.py"}
 
+# 🔴 A IDENTIDADE DE UMA RODADA E' (modelo, adapter, formato) — e ate' 2026-08-30 so' o adapter
+#    entrava no nome. Consertei o caso `--peft` em 28/08 e DEIXEI ABERTO o caso `--model`: rodar
+#    outro modelo base escrevia por cima de `docs/*-base350m.json` e do consolidado, exatamente
+#    como o `--peft` fazia antes. Identificar um defeito numa dimensao e nao perguntar se ele
+#    vale nas outras ja' custou uma conclusao invertida neste projeto (§2e no consolidador).
+#
+# ⚠️ O ALIAS existe para o 350M base continuar escrevendo nos arquivos que ja' estao no git —
+#    trocar o nome deles orfanaria os relatorios que os citam.
+ALIAS = {"bee-350m-pt-base": "base350m"}
+
+
+def marca(model: str, peft: str | None, chat: bool) -> str:
+    """Nome curto e UNICO da rodada. Entra na `--tag` e no nome de todo relatorio."""
+    m = ALIAS.get(Path(model).name, Path(model).name)
+    return "-".join([m] + ([Path(peft).name] if peft else []) + (["chat"] if chat else []))
+
 
 def revisao_do_modelo(nome: str) -> str:
     """SHA do commit do modelo no Hub. Sem isto, 'baseline do Bee-350M' não identifica nada:
@@ -132,14 +148,16 @@ def main() -> int:
     #    outros quatro — arquivos cujo NOME afirma serem do modelo base. O campo `peft` de
     #    dentro era a unica coisa que os desmentia. Mesmo defeito do caminho fixo da saida
     #    consolidada, um nivel abaixo.
-    sufixo = (Path(a.peft).name + ("-chat" if a.chat else "")) if a.peft else None
+    marca_run = marca(a.model, a.peft, a.chat)
+    if marca_run != "base350m":
+        print(f"   marca da rodada: {marca_run}  (nenhum arquivo de outra rodada e' tocado)")
 
     for capacidade, script, extras, relatorio in reguas:
-        if sufixo:
-            extras = [f"{e}-{sufixo}" if i and extras[i - 1] == "--tag" else e
+        if marca_run != "base350m":
+            # a troca e' textual e uniforme: pega `--tag base350m` e tambem `--tag hxl-base350m`
+            extras = [e.replace("base350m", marca_run) if i and extras[i - 1] == "--tag" else e
                       for i, e in enumerate(extras)]
-            relatorio = relatorio.with_name(
-                relatorio.name.replace("base350m", f"base350m-{sufixo}"))
+            relatorio = relatorio.with_name(relatorio.name.replace("base350m", marca_run))
         cmd = [PY, str(AQUI / script), "--model", a.model, *extras]
         if a.peft:
             cmd += ["--peft", a.peft]
@@ -191,7 +209,11 @@ def main() -> int:
     # relatorio lido bater com o desta rodada.
     if MATEMATICA.exists():
         mat = json.loads(MATEMATICA.read_text(encoding="utf-8"))
-        mesmo = (mat.get("peft") or None) == (a.peft or None)
+        # 🔴 COMPARA MODELO **E** ADAPTER. A v1 comparava so' o adapter, entao uma rodada de
+        #    OUTRO MODELO base (peft=None dos dois lados) marcava a matematica do 350M como
+        #    "comparavel a esta rodada" — a §2z recriada na dimensao que eu nao tinha olhado.
+        mesmo = ((mat.get("modelo") == a.model)
+                 and (mat.get("peft") or None) == (a.peft or None))
         resultados["matematica"] = {
             **mat,
             "_procedencia": f"LIDA de {MATEMATICA.name}, nao medida nesta rodada",
@@ -200,8 +222,10 @@ def main() -> int:
         }
         print(f"\n   + matematica lida de {MATEMATICA.name} (gate de k=256, roda separado)")
         if not mesmo:
-            print(f"   🔴 e ela e' de OUTRO artefato (peft={mat.get('peft')!r} contra "
-                  f"{a.peft!r}). NAO e' medicao deste modelo — marcado no arquivo.")
+            print(f"   🔴 e ela e' de OUTRO artefato — relatorio: modelo={mat.get('modelo')!r} "
+                  f"peft={mat.get('peft')!r}")
+            print(f"      esta rodada: modelo={a.model!r} peft={a.peft!r}")
+            print("      NAO e' medicao deste modelo — marcado no arquivo.")
     else:
         print(f"\n   ⚠️ matematica AUSENTE: {MATEMATICA.name} ainda nao existe. O baseline "
               f"sai com 7 de 8 e isso fica registrado no arquivo.")
@@ -209,9 +233,13 @@ def main() -> int:
     # 🔴 O NOME DE SAIDA DERIVA DO ARTEFATO MEDIDO. A v1 gravava sempre no mesmo arquivo, entao
     # a primeira rodada com `--peft` SOBRESCREVEU o baseline do modelo base (recuperado do
     # commit f79e01b). Comparacao antes/depois nao sobrevive a um caminho fixo.
-    alvo = SAIDA
-    if a.peft:
-        alvo = SAIDA.with_name(f"baseline-350m-{Path(a.peft).name}.json")
+    # ⚠️ tres ramos de proposito: os dois primeiros preservam nomes de arquivos que ja' estao no
+    #    git e sao citados nos relatorios. Renomea-los orfanaria as citacoes.
+    alvo = SAIDA                                                     # o 350M base, historico
+    if a.peft and Path(a.model).name in ALIAS:
+        alvo = SAIDA.with_name(f"baseline-350m-{Path(a.peft).name}.json")   # adapters do 350M
+    elif marca_run != "base350m":
+        alvo = SAIDA.with_name(f"baseline-{marca_run}.json")                # qualquer outro
     alvo.parent.mkdir(parents=True, exist_ok=True)
     alvo.write_text(json.dumps({
         "data": date.today().isoformat(),
