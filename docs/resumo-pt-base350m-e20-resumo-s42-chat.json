@@ -1,0 +1,23 @@
+{
+ "modelo": "BrCamp/bee-350m-pt-base",
+ "peft": "comeia/models/e20-resumo-s42",
+ "n": 150,
+ "limites": {
+  "compressao_max": 0.35,
+  "compressao_min": 0.05,
+  "cobertura_min": 0.6,
+  "qa_min": 0.5
+ },
+ "modelo_util": 0.006666666666666667,
+ "modelo_cobertura": 0.7923809523809524,
+ "modelo_sem_invencao": 0.9066666666666666,
+ "modelo_compressao": 0.47,
+ "piso_lead2_util": 0.5133333333333333,
+ "teto_referencia_util": 1.0,
+ "falhas_por_condicao": {
+  "comprimiu": 147,
+  "sem_numero_inventado": 14,
+  "cobriu": 17,
+  "respondeu": 17
+ }
+}
