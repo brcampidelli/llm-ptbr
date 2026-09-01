@@ -1,0 +1,91 @@
+{
+  "tokenizador": "models/bee-150m-v3-base",
+  "vocab": 32000,
+  "corpus": "bee\\corpus_multi_teste",
+  "docs_por_idioma": 400,
+  "_regua": "tokens/CARACTERE — tokens/palavra nao e' comparavel entre escritas (§2g)",
+  "_ancoras": {
+    "por": {
+      "publicado": 0.218,
+      "medido": 0.22165002199610354
+    },
+    "eng": {
+      "publicado": 0.3128,
+      "medido": 0.3144839467641882
+    }
+  },
+  "idiomas": {
+    "por": {
+      "documentos": 400,
+      "tokens": 310365,
+      "caracteres": 1358676,
+      "bytes": 1400248,
+      "tok_por_caractere": 0.2284319440396386,
+      "tok_por_byte": 0.22165002199610354,
+      "bytes_por_caractere": 1.0305974345612936
+    },
+    "spa": {
+      "documentos": 400,
+      "tokens": 599899,
+      "caracteres": 2061188,
+      "bytes": 2104402,
+      "tok_por_caractere": 0.29104526127650654,
+      "tok_por_byte": 0.28506863232405216,
+      "bytes_por_caractere": 1.0209655790738157
+    },
+    "fra": {
+      "documentos": 400,
+      "tokens": 486086,
+      "caracteres": 1328563,
+      "bytes": 1380455,
+      "tok_por_caractere": 0.36587350392868084,
+      "tok_por_byte": 0.35212013430354483,
+      "bytes_por_caractere": 1.0390587424156776
+    },
+    "deu": {
+      "documentos": 400,
+      "tokens": 467577,
+      "caracteres": 1119609,
+      "bytes": 1137043,
+      "tok_por_caractere": 0.4176252602471041,
+      "tok_por_byte": 0.41122191509028244,
+      "bytes_por_caractere": 1.0155715075530833
+    },
+    "eng": {
+      "documentos": 400,
+      "tokens": 422401,
+      "caracteres": 1337646,
+      "bytes": 1343156,
+      "tok_por_caractere": 0.3157793616547278,
+      "tok_por_byte": 0.3144839467641882,
+      "bytes_por_caractere": 1.0041191765235347
+    },
+    "arb": {
+      "documentos": 400,
+      "tokens": 3699912,
+      "caracteres": 2138142,
+      "bytes": 3781215,
+      "tok_por_caractere": 1.7304332453129867,
+      "tok_por_byte": 0.978498181140189,
+      "bytes_por_caractere": 1.7684583156778175
+    },
+    "cmn": {
+      "documentos": 400,
+      "tokens": 1199323,
+      "caracteres": 476482,
+      "bytes": 1257521,
+      "tok_por_caractere": 2.517037369722256,
+      "tok_por_byte": 0.9537200571600792,
+      "bytes_por_caractere": 2.639178394986589
+    },
+    "jpn": {
+      "documentos": 400,
+      "tokens": 1250104,
+      "caracteres": 607920,
+      "bytes": 1647742,
+      "tok_por_caractere": 2.056362679299908,
+      "tok_por_byte": 0.7586770258936169,
+      "bytes_por_caractere": 2.7104586129753914
+    }
+  }
+}
