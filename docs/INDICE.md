@@ -53,6 +53,16 @@ o mesmo modo de falha: **nada reclama, a loss cai bonito, e o número sai**.
 | **[reguas-e-pisos-e0.md](reguas-e-pisos-e0.md)** | ⭐ **as 8 réguas e o piso de cada uma.** Copiar 2 frases resume 51,3%; contar a palavra "não" faz 79,0% em sentimento; copiar a fonte marca chrF++ 21,5 em tradução. E a régua de tradução reproduziu o **BLEU 50,4 publicado do opus-mt em 50,5** — validação do aparato, não só do modelo |
 | [censo-mistura-350m.md](censo-mistura-350m.md) | censo por TOKEN: o agêntico recebe 2,7% do gradiente, não 20,9% |
 
+## 🐝 O proximo degrau — Bee-1G multilingue e multimodal
+
+| documento | o que traz |
+|---|---|
+| **[plano-bee-1g.md](plano-bee-1g.md)** | ⭐⭐ **o documento de decisao.** 🔴 A premissa do README ("o proximo degrau e' parametro") **nao transfere**: para 7 dos 8 idiomas o problema e' DADO, e um 1G de orcamento razoavel teria **menos portugues que o 350M**. Traz os gates T1-T4/V/A com criterio declarado ANTES, a decisao de identidade do multimodal (encoders pre-treinados = "do zero" nao cobre olhos e ouvidos), o Pixabay **reprovado** por licenca, e o atalho de fundir modelos monolingues **morto por medicao** |
+| **[bpb-compra-capacidade.md](bpb-compra-capacidade.md)** | ⭐⭐ a premissa que carregava as decisoes caras, finalmente testada: **escala melhora o que ja existe e nao cria o que nao existe** — traducao pt->en de 0% para 86%, e as quatro capacidades em zero continuaram em zero |
+| **[fase2-capacidades-em-zero.md](fase2-capacidades-em-zero.md)** | ⭐ a receita de pos-treino validada: **adapter por capacidade, nao dose**; atendimento 0% -> 66,2% acima do piso; codigo de 876/877 sem codigo para **0**. US$ 1,20 |
+| **[e22-dois-adapters-e-roteador.md](e22-dois-adapters-e-roteador.md)** | separar dobra o alvo e custa zero — roteador deterministico 954/954 |
+| **[e20-e21-resumo-por-dado.md](e20-e21-resumo-por-dado.md)** | a curva de dose, e o preco que so' aparece na dose que move o alvo |
+
 ## ⭐ O ciclo agêntico E2 → E19 (2026-08-20 a 30) — US$ 0,66 no total
 
 Doze estágios, quase tudo na RTX 5070 local. ⭐ **As reprovações valem tanto quanto as adoções**,
