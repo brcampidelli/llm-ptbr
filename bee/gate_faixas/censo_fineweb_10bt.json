@@ -1,0 +1,95 @@
+{
+  "corpus": "/workspace/fineweb_en/train.bin",
+  "tokens_analisados": 14397545962,
+  "documentos": 14868871,
+  "tokens_por_doc_medio": 968.3,
+  "parametros": {
+    "k": 16,
+    "bandas": 4,
+    "limiar": 0.8,
+    "min_tokens": 50
+  },
+  "censo_completo": true,
+  "t1_exato": [
+    {
+      "faixa": "1 (unico)",
+      "documentos": 14766462,
+      "tokens": 14299377370,
+      "pct_tokens": 99.318
+    },
+    {
+      "faixa": "2",
+      "documentos": 101450,
+      "tokens": 97284726,
+      "pct_tokens": 0.676
+    },
+    {
+      "faixa": "3-10  ⚠️ PICO DO DANO",
+      "documentos": 884,
+      "tokens": 874748,
+      "pct_tokens": 0.006
+    },
+    {
+      "faixa": "11-100",
+      "documentos": 75,
+      "tokens": 9118,
+      "pct_tokens": 0.0
+    },
+    {
+      "faixa": "101-1000",
+      "documentos": 0,
+      "tokens": 0,
+      "pct_tokens": 0.0
+    },
+    {
+      "faixa": ">1000",
+      "documentos": 0,
+      "tokens": 0,
+      "pct_tokens": 0.0
+    }
+  ],
+  "t2_quase_dup": [
+    {
+      "faixa": "1 (unico)",
+      "documentos": 14721935,
+      "tokens": 14257220173,
+      "pct_tokens": 99.025
+    },
+    {
+      "faixa": "2",
+      "documentos": 135960,
+      "tokens": 135608244,
+      "pct_tokens": 0.942
+    },
+    {
+      "faixa": "3-10  ⚠️ PICO DO DANO",
+      "documentos": 6256,
+      "tokens": 3265403,
+      "pct_tokens": 0.023
+    },
+    {
+      "faixa": "11-100",
+      "documentos": 3250,
+      "tokens": 978302,
+      "pct_tokens": 0.007
+    },
+    {
+      "faixa": "101-1000",
+      "documentos": 1470,
+      "tokens": 473840,
+      "pct_tokens": 0.003
+    },
+    {
+      "faixa": ">1000",
+      "documentos": 0,
+      "tokens": 0,
+      "pct_tokens": 0.0
+    }
+  ],
+  "pct_flops_repetidos_exato": 0.682,
+  "pct_flops_repetidos_quase": 0.975,
+  "pct_flops_faixa_3_a_10": 0.023,
+  "pares_testados": 411869,
+  "minutos": 23.2,
+  "referencia": "arXiv:2606.24998 — medido em 344M; 10% dos FLOPs em repetidos == perder 33% da computacao"
+}

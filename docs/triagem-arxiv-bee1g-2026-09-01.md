@@ -692,11 +692,17 @@ agregado:
    30B–671B já treinados;
 7. **Encoder como classificador de qualidade de corpus, medido como objeto próprio: zero** — dois
    artigos **usam** um e **nenhum reporta precisão, recall ou o pareado com-e-sem**.
-   ⭐ **Nós temos um, e ele É medido:** `docs/fineweb-edu-pt.md` reporta **Pearson 0,705**, **−35%**
-   de erro absoluto médio, **F1 0,723 / acurácia 78,0%** e a **curva de retenção completa** com o
-   joelho em ~10%. 🔴 **Mas ele nunca foi aplicado ao corpus**, arquivado por um argumento de
-   **2026-08-04** — três dias antes de o bug de rótulos ser achado, e a quinta hipótese da §5. O
-   argumento está agora contradito por `2604.28075`. Ver `plano-bee-1g.md` §5;
+   ⭐⭐ **Nós temos um, ele É medido, E foi aplicado** — o que nos põe à frente da literatura nos
+   três eixos que ela não reporta. `docs/fineweb-edu-pt.md` traz **Pearson 0,705**, **−35%** de erro
+   absoluto médio, **F1 0,723 / acurácia 78,0%** e a **curva de retenção completa**; o
+   `bee/coletar_pt_volume.py` pontuou **todo** documento e escreveu o corpus em **três faixas**
+   (A 3,86B · B 8,08B · C 10,03B tokens, em disco); e o **pareado com-e-sem está medido**:
+   **+1,6% de bpb a 131M tokens, IC excluindo zero em 4 pontos, e não cresce com escala**.
+   ✅ **[MEDIDO no mesmo dia] E o desenho do `2604.28075` — filtrar E REPETIR o núcleo — também
+   rodou:** 3 braços × 3 sementes, mesmo orçamento de tokens vistos. **A hipótese não transfere no
+   nosso regime**: repetir o top 18% por 5,69 épocas custa **+5,31% de bpb** (t = +7,17), e o braço
+   moderado fica dentro do ruído de semente. ⚠️ A perda de **treino** ordenava ao contrário —
+   memorização. Ver `plano-bee-1g.md` §5;
 8. **Licença do fineweb-2 discutida em artigo: zero.**
 
 ⚠️ Em todos os casos a formulação é *"este instrumento não conseguiu mostrar"*, não *"não existe"* —

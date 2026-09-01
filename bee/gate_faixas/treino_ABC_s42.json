@@ -1,0 +1,15 @@
+{
+  "braco": "ABC",
+  "semente": 42,
+  "passos": 3051,
+  "tokens_vistos": 99975168,
+  "pool_tokens": 99999991,
+  "epocas": 0.9997517699776592,
+  "epocas_completas": 0,
+  "perda_final": 4.102780699729919,
+  "minutos": 20.612512997786204,
+  "tok_s_regime": 80812.68165873457,
+  "cobertura_distinta": 0.9997517699776592,
+  "passes_no_pool": 0.9997517699776592,
+  "_correcao": "campo `cobertura_por_epoca` REMOVIDO em 2026-09-01: era passes/epocas_completas, que nao e' cobertura de nada (§2t). `cobertura_distinta` = fracao do pool vista ao menos uma vez — e' o numero da §2 (contra 63,2% de amostragem com reposicao). Recomputado do artefato, nao remedido: com permutacao, >=1 epoca completa implica 1,00 por construcao."
+}

@@ -1,0 +1,94 @@
+PREP_INICIO 2026-09-01T16:57:05Z
+repo=HuggingFaceFW/fineweb config=sample-10BT
+tokenizador: vocab 32000 · EOS id 0
+alvo: tudo
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+     200,000 docs ·  0.194B tok ·  2.74M tok/s ·    1.2 min
+     400,000 docs ·  0.386B tok ·  2.91M tok/s ·    2.2 min
+     600,000 docs ·  0.577B tok ·  2.95M tok/s ·    3.3 min
+     800,000 docs ·  0.770B tok ·  3.11M tok/s ·    4.1 min
+   1,000,000 docs ·  0.961B tok ·  3.23M tok/s ·    5.0 min
+   1,200,000 docs ·  1.153B tok ·  3.26M tok/s ·    5.9 min
+   1,400,000 docs ·  1.345B tok ·  3.33M tok/s ·    6.7 min
+   1,600,000 docs ·  1.538B tok ·  3.30M tok/s ·    7.8 min
+   1,800,000 docs ·  1.731B tok ·  3.27M tok/s ·    8.8 min
+   2,000,000 docs ·  1.925B tok ·  3.29M tok/s ·    9.8 min
+   2,200,000 docs ·  2.118B tok ·  3.28M tok/s ·   10.8 min
+   2,400,000 docs ·  2.310B tok ·  3.24M tok/s ·   11.9 min
+   2,600,000 docs ·  2.505B tok ·  3.27M tok/s ·   12.8 min
+   2,800,000 docs ·  2.698B tok ·  3.31M tok/s ·   13.6 min
+   3,000,000 docs ·  2.890B tok ·  3.32M tok/s ·   14.5 min
+   3,200,000 docs ·  3.082B tok ·  3.33M tok/s ·   15.4 min
+   3,400,000 docs ·  3.273B tok ·  3.32M tok/s ·   16.4 min
+   3,600,000 docs ·  3.466B tok ·  3.34M tok/s ·   17.3 min
+   3,800,000 docs ·  3.659B tok ·  3.34M tok/s ·   18.3 min
+   4,000,000 docs ·  3.851B tok ·  3.33M tok/s ·   19.3 min
+   4,200,000 docs ·  4.046B tok ·  3.33M tok/s ·   20.2 min
+   4,400,000 docs ·  4.239B tok ·  3.33M tok/s ·   21.2 min
+   4,600,000 docs ·  4.435B tok ·  3.34M tok/s ·   22.2 min
+   4,800,000 docs ·  4.630B tok ·  3.34M tok/s ·   23.1 min
+   5,000,000 docs ·  4.823B tok ·  3.36M tok/s ·   24.0 min
+   5,200,000 docs ·  5.016B tok ·  3.36M tok/s ·   24.9 min
+   5,400,000 docs ·  5.209B tok ·  3.35M tok/s ·   25.9 min
+   5,600,000 docs ·  5.401B tok ·  3.36M tok/s ·   26.8 min
+   5,800,000 docs ·  5.593B tok ·  3.37M tok/s ·   27.7 min
+   6,000,000 docs ·  5.787B tok ·  3.37M tok/s ·   28.6 min
+   6,200,000 docs ·  5.980B tok ·  3.39M tok/s ·   29.4 min
+   6,400,000 docs ·  6.174B tok ·  3.39M tok/s ·   30.4 min
+   6,600,000 docs ·  6.369B tok ·  3.40M tok/s ·   31.2 min
+   6,800,000 docs ·  6.562B tok ·  3.40M tok/s ·   32.2 min
+   7,000,000 docs ·  6.757B tok ·  3.40M tok/s ·   33.1 min
+   7,200,000 docs ·  6.949B tok ·  3.41M tok/s ·   34.0 min
+   7,400,000 docs ·  7.142B tok ·  3.41M tok/s ·   34.9 min
+   7,600,000 docs ·  7.336B tok ·  3.42M tok/s ·   35.8 min
+   7,800,000 docs ·  7.531B tok ·  3.43M tok/s ·   36.6 min
+   8,000,000 docs ·  7.725B tok ·  3.43M tok/s ·   37.5 min
+   8,200,000 docs ·  7.918B tok ·  3.44M tok/s ·   38.4 min
+   8,400,000 docs ·  8.111B tok ·  3.43M tok/s ·   39.4 min
+   8,600,000 docs ·  8.306B tok ·  3.44M tok/s ·   40.3 min
+   8,800,000 docs ·  8.502B tok ·  3.44M tok/s ·   41.2 min
+   9,000,000 docs ·  8.699B tok ·  3.44M tok/s ·   42.1 min
+   9,200,000 docs ·  8.894B tok ·  3.45M tok/s ·   42.9 min
+   9,400,000 docs ·  9.090B tok ·  3.45M tok/s ·   43.9 min
+   9,600,000 docs ·  9.285B tok ·  3.45M tok/s ·   44.8 min
+   9,800,000 docs ·  9.479B tok ·  3.45M tok/s ·   45.8 min
+  10,000,000 docs ·  9.673B tok ·  3.44M tok/s ·   46.9 min
+  10,200,000 docs ·  9.867B tok ·  3.45M tok/s ·   47.7 min
+  10,400,000 docs · 10.064B tok ·  3.45M tok/s ·   48.5 min
+  10,600,000 docs · 10.261B tok ·  3.45M tok/s ·   49.5 min
+  10,800,000 docs · 10.456B tok ·  3.46M tok/s ·   50.3 min
+  11,000,000 docs · 10.652B tok ·  3.47M tok/s ·   51.2 min
+  11,200,000 docs · 10.846B tok ·  3.48M tok/s ·   52.0 min
+  11,400,000 docs · 11.042B tok ·  3.48M tok/s ·   52.8 min
+  11,600,000 docs · 11.237B tok ·  3.48M tok/s ·   53.8 min
+  11,800,000 docs · 11.433B tok ·  3.49M tok/s ·   54.6 min
+  12,000,000 docs · 11.628B tok ·  3.49M tok/s ·   55.5 min
+  12,200,000 docs · 11.825B tok ·  3.50M tok/s ·   56.4 min
+  12,400,000 docs · 12.021B tok ·  3.50M tok/s ·   57.2 min
+  12,600,000 docs · 12.216B tok ·  3.50M tok/s ·   58.2 min
+  12,800,000 docs · 12.411B tok ·  3.50M tok/s ·   59.0 min
+  13,000,000 docs · 12.606B tok ·  3.51M tok/s ·   59.9 min
+  13,200,000 docs · 12.801B tok ·  3.51M tok/s ·   60.8 min
+  13,400,000 docs · 12.997B tok ·  3.51M tok/s ·   61.6 min
+  13,600,000 docs · 13.193B tok ·  3.52M tok/s ·   62.5 min
+  13,800,000 docs · 13.387B tok ·  3.52M tok/s ·   63.4 min
+  14,000,000 docs · 13.579B tok ·  3.52M tok/s ·   64.3 min
+  14,200,000 docs · 13.772B tok ·  3.52M tok/s ·   65.2 min
+  14,400,000 docs · 13.964B tok ·  3.52M tok/s ·   66.1 min
+  14,600,000 docs · 14.155B tok ·  3.52M tok/s ·   67.0 min
+  14,800,000 docs · 14.347B tok ·  3.52M tok/s ·   67.9 min
+
+==================================================================
+  documentos ....... 14,868,862
+  tokens ........... 14,412,414,833 (14.412B)
+  bytes UTF-8 ...... 46,129,982,020
+  tok/byte ......... 0.3124  (PT no nosso tokenizador: 0,218)
+  arquivo .......... /workspace/fineweb_en/train.bin (26.8 GB)
+  tempo ............ 68.2 min
+PREP_SAIDA_0 2026-09-01T18:05:28Z
+total 28149256
+drwxr-xr-x 2 root root          52 Sep  1 18:05 .
+drwxr-xr-x 6 root root        4096 Sep  1 16:57 ..
+-rw-r--r-- 1 root root         423 Sep  1 18:05 meta.json
+-rw-r--r-- 1 root root 28824829666 Sep  1 18:05 train.bin
+PREP_FIM

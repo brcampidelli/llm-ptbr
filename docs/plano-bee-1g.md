@@ -683,6 +683,46 @@ medições de que capacidade é disputada (E2, E19, E21) e nenhuma razão para s
 uma reformatação "estilo Wikipédia" faz o classificador **FineWeb-Edu inverter a decisão em ~7%**.
 Nosso corpus **é** fineweb-2 e nós treinamos um classificador edu — ele mede **formato**.
 
+### ✅ [MEDIDO 09-01] O inglês do FineWeb passa — e o piloto errou por 170×
+
+**Por que o censo era obrigatório:** a dedup do FineWeb é **por crawl**, declarada pelos autores e
+escolhida por medição. Logo **duplicata ENTRE crawls sobrevive por construção** — e os configs
+`sample-*BT` são amostrados **através** dos 96 dumps, que é exatamente onde ela se concentraria.
+Tokenizado com **o nosso** tokenizador, porque token == FLOP e o FineWeb conta em gpt2 (§2g).
+
+| | `sample-10BT`, censo completo |
+|---|---:|
+| documentos | 14.868.871 |
+| tokens (**nosso** tokenizador) | **14,412 B** |
+| FLOPs em duplicata **exata** | **0,682%** |
+| FLOPs em **quase**-duplicata | **0,975%** |
+| ⚠️ faixa **3–10×** (pico do dano) | **0,023%** |
+| pares testados | 411.869 · 23,2 min de CPU |
+
+✅ **Veredito: ADOTAR.** O `2606.24998` mede que **10%** dos FLOPs em repetidos equivale a perder
+**um terço** da computação; estamos em **1%**, e a faixa de pico do dano é **0,023%** — desprezível.
+
+#### 🔴 E o achado de método: **censo de duplicação NÃO PODE ser pilotado**
+
+O piloto (208.000 docs, os primeiros do stream, **1,4%** da amostra) deu **0,004%**. O completo deu
+**0,682%** — **170× mais**.
+
+⭐ **E isso não foi azar: é aritmética.** Para uma duplicata ser **detectável**, as **duas** cópias
+precisam cair na amostra. Numa amostra de fração *f*, a taxa medida ≈ taxa real × *f*. Com
+*f* = 1,4%: 0,676% × 0,014 = **0,0095%** previsto, contra 0,004% medido — mesma ordem.
+
+⚠️ **A consequência geral:** todo piloto de duplicação subestima **pela fração amostrada**, por
+construção. Um piloto de 1% lê ~100× baixo e **parece um resultado limpo**. Se o corpus tivesse 5%
+de repetição — dano real — o mesmo piloto teria impresso 0,07% e eu teria escrito "🟢 repetição
+baixa" com a mesma confiança. **É censo completo ou nada.** Custa 23 min de CPU.
+
+#### ⚠️ E dois números do prep que mudam contas do plano
+
+1. **`sample-10BT` são 10B tokens de *gpt2*, e 14,41B nos nossos** — **+44%**. Orçar inglês pelo
+   número publicado erraria por quase metade (§2g).
+2. **Fertilidade do nosso tokenizador PT em inglês: 0,3124 tok/byte**, contra **0,218** em
+   português — **+43%**. Entra no Gate T1 como medição, não como suposição.
+
 🔴 **E um atalho que está morto:**
 [fundir modelos monolíngues causa colapso por interferência](https://arxiv.org/abs/2605.25846) —
 similaridade representacional é pré-requisito e **não sobrevive ao pré-treino separado**.
@@ -742,23 +782,103 @@ não-refiltrado**. **Filtrar duro os 21,75B e repetir o núcleo é a alternativa
 > classificador educacional sobre o FineWeb2 e **nenhum reporta precisão, recall, quanto do corpus
 > cortou, nem o pareado com-e-sem** ([rodada 3, §H4](triagem-arxiv-bee1g-2026-09-01.md)).
 >
-> 🔴 **Mas ele nunca foi aplicado ao corpus de pré-treino**, e o motivo registrado foi:
-> *"no regime certo (~10%), os 9,87B viram ~1B […] empate, não salto"*.
+> 🔴🔴 **[CORRIGIDO 09-01, segunda passada] A primeira versão deste bloco dizia que o classificador
+> "nunca foi aplicado ao corpus". ISSO ESTÁ ERRADO, e o erro é meu.**
 >
-> ⚠️ **Duas razões para reabrir.** A primeira é a data: o documento é de **2026-08-04** e o bug de
-> deslocamento de rótulos foi achado em **07/08** — a abertura dele diz *"as alternativas caíram uma
-> a uma, qualidade do corpus é o que sobrou"*, que é literalmente a **quinta hipótese da §5**
-> (*cinco hipóteses elaboradas, todas medidas com rigor, todas sobre um artefato*). As métricas do
-> classificador **sobrevivem** — são CPU contra anotação de professor. O **argumento** que o
-> arquivou, não: ele comparava contra o que o Bee conseguia fazer, e aquilo estava errado.
-> A segunda é que o argumento está **contradito por medição**: `2604.28075` mede que repetir o núcleo
-> filtrado **bate** — não empata — o passe único num corpus maior, com a folga persistindo após 7
-> épocas.
+> O `bee/coletar_pt_volume.py` **pontua todo documento e escreve o corpus em TRÊS FAIXAS**, com o
+> raciocínio no cabeçalho dele. As faixas estão em disco:
 >
-> ✅ **O experimento, com os números que já temos:** corte de **10%** sobre os 21,75B → **~2B
-> tokens**, repetidos até o **mesmo orçamento de passos** do 350M, medido **pareado** contra o
-> checkpoint atual. Nada precisa ser construído — o classificador está em
-> `bee/edu/classificador.joblib` e a curva de corte está publicada.
+> | faixa | corte de score | tokens |
+> |---|---:|---:|
+> | **A** (top 10%) | ≥ 3,358 | **3,86B** |
+> | **B** (10–30%) | ≥ 2,403 | 8,08B |
+> | **C** (30–60%) | ≥ 1,399 | 10,03B |
+> | | | **21,97B** |
+>
+> **E o efeito do filtro FOI medido pareado**, e está registrado em `docs/escada-scaling.md` e
+> `docs/gate-corpus-pt-plano.md`: **+1,6% de bpb a 131M tokens, com o IC excluindo zero em 4
+> pontos — e NÃO cresce com escala.** O desenho em faixas foi escolhido justamente por isso:
+> *"volume vence filtro por ~50×; cortar a 10% jogaria fora 90% do corpus por 1,6%"*. **O corte é um
+> botão barato — treinar com A, A+B ou A+B+C.**
+>
+> ✅ **O que CONTINUA não medido, e é o desenho do `2604.28075`:** nós medimos **filtrar em passe
+> único**; o artigo alemão mede **filtrar E REPETIR o núcleo**, e mede que isso **bate** — não empata
+> — o passe único num corpus maior, com a folga persistindo após 7 épocas. São desenhos diferentes,
+> e o segundo nunca rodou aqui.
+>
+> ⭐ **E como as faixas já existem, o experimento é imediato — mesmo orçamento de tokens vistos:**
+>
+> | braço | corpus | épocas | tokens vistos |
+> |---|---|---:|---:|
+> | controle | **A+B+C** | 1,0 | 21,97B |
+> | repetição moderada | **A+B** (11,94B) | **1,8** | 21,97B |
+> | repetição agressiva | **A** (3,86B) | **5,7** | 21,97B |
+>
+> ⚠️ **E há tensão medida entre os braços:** [`2305.16264`](https://arxiv.org/abs/2305.16264) mede
+> que **até ~4 épocas de dado repetido ≈ dado único**, o que põe o braço agressivo **fora** da faixa
+> segura; e o `2606.24998` (§2c #6) mede que o dano de repetição **pica em contagem INTERMEDIÁRIA**.
+> O braço A+B a 1,8 época é o que cai na zona defendida pelas duas medições. **Os três vão juntos
+> justamente porque a previsão não é monotônica.**
+>
+> ⚠️ **A ressalva de data continua valendo para o `fineweb-edu-pt.md`:** ele é de **2026-08-04** e o
+> bug de rótulos foi achado em **07/08**; a abertura dele diz *"as alternativas caíram uma a uma,
+> qualidade do corpus é o que sobrou"* — a quinta hipótese da §5. As **métricas** do classificador
+> sobrevivem (Pearson 0,705, CPU contra anotação de professor); o **argumento** de arquivamento,
+> não.
+
+### ⭐⭐ [MEDIDO 09-01] O experimento rodou — e a hipótese alemã NÃO transfere
+
+**9 runs** (3 braços × **3 sementes**, §2x), 151M de parâmetros, **100M de tokens vistos por braço**
+— mesmo orçamento, mesma receita, mesmo número de passos. RTX 5090, 186 min, **US$ 3,2**.
+Artefatos em `bee/gate_faixas/`, código em [`bee/gate_faixas.py`](../bee/gate_faixas.py).
+
+| braço | pool | épocas | **bpb WIKI** (primário) | bpb CRU |
+|---|---|---:|---|---|
+| **ABC** — controle | 100,0M | 1,00 | **1,3894 ± 0,0089** (ampl. 0,0157) | 1,5095 ± 0,0105 |
+| **AB** — moderado | 54,4M | 1,84 | **1,3802 ± 0,0165** (ampl. 0,0314) | 1,5482 ± 0,0134 |
+| **A** — agressivo | 17,6M | 5,69 | 🔴 **1,4633 ± 0,0155** (ampl. 0,0274) | 1,6941 ± 0,0081 |
+
+**Welch contra o controle, no holdout primário:**
+
+| | delta | t | df | veredito |
+|---|---:|---:|---:|---|
+| **AB** | −0,66% | −0,85 | 3,1 | ⚠️ **dentro do ruído de semente** — não é evidência de nada |
+| **A** | **+5,31%** | **+7,17** | 3,2 | ⭐ **significativo** — pior |
+
+✅ **Veredito: o corpus continua sendo A+B+C.** A decisão de escrever em faixas (2026-08-06) estava
+certa — mas repousava em dois números vindos de documentos marcados **DOCUMENTO INVÁLIDO** um dia
+depois (§5, corolário). **Agora ela repousa em medição válida.**
+
+#### 🔴 E o que torna este resultado confiável é que a perda de TREINO apontava ao contrário
+
+| braço | perda de **treino** | bpb no **holdout** |
+|---|---:|---:|
+| ABC | 4,0891 (a **pior**) | **1,3894** (a **melhor**) |
+| AB | 3,9528 | 1,3802 |
+| **A** | **3,4000** (a **melhor**) | 🔴 **1,4633** (a **pior**) |
+
+**A ordem inverte por completo.** O braço que viu os mesmos 17,6M de tokens **5,69 vezes** tem a
+menor perda de treino porque **decorou** — e a dispersão entre sementes cai junto (dp 0,0069 contra
+0,0627 do controle), que é a assinatura da memorização. Ler a perda de treino teria produzido
+exatamente a conclusão oposta. ⭐ **É por isso que o holdout é Wikipédia-PT, que nenhum braço vê**
+(0,12% de sobreposição com o pool).
+
+#### ⚠️ O que este gate NÃO mostra (§2q)
+
+1. **É um ponto de orçamento e um de escala.** 100M de tokens a 151M de parâmetros. O
+   [`2604.28075`](https://arxiv.org/abs/2604.28075) mede em **múltiplas escalas de modelo e de
+   orçamento** — o resultado aqui é sobre **o nosso regime**, não sobre a tese deles em geral.
+2. **As razões de filtragem são as nossas** (18% e 54%), não as do artigo.
+3. **AB nominalmente ganha por 0,66% e isso cabe na amplitude entre sementes.** Não adotar, e não
+   registrar como folga — seria a §2x outra vez.
+
+#### ✅ E duas guardas que pagaram por si nesta rodada
+
+- **Cobertura sem reposição (§2):** `cobertura_distinta` = **1,00 nos três braços**. O controle com
+  `np.random.randint` daria **0,630** no braço de 1 época — o pool inteiro do controle teria perdido
+  37% do dado, e o braço agressivo não (0,997). O defeito **favoreceria a hipótese sob teste**.
+- **Throughput medido:** **80.812 tok/s** para 151M na RTX 5090 (contra 62,9k medidos no 345M).
+  Entra no Gate T3 como ponto de ancoragem, medido e não extrapolado.
 
 ⚠️ Com contrapesos honestos: [Nemotron-CC](https://arxiv.org/abs/2412.02595) mede que FineWeb-Edu e
 DCLM **removem 90% do dado**, inviabilizando horizonte longo;

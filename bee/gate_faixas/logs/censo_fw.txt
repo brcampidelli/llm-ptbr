@@ -1,0 +1,49 @@
+corpus:  /workspace/fineweb_en/train.bin
+tokens:  14,412,414,833 (14.41B)   alvo desta corrida: 14,412,414,833
+EOS=0  k=16  bandas=4  limiar Jaccard=0.8
+------------------------------------------------------------------------------
+   1,000,000 docs ·  0.960B tok ·   1.5 min · resta ~ 21.6 min
+   2,000,000 docs ·  1.923B tok ·   3.1 min · resta ~ 19.9 min
+   3,000,000 docs ·  2.887B tok ·   4.6 min · resta ~ 18.4 min
+   4,000,000 docs ·  3.847B tok ·   6.1 min · resta ~ 16.8 min
+   5,000,000 docs ·  4.818B tok ·   7.7 min · resta ~ 15.3 min
+   6,000,000 docs ·  5.781B tok ·   9.2 min · resta ~ 13.7 min
+   7,000,000 docs ·  6.750B tok ·  10.7 min · resta ~ 12.2 min
+   8,000,000 docs ·  7.717B tok ·  12.3 min · resta ~ 10.6 min
+   9,000,000 docs ·  8.690B tok ·  13.8 min · resta ~  9.1 min
+  10,000,000 docs ·  9.663B tok ·  15.4 min · resta ~  7.6 min
+  11,000,000 docs · 10.641B tok ·  16.9 min · resta ~  6.0 min
+  12,000,000 docs · 11.616B tok ·  18.4 min · resta ~  4.4 min
+  13,000,000 docs · 12.593B tok ·  20.0 min · resta ~  2.9 min
+  14,000,000 docs · 13.565B tok ·  21.5 min · resta ~  1.3 min
+------------------------------------------------------------------------------
+documentos: 14,868,871   tokens em documentos: 14,397,545,962
+guarda de fechamento: 14,412,414,833 vs 14,412,414,833  (erro 0.0000%)
+✅ censo fecha.
+
+T1 — DUPLICATA EXATA (censo exato)
+  faixa                      documentos           tokens  % tokens
+  1 (unico)                  14,766,462   14,299,377,370   99.318%
+  2                             101,450       97,284,726    0.676%
+  3-10  ⚠️ PICO DO DANO             884          874,748    0.006%
+  11-100                             75            9,118    0.000%
+  101-1000                            0                0    0.000%
+  >1000                               0                0    0.000%
+
+T2 — QUASE-DUPLICATA (Jaccard >= 0.8, censo aproximado)
+  faixa                      documentos           tokens  % tokens
+  1 (unico)                  14,721,935   14,257,220,173   99.025%
+  2                             135,960      135,608,244    0.942%
+  3-10  ⚠️ PICO DO DANO           6,256        3,265,403    0.023%
+  11-100                          3,250          978,302    0.007%
+  101-1000                        1,470          473,840    0.003%
+  >1000                               0                0    0.000%
+
+==============================================================================
+FRACAO DOS FLOPs em documentos repetidos:  exato 0.68%   ·   quase-dup 0.97%
+FRACAO na faixa 3-10x (o PICO do dano):    0.02%
+
+🟢 repeticao baixa. O corpus nao e' o gargalo por este eixo; nao gastar tempo aqui.
+==============================================================================
+
+relatorio: /workspace/censo_fw_full.json   (23.2 min)

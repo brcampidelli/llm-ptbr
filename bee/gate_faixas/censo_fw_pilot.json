@@ -1,0 +1,95 @@
+{
+  "corpus": "/workspace/fineweb_pilot/train.bin",
+  "tokens_analisados": 201427457,
+  "documentos": 208000,
+  "tokens_por_doc_medio": 968.4,
+  "parametros": {
+    "k": 16,
+    "bandas": 4,
+    "limiar": 0.8,
+    "min_tokens": 50
+  },
+  "censo_completo": true,
+  "t1_exato": [
+    {
+      "faixa": "1 (unico)",
+      "documentos": 207986,
+      "tokens": 201419043,
+      "pct_tokens": 99.996
+    },
+    {
+      "faixa": "2",
+      "documentos": 14,
+      "tokens": 8414,
+      "pct_tokens": 0.004
+    },
+    {
+      "faixa": "3-10  ⚠️ PICO DO DANO",
+      "documentos": 0,
+      "tokens": 0,
+      "pct_tokens": 0.0
+    },
+    {
+      "faixa": "11-100",
+      "documentos": 0,
+      "tokens": 0,
+      "pct_tokens": 0.0
+    },
+    {
+      "faixa": "101-1000",
+      "documentos": 0,
+      "tokens": 0,
+      "pct_tokens": 0.0
+    },
+    {
+      "faixa": ">1000",
+      "documentos": 0,
+      "tokens": 0,
+      "pct_tokens": 0.0
+    }
+  ],
+  "t2_quase_dup": [
+    {
+      "faixa": "1 (unico)",
+      "documentos": 207946,
+      "tokens": 201403367,
+      "pct_tokens": 99.988
+    },
+    {
+      "faixa": "2",
+      "documentos": 44,
+      "tokens": 21012,
+      "pct_tokens": 0.01
+    },
+    {
+      "faixa": "3-10  ⚠️ PICO DO DANO",
+      "documentos": 10,
+      "tokens": 3078,
+      "pct_tokens": 0.002
+    },
+    {
+      "faixa": "11-100",
+      "documentos": 0,
+      "tokens": 0,
+      "pct_tokens": 0.0
+    },
+    {
+      "faixa": "101-1000",
+      "documentos": 0,
+      "tokens": 0,
+      "pct_tokens": 0.0
+    },
+    {
+      "faixa": ">1000",
+      "documentos": 0,
+      "tokens": 0,
+      "pct_tokens": 0.0
+    }
+  ],
+  "pct_flops_repetidos_exato": 0.004,
+  "pct_flops_repetidos_quase": 0.012,
+  "pct_flops_faixa_3_a_10": 0.002,
+  "pares_testados": 359,
+  "minutos": 0.4,
+  "referencia": "arXiv:2606.24998 — medido em 344M; 10% dos FLOPs em repetidos == perder 33% da computacao"
+}

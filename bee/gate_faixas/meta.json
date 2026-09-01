@@ -1,0 +1,46 @@
+{
+  "tokens_vistos": 100000000,
+  "fracao": 0.004551788056669092,
+  "faixas_em_disco": {
+    "A": 3863236392,
+    "B": 8077600291,
+    "C": 10028551776
+  },
+  "pools": {
+    "ABC": {
+      "tokens": 99999991,
+      "epocas": 1.0000000900000081,
+      "faixas": [
+        "A",
+        "B",
+        "C"
+      ]
+    },
+    "AB": {
+      "tokens": 54352155,
+      "epocas": 1.8398534519928418,
+      "faixas": [
+        "A",
+        "B"
+      ]
+    },
+    "A": {
+      "tokens": 17584632,
+      "epocas": 5.686783778017078,
+      "faixas": [
+        "A"
+      ]
+    }
+  },
+  "holdout_wiki": {
+    "docs": 300,
+    "tokens": 235002,
+    "bytes": 1029991
+  },
+  "holdout_cru": {
+    "docs": 300,
+    "tokens": 158338,
+    "bytes": 736075
+  },
+  "sobreposicao_wiki_pool_pct": 0.11888586956521739
+}

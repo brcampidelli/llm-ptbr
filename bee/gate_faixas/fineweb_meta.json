@@ -1,0 +1,12 @@
+{
+  "eos": 0,
+  "tokens": 14412414833,
+  "documentos": 14868862,
+  "bytes_utf8": 46129982020,
+  "tok_por_byte": 0.3124305322024923,
+  "repo": "HuggingFaceFW/fineweb",
+  "config": "sample-10BT",
+  "tokenizador": "/workspace/bee/tokenizer_bee",
+  "minutos": 68.16212699413299,
+  "_amostra": "sample-10BT e' amostra de 10B dos 18,5T do FineWeb completo — este censo mede o artefato que seria baixado, nao o corpus inteiro"
+}

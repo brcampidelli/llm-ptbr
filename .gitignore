@@ -65,3 +65,9 @@ comeia/models/
 comeia/data/raw/gigaverbo/
 comeia/data/processed/gigaverbo_*.jsonl
 comeia/data/processed/mix_e4/
+
+# gate das faixas (2026-09-01): pools de 329 MB, checkpoints de sonda e as copias
+# de staging que foram para o pod. O que se versiona e' o RESULTADO e os holdouts.
+bee/gate_faixas/m_*/
+bee/gate_faixas/config.py
+bee/gate_faixas/gate_faixas.py
