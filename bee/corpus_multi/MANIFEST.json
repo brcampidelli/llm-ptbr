@@ -1,0 +1,151 @@
+{
+  "_gerado": "bee/coletar_multilingue.py",
+  "_gate": "T1 — tokenizador multilingue do Bee-1G",
+  "unidade_de_balanceamento": "caracteres",
+  "alvo_por_idioma": 100000000,
+  "_parcial": null,
+  "_erros": null,
+  "_aviso_metrica": "fertilidade em tokens/PALAVRA nao e' comparavel entre escritas — `\\w+` nao segmenta han nem kana. Usar tokens/CARACTERE (§2g).",
+  "idiomas": {
+    "por": {
+      "repo": "HuggingFaceFW/fineweb-2",
+      "config": "por_Latn",
+      "licenca": "odc-by",
+      "fonte": "fineweb2-por",
+      "escrita_esperada": "latim",
+      "documentos": 25810,
+      "caracteres": 100008397,
+      "bytes_utf8": 103055759,
+      "bytes_por_caractere": 1.0304710613449788,
+      "shards": 1,
+      "minutos": 0.2630536794662476,
+      "perfil_escrita": {
+        "latim": 0.9985
+      },
+      "interrompido": null
+    },
+    "spa": {
+      "repo": "HuggingFaceFW/fineweb-2",
+      "config": "spa_Latn",
+      "licenca": "odc-by",
+      "fonte": "fineweb2-spa",
+      "escrita_esperada": "latim",
+      "documentos": 24876,
+      "caracteres": 100046529,
+      "bytes_utf8": 102006759,
+      "bytes_por_caractere": 1.019593183487655,
+      "shards": 1,
+      "minutos": 0.20113032261530558,
+      "perfil_escrita": {
+        "latim": 0.998
+      },
+      "interrompido": null
+    },
+    "fra": {
+      "repo": "HuggingFaceFW/fineweb-2",
+      "config": "fra_Latn",
+      "licenca": "odc-by",
+      "fonte": "fineweb2-fra",
+      "escrita_esperada": "latim",
+      "documentos": 26481,
+      "caracteres": 100006662,
+      "bytes_utf8": 103714555,
+      "bytes_por_caractere": 1.037076459966237,
+      "shards": 1,
+      "minutos": 0.18919778267542522,
+      "perfil_escrita": {
+        "latim": 0.9931
+      },
+      "interrompido": null
+    },
+    "deu": {
+      "repo": "HuggingFaceFW/fineweb-2",
+      "config": "deu_Latn",
+      "licenca": "odc-by",
+      "fonte": "fineweb2-deu",
+      "escrita_esperada": "latim",
+      "documentos": 31482,
+      "caracteres": 100009378,
+      "bytes_utf8": 101583865,
+      "bytes_por_caractere": 1.0157433935845497,
+      "shards": 1,
+      "minutos": 0.22339019775390626,
+      "perfil_escrita": {
+        "latim": 0.9994
+      },
+      "interrompido": null
+    },
+    "jpn": {
+      "repo": "HuggingFaceFW/fineweb-2",
+      "config": "jpn_Jpan",
+      "licenca": "odc-by",
+      "fonte": "fineweb2-jpn",
+      "escrita_esperada": "kana",
+      "documentos": 65103,
+      "caracteres": 100007448,
+      "bytes_utf8": 270582460,
+      "bytes_por_caractere": 2.705623085192615,
+      "shards": 2,
+      "minutos": 0.42817266782124835,
+      "perfil_escrita": {
+        "latim": 0.0851,
+        "han": 0.2734,
+        "kana": 0.6347
+      },
+      "interrompido": null
+    },
+    "cmn": {
+      "repo": "HuggingFaceFW/fineweb-2",
+      "config": "cmn_Hani",
+      "licenca": "odc-by",
+      "fonte": "fineweb2-cmn",
+      "escrita_esperada": "han",
+      "documentos": 74242,
+      "caracteres": 100001212,
+      "bytes_utf8": 262845500,
+      "bytes_por_caractere": 2.6284231435115006,
+      "shards": 2,
+      "minutos": 0.2948993762334188,
+      "perfil_escrita": {
+        "latim": 0.1221,
+        "han": 0.8704
+      },
+      "interrompido": null
+    },
+    "arb": {
+      "repo": "HuggingFaceFW/fineweb-2",
+      "config": "arb_Arab",
+      "licenca": "odc-by",
+      "fonte": "fineweb2-arb",
+      "escrita_esperada": "arabe",
+      "documentos": 13518,
+      "caracteres": 100021030,
+      "bytes_utf8": 178145732,
+      "bytes_por_caractere": 1.7810827582959303,
+      "shards": 1,
+      "minutos": 0.2420898715655009,
+      "perfil_escrita": {
+        "latim": 0.0343,
+        "arabe": 0.9654
+      },
+      "interrompido": null
+    },
+    "eng": {
+      "repo": "HuggingFaceFW/fineweb",
+      "config": "sample-10BT",
+      "licenca": "odc-by",
+      "fonte": "fineweb-eng",
+      "escrita_esperada": "latim",
+      "documentos": 32192,
+      "caracteres": 100006378,
+      "bytes_utf8": 100647019,
+      "bytes_por_caractere": 1.0064060014252292,
+      "shards": 1,
+      "minutos": 1.146239407857259,
+      "perfil_escrita": {
+        "latim": 0.9971
+      },
+      "interrompido": null
+    }
+  }
+}

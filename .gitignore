@@ -77,3 +77,4 @@ bee/corpus_multi/**
 bee/corpus_multi_teste/**
 !bee/corpus_multi/MANIFEST.json
 !bee/corpus_multi_teste/MANIFEST.json
+bee/tok_t1/**
