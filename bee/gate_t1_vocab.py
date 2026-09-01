@@ -64,6 +64,21 @@ TETO_TOK_PALAVRA = 3.0        # teto europeu medido em 2605.24718
 D_MODEL_REF = 2048            # referencia do Bee-1G para custo de embedding
 ALVO_PARAMS = 1_000_000_000
 
+# acima disto, `\w+` nao esta' segmentando palavras — esta' casando oracoes inteiras
+MAX_CAR_POR_PALAVRA = 8.0
+
+
+def _segmenta(m: dict) -> bool:
+    """O `\\w+` segmenta PALAVRAS neste idioma? Medido, nao suposto.
+
+    Linguas com espaco dao ~6 caracteres por 'palavra' (medido: por 6,1 · spa 6,0 · fra 5,9 ·
+    deu 6,8 · eng 5,8 · **arb 5,7** — arabe usa espaco e entra). Chines da' 9,7 e japones 12,3,
+    porque sem espaco o `\\w+` casa a oracao inteira. Onde nao segmenta, tok/palavra nao e'
+    comparavel com nada e o teto europeu nao tem forma valida.
+    """
+    tc = m.get("tok_por_caractere") or 0
+    return bool(tc) and (m["tok_por_palavra"] / tc) <= MAX_CAR_POR_PALAVRA
+
 
 # ------------------------------------------------------------------ corpus
 def textos(corpus: Path, cod: str, limite_bytes: int, parte: str):
@@ -432,15 +447,34 @@ def main() -> int:
     print(f"  PT: piora maxima {TETO_PIORA_PT:.0%} sobre {BASE_PT} tok/byte "
           f"(teto {BASE_PT*(1+TETO_PIORA_PT):.3f}) · nenhum idioma acima de "
           f"{TETO_TOK_PALAVRA} tok/palavra\n")
+    # 🔴 O teto de tok/PALAVRA so' vale onde `\w+` de fato segmenta palavras, e isso e'
+    # MEDIDO, nao suposto: caracteres/palavra ~6 nas linguas com espaco (por 6,1 · spa 6,0 ·
+    # fra 5,9 · deu 6,8 · eng 5,8 · **arb 5,7**) contra 9,7 no chines e 12,3 no japones, onde
+    # uma "palavra" e' uma oracao inteira. A fonte do teto (2605.24718) mediu 25 linguas
+    # EUROPEIAS; aplica-lo a cmn/jpn e' comparar duas coisas medidas de jeitos diferentes (§2g).
+    # Sem esta separacao o criterio reprova TODOS os bracos — inclusive os bons —, que e' a
+    # assinatura de regua quebrada e nao de candidato ruim.
+    aplicavel = [c for c in ORDEM if c in bracos["32k-atual"]["idiomas"]
+                 and _segmenta(bracos["32k-atual"]["idiomas"][c])]
+    sem_criterio = [c for c in ORDEM if c not in aplicavel
+                    and c in bracos["32k-atual"]["idiomas"]]
+    print(f"  teto de tok/palavra aplicado em: {', '.join(aplicavel)}")
+    if sem_criterio:
+        print(f"  ⚠️ SEM CRITERIO em {', '.join(sem_criterio)} — `\\w+` nao os segmenta "
+              f"(>8 car/palavra). Os numeros vao na tabela, mas NAO reprovam nem aprovam: "
+              f"o teto de CJK precisa vir de referencia externa, e inventa-lo agora seria "
+              f"escolher o limiar que da' o resultado desejado (§2l).\n")
     for nome, b in bracos.items():
         pt = b["idiomas"].get("por", {}).get("tok_por_byte", float("nan"))
         piora = (pt - BASE_PT) / BASE_PT
-        acima = {c: b["idiomas"][c]["tok_por_palavra"] for c in ORDEM
-                 if c in b["idiomas"] and b["idiomas"][c]["tok_por_palavra"] > TETO_TOK_PALAVRA}
+        acima = {c: b["idiomas"][c]["tok_por_palavra"] for c in aplicavel
+                 if b["idiomas"][c]["tok_por_palavra"] > TETO_TOK_PALAVRA}
         ok = piora <= TETO_PIORA_PT and not acima
         b["eixo1_passa"] = bool(ok)
         b["pt_piora"] = piora
         b["acima_do_teto_palavra"] = {k: round(v, 2) for k, v in acima.items()}
+        b["idiomas_sem_criterio"] = {c: round(b["idiomas"][c]["tok_por_caractere"], 3)
+                                     for c in sem_criterio if c in b["idiomas"]}
         print(f"  {nome:<20} PT {pt:.3f} ({piora:+.1%})  "
               + (f"🔴 acima de {TETO_TOK_PALAVRA} tok/palavra: "
                  + ", ".join(f"{k} {v:.1f}" for k, v in acima.items()) if acima else "")

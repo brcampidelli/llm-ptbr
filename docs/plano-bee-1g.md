@@ -410,6 +410,85 @@ e kana dispensaria a expansão do vocabulário inteira.
 **romanização AUMENTA a contagem de tokens em 2–19%**. Não é contradição — **pode custar tokens e
 comprar transferência** — mas as duas medidas vão juntas.
 
+##### ⭐⭐ [MEDIDO 09-01] O Gate T1 rodou — eixos 1 e 3
+
+Corpus: **293.704 documentos · 800 Mcar · 1,22 GB**, os 8 idiomas do `fineweb-2` (odc-by, configs
+conferidos na origem) mais o inglês do `fineweb`. Código em
+[`bee/coletar_multilingue.py`](../bee/coletar_multilingue.py) e
+[`bee/gate_t1_vocab.py`](../bee/gate_t1_vocab.py); artefato em `docs/gate-t1-vocab.json`.
+
+**Eixo 1 — tok/caractere por idioma** (§2y: por idioma, nunca a média):
+
+| braço | vocab | por | spa | fra | deu | eng | arb | cmn | jpn | emb@2048 | %1B |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 32k atual | 32k | 0,23 | 0,29 | 0,36 | 0,42 | 0,32 | 1,72 | 2,60 | 2,04 | 66M | 7% |
+| **32k-multi** | 32k | 0,27 | 0,26 | 0,28 | 0,30 | 0,27 | **0,36** | **0,81** | **0,59** | 66M | 7% |
+| 64k-multi | 64k | 0,25 | 0,24 | 0,25 | 0,27 | 0,25 | 0,32 | 0,73 | 0,53 | 131M | 13% |
+| 96k-multi | 96k | 0,23 | 0,23 | 0,24 | 0,26 | 0,24 | 0,30 | 0,69 | 0,49 | 197M | 20% |
+| 128k-multi | 128k | 0,23 | 0,22 | 0,24 | 0,25 | 0,23 | 0,29 | 0,67 | 0,47 | 262M | 26% |
+| **32k+32k in-place** | 57k | **0,23** | **0,29** | **0,36** | **0,42** | **0,32** | **0,35** | 1,53 | 0,79 | 116M | 12% |
+
+| braço | PT | máx tok/pal | veredito |
+|---|---:|---:|---|
+| 32k atual | +1,0% | 9,8 | ❌ árabe quebrado |
+| 32k-multi | +19,4% | 2,1 | ❌ estoura o teto de PT |
+| 64k · 96k · 128k-multi | +9,1% · +4,3% · +1,5% | 1,8 · 1,8 · 1,7 | ✅ **passam** |
+| 32k+32k in-place | +1,0% | 2,9 | ✅ **passa** |
+
+**Três leituras:**
+
+1. ⭐⭐ **O problema do vocabulário atual não é tamanho — é composição.** O `32k-multi` tem **o
+   mesmo vocab e o mesmo custo de embedding** e põe o chinês de 2,60 para **0,81**. Três vezes
+   menos token, zero parâmetro a mais. O preço é o PT: +19,4%, acima do teto declarado.
+2. **Dobrar o embedding compra 8%.** De 64k para 128k: cmn 0,73 → 0,67 e por 0,25 → 0,23, ao custo
+   de **131M de parâmetros** — 13% de um modelo de 1B.
+3. ⭐ **A expansão in-place preserva as cinco latinas EXATAMENTE** (dígito por dígito) e resolve o
+   árabe (0,35 contra 0,32 do 64k do zero). ⚠️ Mas só metade do chinês (1,53), e coube apenas
+   **24.667 dos 32.000** pedidos — acabaram os candidatos 100% na escrita-alvo.
+
+**Eixo 3 — % dos tokens EMITIDOS que não decodificam sozinhos:**
+
+| braço | arb | cmn | jpn |
+|---|---:|---:|---:|
+| 32k atual | 88,2% | 96,6% | 95,9% |
+| 32k-multi | 0,1% | 8,4% | 1,8% |
+| 128k-multi | 0,1% | **1,8%** | 0,3% |
+| 32k+32k in-place | 20,7% | 🔴 **80,9%** | 59,2% |
+
+⭐ **É aqui que a expansão in-place se separa**, e exatamente como o critério previa: fertilidade
+decente em japonês (0,79) **com 59,2% dos tokens emitidos sendo fragmentos incompletos**. Eixo 3
+não é redundante com o eixo 1.
+
+##### 🔴 E o critério que eu declarei estava quebrado em 2 dos 8 idiomas
+
+O teto *"nenhum idioma acima de 3,0 tok/palavra"* reprovou **os seis braços**, inclusive os
+obviamente bons — assinatura de régua defeituosa, não de candidato ruim. Caracteres por "palavra"
+que o `\w+` enxerga:
+
+| por | spa | fra | deu | eng | **arb** | **cmn** | **jpn** |
+|---:|---:|---:|---:|---:|---:|---:|---:|
+| 6,1 | 6,0 | 5,9 | 6,8 | 5,8 | **5,7** | 🔴 **9,7** | 🔴 **12,3** |
+
+⭐ **O árabe usa espaço e entra na linha das europeias.** Quebram chinês e japonês, onde uma
+"palavra" é uma oração inteira — e a fonte do teto ([`2605.24718`](https://arxiv.org/abs/2605.24718))
+mediu **25 línguas europeias**. Aplicar aquele número a CJK é a §2g na própria régua do gate.
+
+✅ Corrigido medindo **quais idiomas o `\w+` segmenta** (car/palavra ≤ 8), em vez de listar. E
+**não inventei teto para CJK**: escolher agora um limiar que faz os braços passarem seria escolher
+o número que dá o resultado desejado (§2l). Os valores de cmn/jpn vão na tabela e **não aprovam
+nem reprovam** até virem de referência externa.
+
+##### ✅ E o orçamento de texto não prende
+
+25 / 50 / 100 MB por idioma dão fertilidade **idêntica na segunda casa nos oito**, a 32k; e a
+checagem no topo confirma a 128k (cmn 0,67 contra 0,66). A escolha de 50 MB é de recurso, sem
+consequência de medição — e foi feita porque a corrida a 1,22 GB levou o *commit* da máquina a
+**70,2 GB de 71,1 GB** e teria morrido de OOM no meio.
+
+⚠️ **O eixo 2 (qualidade, bpb por idioma) continua NÃO MEDIDO** — exige GPU, e `2607.24276` e
+`2310.08754` mediram que **fertilidade não é preditiva de qualidade**. Este gate **elimina
+candidatos; não elege nenhum.** A escolha entre 64k, 96k, 128k e o híbrido in-place é do eixo 2.
+
 #### Gate T2 — mistura de idiomas · **horas locais + ~US$ 20**
 
 Mini-runs no estilo do E4 (40 braços de 3,8M tokens), agora com **3 sementes por braço**.

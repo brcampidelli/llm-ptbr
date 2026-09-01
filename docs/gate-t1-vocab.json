@@ -1,0 +1,461 @@
+{
+  "_gate": "T1 — vocabulario multilingue do Bee-1G",
+  "_regua": "tokens/CARACTERE — tokens/palavra nao compara entre escritas (§2g)",
+  "_criterio_eixo1": {
+    "pt_piora_max": 0.15,
+    "pt_base_tok_byte": 0.218,
+    "teto_tok_palavra": 3.0
+  },
+  "_eixo2_qualidade": {
+    "estado": "NAO MEDIDO",
+    "por_que": "bpb por idioma exige GPU; fertilidade NAO e' preditiva de qualidade (2607.24276, 2310.08754). Este gate nao e' aprovacao final."
+  },
+  "_ancoras_problema": null,
+  "d_model_referencia": 2048,
+  "corpus": "bee\\corpus_multi",
+  "bytes_por_idioma": 52428800,
+  "bracos": {
+    "32k-atual": {
+      "vocab": 32000,
+      "origem": "models/bee-150m-v3-base",
+      "idiomas": {
+        "_vocab_quebrado": 0.004969371171396424,
+        "_vocab_tokens": 31996,
+        "por": {
+          "docs": 300,
+          "tok_por_caractere": 0.2269218838569132,
+          "tok_por_byte": 0.22016710830865335,
+          "tok_por_palavra": 1.3751775742137748,
+          "frac_tokens_incompletos": 0.0007836746325411986
+        },
+        "spa": {
+          "docs": 300,
+          "tok_por_caractere": 0.29168786020674214,
+          "tok_por_byte": 0.28634588996661964,
+          "tok_por_palavra": 1.7642377849373805,
+          "frac_tokens_incompletos": 0.001956624719378823
+        },
+        "fra": {
+          "docs": 300,
+          "tok_por_caractere": 0.36488646469555447,
+          "tok_por_byte": 0.3520499639682921,
+          "tok_por_palavra": 2.1592843167299214,
+          "frac_tokens_incompletos": 0.006885992205155078
+        },
+        "deu": {
+          "docs": 300,
+          "tok_por_caractere": 0.4222700596930176,
+          "tok_por_byte": 0.41607831222481195,
+          "tok_por_palavra": 2.8872376290661044,
+          "frac_tokens_incompletos": 0.009610245481686746
+        },
+        "eng": {
+          "docs": 300,
+          "tok_por_caractere": 0.3185325918731121,
+          "tok_por_byte": 0.3163375525100409,
+          "tok_por_palavra": 1.840762877568266,
+          "frac_tokens_incompletos": 0.005254163455416681
+        },
+        "arb": {
+          "docs": 300,
+          "tok_por_caractere": 1.7177010100507768,
+          "tok_por_byte": 0.9769508513185783,
+          "tok_por_palavra": 9.843736051416705,
+          "frac_tokens_incompletos": 0.8818366503662328
+        },
+        "cmn": {
+          "docs": 300,
+          "tok_por_caractere": 2.602141714039589,
+          "tok_por_byte": 0.9624139967315325,
+          "tok_por_palavra": 25.140843049327355,
+          "frac_tokens_incompletos": 0.9655273037567013
+        },
+        "jpn": {
+          "docs": 300,
+          "tok_por_caractere": 2.043919340463458,
+          "tok_por_byte": 0.7566830737808706,
+          "tok_por_palavra": 25.17457050332071,
+          "frac_tokens_incompletos": 0.9588612804163473
+        }
+      },
+      "minutos": 0.0,
+      "eixo1_passa": false,
+      "pt_piora": 0.009940863801162174,
+      "acima_do_teto_palavra": {
+        "arb": 9.84
+      },
+      "idiomas_sem_criterio": {
+        "cmn": 2.602,
+        "jpn": 2.044
+      }
+    },
+    "32k-multi": {
+      "vocab": 32000,
+      "origem": "C:\\Users\\brcam\\Desktop\\Desenvolvendo Projetos\\Desenvolvendo LLM\\bee\\tok_t1\\32k-multi",
+      "idiomas": {
+        "_vocab_quebrado": 0.015783222902862857,
+        "_vocab_tokens": 31996,
+        "por": {
+          "docs": 300,
+          "tok_por_caractere": 0.2683377572641213,
+          "tok_por_byte": 0.2603501569029966,
+          "tok_por_palavra": 1.626163417262663,
+          "frac_tokens_incompletos": 0.0003765457201813444
+        },
+        "spa": {
+          "docs": 300,
+          "tok_por_caractere": 0.26019893224608803,
+          "tok_por_byte": 0.25543365009966934,
+          "tok_por_palavra": 1.5737809161599767,
+          "frac_tokens_incompletos": 0.00023088556157140714
+        },
+        "fra": {
+          "docs": 300,
+          "tok_por_caractere": 0.2782867278070622,
+          "tok_por_byte": 0.26849675714628873,
+          "tok_por_palavra": 1.646814077933099,
+          "frac_tokens_incompletos": 0.0015924820532640515
+        },
+        "deu": {
+          "docs": 300,
+          "tok_por_caractere": 0.2954139518502679,
+          "tok_por_byte": 0.29108229596689494,
+          "tok_por_palavra": 2.0198691769747543,
+          "frac_tokens_incompletos": 0.00174207126433985
+        },
+        "eng": {
+          "docs": 300,
+          "tok_por_caractere": 0.27210238128275466,
+          "tok_por_byte": 0.2702272970592257,
+          "tok_por_palavra": 1.5724480795445432,
+          "frac_tokens_incompletos": 0.002020162397520888
+        },
+        "arb": {
+          "docs": 300,
+          "tok_por_caractere": 0.3607207188759044,
+          "tok_por_byte": 0.20516167326678517,
+          "tok_por_palavra": 2.0672046672352624,
+          "frac_tokens_incompletos": 0.0013289838089020627
+        },
+        "cmn": {
+          "docs": 300,
+          "tok_por_caractere": 0.8122732690472566,
+          "tok_por_byte": 0.30042297815070657,
+          "tok_por_palavra": 7.847856502242152,
+          "frac_tokens_incompletos": 0.08437824272372794
+        },
+        "jpn": {
+          "docs": 300,
+          "tok_por_caractere": 0.5915953654188948,
+          "tok_por_byte": 0.21901558964561788,
+          "tok_por_palavra": 7.286568966463582,
+          "frac_tokens_incompletos": 0.017637886617352397
+        }
+      },
+      "minutos": 1.9183196425437927,
+      "eixo1_passa": false,
+      "pt_piora": 0.19426677478438817,
+      "acima_do_teto_palavra": {},
+      "idiomas_sem_criterio": {
+        "cmn": 0.812,
+        "jpn": 0.592
+      }
+    },
+    "64k-multi": {
+      "vocab": 64000,
+      "origem": "C:\\Users\\brcam\\Desktop\\Desenvolvendo Projetos\\Desenvolvendo LLM\\bee\\tok_t1\\64k-multi",
+      "idiomas": {
+        "_vocab_quebrado": 0.008406775423463967,
+        "_vocab_tokens": 63996,
+        "por": {
+          "docs": 300,
+          "tok_por_caractere": 0.24516592519094305,
+          "tok_por_byte": 0.23786807992102402,
+          "tok_por_palavra": 1.4857389536592533,
+          "frac_tokens_incompletos": 0.00023079554399746126
+        },
+        "spa": {
+          "docs": 300,
+          "tok_por_caractere": 0.23716572614074646,
+          "tok_por_byte": 0.2328222740336792,
+          "tok_por_palavra": 1.4344674305370508,
+          "frac_tokens_incompletos": 7.599265404344247e-05
+        },
+        "fra": {
+          "docs": 300,
+          "tok_por_caractere": 0.2548486909654758,
+          "tok_por_byte": 0.24588325726639443,
+          "tok_por_palavra": 1.5081150845100304,
+          "frac_tokens_incompletos": 0.0009495785512479338
+        },
+        "deu": {
+          "docs": 300,
+          "tok_por_caractere": 0.26934237054234034,
+          "tok_por_byte": 0.2653930023534178,
+          "tok_por_palavra": 1.8416068330704096,
+          "frac_tokens_incompletos": 0.0016251614487153485
+        },
+        "eng": {
+          "docs": 300,
+          "tok_por_caractere": 0.24957999338236078,
+          "tok_por_byte": 0.24786011314502682,
+          "tok_por_palavra": 1.4422938139560704,
+          "frac_tokens_incompletos": 0.0019287599057430857
+        },
+        "arb": {
+          "docs": 300,
+          "tok_por_caractere": 0.32048579851494524,
+          "tok_por_byte": 0.18227786550898903,
+          "tok_por_palavra": 1.8366279057583943,
+          "frac_tokens_incompletos": 0.0012881701708166132
+        },
+        "cmn": {
+          "docs": 300,
+          "tok_por_caractere": 0.7341552891202561,
+          "tok_por_byte": 0.2715306865155115,
+          "tok_por_palavra": 7.093112107623319,
+          "frac_tokens_incompletos": 0.03951284768144932
+        },
+        "jpn": {
+          "docs": 300,
+          "tok_por_caractere": 0.5260583778966131,
+          "tok_por_byte": 0.19475302302522768,
+          "tok_por_palavra": 6.479362204292222,
+          "frac_tokens_incompletos": 0.007920540460407887
+        }
+      },
+      "minutos": 2.724047338962555,
+      "eixo1_passa": true,
+      "pt_piora": 0.091137981289101,
+      "acima_do_teto_palavra": {},
+      "idiomas_sem_criterio": {
+        "cmn": 0.734,
+        "jpn": 0.526
+      }
+    },
+    "96k-multi": {
+      "vocab": 96000,
+      "origem": "C:\\Users\\brcam\\Desktop\\Desenvolvendo Projetos\\Desenvolvendo LLM\\bee\\tok_t1\\96k-multi",
+      "idiomas": {
+        "_vocab_quebrado": 0.005854410600441685,
+        "_vocab_tokens": 95996,
+        "por": {
+          "docs": 300,
+          "tok_por_caractere": 0.23427567942786298,
+          "tok_por_byte": 0.2273020037115573,
+          "tok_por_palavra": 1.419742578622514,
+          "frac_tokens_incompletos": 0.00019839472787575314
+        },
+        "spa": {
+          "docs": 300,
+          "tok_por_caractere": 0.2266123444527661,
+          "tok_por_byte": 0.22246216693336898,
+          "tok_por_palavra": 1.3706366124851628,
+          "frac_tokens_incompletos": 2.6510548989285318e-05
+        },
+        "fra": {
+          "docs": 300,
+          "tok_por_caractere": 0.24453436134710702,
+          "tok_por_byte": 0.2359317799663704,
+          "tok_por_palavra": 1.4470780981117843,
+          "frac_tokens_incompletos": 0.0006719718504882995
+        },
+        "deu": {
+          "docs": 300,
+          "tok_por_caractere": 0.2565491613867755,
+          "tok_por_byte": 0.2527873800716578,
+          "tok_por_palavra": 1.754134292636659,
+          "frac_tokens_incompletos": 0.001059022281492605
+        },
+        "eng": {
+          "docs": 300,
+          "tok_por_caractere": 0.2400954220879719,
+          "tok_por_byte": 0.23844090096259132,
+          "tok_por_palavra": 1.387483577283914,
+          "frac_tokens_incompletos": 0.0017248814144027599
+        },
+        "arb": {
+          "docs": 300,
+          "tok_por_caractere": 0.30085522654288527,
+          "tok_por_byte": 0.17111288168016328,
+          "tok_por_palavra": 1.7241297655695003,
+          "frac_tokens_incompletos": 0.0011339976882490856
+        },
+        "cmn": {
+          "docs": 300,
+          "tok_por_caractere": 0.6949876910852267,
+          "tok_por_byte": 0.25704437150665366,
+          "tok_por_palavra": 6.7146905829596415,
+          "frac_tokens_incompletos": 0.024525570063898446
+        },
+        "jpn": {
+          "docs": 300,
+          "tok_por_caractere": 0.4936319073083779,
+          "tok_por_byte": 0.1827483607321417,
+          "tok_por_palavra": 6.0799714583676385,
+          "frac_tokens_incompletos": 0.004572496411515649
+        }
+      },
+      "minutos": 3.1622334917386374,
+      "eixo1_passa": true,
+      "pt_piora": 0.04266974179613435,
+      "acima_do_teto_palavra": {},
+      "idiomas_sem_criterio": {
+        "cmn": 0.695,
+        "jpn": 0.494
+      }
+    },
+    "128k-multi": {
+      "vocab": 128000,
+      "origem": "C:\\Users\\brcam\\Desktop\\Desenvolvendo Projetos\\Desenvolvendo LLM\\bee\\tok_t1\\128k-multi",
+      "idiomas": {
+        "_vocab_quebrado": 0.004586080815025469,
+        "_vocab_tokens": 127996,
+        "por": {
+          "docs": 300,
+          "tok_por_caractere": 0.2279858501575741,
+          "tok_por_byte": 0.2211994035627421,
+          "tok_por_palavra": 1.3816253551484277,
+          "frac_tokens_incompletos": 0.00016841284192238828
+        },
+        "spa": {
+          "docs": 300,
+          "tok_por_caractere": 0.2204615452393635,
+          "tok_por_byte": 0.2164240134307878,
+          "tok_por_palavra": 1.3334342675807271,
+          "frac_tokens_incompletos": 2.7250183938741586e-05
+        },
+        "fra": {
+          "docs": 300,
+          "tok_por_caractere": 0.23820853130598713,
+          "tok_por_byte": 0.22982848907038195,
+          "tok_por_palavra": 1.4096438084910776,
+          "frac_tokens_incompletos": 0.0004682391698788431
+        },
+        "deu": {
+          "docs": 300,
+          "tok_por_caractere": 0.24861620731913303,
+          "tok_por_byte": 0.2449707469392467,
+          "tok_por_palavra": 1.699893356136445,
+          "frac_tokens_incompletos": 0.0009829544140435276
+        },
+        "eng": {
+          "docs": 300,
+          "tok_por_caractere": 0.234523796817129,
+          "tok_por_byte": 0.23290767030849352,
+          "tok_por_palavra": 1.3552858015210674,
+          "frac_tokens_incompletos": 0.00168393841336592
+        },
+        "arb": {
+          "docs": 300,
+          "tok_por_caractere": 0.2885482723239066,
+          "tok_por_byte": 0.16411324127067514,
+          "tok_por_palavra": 1.6536015373041435,
+          "frac_tokens_incompletos": 0.0009289098805343323
+        },
+        "cmn": {
+          "docs": 300,
+          "tok_por_caractere": 0.6695158493522503,
+          "tok_por_byte": 0.2476234945136438,
+          "tok_por_palavra": 6.468591928251121,
+          "frac_tokens_incompletos": 0.018359842938905895
+        },
+        "jpn": {
+          "docs": 300,
+          "tok_por_caractere": 0.4729188948306595,
+          "tok_por_byte": 0.17508015894030995,
+          "tok_por_palavra": 5.8248531752566,
+          "frac_tokens_incompletos": 0.0031331568086088784
+        }
+      },
+      "minutos": 3.3435763835906984,
+      "eixo1_passa": true,
+      "pt_piora": 0.014676163131844461,
+      "acima_do_teto_palavra": {},
+      "idiomas_sem_criterio": {
+        "cmn": 0.67,
+        "jpn": 0.473
+      }
+    },
+    "32k+32k-inplace": {
+      "vocab": 56667,
+      "origem": "C:\\Users\\brcam\\Desktop\\Desenvolvendo Projetos\\Desenvolvendo LLM\\bee\\tok_t1\\32k+32k-inplace",
+      "tokens_acrescentados": 24667,
+      "idiomas": {
+        "_vocab_quebrado": 0.004969371171396424,
+        "_vocab_tokens": 31996,
+        "por": {
+          "docs": 300,
+          "tok_por_caractere": 0.2268855089406513,
+          "tok_por_byte": 0.22013181616321442,
+          "tok_por_palavra": 1.374957137258744,
+          "frac_tokens_incompletos": 0.0006012104370131865
+        },
+        "spa": {
+          "docs": 300,
+          "tok_por_caractere": 0.29168786020674214,
+          "tok_por_byte": 0.28634588996661964,
+          "tok_por_palavra": 1.7642377849373805,
+          "frac_tokens_incompletos": 0.001956624719378823
+        },
+        "fra": {
+          "docs": 300,
+          "tok_por_caractere": 0.3645179890791794,
+          "tok_por_byte": 0.35169445111698294,
+          "tok_por_palavra": 2.1571037929327455,
+          "frac_tokens_incompletos": 0.00564987186702584
+        },
+        "deu": {
+          "docs": 300,
+          "tok_por_caractere": 0.4222700596930176,
+          "tok_por_byte": 0.41607831222481195,
+          "tok_por_palavra": 2.8872376290661044,
+          "frac_tokens_incompletos": 0.009610245481686746
+        },
+        "eng": {
+          "docs": 300,
+          "tok_por_caractere": 0.3180202585148737,
+          "tok_por_byte": 0.3158287496912733,
+          "tok_por_palavra": 1.8378021625555905,
+          "frac_tokens_incompletos": 0.0033596240980030205
+        },
+        "arb": {
+          "docs": 300,
+          "tok_por_caractere": 0.346715963716864,
+          "tok_por_byte": 0.19719640026812266,
+          "tok_por_palavra": 1.9869467454877314,
+          "frac_tokens_incompletos": 0.2071951308258338
+        },
+        "cmn": {
+          "docs": 300,
+          "tok_por_caractere": 1.5255479602104582,
+          "tok_por_byte": 0.5642308801516129,
+          "tok_por_palavra": 14.73922869955157,
+          "frac_tokens_incompletos": 0.8092178281441673
+        },
+        "jpn": {
+          "docs": 300,
+          "tok_por_caractere": 0.7879099821746881,
+          "tok_por_byte": 0.2916935787883812,
+          "tok_por_palavra": 9.70453921730062,
+          "frac_tokens_incompletos": 0.5923662524673797
+        }
+      },
+      "minutos": 2.639928762118022,
+      "_ressalva": "add_tokens casa por longest-match ANTES do BPE, nao dentro da tabela de merges — nao e' identico a re-treinar semeado",
+      "efeito_vs_32k_atual": {
+        "arb": -0.7982,
+        "cmn": -0.4137,
+        "jpn": -0.6145
+      },
+      "agiu": true,
+      "eixo1_passa": true,
+      "pt_piora": 0.009778973225754233,
+      "acima_do_teto_palavra": {},
+      "idiomas_sem_criterio": {
+        "cmn": 1.526,
+        "jpn": 0.788
+      }
+    }
+  }
+}
