@@ -653,6 +653,85 @@ texto mais longo produz menos spans de erro e ranking de sistema pior.
 nos custou US$ 22 — o LR de pico fica amarrado ao horizonte original (§2d). Se ficar WSD, `--lr`
 **explícito** e marcos comparados **só dentro do mesmo regime**.
 
+### ✅⭐⭐ [MEDIDO 09-02] Eixo 2 fechado — o bpb decide, e a fertilidade errou o lado DUAS vezes
+
+**18 corridas** (6 braços × 3 sementes), 3051 passos cada, cobertura 0,833, todas validadas.
+Régua canônica: `cuda/bf16`, holdout de **1,5 MB por idioma**. Custo total **US$ 7,45**.
+
+🔴 **Leia por coluna, nunca entre colunas** (`arXiv:2608.25089`): bpb carrega viés crosslinguístico
+de tokenização e ortografia. Um byte de árabe e um de chinês não carregam a mesma informação.
+
+| braço | par | por | spa | fra | deu | eng | arb | cmn | jpn |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 32k-atual *(controle)* | 151M | 2,063 | 2,076 | 2,186 | 2,785 | 2,329 | 1,628 | 3,265 | 2,117 |
+| 32k-multi | 151M | 1,803 | 1,742 | 1,786 | 2,419 | 1,990 | 1,416 | 2,548 | 1,647 |
+| 32k+32k-inplace | 165M | 1,833 | 1,781 | 1,826 | 2,454 | 2,017 | 1,428 | 2,710 | 1,731 |
+| 64k-multi | 170M | 1,711 | 1,655 | 1,699 | 2,328 | 1,892 | 1,367 | 2,424 | 1,571 |
+| **96k-multi** | 188M | **1,694** | **1,639** | **1,683** | **2,313** | **1,874** | **1,363** | **2,400** | **1,554** |
+| 128k-multi | 206M | 1,703 | 1,647 | 1,693 | 2,325 | 1,882 | 1,382 | 2,423 | 1,578 |
+
+#### O teste pareado — e a unidade é a SEMENTE, não o idioma
+
+Os oito idiomas saem do **mesmo modelo**: contá-los como oito observações independentes é o erro
+da §2y. A unidade correta é a corrida.
+
+| comparação | por semente | média | **t** (n=3) | veredito |
+|---|---|---:|---:|---|
+| 64k **>** 32k-multi | −3,48% · −4,49% · −5,74% | −4,57% | **−7,00** | ✅ **decidido** |
+| 96k **>** 128k | −0,69% · −1,56% · −0,16% | −0,80% | −1,97 | 🟡 marginal — mas **nenhuma semente favorece o 128k** |
+| 96k **>** 64k | −1,17% · −2,04% · **+0,64%** | −0,86% | **−1,09** | 🔴 **NÃO decidido** |
+
+⭐⭐ **A semente 44 inverteu o sinal em 8 de 8 idiomas — e as duas réguas independentes reproduziram
+a inversão** (`cpu/fp32` com 8 KB: 8/8, 8/8, 1/8 · `cuda/bf16` com 1,5 MB: 8/8, 8/8, 0/8). Está nos
+**modelos**, não na medição. Com duas sementes o relatório interino dizia *"96k > 64k, 8 de 8,
+folgas de 0,7% a 2,9%"*; com três o **t cai para −1,09**. É a §2x cobrando exatamente onde ela avisa
+que vai cobrar: **duas alertam, três decidem** — e desta vez decidiram contra a leitura de duas.
+
+⚠️ **E a régua maior não podia resolver isso, o que foi previsto antes de rodá-la:** um holdout 187×
+maior reduz o ruído *da medição*, mas a dispersão aqui está nos **pesos**. Medir melhor a semente 44
+não torna o `64k` dela pior.
+
+#### As quatro conclusões que sobrevivem
+
+1. ✅ **Vocabulário multilíngue ganha do especializado em PT — inclusive em português**, por 12,6%,
+   e por 22% a 27% em chinês e japonês. Mesmo número de parâmetros, mesmo custo de embedding, mesmo
+   dado. O mecanismo é direto: com byte-fallback, uma janela de 2048 tokens cobre muito menos texto,
+   então a passos fixos o controle vê **menos bytes**. Tokenizador ruim custa **dado** a computação
+   fixa.
+2. 🔴 **`128k` está morto pelo critério declarado antes de gastar.** É um modelo 18M maior — ganha
+   capacidade de graça — e não vence em semente nenhuma. O desenho unilateral cumpriu o papel.
+3. 🔴 **A expansão in-place é o pior braço multilíngue em 8 de 8**, e é justamente a que passou no
+   eixo 1 com preservação latina perfeita.
+4. 🟡 **`64k` × `96k` fica em aberto, e o desempate é de custo:** `64k` tem 18M de parâmetros a
+   menos e roda **11% mais rápido** (68,8k contra 62,1k tok/s).
+
+⭐ **A fertilidade apontou o lado errado duas vezes neste gate.** O `32k-multi` foi reprovado no
+eixo 1 (+19,4% de fertilidade em PT) e é **12,6% melhor em bpb de PT**; o in-place passou no eixo 1
+e é o pior dos multilíngues. **Fertilidade não é proxy de bpb** — é uma medida de compressão, e o
+que decide é quanta informação o modelo perde por byte.
+
+⚠️ **Uma ressalva que puxa para o `96k` e que este proxy não consegue medir.** Aqui o embedding de
+96k é **29% do modelo** (d_model 576). No Bee-1G, com d_model 2048, cairia para **~20%**. O proxy
+penaliza vocabulário grande mais do que o modelo real penalizaria — então a indecisão entre 64k e
+96k não deve ser resolvida copiando este resultado para a escala de 1B.
+
+#### ⭐ E a dispersão entre sementes virou achado próprio
+
+| braço | amplitude média entre as 3 sementes | cobertura de escrita |
+|---|---:|---|
+| 32k-atual | **6,25%** | zero em CJK e árabe |
+| 32k-multi · in-place · 64k · 96k | 1,32% – 1,48% | parcial a completa |
+| 128k-multi | **0,23%** | completa, com folga |
+
+⭐ **A reprodutibilidade entre corridas segue a cobertura do vocabulário**, e o `128k` — que perde em
+bpb — é o mais estável dos seis. Faz sentido: mais parâmetros, menos sensibilidade à inicialização.
+⚠️ Com 3 sementes isto é direção, não estimativa de variância.
+
+**Artefatos:** `docs/gate-t1-bpb.json` (canônico) · os três de CPU levam `-cpu-8000b` no nome, por
+construção, para não poderem ser confundidos com ele (§2z) · tokenizadores em
+`bee/gate_t1_bpb/nl/tok_t1.tgz`, hash conferido contra a origem antes de o pod ser encerrado.
+
+
 ### Estágio V — visão · Estágio A — áudio
 
 #### 🔴 A decisão de identidade, declarada antes

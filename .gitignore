@@ -84,3 +84,10 @@ bee/tok_t1/**
 bee/gate_t1_bpb/pool_*.bin
 bee/gate_t1_bpb/holdout.json
 bee/gate_t1_bpb/m_*/
+
+# Gate T1 eixo 2 — os JSONs sao a evidencia e entram; o tarball de tokenizadores e os
+# logs de execucao ficam so' em disco. Os tokenizadores sao regeneraveis em minutos a
+# partir de bee/corpus_multi (403 MB, local), entao versionar 5,5 MB de candidatos
+# ainda NAO decididos (64k x 96k continua em aberto) seria peso sem ganho.
+bee/gate_t1_bpb/nl/*.tgz
+bee/gate_t1_bpb/nl/logs/

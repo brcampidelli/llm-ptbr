@@ -389,7 +389,7 @@ def treinar(args) -> int:
 
 # ---------------------------------------------------------------- avaliar
 
-def bpb_idioma(modelo, tok, txts: list[str], seq_len: int,
+def bpb_idioma(dev, modelo, tok, txts: list[str], seq_len: int,
                teto_bytes: int) -> tuple[float, int, int]:
     """bits por byte. Normaliza por BYTE do texto original — a unica forma de comparar
     modelos que usam tokenizadores diferentes.
@@ -417,8 +417,8 @@ def bpb_idioma(modelo, tok, txts: list[str], seq_len: int,
                 p = ids[i:i + seq_len]
                 if len(p) < 2:
                     continue
-                x = torch.tensor([p], dtype=torch.long).cuda()
-                with torch.autocast("cuda", dtype=torch.bfloat16):
+                x = torch.tensor([p], dtype=torch.long).to(dev)
+                with torch.autocast(dev, dtype=torch.bfloat16, enabled=(dev == "cuda")):
                     perda = modelo(input_ids=x, labels=x).loss
                 nats += perda.item() * (len(p) - 1)
     return nats / math.log(2) / n_byte, len(txts), n_byte
@@ -443,13 +443,16 @@ def avaliar(args) -> int:
             if not d.exists():
                 print(f"  ⚠️ {nome} s{s}: sem modelo, pulando")
                 continue
-            m = LlamaForCausalLM.from_pretrained(d, dtype=torch.bfloat16).cuda()
+            dt = torch.bfloat16 if args.dispositivo == "cuda" else torch.float32
+            m = LlamaForCausalLM.from_pretrained(d, dtype=dt).to(args.dispositivo)
             for c in IDIOMAS:
-                b, nd, nb = bpb_idioma(m, tok, hold[c], args.seq_len, args.bytes_holdout)
+                b, nd, nb = bpb_idioma(args.dispositivo, m, tok, hold[c],
+                                      args.seq_len, args.bytes_holdout)
                 res[nome][c].append(b)
                 usado[c] = (nd, nb)
             del m
-            torch.cuda.empty_cache()
+            if args.dispositivo == "cuda":
+                torch.cuda.empty_cache()
             print(f"  {nome} s{s}: "
                   + " ".join(f"{c} {res[nome][c][-1]:.3f}" for c in IDIOMAS), flush=True)
 
@@ -500,6 +503,10 @@ def avaliar(args) -> int:
               + f" {saida[nome]['minutos_medio']:>7.1f} {saida[nome]['tok_s']/1000:>7.1f}k")
 
     doc = {"_gate": "T1 eixo 2 — bpb por idioma",
+    "_dispositivo": args.dispositivo,
+    "_dtype": "bfloat16" if args.dispositivo == "cuda" else "float32",
+    "_aviso_regua": ("cpu/fp32 e cuda/bf16 sao REGUAS DIFERENTES (§2g). Numero desta rodada so' compara com outro de MESMO _dispositivo e mesmo _bytes_holdout."),
+    "_bytes_holdout": args.bytes_holdout,
            "_regua": "bpb normaliza por BYTE; loss NAO compara tokenizadores diferentes",
            "_leia_por_coluna": ("bpb carrega vies crosslinguistico (2608.25089): comparar ENTRE "
                                 "idiomas e' invalido. Valido: braco x braco DENTRO de um idioma, "
@@ -518,12 +525,22 @@ def avaliar(args) -> int:
            "holdout_usado": {c: {"docs": usado[c][0], "bytes": usado[c][1]}
                              for c in usado},
            "sementes": sementes, "controle": CONTROLE, "bracos": saida}
-    dest = ROOT / "docs" / "gate-t1-bpb.json"
+    # §2z: NOME DE SAIDA DERIVA DO QUE FOI MEDIDO. Um caminho fixo faz uma rodada de
+    # smoke-test em cpu/fp32 sobrescrever o resultado canonico de cuda/bf16, e o JSON so'
+    # denuncia a troca no campo `_dispositivo`, que ninguem le antes de citar o numero.
+    # A config de referencia mantem o nome estavel (os documentos apontam para ele);
+    # qualquer desvio ganha sufixo e nao pode colidir.
+    canonica = (args.dispositivo == "cuda" and args.bytes_holdout == 1_500_000 and len(sementes) == 3)
+    sufixo = "" if canonica else (f"-{args.dispositivo}-{args.bytes_holdout}b" + "-s" + "".join(str(s) for s in sementes))
+    dest = ROOT / "docs" / f"gate-t1-bpb{sufixo}.json"
     dest.parent.mkdir(exist_ok=True)
     tmp = dest.with_suffix(".json.tmp")
     open(tmp, "w", encoding="utf-8").write(json.dumps(doc, indent=2, ensure_ascii=False) + "\n")
     os.replace(tmp, dest)
-    print("\nartefato: docs/gate-t1-bpb.json")
+    print()
+    print(f"artefato: docs/{dest.name}"
+          + ("" if canonica else "   [NAO E A CONFIG CANONICA — nao comparar com o"
+                                  " numero de referencia]"))
     if len(sementes) < 3:
         print("\n⚠️ menos de 3 sementes: duas ALERTAM, tres DECIDEM (§2x). "
               "Nao afirme nada sobre variancia com o que esta' aqui.")
@@ -562,6 +579,8 @@ def main() -> int:
     a = sub.add_parser("avaliar")
     a.add_argument("--sementes", default="42,43,44")
     a.add_argument("--seq-len", type=int, default=2048)
+    a.add_argument("--dispositivo", choices=["cuda", "cpu"], default="cuda",
+                   help="cpu usa fp32 — REGUA DIFERENTE da bf16/cuda, nunca misturar")
     a.add_argument("--bytes-holdout", type=int, default=1_500_000,
                    help="teto de BYTES por idioma — mesmo orcamento em todos")
 

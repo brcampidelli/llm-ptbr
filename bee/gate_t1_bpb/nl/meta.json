@@ -1,0 +1,341 @@
+{
+  "_regua": "bpb = nats/ln2 / BYTES do holdout — comparavel entre tokenizadores",
+  "_desenho": "transformer identico; so' o vocab muda. Generoso com vocab grande.",
+  "holdout_bytes_por_idioma": 4194304,
+  "holdout": {
+    "por": {
+      "docs": 506,
+      "bytes": 1745870
+    },
+    "spa": {
+      "docs": 500,
+      "bytes": 1960870
+    },
+    "fra": {
+      "docs": 534,
+      "bytes": 1935729
+    },
+    "deu": {
+      "docs": 637,
+      "bytes": 2533470
+    },
+    "eng": {
+      "docs": 629,
+      "bytes": 2083846
+    },
+    "arb": {
+      "docs": 219,
+      "bytes": 4332548
+    },
+    "cmn": {
+      "docs": 1126,
+      "bytes": 4202849
+    },
+    "jpn": {
+      "docs": 1073,
+      "bytes": 4194852
+    }
+  },
+  "bracos": {
+    "32k-atual": {
+      "tokenizador": "models/bee-150m-v3-base",
+      "vocab": 32000,
+      "eos": 0,
+      "pool_tokens": 120000000,
+      "dtype": "uint32",
+      "minutos": 1.4198798616727193,
+      "por_idioma": {
+        "por": {
+          "tokens": 3538864,
+          "bytes": 15921684,
+          "tok_por_byte": 0.22226694110999817
+        },
+        "spa": {
+          "tokens": 4629221,
+          "bytes": 16069239,
+          "tok_por_byte": 0.28807966575143973
+        },
+        "fra": {
+          "tokens": 4990805,
+          "bytes": 14226598,
+          "tok_por_byte": 0.3508080427942084
+        },
+        "deu": {
+          "tokens": 5173335,
+          "bytes": 12587244,
+          "tok_por_byte": 0.4109982296362889
+        },
+        "eng": {
+          "tokens": 4139342,
+          "bytes": 13182906,
+          "tok_por_byte": 0.3139931362629757
+        },
+        "arb": {
+          "tokens": 68728421,
+          "bytes": 69768443,
+          "tok_por_byte": 0.9850932319071533
+        },
+        "cmn": {
+          "tokens": 17699864,
+          "bytes": 18502340,
+          "tok_por_byte": 0.9566284048396041
+        },
+        "jpn": {
+          "tokens": 14316433,
+          "bytes": 18856625,
+          "tok_por_byte": 0.7592256302493156
+        }
+      }
+    },
+    "32k-multi": {
+      "tokenizador": "bee/tok_t1/32k-multi",
+      "vocab": 32000,
+      "eos": 0,
+      "pool_tokens": 120000000,
+      "dtype": "uint32",
+      "minutos": 1.9454629023869832,
+      "por_idioma": {
+        "por": {
+          "tokens": 12624504,
+          "bytes": 48277240,
+          "tok_por_byte": 0.26150011889660635
+        },
+        "spa": {
+          "tokens": 12174760,
+          "bytes": 47319724,
+          "tok_por_byte": 0.25728721494656226
+        },
+        "fra": {
+          "tokens": 12339409,
+          "bytes": 45998775,
+          "tok_por_byte": 0.2682551654908201
+        },
+        "deu": {
+          "tokens": 10059656,
+          "bytes": 37514085,
+          "tok_por_byte": 0.2681567736491507
+        },
+        "eng": {
+          "tokens": 10160346,
+          "bytes": 38032470,
+          "tok_por_byte": 0.2671492543082266
+        },
+        "arb": {
+          "tokens": 34007057,
+          "bytes": 169125183,
+          "tok_por_byte": 0.20107624658120843
+        },
+        "cmn": {
+          "tokens": 16654201,
+          "bytes": 56439325,
+          "tok_por_byte": 0.29508150567002706
+        },
+        "jpn": {
+          "tokens": 12121427,
+          "bytes": 54982814,
+          "tok_por_byte": 0.22045846907726477
+        }
+      }
+    },
+    "64k-multi": {
+      "tokenizador": "bee/tok_t1/64k-multi",
+      "vocab": 64000,
+      "eos": 0,
+      "pool_tokens": 120000000,
+      "dtype": "uint32",
+      "minutos": 2.2214836359024046,
+      "por_idioma": {
+        "por": {
+          "tokens": 13151697,
+          "bytes": 55295201,
+          "tok_por_byte": 0.23784517936737404
+        },
+        "spa": {
+          "tokens": 13027450,
+          "bytes": 55562092,
+          "tok_por_byte": 0.23446651360787496
+        },
+        "fra": {
+          "tokens": 12974764,
+          "bytes": 52925606,
+          "tok_por_byte": 0.24515097663690427
+        },
+        "deu": {
+          "tokens": 10379294,
+          "bytes": 43244793,
+          "tok_por_byte": 0.24001257214943775
+        },
+        "eng": {
+          "tokens": 10736760,
+          "bytes": 43816024,
+          "tok_por_byte": 0.24504185957174024
+        },
+        "arb": {
+          "tokens": 30991120,
+          "bytes": 173321988,
+          "tok_por_byte": 0.17880662665835567
+        },
+        "cmn": {
+          "tokens": 16676989,
+          "bytes": 62087404,
+          "tok_por_byte": 0.26860502977383305
+        },
+        "jpn": {
+          "tokens": 12433546,
+          "bytes": 63294871,
+          "tok_por_byte": 0.19643844443572686
+        }
+      }
+    },
+    "96k-multi": {
+      "tokenizador": "bee/tok_t1/96k-multi",
+      "vocab": 96000,
+      "eos": 0,
+      "pool_tokens": 120000000,
+      "dtype": "uint32",
+      "minutos": 2.594171353181203,
+      "por_idioma": {
+        "por": {
+          "tokens": 13441989,
+          "bytes": 59191304,
+          "tok_por_byte": 0.22709398326483904
+        },
+        "spa": {
+          "tokens": 13429512,
+          "bytes": 59877034,
+          "tok_por_byte": 0.22428485686181449
+        },
+        "fra": {
+          "tokens": 13505269,
+          "bytes": 57418144,
+          "tok_por_byte": 0.23520908303828142
+        },
+        "deu": {
+          "tokens": 10601230,
+          "bytes": 46771324,
+          "tok_por_byte": 0.22666089161812053
+        },
+        "eng": {
+          "tokens": 11014486,
+          "bytes": 46772485,
+          "tok_por_byte": 0.2354907163902025
+        },
+        "arb": {
+          "tokens": 29052344,
+          "bytes": 173321988,
+          "tok_por_byte": 0.16762064833920554
+        },
+        "cmn": {
+          "tokens": 16640932,
+          "bytes": 65259974,
+          "tok_por_byte": 0.254994462608888
+        },
+        "jpn": {
+          "tokens": 12558995,
+          "bytes": 68133124,
+          "tok_por_byte": 0.18433023854887381
+        }
+      }
+    },
+    "128k-multi": {
+      "tokenizador": "bee/tok_t1/128k-multi",
+      "vocab": 128000,
+      "eos": 0,
+      "pool_tokens": 120000000,
+      "dtype": "uint32",
+      "minutos": 2.9436762928962708,
+      "por_idioma": {
+        "por": {
+          "tokens": 13691254,
+          "bytes": 62028520,
+          "tok_por_byte": 0.22072514385318237
+        },
+        "spa": {
+          "tokens": 13694418,
+          "bytes": 62753742,
+          "tok_por_byte": 0.21822472355513078
+        },
+        "fra": {
+          "tokens": 13735029,
+          "bytes": 59968376,
+          "tok_por_byte": 0.22903786822574618
+        },
+        "deu": {
+          "tokens": 10772864,
+          "bytes": 49235519,
+          "tok_por_byte": 0.21880268998484612
+        },
+        "eng": {
+          "tokens": 11389987,
+          "bytes": 49552299,
+          "tok_por_byte": 0.22985789216359062
+        },
+        "arb": {
+          "tokens": 27834470,
+          "bytes": 173321988,
+          "tok_por_byte": 0.16059399226369364
+        },
+        "cmn": {
+          "tokens": 16570955,
+          "bytes": 67433421,
+          "tok_por_byte": 0.24573801468562598
+        },
+        "jpn": {
+          "tokens": 12580205,
+          "bytes": 71178438,
+          "tok_por_byte": 0.17674179644122
+        }
+      }
+    },
+    "32k+32k-inplace": {
+      "tokenizador": "bee/tok_t1/32k+32k-inplace",
+      "vocab": 56667,
+      "eos": 0,
+      "pool_tokens": 120000000,
+      "dtype": "uint32",
+      "minutos": 1.798485314846039,
+      "por_idioma": {
+        "por": {
+          "tokens": 8362966,
+          "bytes": 37670171,
+          "tok_por_byte": 0.22200499169488772
+        },
+        "spa": {
+          "tokens": 10514761,
+          "bytes": 36469379,
+          "tok_por_byte": 0.2883175224892094
+        },
+        "fra": {
+          "tokens": 12038207,
+          "bytes": 34320451,
+          "tok_por_byte": 0.3507589978931221
+        },
+        "deu": {
+          "tokens": 12023171,
+          "bytes": 29255057,
+          "tok_por_byte": 0.4109775277484505
+        },
+        "eng": {
+          "tokens": 9301169,
+          "bytes": 29608435,
+          "tok_por_byte": 0.31413916338367764
+        },
+        "arb": {
+          "tokens": 30989875,
+          "bytes": 156408170,
+          "tok_por_byte": 0.1981346306909671
+        },
+        "cmn": {
+          "tokens": 24382730,
+          "bytes": 45539606,
+          "tok_por_byte": 0.5354181149481179
+        },
+        "jpn": {
+          "tokens": 12615642,
+          "bytes": 42457517,
+          "tok_por_byte": 0.29713565209194875
+        }
+      }
+    }
+  }
+}
