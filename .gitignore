@@ -78,3 +78,9 @@ bee/corpus_multi_teste/**
 !bee/corpus_multi/MANIFEST.json
 !bee/corpus_multi_teste/MANIFEST.json
 bee/tok_t1/**
+
+# gate T1 eixo 2: pools de 2,9 GB, checkpoints e o holdout de 30 MB ficam fora.
+# O que se versiona e' o SCRIPT e, quando fecharem, os JSON de resultado do pod.
+bee/gate_t1_bpb/pool_*.bin
+bee/gate_t1_bpb/holdout.json
+bee/gate_t1_bpb/m_*/
