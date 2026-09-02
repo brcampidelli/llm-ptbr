@@ -841,6 +841,61 @@ LLM **só 10,9% é conteúdo único treinável; a contagem crua superestima a in
 que a literatura não mediu.** Se o Bee-1G usar dado traduzido em volume, **o histograma de repetição
 cross-lingual é medição obrigatória**, não opcional.
 
+### ✅⭐⭐ [MEDIDO 09-02] O censo rodou — e a interação temida NÃO existe no Common Corpus
+
+A seção acima declarou o histograma cross-lingual como **medição obrigatória**. Ele foi feito.
+
+**Método** (`bee/gate_trad_censo.py`): a digital de um documento é o hash da sequência ordenada dos
+seus 12 primeiros números, exigindo ao menos 8. ⭐ **Número sobrevive à tradução** — um relatório
+orçamentário em francês e a versão dele em alemão carregam os mesmos valores, enquanto todas as
+palavras mudam. É a única assinatura barata que atravessa idioma.
+
+**Escala:** 5 idiomas × 40.000 documentos do Common Corpus = 200.000 lidos, **31.042 digitais**
+retidas nos baldes.
+
+| | digitais | fração |
+|---|---:|---:|
+| **cross-lingual** (a mesma digital em 2+ idiomas) | **16** | **0,05%** |
+| intra-idioma (a mesma digital repetida no idioma) | 109 | 0,35% |
+
+E a distribuição é rasa: **15 das 16** aparecem em exatamente 2 idiomas, **uma** em 3. Nenhuma em 4
+ou 5. Os pares mais comuns são `de-es` (4), `en-fr` (3), `es-it` (3).
+
+⭐⭐ **O que isso refuta é uma previsão minha, escrita antes.** Eu havia registrado que o
+`OpenGovernment` do Common Corpus seria multi-paralelo por construção — documentos da UE existem
+oficialmente em 24 idiomas. A medição diz que **não**: o Common Corpus é uma união de coleções
+nacionais independentes, não um corpus alinhado. A interação perigosa que o `2606.24998` descreve
+**não é instanciada por esta fonte**.
+
+⚠️ **E a §2ac foi respeitada por construção.** O piloto do FineWeb errou por **170×** porque, para
+uma duplicata ser detectável, as **duas** cópias precisam cair na amostra — o viés é estrutural e
+sempre para baixo. Aqui a amostragem é **por balde de digital**, não por documento: as duplicatas
+caem no mesmo balde por definição, então a medição *dentro* dos baldes retidos não carrega o viés.
+
+⚠️ **Quatro coisas que este censo NÃO mostra**, e a §2q exige que estejam escritas:
+1. **texto sem números** — literatura e ficção ficam fora; a cobertura admissível vai de 75,4% (en)
+   a 43,2% (it), e o resto é invisível a esta régua;
+2. **tradução que escreve número por extenso** — "doze mil" quebra a digital;
+3. **duplicação semântica sem números em comum** — dois textos sobre o mesmo fato, redigidos do zero;
+4. é um **piso**, nunca um teto.
+
+🔴 **E a medição que ainda falta, que é diferente desta.** O censo limita a duplicação **dentro do
+lote traduzido**. Ele **não mede** duplicação entre o lote traduzido e o **nosso corpus PT atual**
+(fineweb-2, 21,97B). São distribuições diferentes — Common Corpus é livro, jornal e administração
+pública; o nosso é web — mas a web republica domínio público, e a suposição de que não há
+interseção é exatamente do tipo que este projeto já pagou para não fazer. Custa o mesmo script com
+o PT existente como sexto idioma.
+
+**Veredito do estágio A: ✅ traduzir não cria o problema do `2606.24998`.** O estágio B — traduzir
+uma fatia limitada e medir a qualidade — segue liberado, com a ressalva já registrada de que
+**a régua não pode ser bpb do PT** (`2607.00890` mede que a loss na língua-alvo subestima
+sistematicamente o valor da mistura).
+
+⚠️ **E a licença do tradutor é parte da decisão, não detalhe.** Verificado na origem: **NLLB em
+todas as variantes e TowerInstruct são `cc-by-nc-4.0`** — usá-los contaminaria o modelo publicado.
+Limpos: **Madlad-400** e **Opus-MT** (Apache-2.0), **ALMA** (MIT).
+
+
 ### 🔴 [novo 09-01] E uma hipótese alternativa que nunca testamos
 
 [`2604.28075`](https://arxiv.org/abs/2604.28075) (alemão, 500M documentos, **múltiplas escalas de
