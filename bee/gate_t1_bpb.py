@@ -323,6 +323,9 @@ def treinar_um(nome: str, semente: int, args) -> dict:
     modelo.train()
     primeiro, t0, leituras = True, time.time(), []
     acc = 0.0
+    # 🔴 `acc` e' a perda de UM lote. Guardar os ultimos 100 passos para poder reportar uma
+    #    media — ver a nota de `perda_ultimo_lote` no dicionario de saida.
+    janela: list[float] = []
     for passo in range(passos):
         opt.zero_grad(set_to_none=True)
         acc = 0.0
@@ -335,6 +338,9 @@ def treinar_um(nome: str, semente: int, args) -> dict:
                 perda = modelo(input_ids=x, labels=x).loss / args.grad_accum
             perda.backward()
             acc += perda.item()
+        janela.append(acc)
+        if len(janela) > 100:
+            janela.pop(0)
         torch.nn.utils.clip_grad_norm_(modelo.parameters(), 1.0)
         opt.step()
         sched.step()
@@ -351,7 +357,16 @@ def treinar_um(nome: str, semente: int, args) -> dict:
          "params": int(n_par), "params_embedding": int(n_emb),
          "tokens_vistos": vistos, "pool_tokens": int(len(dados)),
          "epocas": vistos / len(dados), "cobertura_distinta": am.cobertura_distinta,
-         "perda_final": acc, "minutos": (time.time() - t0) / 60,
+         # 🔴 MEDIDO 2026-09-02: o campo chamava-se `perda_final` e era `acc` — a perda de UM
+         #    lote. Entre sementes do braco `32k-atual` isso oscilou 1,1773 (2,5953 x 1,4180)
+         #    enquanto os bracos multilingues oscilavam 0,05-0,13. Nao e' variancia de treino:
+         #    o vocab PT usa byte-fallback pesado em CJK/arabe, entao um lote majoritariamente
+         #    chines tem perda baixa (byte e' previsivel) e um majoritariamente portugues tem
+         #    perda alta. O NOME afirmava um resumo da corrida e o valor era um sorteio (§2t).
+         # ⚠️ E nenhum dos dois compara BRACOS: perda por token depende do tokenizador. So' bpb.
+         "perda_ultimo_lote": acc,
+         "perda_media_100": sum(janela) / len(janela) if janela else float("nan"),
+         "minutos": (time.time() - t0) / 60,
          "tok_s_regime": sorted(leituras)[len(leituras) // 2] if leituras else 0.0,
          "lr": args.lr, "seq_len": args.seq_len, "micro_batch": args.micro_batch,
          "grad_accum": args.grad_accum}
@@ -440,6 +455,14 @@ def avaliar(args) -> int:
 
     print(f"\n{'='*104}\nEIXO 2 — bpb POR IDIOMA (menor e' melhor) · media de "
           f"{len(sementes)} sementes\n{'='*104}")
+    print("🔴 LEIA POR COLUNA, NUNCA ENTRE COLUNAS. `2608.25089` mede que metricas normalizadas —")
+    print("   bpb entre elas — carregam vies crosslinguistico de tokenizacao, codificacao e")
+    print("   ortografia. Um byte de arabe e um byte de chines NAO carregam a mesma informacao,")
+    print("   entao 'arb 1,20 contra cmn 0,90' nao diz nada. A comparacao VALIDA e' braco contra")
+    print("   braco DENTRO da mesma coluna — que e' a tabela de DELTA logo abaixo.")
+    print("   ⭐ E bpb e' justamente a regua que RESISTE ao fallback de byte: perplexidade POR")
+    print("   TOKEN e' deflacionada por ele (dado o byte-lider, os de continuacao sao quase")
+    print("   deterministicos), mas bpb normaliza por BYTE e essa deflacao nao passa (2605.09015).")
     print(f"{'braco':<18} {'vocab':>8} {'params':>8} " + " ".join(f"{c:>7}" for c in IDIOMAS))
     print("-" * 104)
     saida = {}
@@ -478,6 +501,11 @@ def avaliar(args) -> int:
 
     doc = {"_gate": "T1 eixo 2 — bpb por idioma",
            "_regua": "bpb normaliza por BYTE; loss NAO compara tokenizadores diferentes",
+           "_leia_por_coluna": ("bpb carrega vies crosslinguistico (2608.25089): comparar ENTRE "
+                                "idiomas e' invalido. Valido: braco x braco DENTRO de um idioma, "
+                                "que e' `delta_vs_controle`. E bpb RESISTE ao fallback de byte, "
+                                "porque a deflacao do 2605.09015 atinge perplexidade POR TOKEN e "
+                                "bpb normaliza por BYTE."),
            "_desenho": ("transformer identico em todos os bracos; so' o vocab muda, entao o "
                         "braco de vocab maior e' um modelo MAIOR. Teste UNILATERAL: se o vocab "
                         "grande nao ganha com parametros de graca, esta' morto. Se ganha, isto "

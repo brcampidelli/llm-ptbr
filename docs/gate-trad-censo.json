@@ -1,0 +1,108 @@
+{
+  "_gate": "T-TRAD estagio A — repeticao cross-lingual no corpus fonte",
+  "_metodo": "digital = hash da sequencia ordenada de numeros (sobrevive a traducao). Amostragem por BALDE DE DIGITAL, nao por documento: duplicatas caem no mesmo balde, entao a medicao dentro dos baldes retidos e' SEM o vies da §2ac (que no FineWeb deu erro de 170x).",
+  "_nao_mostra": [
+    "texto sem numeros (literatura, ficcao) — ver cobertura por idioma",
+    "traducao que escreve numeros por extenso",
+    "duplicacao semantica sem numeros em comum",
+    "e' um PISO de duplicacao, nunca um teto"
+  ],
+  "parametros": {
+    "baldes": 4,
+    "min_numeros": 8,
+    "shingle": 12,
+    "docs_por_idioma": 40000
+  },
+  "por_idioma": {
+    "en": {
+      "lidos": 40000,
+      "admissiveis": 30174,
+      "cobertura": 0.75435,
+      "retidos": 7712
+    },
+    "fr": {
+      "lidos": 40000,
+      "admissiveis": 28383,
+      "cobertura": 0.709575,
+      "retidos": 7114
+    },
+    "de": {
+      "lidos": 40000,
+      "admissiveis": 25450,
+      "cobertura": 0.63625,
+      "retidos": 6342
+    },
+    "es": {
+      "lidos": 40000,
+      "admissiveis": 22929,
+      "cobertura": 0.573225,
+      "retidos": 5760
+    },
+    "it": {
+      "lidos": 40000,
+      "admissiveis": 17277,
+      "cobertura": 0.431925,
+      "retidos": 4335
+    }
+  },
+  "licencas_declaradas": {
+    "Public Domain": 69485,
+    "CC0": 44686,
+    "CC-By-SA": 41992,
+    "CC-By": 12439,
+    "Various open science": 12068,
+    "Various open data": 9395,
+    "Licence ouverte": 7298,
+    "Open Parliament Licence v3.0": 2222,
+    "Non-Commercial": 195,
+    "Publc Domain": 161,
+    "The A2AJ has obtained these documents directly from the Immigration and Refugee Board without any licensing restrictions. Note: This is an unofficial reproduction of an Immigration and Refugee Board d": 39,
+    "Open Government Licence": 16,
+    "": 3,
+    "The CHRT website from which this document was scraped does not (as of 28 July 2025) include any licensing restrictions. Note: This is an unofficial reproduction of a Canadian Human Rights Tribunal dec": 1
+  },
+  "colecoes": {
+    "VoxPopuli": 33877,
+    "Wikipedia": 25557,
+    "French Open Data": 13276,
+    "Italian-PD": 9665,
+    "French-PD-Newspapers": 8933,
+    "Spanish-Science-Pile": 8883,
+    "Wiki Discussions": 8582,
+    "Deutsches Zeitungsportal": 8215,
+    "StackExchange": 7068,
+    "US-PD-Newspapers": 6966,
+    "USPTO": 6153,
+    "French-PD-diverse": 6142,
+    "German-PD": 4823,
+    "English-PD": 3949,
+    "Court Listener": 3443,
+    "SBB Fulltexts": 3267,
+    "Spanish-PD-Books": 3160,
+    "Eurlex": 2881,
+    "French-Science-Pile": 2492,
+    "French-PD-Books": 2300
+  },
+  "digitais_no_balde": 31042,
+  "cross_lingual": {
+    "digitais": 16,
+    "fracao": 0.0005154307067843567,
+    "histograma_idiomas_por_digital": {
+      "2": 15,
+      "3": 1
+    },
+    "pares": {
+      "de-es": 4,
+      "en-fr": 3,
+      "es-it": 3,
+      "de-en": 2,
+      "en-es": 2,
+      "es-fr": 2,
+      "de-it": 2
+    }
+  },
+  "intra_idioma": {
+    "digitais": 109,
+    "fracao": 0.0035113716899684297
+  }
+}
