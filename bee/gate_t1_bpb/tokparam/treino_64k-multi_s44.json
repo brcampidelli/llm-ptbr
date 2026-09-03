@@ -1,0 +1,20 @@
+{
+  "braco": "64k-multi",
+  "semente": 44,
+  "vocab": 64000,
+  "passos": 6700,
+  "params": 169609536,
+  "params_embedding": 36864000,
+  "tokens_vistos": 219545600,
+  "pool_tokens": 279047280,
+  "epocas": 0.7867684644695336,
+  "cobertura_distinta": 0.7867716674128276,
+  "perda_ultimo_lote": 4.2702619433403015,
+  "perda_media_100": 4.307947126030922,
+  "minutos": 56.481104441483815,
+  "tok_s_regime": 64757.7343407866,
+  "lr": 0.003,
+  "seq_len": 2048,
+  "micro_batch": 4,
+  "grad_accum": 4
+}

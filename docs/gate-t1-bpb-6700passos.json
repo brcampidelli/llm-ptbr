@@ -1,0 +1,194 @@
+{
+  "_gate": "T1 eixo 2 — bpb por idioma",
+  "_dispositivo": "cuda",
+  "_dtype": "bfloat16",
+  "_aviso_regua": "cpu/fp32 e cuda/bf16 sao REGUAS DIFERENTES (§2g). Numero desta rodada so' compara com outro de MESMO _dispositivo e mesmo _bytes_holdout.",
+  "_bytes_holdout": 1500000,
+  "_regua": "bpb normaliza por BYTE; loss NAO compara tokenizadores diferentes",
+  "_leia_por_coluna": "bpb carrega vies crosslinguistico (2608.25089): comparar ENTRE idiomas e' invalido. Valido: braco x braco DENTRO de um idioma, que e' `delta_vs_controle`. E bpb RESISTE ao fallback de byte, porque a deflacao do 2605.09015 atinge perplexidade POR TOKEN e bpb normaliza por BYTE.",
+  "_desenho": "transformer identico em todos os bracos; so' o vocab muda, entao o braco de vocab maior e' um modelo MAIOR. Teste UNILATERAL: se o vocab grande nao ganha com parametros de graca, esta' morto. Se ganha, isto e' o TETO do beneficio, nao o valor dele no Bee-1G.",
+  "_nao_controlado": [
+    "LR unico (3e-3) para todos os vocabularios",
+    "geometria fixa — d_model nao acompanha o vocab",
+    "mesmos PASSOS nao e' mesmos FLOPs: a cabeca custa d_model x vocab",
+    "escala de 150M distorce a fracao de embedding contra o vocab grande (no 1G a mesma troca custa ~metade da fracao)"
+  ],
+  "holdout_usado": {
+    "por": {
+      "docs": 438,
+      "bytes": 1487916
+    },
+    "spa": {
+      "docs": 402,
+      "bytes": 1499196
+    },
+    "fra": {
+      "docs": 423,
+      "bytes": 1498334
+    },
+    "deu": {
+      "docs": 321,
+      "bytes": 1475450
+    },
+    "eng": {
+      "docs": 461,
+      "bytes": 1495476
+    },
+    "arb": {
+      "docs": 43,
+      "bytes": 1196795
+    },
+    "cmn": {
+      "docs": 314,
+      "bytes": 1499703
+    },
+    "jpn": {
+      "docs": 351,
+      "bytes": 1496593
+    }
+  },
+  "sementes": [
+    42,
+    43,
+    44
+  ],
+  "controle": "32k-atual",
+  "bracos": {
+    "64k-multi": {
+      "params": 169609536,
+      "vocab": 64000,
+      "bpb": {
+        "por": 1.4836178745193225,
+        "spa": 1.4503269028967436,
+        "fra": 1.4629585994507663,
+        "deu": 2.073907180205885,
+        "eng": 1.6329565832067823,
+        "arb": 1.2171835186554645,
+        "cmn": 1.912848562331162,
+        "jpn": 1.2275842692465497
+      },
+      "amplitude": {
+        "por": 0.02569237835158167,
+        "spa": 0.02393821776696403,
+        "fra": 0.025697338413457338,
+        "deu": 0.02683380054916551,
+        "eng": 0.019138173818842974,
+        "arb": 0.02127615690052642,
+        "cmn": 0.03290888088548227,
+        "jpn": 0.026465384033007577
+      },
+      "por_semente": {
+        "por": [
+          1.4954218179902734,
+          1.4697294396386917,
+          1.4857023659290023
+        ],
+        "spa": [
+          1.4616427044427167,
+          1.4377044866757527,
+          1.4516335175717614
+        ],
+        "fra": [
+          1.4744103666118669,
+          1.4487130281984095,
+          1.4657524035420226
+        ],
+        "deu": [
+          2.0884490059074614,
+          2.061615205358296,
+          2.0716573293518974
+        ],
+        "eng": [
+          1.643345569760906,
+          1.624207395942063,
+          1.6313167839173779
+        ],
+        "arb": [
+          1.2277228385270909,
+          1.2064466816265644,
+          1.2173810358127382
+        ],
+        "cmn": [
+          1.9327664560287214,
+          1.8998575751432392,
+          1.9059216558215255
+        ],
+        "jpn": [
+          1.2415380166444894,
+          1.2150726326114818,
+          1.2261421584836778
+        ]
+      },
+      "minutos_medio": 56.542211793528665,
+      "tok_s": 64697.5327842628
+    },
+    "96k-multi": {
+      "params": 188041536,
+      "vocab": 96000,
+      "bpb": {
+        "por": 1.47685856026397,
+        "spa": 1.4445074220853473,
+        "fra": 1.4547276146145454,
+        "deu": 2.0744378153595946,
+        "eng": 1.6251662939032592,
+        "arb": 1.2162883038060057,
+        "cmn": 1.912820259557549,
+        "jpn": 1.2236270157559128
+      },
+      "amplitude": {
+        "por": 0.015603265852434545,
+        "spa": 0.016515915016057425,
+        "fra": 0.018284130323682035,
+        "deu": 0.02268620304656732,
+        "eng": 0.014034819392324094,
+        "arb": 0.015569606063904784,
+        "cmn": 0.02020917214982565,
+        "jpn": 0.017146678139792648
+      },
+      "por_semente": {
+        "por": [
+          1.4839203730858046,
+          1.4783382004727357,
+          1.46831710723337
+        ],
+        "spa": [
+          1.4518225993771665,
+          1.4463929825177666,
+          1.435306684361109
+        ],
+        "fra": [
+          1.4635005942350212,
+          1.4554657856972755,
+          1.4452164639113392
+        ],
+        "deu": [
+          2.0848060009574763,
+          2.076387647210399,
+          2.062119797910909
+        ],
+        "eng": [
+          1.6309781026202057,
+          1.6275774958616902,
+          1.6169432832278816
+        ],
+        "arb": [
+          1.2250163846414184,
+          1.2144017481990852,
+          1.2094467785775136
+        ],
+        "cmn": [
+          1.9208292634889579,
+          1.9170114238445568,
+          1.9006200913391322
+        ],
+        "jpn": [
+          1.2313134030706863,
+          1.2254009192661586,
+          1.2141667249308936
+        ]
+      },
+      "minutos_medio": 62.33898953729206,
+      "tok_s": 58675.08604435354
+    }
+  }
+}

@@ -474,18 +474,15 @@ def avaliar(args) -> int:
             print(f"  {nome} s{s}: "
                   + " ".join(f"{c} {res[nome][c][-1]:.3f}" for c in IDIOMAS), flush=True)
 
-    print(f"\n{'='*104}\nEIXO 2 — bpb POR IDIOMA (menor e' melhor) · media de "
-          f"{len(sementes)} sementes\n{'='*104}")
-    print("🔴 LEIA POR COLUNA, NUNCA ENTRE COLUNAS. `2608.25089` mede que metricas normalizadas —")
-    print("   bpb entre elas — carregam vies crosslinguistico de tokenizacao, codificacao e")
-    print("   ortografia. Um byte de arabe e um byte de chines NAO carregam a mesma informacao,")
-    print("   entao 'arb 1,20 contra cmn 0,90' nao diz nada. A comparacao VALIDA e' braco contra")
-    print("   braco DENTRO da mesma coluna — que e' a tabela de DELTA logo abaixo.")
-    print("   ⭐ E bpb e' justamente a regua que RESISTE ao fallback de byte: perplexidade POR")
-    print("   TOKEN e' deflacionada por ele (dado o byte-lider, os de continuacao sao quase")
-    print("   deterministicos), mas bpb normaliza por BYTE e essa deflacao nao passa (2605.09015).")
-    print(f"{'braco':<18} {'vocab':>8} {'params':>8} " + " ".join(f"{c:>7}" for c in IDIOMAS))
-    print("-" * 104)
+    # 🔴 MEDIDO 2026-09-03: a gravacao ficava DEPOIS de toda a apresentacao, e um KeyError na
+    # montagem da tabela matou a rodada com os 6 modelos ja' medidos — 35 min de GPU perdidos
+    # por um defeito de FORMATACAO. A ordem certa e' medir -> GRAVAR -> apresentar: a
+    # apresentacao e' a parte menos confiavel e nao pode ter poder de destruir a medicao.
+    # Mesma licao do `_grava_probe` por lote no gate T-TRAD, no mesmo dia.
+    # AGREGACAO separada da APRESENTACAO, de proposito: o `saida` precisa existir ANTES da
+    # gravacao, senao a ordem medir->gravar->apresentar nao e' possivel. Foi assim que a
+    # primeira tentativa de conserto quebrou (UnboundLocalError) — mover a gravacao sem mover
+    # o que ela grava.
     saida = {}
     for nome in bracos_ativos(args):
         tr = [json.load(open(p, encoding="utf-8"))
@@ -499,26 +496,6 @@ def avaliar(args) -> int:
                        "bpb": med, "amplitude": amp, "por_semente": res[nome],
                        "minutos_medio": statistics.mean([t["minutos"] for t in tr]) if tr else 0,
                        "tok_s": statistics.mean([t["tok_s_regime"] for t in tr]) if tr else 0}
-        print(f"{nome:<18} {saida[nome]['vocab']:>8,} {par/1e6:>7.0f}M "
-              + " ".join(f"{med[c]:>7.3f}" for c in IDIOMAS))
-    print("-" * 104)
-    print(f"{'amplitude media entre sementes':<36}"
-          + " ".join(f"{statistics.mean([saida[n]['amplitude'][c] for n in BRACOS]):>7.3f}"
-                     for c in IDIOMAS))
-
-    # §2y: delta POR IDIOMA, nunca a media entre idiomas
-    print(f"\n{'='*104}\nDELTA contra {CONTROLE} (negativo = melhor) · e o custo em relogio")
-    print(f"{'braco':<18} " + " ".join(f"{c:>7}" for c in IDIOMAS)
-          + f" {'min':>7} {'tok/s':>8}")
-    print("-" * 104)
-    base = saida[CONTROLE]["bpb"]
-    for nome in bracos_ativos(args):
-        if nome == CONTROLE:
-            continue
-        d = {c: (saida[nome]["bpb"][c] - base[c]) / base[c] for c in IDIOMAS}
-        saida[nome]["delta_vs_controle"] = d
-        print(f"{nome:<18} " + " ".join(f"{d[c]:>+6.1%}" for c in IDIOMAS)
-              + f" {saida[nome]['minutos_medio']:>7.1f} {saida[nome]['tok_s']/1000:>7.1f}k")
 
     doc = {"_gate": "T1 eixo 2 — bpb por idioma",
     "_dispositivo": args.dispositivo,
@@ -555,6 +532,50 @@ def avaliar(args) -> int:
     tmp = dest.with_suffix(".json.tmp")
     open(tmp, "w", encoding="utf-8").write(json.dumps(doc, indent=2, ensure_ascii=False) + "\n")
     os.replace(tmp, dest)
+
+    print(f"\n{'='*104}\nEIXO 2 — bpb POR IDIOMA (menor e' melhor) · media de "
+          f"{len(sementes)} sementes\n{'='*104}")
+    print("🔴 LEIA POR COLUNA, NUNCA ENTRE COLUNAS. `2608.25089` mede que metricas normalizadas —")
+    print("   bpb entre elas — carregam vies crosslinguistico de tokenizacao, codificacao e")
+    print("   ortografia. Um byte de arabe e um byte de chines NAO carregam a mesma informacao,")
+    print("   entao 'arb 1,20 contra cmn 0,90' nao diz nada. A comparacao VALIDA e' braco contra")
+    print("   braco DENTRO da mesma coluna — que e' a tabela de DELTA logo abaixo.")
+    print("   ⭐ E bpb e' justamente a regua que RESISTE ao fallback de byte: perplexidade POR")
+    print("   TOKEN e' deflacionada por ele (dado o byte-lider, os de continuacao sao quase")
+    print("   deterministicos), mas bpb normaliza por BYTE e essa deflacao nao passa (2605.09015).")
+    print(f"{'braco':<18} {'vocab':>8} {'params':>8} " + " ".join(f"{c:>7}" for c in IDIOMAS))
+    print("-" * 104)
+    for nome in saida:
+        v = saida[nome]
+        print(f"{nome:<18} {v['vocab']:>8,} {v['params']/1e6:>7.0f}M "
+              + " ".join(f"{v['bpb'][c]:>7.3f}" for c in IDIOMAS))
+    print("-" * 104)
+    print(f"{'amplitude media entre sementes':<36}"
+          + " ".join(f"{statistics.mean([saida[n]['amplitude'][c] for n in saida]):>7.3f}"
+                     for c in IDIOMAS))
+
+    # §2y: delta POR IDIOMA, nunca a media entre idiomas
+    print(f"\n{'='*104}\nDELTA contra {CONTROLE} (negativo = melhor) · e o custo em relogio")
+    print(f"{'braco':<18} " + " ".join(f"{c:>7}" for c in IDIOMAS)
+          + f" {'min':>7} {'tok/s':>8}")
+    print("-" * 104)
+    # 🔴 MEDIDO 2026-09-03: com `--bracos 64k-multi,96k-multi` o controle nao foi avaliado,
+    # e este bloco estourou KeyError DEPOIS de os 6 modelos ja' terem rodado — 35 min de GPU
+    # medidos e nenhum artefato gravado. Um gate que compara dois bracos ENTRE SI nao precisa
+    # do controle; o que ele nao pode e' fingir que tem.
+    if CONTROLE not in saida:
+        print(f'  (controle {CONTROLE} nao foi avaliado nesta rodada — sem coluna de delta.'
+              f' Comparacao com numero PUBLICADO exige inclui-lo: --bracos ...,{CONTROLE})')
+        return 0
+    base = saida[CONTROLE]["bpb"]
+    for nome in bracos_ativos(args):
+        if nome == CONTROLE:
+            continue
+        d = {c: (saida[nome]["bpb"][c] - base[c]) / base[c] for c in IDIOMAS}
+        saida[nome]["delta_vs_controle"] = d
+        print(f"{nome:<18} " + " ".join(f"{d[c]:>+6.1%}" for c in IDIOMAS)
+              + f" {saida[nome]['minutos_medio']:>7.1f} {saida[nome]['tok_s']/1000:>7.1f}k")
+
     print()
     print(f"artefato: docs/{dest.name}"
           + ("" if canonica else "   [NAO E A CONFIG CANONICA — nao comparar com o"

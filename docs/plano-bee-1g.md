@@ -732,6 +732,69 @@ construção, para não poderem ser confundidos com ele (§2z) · tokenizadores 
 `bee/gate_t1_bpb/nl/tok_t1.tgz`, hash conferido contra a origem antes de o pod ser encerrado.
 
 
+### ✅⭐⭐ [MEDIDO 09-03] `64k` × `96k` resolvido — e a hipótese que motivou o teste foi REFUTADA
+
+O eixo 2 deixou esse par indeciso (`t = −1,09`). Antes de gastar, foram identificados **dois**
+vieses do proxy contra o vocabulário grande, e medido o custo de corrigir cada um:
+
+| viés | correção | custo |
+|---|---|---:|
+| fração de embedding: 21,7%/29,4% no proxy contra **10,9%/15,5%** no Bee-1G | exige ~1B de params não-embedding — a fração só cai com `d_model² × camadas`, não há atalho | **~US$ 93** |
+| **tokens por parâmetro: 0,59 / 0,53** — modelos praticamente não treinados, e o `96k` recebe 20% menos que o `32k` | triplicar o treino | **US$ 6** |
+
+Rodou-se o segundo. **`64k-multi` × `96k-multi`, 6.700 passos, 3 sementes, US$ 5,93.**
+
+⚠️ **6.700 e não os 9.153 planejados**, e a razão é a guarda: o corpus rendeu pools de **279,0M**
+(64k) e **264,7M** (96k), não os 300M pedidos. A 9.153 passos a cobertura passaria de **1,08 e
+1,13 épocas** — repetição entrando em silêncio, que é o confundidor do `2606.24998` e justamente
+o que este experimento não pode ter. 6.700 é o máximo com cobertura < 1 no braço que limita.
+
+#### O resultado
+
+| passos | tok/param | folga média | por semente | **t** (n=3) |
+|---:|---|---:|---|---:|
+| 3.051 | 0,59 / 0,53 | −0,86% | −1,17 · −2,04 · **+0,64** | −1,09 |
+| **6.700** | **1,29 / 1,17** | **−0,29%** | −0,59 · **+0,60** · −0,88 | **−0,64** |
+
+⭐⭐ **A folga ENCOLHEU 66% com 2,2× mais treino por parâmetro — o oposto do que a hipótese
+previa.** A suspeita era que o subtreino penalizava o `96k` e que treinar mais o favoreceria.
+Treinar mais **reduziu** a vantagem dele. E o sinal continua instável: de novo uma semente em
+três inverte (a 43 agora, a 44 antes).
+
+⭐ **A assinatura observável estava declarada antes de ler** (§2s): se o subtreino fosse o viés,
+a folga cresceria com o treino. Ela caiu. A hipótese está refutada pelo experimento que a testava.
+
+#### A decisão: `64k-multi`
+
+A tendência é de **convergência, não de separação** — 0,86% a 0,55 tok/param, 0,29% a 1,23. O
+Bee-1G treina em **20 a 170 tok/param**, ordens de grandeza acima. Extrapolar o valor exato seria
+erro; a **direção** está medida.
+
+E o termo que **não** encolhe é o custo, medido em 3 sementes de cada lado:
+
+| | `64k-multi` | `96k-multi` |
+|---|---:|---:|
+| parâmetros (proxy) | 170M | 188M |
+| throughput | **64,8 / 64,5 / 64,8k tok/s** | 58,8 / 58,5 / 58,6k |
+| penalidade | — | **−9,6%** |
+
+⚠️ **O que este experimento NÃO mostra:** não alcança o regime de treino real, e a fração de
+embedding continua a do proxy. Corrigir isso custaria ~US$ 93 para decidir uma folga de 0,29% —
+não se paga, e menos ainda agora que a folga é menor do que era quando o orçamento foi estimado.
+
+#### 🔴 E dois defeitos meus, no mesmo dia e da mesma família
+
+1. Ao acrescentar `--bracos`, duas iterações continuaram varrendo `BRACOS` inteiro. Com o
+   controle fora do filtro, `avaliar` estourou `KeyError` **depois de medir os 6 modelos** —
+   35 min de GPU medidos e **nenhum artefato gravado**.
+2. A causa de o prejuízo existir não foi o `KeyError`: foi a **ordem**. A gravação ficava depois
+   de toda a apresentação, então um defeito de **formatação** teve poder de destruir a
+   **medição**. Corrigido para **medir → gravar → apresentar**.
+
+⭐ É a terceira vez no mesmo dia que "persistir só no fim" custa medição — a primeira foi o
+`meta.json` por braço no Gate T1, a segunda o `_grava_probe` por lote no T-TRAD.
+
+
 ### Estágio V — visão · Estágio A — áudio
 
 #### 🔴 A decisão de identidade, declarada antes
