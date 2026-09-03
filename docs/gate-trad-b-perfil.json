@@ -1,0 +1,142 @@
+{
+  "_gate": "T-TRAD estagio B · perfil",
+  "_pergunta": "quanto do documento do Common Corpus cabe no tradutor?",
+  "_regua": "TOKENS do tokenizador do proprio tradutor, nunca caracteres (§2ad)",
+  "_nao_mostra": [
+    "qualidade de traducao — e' o `avaliar`, e com PISO de copiar a fonte",
+    "custo — e' o `probe`, medido, nunca extrapolado (§3)",
+    "o que o MODELO faz ao estourar; isto e' so' o tokenizador",
+    "a mediana de tokens por sentenca supoe que o separador funcionou naquele idioma; a coluna sent/kcar e' a guarda disso (§2r: reportar QUANTO o instrumento agiu)"
+  ],
+  "tradutor": "google/madlad400-3b-mt",
+  "repo": "PleIAs/common_corpus",
+  "docs_lidos_do_stream": 69907,
+  "por_idioma": {
+    "en": {
+      "docs": 800,
+      "tok_p50": 3451,
+      "tok_p90": 13408,
+      "tok_p99": 39733,
+      "tok_max": 76180,
+      "tok_por_car": 0.29491776665377284,
+      "sent_por_kcar": 13.959823595285071,
+      "car_total": 16847849,
+      "sent_mediana_tok": 22.431811474442213,
+      "estoura": {
+        "256": 0.8425,
+        "512": 0.75875,
+        "1024": 0.6625,
+        "2048": 0.57,
+        "4096": 0.47125
+      }
+    },
+    "fr": {
+      "docs": 800,
+      "tok_p50": 8150,
+      "tok_p90": 16451,
+      "tok_p99": 22031,
+      "tok_max": 27348,
+      "tok_por_car": 0.3178209394890714,
+      "sent_por_kcar": 13.489105139289974,
+      "car_total": 19463856,
+      "sent_mediana_tok": 30.402172324777165,
+      "estoura": {
+        "256": 0.745,
+        "512": 0.7075,
+        "1024": 0.64125,
+        "2048": 0.58,
+        "4096": 0.53375
+      }
+    },
+    "de": {
+      "docs": 800,
+      "tok_p50": 1327,
+      "tok_p90": 15617,
+      "tok_p99": 24784,
+      "tok_max": 31716,
+      "tok_por_car": 0.3336125694778334,
+      "sent_por_kcar": 16.72409663428852,
+      "car_total": 11372692,
+      "sent_mediana_tok": 21.65632879475542,
+      "estoura": {
+        "256": 0.70375,
+        "512": 0.65375,
+        "1024": 0.54625,
+        "2048": 0.43625,
+        "4096": 0.34
+      }
+    },
+    "es": {
+      "docs": 800,
+      "tok_p50": 1440,
+      "tok_p90": 13713,
+      "tok_p99": 21590,
+      "tok_max": 193421,
+      "tok_por_car": 0.2868717245657955,
+      "sent_por_kcar": 12.174638903351115,
+      "car_total": 15396432,
+      "sent_mediana_tok": 24.93268586131294,
+      "estoura": {
+        "256": 0.68375,
+        "512": 0.595,
+        "1024": 0.53125,
+        "2048": 0.475,
+        "4096": 0.40875
+      }
+    },
+    "zh": {
+      "docs": 800,
+      "tok_p50": 758,
+      "tok_p90": 3640,
+      "tok_p99": 9668,
+      "tok_max": 16994,
+      "tok_por_car": 0.9335800973667479,
+      "sent_por_kcar": 19.00898018928807,
+      "car_total": 1259773,
+      "sent_mediana_tok": 46.23180076628353,
+      "estoura": {
+        "256": 0.8775,
+        "512": 0.625,
+        "1024": 0.39875,
+        "2048": 0.225,
+        "4096": 0.08125
+      }
+    },
+    "ja": {
+      "docs": 243,
+      "tok_p50": 2455,
+      "tok_p90": 28963,
+      "tok_p99": 104153,
+      "tok_max": 128554,
+      "tok_por_car": 0.9309051157733915,
+      "sent_por_kcar": 16.339382839614153,
+      "car_total": 3359062,
+      "sent_mediana_tok": 46.333333333333336,
+      "estoura": {
+        "256": 0.9012345679012346,
+        "512": 0.8148148148148148,
+        "1024": 0.6625514403292181,
+        "2048": 0.5185185185185185,
+        "4096": 0.4773662551440329
+      }
+    },
+    "ar": {
+      "docs": 165,
+      "tok_p50": 351,
+      "tok_p90": 6530,
+      "tok_p99": 42524,
+      "tok_max": 46707,
+      "tok_por_car": 0.3899777729903967,
+      "sent_por_kcar": 12.946516212188167,
+      "car_total": 1360057,
+      "sent_mediana_tok": 29.25,
+      "estoura": {
+        "256": 0.6,
+        "512": 0.3575757575757576,
+        "1024": 0.296969696969697,
+        "2048": 0.17575757575757575,
+        "4096": 0.1393939393939394
+      }
+    }
+  }
+}

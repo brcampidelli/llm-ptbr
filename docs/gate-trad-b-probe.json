@@ -1,0 +1,39 @@
+{
+  "_gate": "T-TRAD estagio B · probe de throughput",
+  "_regua": "tokens de SAIDA por segundo, em regime, mediana das 3 ultimas (§3)",
+  "_parcial": "gravado a cada lote — um OOM no lote seguinte nao apaga os anteriores",
+  "_nao_mostra": [
+    "qualidade da traducao — e' o `avaliar`, e com PISO",
+    "custo na 5090: medido NESTA placa; §4 mede que o preditor e' o TDP, e extrapolar entre placas ja' produziu uma recomendacao errada neste projeto",
+    "o custo de CPU de ler e re-montar os documentos"
+  ],
+  "gpu": "NVIDIA GeForce RTX 5070 Laptop GPU",
+  "tradutor": "google/madlad400-3b-mt",
+  "max_new_tokens": 256,
+  "por_lote": {
+    "8": {
+      "tok_saida_s": 87.1716898729342,
+      "sentencas": 80,
+      "frac_no_teto": 0.0,
+      "vram_gb": 6.275211811065674
+    },
+    "16": {
+      "tok_saida_s": 134.9576121983597,
+      "sentencas": 160,
+      "frac_no_teto": 0.0,
+      "vram_gb": 6.8893938064575195
+    },
+    "24": {
+      "tok_saida_s": 96.31560426982911,
+      "sentencas": 240,
+      "frac_no_teto": 0.0,
+      "vram_gb": 7.589915752410889
+    }
+  },
+  "melhor_lote": 16,
+  "entrada_longa": {
+    "tok_entrada": 2053,
+    "tok_saida": 257,
+    "frac_car_preservada": 0.12088632489838731
+  }
+}
