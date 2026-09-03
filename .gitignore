@@ -91,3 +91,11 @@ bee/gate_t1_bpb/m_*/
 # ainda NAO decididos (64k x 96k continua em aberto) seria peso sem ganho.
 bee/gate_t1_bpb/nl/*.tgz
 bee/gate_t1_bpb/nl/logs/
+
+# Gate T2 — corpora coletados em 2026-09-03 para destravar a mistura. Regeneraveis pelo
+# `coletar_multilingue.py` em ~4 min de banda (medido), e o MANIFEST vai versionado.
+bee/corpus_pt_extra/*.zst
+bee/corpus_multi_extra/*.zst
+!bee/corpus_pt_extra/MANIFEST.json
+!bee/corpus_multi_extra/MANIFEST.json
+bee/gate_t2_mistura/*.bin

@@ -1,0 +1,28 @@
+{
+  "_gerado": "bee/coletar_multilingue.py",
+  "_gate": "T1 — tokenizador multilingue do Bee-1G",
+  "unidade_de_balanceamento": "caracteres",
+  "alvo_por_idioma": 500000000,
+  "_parcial": null,
+  "_erros": null,
+  "_aviso_metrica": "fertilidade em tokens/PALAVRA nao e' comparavel entre escritas — `\\w+` nao segmenta han nem kana. Usar tokens/CARACTERE (§2g).",
+  "idiomas": {
+    "por": {
+      "repo": "HuggingFaceFW/fineweb-2",
+      "config": "por_Latn",
+      "licenca": "odc-by",
+      "fonte": "fineweb2-por",
+      "escrita_esperada": "latim",
+      "documentos": 139289,
+      "caracteres": 500004355,
+      "bytes_utf8": 515285469,
+      "bytes_por_caractere": 1.0305619618053126,
+      "shards": 3,
+      "minutos": 0.5786388913790385,
+      "perfil_escrita": {
+        "latim": 0.9985
+      },
+      "interrompido": null
+    }
+  }
+}
