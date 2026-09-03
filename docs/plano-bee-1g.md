@@ -975,6 +975,74 @@ todas as variantes e TowerInstruct são `cc-by-nc-4.0`** — usá-los contaminar
 Limpos: **Madlad-400** e **Opus-MT** (Apache-2.0), **ALMA** (MIT).
 
 
+### ✅⭐⭐ [MEDIDO 09-02] O custo de traduzir — e a razão que enquadra a decisão
+
+`bee/gate_trad_b.py probe`, medido em duas placas, nunca extrapolado (§3, §4).
+
+| lote | RTX 5070 Laptop (8 GB) | **RTX 5090 (32 GB)** | VRAM |
+|---:|---:|---:|---:|
+| 16 | 135 tok/s | 225 tok/s | 6,9 GB |
+| 32 | OOM | 319 tok/s | 8,4 GB |
+| 64 | OOM | 343 tok/s | 11,3 GB |
+| **128** | OOM | **683 tok/s** · 24,0 sent/s | 20,0 GB |
+| 256 | OOM | OOM | — |
+
+⭐ **A §4 acertou na casa decimal.** Razão de TDP 575 W / ~110 W = **5,2×**; ganho medido
+**5,06×**. O preditor de throughput entre placas continua sendo o TDP, não o preço nem a VRAM.
+
+⚠️ E o ótimo se desloca com a memória: na placa de 8 GB o lote 16 já era o teto e o 24 piorava
+por saturação; com 32 GB o ótimo é **128**. Medir numa placa e copiar o lote para outra teria
+deixado 5× de desempenho na mesa.
+
+| volume de PT traduzido | horas na 5090 | **US$ @0,99/h** |
+|---|---:|---:|
+| 0,10B tokens | 41 | **40** |
+| 0,25B | 102 | **101** |
+| 0,50B | 203 | **201** |
+| 1,0B | 407 | **403** |
+
+#### ⭐⭐ A razão que decide o ESCOPO
+
+O pré-treino do Bee-350M custou **US$ 115 por 21,75B tokens = US$ 5,30 por bilhão**.
+
+> **Traduzir um token custa 76× o que custa treinar nele.**
+
+⚠️ Isso **não** reprova a tradução — reprova **tradução como jogada de volume**. Some-se a isso
+o que este projeto já mediu por conta própria: **+45% de mais-do-mesmo corpus PT rendeu 0,19% de
+bpb**. Volume de PT não é o gargalo, e comprá-lo a 76× o preço do treino seria a pior compra
+possível.
+
+✅ **O escopo defensável é 0,1B a 0,25B de tokens, US$ 40 a US$ 101** — e a justificativa é
+**composição**: o Common Corpus é livro, jornal, ciência e administração pública, distribuição
+que o fineweb-2 PT (web) não tem. A 5B (US$ 2.014) sairia mais caro que o projeto inteiro até
+hoje.
+
+⚠️ **E o valor disso continua NÃO MEDIDO.** O custo agora é conhecido; o retorno não. A régua
+para medi-lo **não pode ser bpb do PT** (`2607.00890`: a loss na língua-alvo subestima
+sistematicamente o valor da mistura), o que empurra a decisão para um gate de mistura no estilo
+do E4, com piso de ruído impresso ao lado (§2h).
+
+#### 🔴🔴 E o achado que vale mais que o custo: o carregador entregava lixo
+
+Ver `bee/gate_trad_b.py:carrega_tradutor()`. O checkpoint do `madlad400-3b-mt` guarda **apenas**
+`decoder.embed_tokens` e `lm_head`; o `transformers` fabrica um `shared`, enche com os valores
+do **lm_head** e aponta o **encoder** para lá. Normas ao carregar:
+`shared 2.560 · encoder 2.560 · lm_head 2.560 · decoder 216.064`.
+
+**Carrega sem erro. Toda tradução vira repetição de uma letra cirílica.** Consertado
+(`encoder` e `shared` ← `decoder`): tradução perfeita, 19 tokens no lugar de 81.
+
+⭐⭐ **Verificado nas versões 5.14.1 e 5.16.1 — a guarda disparou igual nas duas.** Não é
+regressão pontual de uma versão; é comportamento estável da biblioteca, e a guarda é permanente.
+
+⚠️ **O dano que isso quase causou:** o primeiro probe reportou 355 tok/s e projetou US$ 774 por
+1B de tokens, tudo medido sobre saídas degeneradas de 256 tokens — um custo que matava o plano e
+que era o defeito. **O que pegou foi a coluna `no teto`** (fração das saídas que bateram em
+`max_new_tokens`): 87–92% é impossível para sentenças de 30 tokens. Depois do conserto, 0,0%.
+Aquela coluna existe só como guarda §2r — "reportar quanto a intervenção agiu" — e pagou por si
+na primeira execução.
+
+
 ### 🔴 [novo 09-01] E uma hipótese alternativa que nunca testamos
 
 [`2604.28075`](https://arxiv.org/abs/2604.28075) (alemão, 500M documentos, **múltiplas escalas de

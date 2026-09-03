@@ -1,0 +1,45 @@
+{
+  "_gate": "T-TRAD estagio B · probe de throughput",
+  "_regua": "tokens de SAIDA por segundo, em regime, mediana das 3 ultimas (§3)",
+  "_parcial": "gravado a cada lote — um OOM no lote seguinte nao apaga os anteriores",
+  "_nao_mostra": [
+    "qualidade da traducao — e' o `avaliar`, e com PISO",
+    "custo na 5090: medido NESTA placa; §4 mede que o preditor e' o TDP, e extrapolar entre placas ja' produziu uma recomendacao errada neste projeto",
+    "o custo de CPU de ler e re-montar os documentos"
+  ],
+  "gpu": "NVIDIA GeForce RTX 5090",
+  "tradutor": "google/madlad400-3b-mt",
+  "max_new_tokens": 256,
+  "por_lote": {
+    "16": {
+      "tok_saida_s": 224.71052740550567,
+      "sentencas": 192,
+      "frac_no_teto": 0.0,
+      "vram_gb": 6.9314117431640625
+    },
+    "32": {
+      "tok_saida_s": 318.8649054565484,
+      "sentencas": 384,
+      "frac_no_teto": 0.0,
+      "vram_gb": 8.379099369049072
+    },
+    "64": {
+      "tok_saida_s": 342.88448727117293,
+      "sentencas": 768,
+      "frac_no_teto": 0.009114583333333334,
+      "vram_gb": 11.266912937164307
+    },
+    "128": {
+      "tok_saida_s": 682.8185514657183,
+      "sentencas": 1536,
+      "frac_no_teto": 0.005859375,
+      "vram_gb": 20.03166675567627
+    }
+  },
+  "melhor_lote": 128,
+  "entrada_longa": {
+    "tok_entrada": 2053,
+    "tok_saida": 257,
+    "frac_car_preservada": 0.12088632489838731
+  }
+}
