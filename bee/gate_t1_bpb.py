@@ -81,6 +81,23 @@ BRACOS = {
 }
 CONTROLE = "32k-atual"
 
+
+def bracos_ativos(args):
+    """Subconjunto de BRACOS a processar, na ORDEM de BRACOS.
+
+    ⚠️ Existe para poder reabrir um par ja' medido sem repagar os bracos ja' decididos. O
+    controle (`32k-atual`) e' o unico que a §2aa exige em qualquer PAREADO — mas ele nao e'
+    forcado aqui: um gate que compara dois bracos ENTRE SI, com o mesmo aparato dos dois
+    lados, nao precisa dele. Quem compara com numero PUBLICADO precisa, e a` mao.
+    """
+    if not getattr(args, 'bracos', ''):
+        return dict(BRACOS)
+    pedidos = [b.strip() for b in args.bracos.split(',') if b.strip()]
+    faltam = [b for b in pedidos if b not in BRACOS]
+    if faltam:
+        raise SystemExit(f'🔴 braco inexistente: {faltam}. Validos: {list(BRACOS)}')
+    return {k: v for k, v in BRACOS.items() if k in pedidos}
+
 HOLDOUT_PCT = 2        # mesmo balde sha1 do Gate T1 — holdout disjunto por construcao
 
 
@@ -148,7 +165,7 @@ def preparar(args) -> int:
     open(BASE / "holdout.json", "w", encoding="utf-8").write(
         json.dumps(hold, ensure_ascii=False))
 
-    for nome, cam in BRACOS.items():
+    for nome, cam in bracos_ativos(args).items():
         p = BASE / f"pool_{nome}.bin"
         if p.exists() and not args.refazer:
             print(f"  {nome}: pool ja' existe, pulando")
@@ -376,10 +393,11 @@ def treinar_um(nome: str, semente: int, args) -> dict:
 
 def treinar(args) -> int:
     sementes = [int(s) for s in args.sementes.split(",")]
-    print(f"{len(BRACOS)} bracos x {len(sementes)} sementes = "
-          f"{len(BRACOS)*len(sementes)} runs")
+    ativos = bracos_ativos(args)
+    print(f"{len(ativos)} bracos x {len(sementes)} sementes = "
+          f"{len(ativos)*len(sementes)} runs: {', '.join(ativos)}")
     for semente in sementes:
-        for nome in BRACOS:
+        for nome in bracos_ativos(args):
             if (BASE / f"treino_{nome}_s{semente}.json").exists() and not args.refazer:
                 print(f"  {nome} s{semente}: ja' rodou, pulando")
                 continue
@@ -435,7 +453,7 @@ def avaliar(args) -> int:
     res: dict[str, dict[str, list[float]]] = {}
     usado: dict[str, tuple[int, int]] = {}
 
-    for nome, cam in BRACOS.items():
+    for nome, cam in bracos_ativos(args).items():
         tok = AutoTokenizer.from_pretrained(caminho(cam))
         res[nome] = {c: [] for c in IDIOMAS}
         for s in sementes:
@@ -469,7 +487,7 @@ def avaliar(args) -> int:
     print(f"{'braco':<18} {'vocab':>8} {'params':>8} " + " ".join(f"{c:>7}" for c in IDIOMAS))
     print("-" * 104)
     saida = {}
-    for nome in BRACOS:
+    for nome in bracos_ativos(args):
         tr = [json.load(open(p, encoding="utf-8"))
               for p in sorted(glob.glob(str(BASE / f"treino_{nome}_s*.json")))]
         par = tr[0]["params"] if tr else 0
@@ -494,7 +512,7 @@ def avaliar(args) -> int:
           + f" {'min':>7} {'tok/s':>8}")
     print("-" * 104)
     base = saida[CONTROLE]["bpb"]
-    for nome in BRACOS:
+    for nome in bracos_ativos(args):
         if nome == CONTROLE:
             continue
         d = {c: (saida[nome]["bpb"][c] - base[c]) / base[c] for c in IDIOMAS}
@@ -559,6 +577,8 @@ def main() -> int:
     sub = ap.add_subparsers(dest="cmd", required=True)
 
     p = sub.add_parser("preparar")
+    p.add_argument("--bracos", default="",
+                       help="subconjunto separado por virgula; vazio = todos")
     p.add_argument("--pool-tokens", type=int, default=120_000_000)
     p.add_argument("--treino-bytes", type=int, default=400 * 1024 ** 2)
     p.add_argument("--holdout-bytes", type=int, default=4 * 1024 ** 2)
@@ -567,6 +587,8 @@ def main() -> int:
     p.add_argument("--refazer", action="store_true")
 
     t = sub.add_parser("treinar")
+    t.add_argument("--bracos", default="",
+                       help="subconjunto separado por virgula; vazio = todos")
     t.add_argument("--sementes", default="42,43,44")
     t.add_argument("--tokens", type=int, default=100_000_000)
     t.add_argument("--passos", type=int, default=0)
@@ -577,6 +599,8 @@ def main() -> int:
     t.add_argument("--refazer", action="store_true")
 
     a = sub.add_parser("avaliar")
+    a.add_argument("--bracos", default="",
+                       help="subconjunto separado por virgula; vazio = todos")
     a.add_argument("--sementes", default="42,43,44")
     a.add_argument("--seq-len", type=int, default=2048)
     a.add_argument("--dispositivo", choices=["cuda", "cpu"], default="cuda",
