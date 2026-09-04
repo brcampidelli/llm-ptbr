@@ -1,0 +1,85 @@
+{
+  "_gate": "throughput do Bee-1G na configuracao real",
+  "_regua": "tokens/s em REGIME: passo >= 20, mediana das 3 ultimas leituras (§3)",
+  "_nao_mede": [
+    "qualidade de nada — e' relogio e memoria",
+    "queda de throughput em run LONGO (termica, I/O de checkpoint): 40 passos nao veem isso, entao o numero e' um TETO otimista",
+    "outras placas: §4 mede que o preditor e' o TDP, e mesmo assim mede-se"
+  ],
+  "gpu": "NVIDIA GeForce RTX 5090",
+  "vram_gb": 31.36669921875,
+  "vocab": 64000,
+  "pool": "bee/gate_t2_mistura/pool_pt-50.bin",
+  "grad_checkpoint": true,
+  "compile": false,
+  "preco_hora": 0.99,
+  "configs": {
+    "mb1_seq2048_ac4": {
+      "micro_batch": 1,
+      "seq_len": 2048,
+      "grad_accum": 4,
+      "params": 1052479232,
+      "tok_por_passo": 8192,
+      "tok_s": 10493.513929579656,
+      "dispersao_3_ultimas": 0.03963707811915769,
+      "vram_pico_gb": 20.349331855773926,
+      "usd_por_bilhao": 26.206664597339113,
+      "compile": false
+    },
+    "mb2_seq2048_ac4": {
+      "micro_batch": 2,
+      "seq_len": 2048,
+      "grad_accum": 4,
+      "params": 1052479232,
+      "tok_por_passo": 16384,
+      "tok_s": 13456.042703074541,
+      "dispersao_3_ultimas": 0.012802586868923558,
+      "vram_pico_gb": 21.652526378631592,
+      "usd_por_bilhao": 20.436914928723127,
+      "compile": false
+    },
+    "mb4_seq2048_ac4": {
+      "micro_batch": 4,
+      "seq_len": 2048,
+      "grad_accum": 4,
+      "params": 1052479232,
+      "tok_por_passo": 32768,
+      "tok_s": 14470.054217397137,
+      "dispersao_3_ultimas": 0.0031886435188468927,
+      "vram_pico_gb": 24.93485975265503,
+      "usd_por_bilhao": 19.004766386387928,
+      "compile": false
+    },
+    "mb1_seq4096_ac4": {
+      "micro_batch": 1,
+      "seq_len": 4096,
+      "grad_accum": 4,
+      "params": 1052479232,
+      "tok_por_passo": 16384,
+      "tok_s": 12486.584524148848,
+      "dispersao_3_ultimas": 0.005366441883011869,
+      "vram_pico_gb": 22.10014295578003,
+      "usd_por_bilhao": 22.023636605202533,
+      "compile": false
+    },
+    "mb2_seq4096_ac4": {
+      "micro_batch": 2,
+      "seq_len": 4096,
+      "grad_accum": 4,
+      "params": 1052479232,
+      "tok_por_passo": 32768,
+      "tok_s": 13489.025724375717,
+      "dispersao_3_ultimas": 0.004678957154623762,
+      "vram_pico_gb": 25.369689464569092,
+      "usd_por_bilhao": 20.386943106132097,
+      "compile": false
+    },
+    "mb4_seq4096_ac4": {
+      "micro_batch": 4,
+      "seq_len": 4096,
+      "oom": true,
+      "grad_checkpoint": true
+    }
+  },
+  "melhor": "mb4_seq2048_ac4"
+}

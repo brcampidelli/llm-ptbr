@@ -882,6 +882,60 @@ proporção. **A saída não foi encolher o experimento: foi coletar**, 500 Mcar
 cada um dos outros 7, em ~4 minutos de banda.
 
 
+### ✅⭐⭐ [MEDIDO 09-04] Gate de throughput do Bee-1G — e três coisas que a extrapolação errava
+
+Rodado na configuração **real**, com as decisões já fechadas: geometria `ESCADA["1b"]`
+(28 camadas · d_model 1792 · 28q/4kv · intermediate 4864), vocabulário **64.000** do Gate T1 e
+pool **`pt-50`** do Gate T2. Resultado: **1,052B parâmetros, embedding em 10,9%**.
+
+⭐ Repare que **10,9% é exatamente a fração que o proxy do T1 não conseguia reproduzir** — lá o
+embedding do `64k` era 21,7% do modelo, o dobro. Foi por isso que o custo de corrigir aquele viés
+foi estimado em ~US$ 93 e a correção recusada. Aqui ela vem de graça, como subproduto da
+configuração real.
+
+| mb | seq | tok/passo | tok/s | VRAM pico | **US$/B tok** | dispersão |
+|---:|---:|---:|---:|---:|---:|---:|
+| 1 | 2048 | 8.192 | 10.494 | 20,3 GB | 26,21 | 🔴 **4,0%** |
+| 2 | 2048 | 16.384 | 13.456 | 21,7 GB | 20,44 | 1,3% |
+| **4** | **2048** | 32.768 | **14.470** | 24,9 GB | **19,00** | 0,3% |
+| 1 | 4096 | 16.384 | 12.487 | 22,1 GB | 22,02 | 0,5% |
+| 2 | 4096 | 32.768 | 13.489 | 25,4 GB | 20,39 | 0,5% |
+| 4 | 4096 | — | 🔴 **OOM** | — | — | — |
+
+#### O orçamento, medido
+
+| cenário | tok/param | horas | **US$ @0,99/h** |
+|---|---:|---:|---:|
+| Chinchilla (~20×) | 20 | 403 | **399** |
+| como o Bee-350M | 63 | 1.267 | **1.254** |
+| como o Bee-150M | 143 | 2.880 | **2.851** |
+
+#### 🔴 As três coisas que a extrapolação errava
+
+**1. Sem recomputação de ativações o modelo NÃO TREINA em 32 GB** — nem com micro-batch 1 a
+`seq_len` 4096. A tabela de custo anterior deste plano projetava horas e dólares para uma
+configuração **que não roda na placa assumida**: a aritmética estava certa e a premissa não.
+O culpado tem nome e já estava nas lições do projeto: a `64k` de vocabulário e 4096 de contexto,
+o **tensor de logits** sozinho é `4096 × 64.000 × 2 B = 524 MB` em bf16, dobrados pelo *upcast*
+da perda, antes de qualquer ativação das 28 camadas — a mesma lição que o SFT já pagou.
+
+**2. `seq_len` 2048 é MAIS RÁPIDO que 4096** — 14.470 contra 13.489 tok/s (−7%) e com 0,5 GB a
+menos. A geometria da escada especifica 4096, e agora o preço disso está medido. Contexto longo
+tem valor próprio e não é uma decisão de throughput, mas ela deixou de ser gratuita.
+⚠️ E a 4096 o micro-batch trava em 2: o `mb=4` estoura. Isso limita o tamanho de lote efetivo
+sem acumulação adicional.
+
+**3. A guarda da §3 reprovou um ponto.** Os 10.494 tok/s do `mb=1 seq=2048` vieram com **4,0% de
+dispersão** entre as três últimas leituras, acima do teto de 3% — o regime não tinha estabilizado.
+Todas as outras cinco ficaram entre 0,3% e 1,3%, então a instabilidade era daquela configuração
+(lote menor, mais sensível a jitter), não da medição. O ponto vai marcado no artefato e **não
+entra em conta nenhuma**. É exatamente o erro que este projeto cometeu três vezes numa hora:
+ler throughput de um número solto.
+
+⚠️ **TETO OTIMISTA, declarado:** 40 passos não veem queda térmica nem I/O de checkpoint. Os
+US$ 399–2.851 são um piso, não a média de um run longo.
+
+
 ### Estágio V — visão · Estágio A — áudio
 
 #### 🔴 A decisão de identidade, declarada antes
