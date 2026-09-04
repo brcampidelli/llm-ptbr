@@ -1507,6 +1507,98 @@ revogada exige.
 mostra que dá para **estimar a mistura de um corpus a partir do vocabulário do tokenizador liberado**
 (erro relativo médio 3,00%). **Publicar o tokenizador publica a composição do corpus.**
 
+### 🔴🔴 [09-04] O censo da coleta: três idiomas prontos que o driver chamava de falha
+
+A pasta `bee/corpus_multi_1g` tinha **221 shards e nenhuma contabilidade válida deles**. Os seis
+`MANIFEST_<idioma>.json` foram todos escritos **às 09:03 — antes de existir um único shard dos
+idiomas que nomeiam** — e todos carregam o mesmo registro de `fra`, de uma corrida anterior.
+E `fra` tem **zero** shards em disco hoje. O `MANIFEST.json` (12:41) descreve só `jpn`, o último
+idioma, ignorando 218 dos 221 shards.
+
+A causa está no `coletar_1g.sh`: o `cp MANIFEST.json MANIFEST_<c>.json` ficava no ramo de
+**sucesso**, então idioma que não chegava a 90% do alvo nunca atualizava o próprio arquivo — e o
+que sobrava ali era o de outra corrida. **§2z: arquivo cujo NOME afirma o que o CONTEÚDO não é.**
+
+#### O segundo defeito é pior, porque dirigia uma ação destrutiva
+
+A correção anterior — *"verificar o que ficou em disco, não confiar no código de saída"* — estava
+certa na intenção e errada na execução: verificava com um **estimador**. O `mcar_em_disco()`
+derivava o número de caracteres do tamanho **comprimido**, multiplicando por uma razão cravada à
+mão por idioma. Contado agora, shard a shard:
+
+| idioma | Mcar **contado** | Mcar **estimado** | erro | o driver diria |
+|---|---:|---:|---:|---|
+| arb | 7.801 | 2.193 | **−72%** | 🔴 parcial → `rm -f` 52 shards |
+| cmn | 3.405 | 1.379 | **−60%** | 🔴 parcial → `rm -f` 46 shards |
+| eng | 10.017 | 3.225 | **−68%** | 🔴 parcial → `rm -f` 66 shards |
+| spa | 8.805 | 2.760 | **−69%** | 🔴 parcial → `rm -f` 54 shards |
+
+⭐ **Sub-estimava entre 60% e 72% em todos, e sempre para o mesmo lado.** Como `arb`, `cmn` e `eng`
+estão a **100,0% do alvo**, rodar o driver de novo teria **apagado os 221 shards** — inclusive os
+três idiomas prontos — para "refazer do zero". As constantes descrevem caracteres por GB
+*descomprimido*; o código as aplica a bytes *comprimidos*.
+
+✅ **Correções:** quem decide passou a ser `bee/censo_coleta_1g.py`, que **conta** (0,8 min para os
+221 shards); e `rm -f` deixou de acontecer sozinho — exige `--refazer <idiomas>` explícito, porque
+o coletor renumera de `0000` e não sabe retomar. Testado contra o estado quebrado (§2t): sem a
+flag, `spa` e `jpn` sobrevivem e `arb`/`cmn`/`eng` são reconhecidos como prontos; com
+`--refazer jpn`, só `jpn` é alvo.
+
+#### O que existe, contado
+
+| idioma | shards | documentos | Mcaracteres | % do alvo | **Btokens 64k** |
+|---|---:|---:|---:|---:|---:|
+| arb | 52 | 2.599.401 | 7.801 | **100,0%** | 2,500 |
+| cmn | 46 | 2.297.588 | 3.405 | **100,0%** | 2,500 |
+| eng | 66 | 3.274.198 | 10.017 | **100,0%** | 2,500 |
+| spa | 54 | 2.681.000 | 8.805 | 83,5% | 2,088 |
+| jpn | 3 | 108.087 | 163 | 3,4% | 0,086 |
+| **deu** | 0 | 0 | 0 | **0%** | — |
+| **fra** | 0 | 0 | 0 | **0%** | — |
+| **total** | **221** | **10.960.274** | **30.191** | **54,3%** | **9,674** |
+
+Com o português re-tokenizado: **23,868B de PT** (medido, `corpus_pt_64k/MANIFEST.json`) contra
+**9,674B de não-PT**.
+
+⚠️ A conversão caractere→token usa a fertilidade **medida por idioma** do braço `64k-multi`
+(`gate-t1-vocab.json`), porque caractere não é comparável entre escritas (§2g): 1 caractere han
+custa 0,734 token e 1 caractere espanhol custa 0,237.
+
+#### ⭐⭐ E a consequência que acopla duas decisões que pareciam independentes
+
+Épocas do pool não-PT exigidas por cada combinação de mistura e orçamento:
+
+| mistura | %PT | 20B | 66B | 143B |
+|---|---:|---:|---:|---:|
+| **hoje — não-PT 9,67B** | | | | |
+| bal-12 | 12,5% | 1,8× | 6,0× | 12,9× |
+| pt-25 | 25% | 1,6× | 5,1× | 11,1× |
+| **pt-50** | 50% | **1,0×** | 3,4× | 7,4× |
+| **coleta completa — não-PT 17,50B** | | | | |
+| bal-12 | 12,5% | 1,0× | 3,3× | 7,2× |
+| pt-25 | 25% | 0,9× | 2,8× | 6,1× |
+| pt-50 | 50% | 0,6× | 1,9× | 4,1× |
+
+⭐ **No orçamento Chinchilla (20B) com `pt-50`, o dado que já existe basta — exatamente 1,0 época.**
+Nenhuma coleta a mais é necessária para esse desenho.
+
+🔴 **Em todo o resto, a repetição cai na faixa de 3–10×, que é o pico do dano medido** por
+[`2606.24998`](https://arxiv.org/abs/2606.24998) (§2c #6): com 10% dos FLOPs em documentos
+repetidos, o resultado equivale a treinar sem repetição usando só 67% dos FLOPs. O dano **não é
+monotônico** — ele tem pico em contagem intermediária, que é justamente onde estas células caem.
+
+⚠️ **Isto é uma afirmação sobre SUPRIMENTO, não sobre qualidade.** Qual mistura treina melhor é o
+que o braço de transferência mede; esta tabela diz apenas qual é **viável** com o dado que há. As
+duas coisas se combinam: um orçamento grande com pouca variedade de dado não é o mesmo
+experimento que o mesmo orçamento com o corpus completo.
+
+⚠️ E a tabela supõe o pool não-PT usado por inteiro e uniformemente. Ele **não** é uniforme:
+`arb`/`cmn`/`eng` têm 2,5B cada, `spa` 2,088B, `jpn` 0,086B, e `deu`/`fra` zero. Uma mistura que
+queira os sete idiomas em proporções parecidas é limitada pelo mais escasso, e hoje isso é `jpn`
+com 3,4% do alvo.
+
+
+
 ---
 
 ## 6. O que fazer na segunda-feira
