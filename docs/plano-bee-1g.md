@@ -936,6 +936,71 @@ ler throughput de um número solto.
 US$ 399–2.851 são um piso, não a média de um run longo.
 
 
+### ⭐⭐ [MEDIDO 09-04] Os Gemstones respondem T0.b — e a resposta depende da unidade do orçamento
+
+O plano (§3, T0.b) listou *"ler a razão d_model/camadas nos Gemstones"* como experimento de custo
+**zero** — 4.000+ checkpoints até 2B com formas arquiteturais diversas, publicados. Lido em 09-04.
+
+#### O achado, em uma frase
+
+> **Modelos profundos alcançam menor loss por FLOP; quando o orçamento é medido em GPU-horas, os
+> largos se tornam Pareto-ótimos** ([`2502.06857`](https://arxiv.org/abs/2502.06857), Figura 7).
+
+⭐⭐ **A nossa unidade de orçamento é GPU-hora alugada, não FLOP.** O próprio plano registra isso na
+§1 (`2603.28823`: *"sob restrição de tempo, o modelo ótimo é MAIOR que o compute-ótimo"*). Pela
+metade da lei que se aplica a nós, **a direção é largura, não profundidade** — e isso concorda com
+o *Depth Delusion* que o T0.b já citava, agora por um mecanismo diferente (custo de paralelismo, não
+loss).
+
+#### ⚠️ E a ressalva é dos próprios autores, o que a torna mais forte
+
+> *"isto provavelmente se deve ao nosso esquema de treino — não usamos paralelismo de pipeline, só
+> tensor+dados… nossas observações sobre gasto de recurso **podem não generalizar** para outras
+> estratégias de paralelismo"*
+
+🔴 **E o nosso caso é ainda mais diferente do deles: treinamos em UMA GPU, sem paralelismo nenhum.**
+O mecanismo que eles apontam — modelos largos são mais fáceis de escalar sob tensor parallelism —
+**não se aplica a nós**. Sobram mecanismos de GPU única (menos lançamentos sequenciais de kernel,
+matmuls maiores saturando melhor os tensor cores), que empurram na mesma direção mas com magnitude
+desconhecida.
+
+⭐ **Aceitar a conclusão deles seria a §2g em forma de hardware:** o número foi medido num aparato
+que não é o nosso.
+
+#### ⭐⭐⭐ A saída, e ela é dos autores também
+
+> *"praticantes podem transformar nossa análise de GPU-horas para o hardware deles: **basta rodar
+> cada forma por algumas dezenas de passos, registrar os tempos de passo** e reajustar as leis"*
+
+**É exatamente o que o `bee/gate_throughput_1g.py` já faz** — 40 passos, throughput em regime,
+mediana de três leituras (§3). Medir 4 formas custa ~20 min de GPU, **US$ 0,35**.
+
+**As formas candidatas, todas com ~985M de parâmetros não-embedding** (o mesmo orçamento do
+`ESCADA["1b"]` atual), variando só a razão:
+
+| camadas | d_model | intermediate | não-emb | total @64k | **razão d/L** |
+|---:|---:|---:|---:|---:|---:|
+| 16 | 2432 | 6592 | 986M | 1,141B | **152,0** |
+| 20 | 2176 | 5888 | 985M | 1,124B | 108,8 |
+| 24 | 1984 | 5376 | 984M | 1,111B | 82,7 |
+| **28** | **1856** | **4992** | 999M | 1,118B | **66,3** ← atual |
+| 32 | 1728 | 4672 | 993M | 1,104B | 54,0 |
+| 40 | 1536 | 4160 | 982M | 1,081B | 38,4 |
+
+⚠️ **E há um custo que só aparece com vocabulário grande:** o embedding escala com `d_model`, então
+a 64k **cada +64 de d_model custa +4,1M de parâmetros**. A forma mais larga (16×2432) tem 1,141B
+contra 1,081B da mais profunda — **5,5% a mais de parâmetro para o mesmo poder de cálculo**. A
+comparação honesta é por **tokens/segundo a parâmetros iguais**, não por forma isolada.
+
+✅ **Decisão:** entra na sessão de pod junto com o sweep de LR (#5) e o braço de transferência (#6)
+— 4 formas × 40 passos. **O que decide é tok/s medido nesta placa**, não a figura do paper.
+
+⚠️ **O que este experimento NÃO vai mostrar:** qualidade. Os Gemstones medem que profundo ganha em
+loss por FLOP; medir só tok/s escolheria a forma mais rápida ainda que ela aprendesse menos. O
+número de tok/s é **metade** da decisão — a outra metade é a loss por forma, que só se mede
+treinando, e que o próprio suite dos Gemstones já publicou. **A leitura correta é: usar a loss deles
+com o nosso tempo de passo**, que é literalmente a receita do parágrafo citado.
+
 ### Estágio V — visão · Estágio A — áudio
 
 #### 🔴 A decisão de identidade, declarada antes
