@@ -1210,6 +1210,10 @@ deixado 5× de desempenho na mesa.
 O pré-treino do Bee-350M custou **US$ 115 por 21,75B tokens = US$ 5,30 por bilhão**.
 
 > **Traduzir um token custa 76× o que custa treinar nele.**
+>
+> ⚠️ **[corrigido 09-04]** O 76× foi calculado contra o **350M** (US$ 5,30/B). O gate de
+> throughput mediu o **1G** em **US$ 19,00/B** → a razão real é **21×**. A conclusão qualitativa
+> (tradução é composição, não volume; escopo 0,1–0,25B) sobrevive; o número não.
 
 ⚠️ Isso **não** reprova a tradução — reprova **tradução como jogada de volume**. Some-se a isso
 o que este projeto já mediu por conta própria: **+45% de mais-do-mesmo corpus PT rendeu 0,19% de
@@ -1403,6 +1407,13 @@ mostra que dá para **estimar a mistura de um corpus a partir do vocabulário do
 ---
 
 ## 6. O que fazer na segunda-feira
+
+> ### 🔴🔴 [09-04] Antes de qualquer item abaixo: a revisão e o gate de sucesso
+> A [revisão de 2026-09-04](revisao-bee-1g-2026-09-04.md) releu as sete decisões da cadeia contra
+> o que o plano declarou: **uma foi rebaixada** (o T2 usou a régua que este plano mandou não usar,
+> e é estágio único) e **cinco ganharam ressalvas**. O [gate de sucesso (T4)](gate-sucesso-bee-1g.md)
+> está declarado — e lista **oito pré-requisitos** sem os quais o run não pode começar, entre eles
+> re-tokenizar os 21,97B PT (trancados no 32k) e coletar os 7 idiomas a ~1,5B tokens cada.
 
 1. **A terceira semente do resumo** (Fase 2) — pendente, e sem ela há uma afirmação em aberto;
 2. **Gate T1** — varredura de vocab sobre os 8 idiomas, agora com **os três eixos** (custo ·

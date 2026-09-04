@@ -144,7 +144,11 @@ ESCADA = {
     "350m": BeeConfig("Bee-350M", n_camadas=32, d_model=960,  n_heads=15, n_kv_heads=5,
                       intermediate=2560, arquitetura="qwen3"),
     "500m": BeeConfig("Bee-500M", n_camadas=27, d_model=1280, n_heads=20, n_kv_heads=4,  intermediate=3456),
-    "1b":   BeeConfig("Bee-1B",   n_camadas=28, d_model=1792, n_heads=28, n_kv_heads=4,  intermediate=4864, seq_len=4096),
+    # seq_len 2048, NAO 4096 — corrigido 2026-09-04. Tres fontes discordavam: esta config dizia
+    # 4096; o plano (§3 T0.f, SkyLadder 2503.15450) ja tinha decidido 2048; e o gate de
+    # throughput mediu 2048 7% MAIS RAPIDO (14.470 x 13.489 tok/s) com menos memoria, e a
+    # 4096 o micro-batch trava em 2. Parte do custo de contexto ja foi paga no tokenizador.
+    "1b":   BeeConfig("Bee-1B",   n_camadas=28, d_model=1792, n_heads=28, n_kv_heads=4,  intermediate=4864, seq_len=2048),
     "4b":   BeeConfig("Bee-4B",   n_camadas=40, d_model=3072, n_heads=24, n_kv_heads=8,  intermediate=8192, seq_len=4096),
 }
 
