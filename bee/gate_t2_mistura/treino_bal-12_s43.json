@@ -1,0 +1,20 @@
+{
+  "braco": "bal-12",
+  "semente": 43,
+  "vocab": 64000,
+  "passos": 6700,
+  "params": 169609536,
+  "params_embedding": 36864000,
+  "tokens_vistos": 219545600,
+  "pool_tokens": 250032835,
+  "epocas": 0.8780670746704128,
+  "cobertura_distinta": 0.8780695575250234,
+  "perda_ultimo_lote": 4.360859274864197,
+  "perda_media_100": 4.2877625542879105,
+  "minutos": 56.724584285418196,
+  "tok_s_regime": 64668.32970641916,
+  "lr": 0.003,
+  "seq_len": 2048,
+  "micro_batch": 4,
+  "grad_accum": 4
+}

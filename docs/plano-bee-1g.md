@@ -795,6 +795,93 @@ não se paga, e menos ainda agora que a folga é menor do que era quando o orça
 `meta.json` por braço no Gate T1, a segunda o `_grava_probe` por lote no T-TRAD.
 
 
+### ✅⭐⭐ [MEDIDO 09-03] Gate T2 — a mistura decide, e a troca é 3,5× a favor do português
+
+**9 corridas** (3 misturas × 3 sementes), 6.700 passos, cobertura 0,878, mistura efetiva com
+desvio máximo de **0,01 pp** do alvo. Régua canônica `cuda/bf16`, holdout de 1,5 MB — **o mesmo
+do Gate T1**, de propósito. Custo **US$ 8,49**.
+
+⭐ **Este gate é mais limpo que o T1 por construção.** Lá os braços tinham vocabulários
+diferentes, então tokens/parâmetro *diferia* entre eles (0,59 contra 0,53) e virou viés. Aqui o
+tokenizador (`64k-multi`), a arquitetura, o total de tokens e a cobertura são **idênticos** —
+a única variável é a proporção de português.
+
+| braço | PT | por | spa | fra | deu | eng | arb | cmn | jpn |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| `bal-12` | 12,5% | 1,4281 | 1,3917 | 1,4088 | 2,0178 | 1,5799 | 1,2008 | 2,0170 | 1,2723 |
+| `pt-25` | 25% | 1,3700 | 1,3957 | 1,4226 | 2,0361 | 1,5974 | 1,2198 | 2,0572 | 1,2962 |
+| `pt-50` | 50% | **1,2801** | 1,3832 | 1,4380 | 2,0658 | 1,6044 | 1,2613 | 2,1332 | 1,3280 |
+
+#### O pareado, com a SEMENTE como unidade
+
+| comparação | PT | **t** | os outros 7 | **t** |
+|---|---:|---:|---:|---:|
+| `bal-12` → `pt-25` | **−4,06%** | **−8,38** | +1,25% | 2,62 |
+| `pt-25` → `pt-50` | **−6,56%** | **−17,62** | +1,66% | 6,38 |
+| `bal-12` → `pt-50` | **−10,35%** | **−12,84** | +2,95% | 3,93 |
+
+⭐⭐ **Sem ambiguidade nenhuma, ao contrário do gate do vocabulário.** O piso de dispersão entre
+sementes é **0,78% a 1,24%**, e o efeito em português é de 4% a 10% — o sinal é consistente nas
+três sementes e nas três comparações. Não é o caso de "duas alertam, três decidem": aqui as três
+concordam.
+
+#### ⭐⭐ A taxa de troca, e ela NÃO piora
+
+| de → para | PT ganha | os 7 perdem | **razão** |
+|---|---:|---:|---:|
+| 12,5% → 25% | −4,06% | +1,25% | **3,24×** |
+| 25% → 50% | −6,56% | +1,66% | **3,95×** |
+| 12,5% → 50% | −10,35% | +2,95% | **3,51×** |
+
+**Cada ponto de bpb perdido nos outros sete compra 3,2 a 4,0 pontos em português**, e a razão não
+degrada ao dobrar a fatia de 25% para 50% — se algo, melhora. Não há retorno decrescente na faixa
+medida.
+
+#### Dois achados por idioma
+
+⭐ **O espanhol não paga a conta.** Em `pt-50` ele fica em **−0,61%**, dentro do ruído de 1,03% —
+isto é, **inalterado**, enquanto os outros seis pioram. É transferência do português para a língua
+mais próxima, e é o único idioma que escapa.
+
+🔴 **Quem paga são as escritas distantes:** chinês **+5,76%**, árabe **+5,04%**, japonês **+4,38%**,
+todos muito acima do ruído. **O custo da mistura não é distribuído — ele se concentra em CJK e
+árabe.**
+
+#### A decisão
+
+✅ **A mistura uniforme de 12,5% é a pior escolha possível para o objetivo declarado do projeto.**
+Se o português é a capacidade que importa, `pt-50` compra 10,35% de bpb ao custo de 2,95% nos
+outros — e o preço recai sobre CJK e árabe, não sobre as línguas latinas.
+
+⚠️ **O que este gate NÃO mostra:**
+· mede **bpb, não capacidade** — o E2 mediu que são coisas diferentes;
+· roda a 150M params e 1,29 tok/param, e o mesmo dia mediu que folgas entre braços **encolhem**
+  com mais treino: isto é um **TETO**, não o valor no Bee-1G;
+· não há braço 100% PT — 220M tokens pedidos contra 157M existentes seria repetição.
+
+#### 🔴🔴 E o erro que a guarda §2r pegou: pool de treino montado a partir do HOLDOUT
+
+A função do T1 chama-se `_no_holdout` e é **português** — *"[está] no holdout"*, devolvendo `True`
+para quem deve ficar **fora** do treino. Foi lida como o inglês *"no holdout"* = "não é holdout",
+a condição foi invertida, e os pools de treino saíram do holdout.
+
+**Nada daria erro.** O treino rodaria, a loss cairia, e o bpb sairia absurdamente bom porque o
+modelo teria visto exatamente o texto da avaliação — e o relatório diria *"a mistura não custa nada
+ao português"*.
+
+⭐ O que pegou foi a guarda de **mistura efetiva** (§2r), mas de raspão e nomeando a causa errada
+(*"reduza --pool-tokens"*). O sintoma real era **98% de descarte com um holdout de 2%**. Trocada por
+uma guarda direta sobre a taxa de descarte, com limites dos **dois** lados — a primeira versão
+pegava o filtro invertido (98%) e deixava passar o filtro **morto** (0%), o que só apareceu porque
+a guarda foi testada antes de ser usada.
+
+⭐ E a §2r disparou uma **segunda** vez, por outra causa: o espanhol tinha só 23,5M tokens e o braço
+`bal-12` precisa de pool/8 de **cada** idioma. Sem ela, o braço rotulado "12,5% uniforme" teria sido
+treinado com `por 14,1% / spa 10,6% / fra 11,3% / …` — o rótulo mentiria e o gate mediria outra
+proporção. **A saída não foi encolher o experimento: foi coletar**, 500 Mcar de PT e 300 Mcar de
+cada um dos outros 7, em ~4 minutos de banda.
+
+
 ### Estágio V — visão · Estágio A — áudio
 
 #### 🔴 A decisão de identidade, declarada antes
