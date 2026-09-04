@@ -59,6 +59,7 @@ import hashlib
 import json
 import math
 import os
+import re
 import sys
 import time
 from pathlib import Path
@@ -299,6 +300,26 @@ def guarda_rotulos(modelo, x) -> None:
 
 # ---------------------------------------------------------------- treinar
 
+def _suf(args) -> str:
+    """Sufixo de escala nos artefatos. 150m e' a escala CANONICA e fica sem sufixo, para que
+    todo artefato historico continue valido; qualquer outra escala ganha `-<escala>` em modelo,
+    treino_*.json e no JSON de saida — senao um run de 350M SOBRESCREVERIA o de 150M em
+    silencio (§2z: nome de saida deriva do que foi medido)."""
+    e = getattr(args, "escala", "150m")
+    return "" if e == "150m" else f"-{e}"
+
+
+def _treinos(nome: str, args) -> list:
+    """Os treino_*.json DESTA escala, e so' desta.
+
+    🔴 `glob("treino_{nome}_s*.json")` casaria tambem `treino_{nome}_s42-350m.json`, e a media
+    de minutos/params/tok_s misturaria duas escalas sem nenhum erro. Regex exata, nao glob."""
+    suf = re.escape(_suf(args))
+    pat = re.compile(rf"treino_{re.escape(nome)}_s\d+{suf}\.json")
+    return [json.load(open(q, encoding="utf-8"))
+            for q in sorted(BASE.glob(f"treino_{nome}_s*.json")) if pat.fullmatch(q.name)]
+
+
 def treinar_um(nome: str, semente: int, args) -> dict:
     import dataclasses
     import numpy as np
@@ -316,7 +337,9 @@ def treinar_um(nome: str, semente: int, args) -> dict:
     if int(dados.max()) >= vocab:
         raise SystemExit(f"🔴 pool corrompido: id {dados.max()} >= vocab {vocab}")
 
-    cfg = dataclasses.replace(ESCADA["150m"], vocab=vocab, seq_len=args.seq_len)
+    if args.escala not in ESCADA:
+        raise SystemExit(f"🔴 escala {args.escala!r} nao existe na ESCADA: {list(ESCADA)}")
+    cfg = dataclasses.replace(ESCADA[args.escala], vocab=vocab, seq_len=args.seq_len)
     modelo = LlamaForCausalLM(para_llama_config(cfg)).cuda()
     n_par = sum(p.numel() for p in modelo.parameters())
     n_emb = sum(p.numel() for n, p in modelo.named_parameters()
@@ -369,8 +392,9 @@ def treinar_um(nome: str, semente: int, args) -> dict:
                   f"{tok_por_passo*(passo+1)/dt/1000:.1f}k tok/s · {dt/60:.1f} min "
                   f"· cob {am.cobertura_distinta:.2f}", flush=True)
 
-    modelo.save_pretrained(BASE / f"m_{nome}_s{semente}")
-    r = {"braco": nome, "semente": semente, "vocab": vocab, "passos": passos,
+    modelo.save_pretrained(BASE / f"m_{nome}_s{semente}{_suf(args)}")
+    r = {"braco": nome, "semente": semente, "escala": args.escala, "vocab": vocab,
+         "passos": passos,
          "params": int(n_par), "params_embedding": int(n_emb),
          "tokens_vistos": vistos, "pool_tokens": int(len(dados)),
          "epocas": vistos / len(dados), "cobertura_distinta": am.cobertura_distinta,
@@ -387,7 +411,7 @@ def treinar_um(nome: str, semente: int, args) -> dict:
          "tok_s_regime": sorted(leituras)[len(leituras) // 2] if leituras else 0.0,
          "lr": args.lr, "seq_len": args.seq_len, "micro_batch": args.micro_batch,
          "grad_accum": args.grad_accum}
-    json.dump(r, open(BASE / f"treino_{nome}_s{semente}.json", "w"), indent=2)
+    json.dump(r, open(BASE / f"treino_{nome}_s{semente}{_suf(args)}.json", "w"), indent=2)
     return r
 
 
@@ -398,7 +422,7 @@ def treinar(args) -> int:
           f"{len(ativos)*len(sementes)} runs: {', '.join(ativos)}")
     for semente in sementes:
         for nome in bracos_ativos(args):
-            if (BASE / f"treino_{nome}_s{semente}.json").exists() and not args.refazer:
+            if (BASE / f"treino_{nome}_s{semente}{_suf(args)}.json").exists() and not args.refazer:
                 print(f"  {nome} s{semente}: ja' rodou, pulando")
                 continue
             treinar_um(nome, semente, args)
@@ -457,7 +481,7 @@ def avaliar(args) -> int:
         tok = AutoTokenizer.from_pretrained(caminho(cam))
         res[nome] = {c: [] for c in IDIOMAS}
         for s in sementes:
-            d = BASE / f"m_{nome}_s{s}"
+            d = BASE / f"m_{nome}_s{s}{_suf(args)}"
             if not d.exists():
                 print(f"  ⚠️ {nome} s{s}: sem modelo, pulando")
                 continue
@@ -485,8 +509,7 @@ def avaliar(args) -> int:
     # o que ela grava.
     saida = {}
     for nome in bracos_ativos(args):
-        tr = [json.load(open(p, encoding="utf-8"))
-              for p in sorted(glob.glob(str(BASE / f"treino_{nome}_s*.json")))]
+        tr = _treinos(nome, args)
         par = tr[0]["params"] if tr else 0
         med = {c: statistics.mean(res[nome][c]) if res[nome][c] else float("nan")
                for c in IDIOMAS}
@@ -497,7 +520,8 @@ def avaliar(args) -> int:
                        "minutos_medio": statistics.mean([t["minutos"] for t in tr]) if tr else 0,
                        "tok_s": statistics.mean([t["tok_s_regime"] for t in tr]) if tr else 0}
 
-    doc = {"_gate": "T1 eixo 2 — bpb por idioma",
+    doc = {"_gate": f"{BASE.name.replace(chr(95), chr(45))} — bpb por idioma",
+           "escala": args.escala,
     "_dispositivo": args.dispositivo,
     "_dtype": "bfloat16" if args.dispositivo == "cuda" else "float32",
     "_aviso_regua": ("cpu/fp32 e cuda/bf16 sao REGUAS DIFERENTES (§2g). Numero desta rodada so' compara com outro de MESMO _dispositivo e mesmo _bytes_holdout."),
@@ -527,7 +551,10 @@ def avaliar(args) -> int:
     # qualquer desvio ganha sufixo e nao pode colidir.
     canonica = (args.dispositivo == "cuda" and args.bytes_holdout == 1_500_000 and len(sementes) == 3)
     sufixo = "" if canonica else (f"-{args.dispositivo}-{args.bytes_holdout}b" + "-s" + "".join(str(s) for s in sementes))
-    dest = ROOT / "docs" / f"gate-t1-bpb{sufixo}.json"
+    # o PREFIXO vem do gate que rodou (bee/gate_t1_bpb -> gate-t1-bpb; bee/gate_t2_mistura ->
+    # gate-t2-mistura): o T2 reaproveita esta funcao e nao pode gravar em cima do artefato do T1.
+    prefixo = BASE.name.replace("_", "-")
+    dest = ROOT / "docs" / f"{prefixo}{sufixo}{_suf(args)}.json"
     dest.parent.mkdir(exist_ok=True)
     tmp = dest.with_suffix(".json.tmp")
     open(tmp, "w", encoding="utf-8").write(json.dumps(doc, indent=2, ensure_ascii=False) + "\n")
@@ -589,6 +616,7 @@ def avaliar(args) -> int:
 # ---------------------------------------------------------------- main
 
 def main() -> int:
+    from config import ESCADA
     for s in (sys.stdout, sys.stderr):
         try:
             s.reconfigure(encoding="utf-8")
@@ -618,8 +646,11 @@ def main() -> int:
     t.add_argument("--grad-accum", type=int, default=4)
     t.add_argument("--lr", type=float, default=3e-3)
     t.add_argument("--refazer", action="store_true")
+    t.add_argument("--escala", default="150m", choices=list(ESCADA),
+                   help="degrau da ESCADA; 150m e' o canonico (sem sufixo nos artefatos)")
 
     a = sub.add_parser("avaliar")
+    a.add_argument("--escala", default="150m", choices=list(ESCADA))
     a.add_argument("--bracos", default="",
                        help="subconjunto separado por virgula; vazio = todos")
     a.add_argument("--sementes", default="42,43,44")

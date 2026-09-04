@@ -274,6 +274,7 @@ def cmd_avaliar(args) -> int:
 
 
 def main() -> int:
+    from config import ESCADA
     for s in (sys.stdout, sys.stderr):
         try:
             s.reconfigure(encoding="utf-8")
@@ -300,6 +301,8 @@ def main() -> int:
     t.add_argument("--grad-accum", type=int, default=4)
     t.add_argument("--lr", type=float, default=3e-3)
     t.add_argument("--refazer", action="store_true")
+    t.add_argument("--escala", default="150m", choices=list(ESCADA),
+                   help="150m e' o T2 original; 350m e' o braco de TRANSFERENCIA (#6)")
     t.set_defaults(fn=cmd_treinar)
 
     a = sub.add_parser("avaliar")
@@ -308,6 +311,7 @@ def main() -> int:
     a.add_argument("--seq-len", type=int, default=2048)
     a.add_argument("--bytes-holdout", type=int, default=1_500_000)
     a.add_argument("--dispositivo", choices=["cuda", "cpu"], default="cuda")
+    a.add_argument("--escala", default="150m", choices=list(ESCADA))
     a.set_defaults(fn=cmd_avaliar)
 
     args = ap.parse_args()
