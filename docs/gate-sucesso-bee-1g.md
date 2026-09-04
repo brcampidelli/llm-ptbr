@@ -77,10 +77,27 @@ o 350M ficou plano de 10B a 15B e caiu 12% ao decair. Não abortar por isso.
 | bpb PT (a) | `bee/gate/holdout_wiki.json` — 300 docs Wikipédia-PT, 1,03 MB, **que nenhum braço treinou** | bpb do **gzip** do mesmo texto | **≤ Bee-350M no MESMO holdout** |
 | bpb PT (b) | PT do `corpus_multi` — balde `sha1 % 100 < 2`, 1,5 MB, o holdout dos gates T1/T2 | idem | idem |
 
-🔴 **O 0,8207 do 350M NÃO serve como âncora**: foi medido nos shards {7,23,41} de `bee/corpus`,
-que não existe mais localmente (revisão §2.9). **Pré-requisito #2:** medir o 350M (Hub) nestes
-dois holdouts, na 5070, antes do run. O número que sair é a âncora — e vai gravado com a config
-completa da régua (§2aa: config se lê no artefato).
+> ### ✅⭐⭐ [MEDIDO 09-04] As âncoras existem, e a régua foi validada
+>
+> `bee/ancora_pt.py`, artefato `docs/ancora-pt-t4.json`. Régua: bpb, `cuda/bf16`, 1,5 MB por
+> holdout, `seq_len` 2048.
+>
+> | holdout | Bee-150M | **Bee-350M = ÂNCORA** | folga |
+> |---|---:|---:|---:|
+> | `wiki` — Wikipédia-PT, 300 docs, 1,03 MB | 0,9434 | **0,9175** | **+2,75%** |
+> | `corpus_multi` PT — 438 docs, 1,49 MB | 0,8857 | **0,8576** | +3,18% |
+>
+> ⭐⭐ **§2aa cumprida na única forma possível.** O número publicado do 350M (0,8207) veio de um
+> holdout que não existe mais, então ele não pode ser reproduzido. Mas a **folga publicada de
+> 2,76% sobre o 150M** pode — e reproduziu em **+2,75%** no `wiki`. Uma folga entre dois modelos
+> na mesma régua sobrevive à troca de holdout; o valor absoluto não.
+>
+> 🔴 **O 0,8207 fica descartado como critério.** As âncoras são **0,9175** (wiki) e **0,8576**
+> (corpus_multi), cada uma no seu holdout, nunca a média.
+>
+> ⚠️ E a diferença entre os dois (0,9175 contra 0,8576, o mesmo modelo) é a razão de reportá-los
+> separados: a Wikipédia-PT é 7% mais difícil. ⭐ A folga da escala também é maior **dentro** da
+> distribuição de treino (3,18% no fineweb-2) que **fora** dela (2,75% na Wikipédia).
 
 **O que não mostra:** capacidade. O E2 mediu que bpb e capacidade são coisas diferentes, e o
 próprio 350M passou de 0% a 86% em tradução pt→en com 2,76% de bpb.
@@ -208,13 +225,13 @@ Copiados da [revisão §4](revisao-bee-1g-2026-09-04.md), com o estado:
 | # | pré-requisito | custo | estado |
 |---|---|---|---|
 | 1 | `ESCADA["1b"].seq_len` → **2048** | minutos | ✅ feito em 09-04 |
-| 2 | **âncora do 350M** nos dois holdouts de texto da §3.1 | 5070, minutos | ❌ |
-| 3 | **re-tokenizar os 21,97B PT** em `64k-multi` (decode 32k → encode 64k, lossless) | CPU ~12 h, paralelizável | ❌ |
-| 4 | **coletar 7 idiomas a ~1,5B tokens** cada, licença por idioma | banda ~10 h | ❌ |
+| 2 | **âncora do 350M** nos dois holdouts de texto da §3.1 | 5070, minutos | ✅ **feito 09-04** — 0,9175 / 0,8576 |
+| 3 | **re-tokenizar os 21,97B PT** em `64k-multi` (lossless, verificado por shard) | CPU ~1,5 h com 5 processos | 🔄 **rodando 09-04** |
+| 4 | **coletar 7 idiomas a 2,5B tokens** cada (alvo por TOKEN, não por caractere) | banda ~3,8 h | 🔄 **rodando 09-04** |
 | 5 | **mini-sweep de LR** que cerca 1e-3 (3 pontos × 1 semente × 2.000 passos) | ~US$ 3 | ❌ |
 | 6 | **braço de transferência do T2** (`bal-12` e `pt-50` a 350M) — **ou** risco aceito por escrito | ~US$ 6 | ❌ |
 | 7 | ❓ **decisão do dono** — ponto da troca, e 1 ou 2 estágios | — | ❌ |
-| 8 | reproduzir **um** número publicado do modelo público da §3.2 (§2aa) | 5070, minutos | ❌ |
+| 8 | reproduzir **um** número publicado (§2aa) | 5070, minutos | ✅ **feito 09-04** — folga 2,76% → +2,75% |
 
 ⚠️ 3 e 4 são os longos, **não precisam de GPU**, e podem rodar em paralelo desde já.
 

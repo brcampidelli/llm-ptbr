@@ -1,0 +1,48 @@
+{
+  "_gate": "ancora de PT para o T4",
+  "_regua": "bpb = nats/ln2 / BYTES · cuda · teto 1500000 B por holdout · seq_len 2048",
+  "_por_que": "o 0,8207 publicado do 350M saiu dos shards {7,23,41} de `bee/corpus`, que nao existe nesta maquina — a ancora tem de ser remedida num holdout que exista (§2g)",
+  "_nao_mostra": [
+    "capacidade — o E2 mediu que bpb e capacidade sao coisas diferentes",
+    "comparacao ENTRE idiomas: bpb carrega vies crosslinguistico (2608.25089); estes numeros sao todos de PT e so' comparam entre si",
+    "o valor absoluto NAO e' comparavel ao 0,8207 publicado — holdout diferente"
+  ],
+  "bytes_holdout": 1500000,
+  "seq_len": 2048,
+  "dispositivo": "cuda",
+  "holdouts": {
+    "wiki": {
+      "docs": 300,
+      "bytes": 1029991
+    },
+    "corpus_multi_pt": {
+      "docs": 438,
+      "bytes": 1487916
+    }
+  },
+  "bpb": {
+    "BrCamp/bee-150m-pt-base": {
+      "wiki": 0.9434311681859796,
+      "corpus_multi_pt": 0.8857138238492245
+    },
+    "BrCamp/bee-350m-pt-base": {
+      "wiki": 0.9175177220264558,
+      "corpus_multi_pt": 0.857561743797375
+    }
+  },
+  "checagem_2aa": {
+    "folga_publicada": 0.0276,
+    "tolerancia": 0.01,
+    "por_holdout": {
+      "wiki": {
+        "folga": 0.027467235590011296,
+        "reproduz": true
+      },
+      "corpus_multi_pt": {
+        "folga": 0.031784623084579744,
+        "reproduz": true
+      }
+    },
+    "todas_reproduzem": true
+  }
+}
