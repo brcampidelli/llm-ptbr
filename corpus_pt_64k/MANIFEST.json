@@ -1,0 +1,407 @@
+{
+  "_origem": "C:\\Users\\brcam\\Desktop\\Desenvolvendo Projetos\\Desenvolvendo LLM\\corpus_pt",
+  "_tok_origem": "models/bee-150m-v3-base",
+  "_tok_destino": "bee/tok_t1/64k-multi",
+  "_lossless": "verificado por round-trip POR SHARD antes de converter: o 32k e' BPE ByteLevel sem byte_fallback com normalizador NFC, entao decode(ids) devolve o texto exato e o corpus ja' foi gravado NFC",
+  "_dtype": "uint16 — vocab 64.000, max id 63.999 < 65.535; construtor que LEVANTA, nao astype() que envolve em silencio",
+  "_corte": "na fronteira de EOS: cada documento e' re-tokenizado inteiro, como numa passada unica",
+  "shards": {
+    "pt_A_001.bin": {
+      "shard": "pt_A_001.bin",
+      "tok_entrada": 303918365,
+      "tok_saida": 330710164,
+      "razao": 1.0881545904605008,
+      "docs_entrada": 250764,
+      "docs_saida": 250764,
+      "max_id": 63999,
+      "minutos": 21.154644870758055
+    },
+    "pt_A_002.bin": {
+      "shard": "pt_A_002.bin",
+      "tok_entrada": 301777419,
+      "tok_saida": 328265468,
+      "razao": 1.087773462599599,
+      "docs_entrada": 250609,
+      "docs_saida": 250609,
+      "max_id": 63999,
+      "minutos": 21.015725123882294
+    },
+    "pt_A_003.bin": {
+      "shard": "pt_A_003.bin",
+      "tok_entrada": 301635615,
+      "tok_saida": 328170461,
+      "razao": 1.0879698705340217,
+      "docs_entrada": 250794,
+      "docs_saida": 250794,
+      "max_id": 63999,
+      "minutos": 21.069093175729115
+    },
+    "pt_A_004.bin": {
+      "shard": "pt_A_004.bin",
+      "tok_entrada": 300940338,
+      "tok_saida": 327437862,
+      "razao": 1.0880490936379557,
+      "docs_entrada": 249828,
+      "docs_saida": 249828,
+      "max_id": 63999,
+      "minutos": 21.15381790002187
+    },
+    "pt_A_005.bin": {
+      "shard": "pt_A_005.bin",
+      "tok_entrada": 297093451,
+      "tok_saida": 323357168,
+      "razao": 1.0884022078292126,
+      "docs_entrada": 247717,
+      "docs_saida": 247717,
+      "max_id": 63999,
+      "minutos": 20.72369677623113
+    },
+    "pt_A_006.bin": {
+      "shard": "pt_A_006.bin",
+      "tok_entrada": 295687379,
+      "tok_saida": 321811065,
+      "razao": 1.0883490059276422,
+      "docs_entrada": 247759,
+      "docs_saida": 247759,
+      "max_id": 63999,
+      "minutos": 21.147292641798654
+    },
+    "pt_A_007.bin": {
+      "shard": "pt_A_007.bin",
+      "tok_entrada": 294861814,
+      "tok_saida": 320702772,
+      "razao": 1.0876375195873955,
+      "docs_entrada": 247259,
+      "docs_saida": 247259,
+      "max_id": 63999,
+      "minutos": 21.12037747701009
+    },
+    "pt_A_008.bin": {
+      "shard": "pt_A_008.bin",
+      "tok_entrada": 295156964,
+      "tok_saida": 321138949,
+      "razao": 1.088027687532387,
+      "docs_entrada": 246985,
+      "docs_saida": 246985,
+      "max_id": 63999,
+      "minutos": 20.99985801378886
+    },
+    "pt_A_009.bin": {
+      "shard": "pt_A_009.bin",
+      "tok_entrada": 293492530,
+      "tok_saida": 319320360,
+      "razao": 1.0880016605533367,
+      "docs_entrada": 247534,
+      "docs_saida": 247534,
+      "max_id": 63999,
+      "minutos": 20.920468175411223
+    },
+    "pt_A_010.bin": {
+      "shard": "pt_A_010.bin",
+      "tok_entrada": 292638144,
+      "tok_saida": 318453896,
+      "razao": 1.088217317288617,
+      "docs_entrada": 246459,
+      "docs_saida": 246459,
+      "max_id": 63999,
+      "minutos": 20.8156973640124
+    },
+    "pt_A_011.bin": {
+      "shard": "pt_A_011.bin",
+      "tok_entrada": 292546656,
+      "tok_saida": 318353260,
+      "razao": 1.0882136352295204,
+      "docs_entrada": 247620,
+      "docs_saida": 247620,
+      "max_id": 63999,
+      "minutos": 19.86496632496516
+    },
+    "pt_A_012.bin": {
+      "shard": "pt_A_012.bin",
+      "tok_entrada": 289584304,
+      "tok_saida": 315168923,
+      "razao": 1.0883494673109078,
+      "docs_entrada": 246064,
+      "docs_saida": 246064,
+      "max_id": 63999,
+      "minutos": 19.63091452519099
+    },
+    "pt_B_000.bin": {
+      "shard": "pt_B_000.bin",
+      "tok_entrada": 627663111,
+      "tok_saida": 682642976,
+      "razao": 1.087594545603302,
+      "docs_entrada": 694048,
+      "docs_saida": 694048,
+      "max_id": 63999,
+      "minutos": 45.25893781582514
+    },
+    "pt_B_001.bin": {
+      "shard": "pt_B_001.bin",
+      "tok_entrada": 627121781,
+      "tok_saida": 681941527,
+      "razao": 1.0874148333878393,
+      "docs_entrada": 693151,
+      "docs_saida": 693151,
+      "max_id": 63999,
+      "minutos": 45.34808418750763
+    },
+    "pt_B_002.bin": {
+      "shard": "pt_B_002.bin",
+      "tok_entrada": 627040296,
+      "tok_saida": 681942177,
+      "razao": 1.0875571814925273,
+      "docs_entrada": 698519,
+      "docs_saida": 698519,
+      "max_id": 63999,
+      "minutos": 45.51512336730957
+    },
+    "pt_B_003.bin": {
+      "shard": "pt_B_003.bin",
+      "tok_entrada": 626904235,
+      "tok_saida": 681595447,
+      "razao": 1.0872401380411794,
+      "docs_entrada": 696023,
+      "docs_saida": 696023,
+      "max_id": 63999,
+      "minutos": 54.41393984953562
+    },
+    "pt_B_004.bin": {
+      "shard": "pt_B_004.bin",
+      "tok_entrada": 622116703,
+      "tok_saida": 676439669,
+      "razao": 1.0873195748290334,
+      "docs_entrada": 690273,
+      "docs_saida": 690273,
+      "max_id": 63999,
+      "minutos": 54.570530072848
+    },
+    "pt_B_005.bin": {
+      "shard": "pt_B_005.bin",
+      "tok_entrada": 621622490,
+      "tok_saida": 676056787,
+      "razao": 1.0875680945842225,
+      "docs_entrada": 691206,
+      "docs_saida": 691206,
+      "max_id": 63999,
+      "minutos": 55.42449643611908
+    },
+    "pt_B_006.bin": {
+      "shard": "pt_B_006.bin",
+      "tok_entrada": 620795906,
+      "tok_saida": 675274127,
+      "razao": 1.0877554450238271,
+      "docs_entrada": 691251,
+      "docs_saida": 691251,
+      "max_id": 63999,
+      "minutos": 55.366895107428235
+    },
+    "pt_B_007.bin": {
+      "shard": "pt_B_007.bin",
+      "tok_entrada": 621016341,
+      "tok_saida": 675516745,
+      "razao": 1.0877600159638956,
+      "docs_entrada": 692552,
+      "docs_saida": 692552,
+      "max_id": 63999,
+      "minutos": 55.58025214672089
+    },
+    "pt_B_008.bin": {
+      "shard": "pt_B_008.bin",
+      "tok_entrada": 618127722,
+      "tok_saida": 672408745,
+      "razao": 1.087815221786801,
+      "docs_entrada": 691598,
+      "docs_saida": 691598,
+      "max_id": 63999,
+      "minutos": 49.91758570671082
+    },
+    "pt_B_009.bin": {
+      "shard": "pt_B_009.bin",
+      "tok_entrada": 616657482,
+      "tok_saida": 670732030,
+      "razao": 1.0876897622722754,
+      "docs_entrada": 692540,
+      "docs_saida": 692540,
+      "max_id": 63999,
+      "minutos": 49.64725062052409
+    },
+    "pt_B_010.bin": {
+      "shard": "pt_B_010.bin",
+      "tok_entrada": 616245355,
+      "tok_saida": 670137706,
+      "razao": 1.087452750049532,
+      "docs_entrada": 691765,
+      "docs_saida": 691765,
+      "max_id": 63999,
+      "minutos": 48.32086996237437
+    },
+    "pt_B_011.bin": {
+      "shard": "pt_B_011.bin",
+      "tok_entrada": 615909335,
+      "tok_saida": 669899161,
+      "razao": 1.0876587233411554,
+      "docs_entrada": 694196,
+      "docs_saida": 694196,
+      "max_id": 63999,
+      "minutos": 48.33454951842626
+    },
+    "pt_B_012.bin": {
+      "shard": "pt_B_012.bin",
+      "tok_entrada": 616379534,
+      "tok_saida": 670422159,
+      "razao": 1.0876775136404837,
+      "docs_entrada": 694098,
+      "docs_saida": 694098,
+      "max_id": 63999,
+      "minutos": 48.44257630904516
+    },
+    "pt_C_000.bin": {
+      "shard": "pt_C_000.bin",
+      "tok_entrada": 765683566,
+      "tok_saida": 830869369,
+      "razao": 1.0851341283717717,
+      "docs_entrada": 1183384,
+      "docs_saida": 1183384,
+      "max_id": 63999,
+      "minutos": 59.21286036968231
+    },
+    "pt_C_001.bin": {
+      "shard": "pt_C_001.bin",
+      "tok_entrada": 770196018,
+      "tok_saida": 835595636,
+      "razao": 1.0849129526400643,
+      "docs_entrada": 1185737,
+      "docs_saida": 1185737,
+      "max_id": 63999,
+      "minutos": 59.76784381866455
+    },
+    "pt_C_002.bin": {
+      "shard": "pt_C_002.bin",
+      "tok_entrada": 771131299,
+      "tok_saida": 836461724,
+      "razao": 1.0847202351722984,
+      "docs_entrada": 1190482,
+      "docs_saida": 1190482,
+      "max_id": 63999,
+      "minutos": 59.493240010738376
+    },
+    "pt_C_003.bin": {
+      "shard": "pt_C_003.bin",
+      "tok_entrada": 768968510,
+      "tok_saida": 834089196,
+      "razao": 1.0846857643104266,
+      "docs_entrada": 1186454,
+      "docs_saida": 1186454,
+      "max_id": 63999,
+      "minutos": 59.41823521057765
+    },
+    "pt_C_004.bin": {
+      "shard": "pt_C_004.bin",
+      "tok_entrada": 768347159,
+      "tok_saida": 833465269,
+      "razao": 1.0847508957861585,
+      "docs_entrada": 1186076,
+      "docs_saida": 1186076,
+      "max_id": 63999,
+      "minutos": 59.41315781672795
+    },
+    "pt_C_005.bin": {
+      "shard": "pt_C_005.bin",
+      "tok_entrada": 770800476,
+      "tok_saida": 836143062,
+      "razao": 1.0847723737005062,
+      "docs_entrada": 1191681,
+      "docs_saida": 1191681,
+      "max_id": 63999,
+      "minutos": 64.55013239383698
+    },
+    "pt_C_006.bin": {
+      "shard": "pt_C_006.bin",
+      "tok_entrada": 770022735,
+      "tok_saida": 835284112,
+      "razao": 1.084752532663857,
+      "docs_entrada": 1190838,
+      "docs_saida": 1190838,
+      "max_id": 63999,
+      "minutos": 64.58736768166224
+    },
+    "pt_C_007.bin": {
+      "shard": "pt_C_007.bin",
+      "tok_entrada": 771672027,
+      "tok_saida": 837137371,
+      "razao": 1.084835709614235,
+      "docs_entrada": 1194231,
+      "docs_saida": 1194231,
+      "max_id": 63999,
+      "minutos": 64.20926449298858
+    },
+    "pt_C_008.bin": {
+      "shard": "pt_C_008.bin",
+      "tok_entrada": 771337579,
+      "tok_saida": 836858358,
+      "razao": 1.0849443626031345,
+      "docs_entrada": 1195181,
+      "docs_saida": 1195181,
+      "max_id": 63999,
+      "minutos": 64.44023793538412
+    },
+    "pt_C_009.bin": {
+      "shard": "pt_C_009.bin",
+      "tok_entrada": 773204856,
+      "tok_saida": 838725361,
+      "razao": 1.0847388689964461,
+      "docs_entrada": 1198094,
+      "docs_saida": 1198094,
+      "max_id": 63999,
+      "minutos": 64.43419834375382
+    },
+    "pt_C_010.bin": {
+      "shard": "pt_C_010.bin",
+      "tok_entrada": 774993929,
+      "tok_saida": 840757883,
+      "razao": 1.0848573795730985,
+      "docs_entrada": 1196647,
+      "docs_saida": 1196647,
+      "max_id": 63999,
+      "minutos": 54.95535581906636
+    },
+    "pt_C_011.bin": {
+      "shard": "pt_C_011.bin",
+      "tok_entrada": 775210837,
+      "tok_saida": 840811465,
+      "razao": 1.0846229501304043,
+      "docs_entrada": 1201251,
+      "docs_saida": 1201251,
+      "max_id": 63999,
+      "minutos": 54.83054977258046
+    },
+    "pt_C_012.bin": {
+      "shard": "pt_C_012.bin",
+      "tok_entrada": 776982785,
+      "tok_saida": 842848270,
+      "razao": 1.0847708421236129,
+      "docs_entrada": 1204122,
+      "docs_saida": 1204122,
+      "max_id": 63999,
+      "minutos": 48.51763796011607
+    },
+    "pt_A_000.bin": {
+      "shard": "pt_A_000.bin",
+      "tok_entrada": 303903413,
+      "tok_saida": 330634559,
+      "razao": 1.0879593477944915,
+      "docs_entrada": 250314,
+      "docs_saida": 250314,
+      "max_id": 63999,
+      "minutos": null,
+      "_procedencia": "convertido a mao na verificacao de round-trip; o run de 39 shards o PULOU (ja' existia). As guardas foram reaplicadas em 2026-09-04 sobre o arquivo em disco."
+    }
+  },
+  "total": {
+    "tok_entrada": 21969388459,
+    "tok_saida": 23867581239,
+    "razao": 1.086401712252595,
+    "shards": 39
+  }
+}

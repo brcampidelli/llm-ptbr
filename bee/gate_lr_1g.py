@@ -2,14 +2,35 @@
 
 🔴 POR QUE ISTO EXISTE. O `config.py` nao tem regra de LR, e o gate de throughput usou `1e-3`
    POR ARBITRIO. Este projeto ja' perdeu **7 de 15 bracos** por grade de LR mal centrada (§2f):
+
    varri LoRA de 5x a 20x acima do otimo medido, 3 de 4 bracos morreram no maior LR, e o unico
    sobrevivente ficou na BORDA — o que transforma qualquer comparacao numa afirmacao sobre o LR
    em vez de sobre o que se queria medir.
 
-⭐ A Step Law que o projeto usa (`eta* = 1,79 * N^-0,713 * D^0,307`) da', para N = 1,052B:
-       20B tokens -> 9,6e-4        66B -> 1,4e-3        150B -> 1,8e-3
-   A grade padrao [5e-4, 1e-3, 2e-3] CERCA os tres — e o script ABORTA se a grade dada ficar
-   toda de um lado do intervalo previsto.
+🔴🔴 E A PRIMEIRA VERSAO DESTA GUARDA MIRAVA O HORIZONTE ERRADO (medido 2026-09-04).
+   A Step Law (`eta* = 1,79 * N^-0,713 * D^0,307`) depende de **D**, e para N = 1,052B da':
+
+       32,8M tokens (o SWEEP) -> 1,34e-4   |   20B -> 9,6e-4   66B -> 1,4e-3   150B -> 1,8e-3
+
+   A guarda velha cravava `[9,6e-4, 1,8e-3]` — a faixa do **RUN** — e exigia que a grade
+   cercasse aquilo. Mas 1.000 passos x 4 x 4 x 2048 sao **32,8M tokens**, 600x menos: o sweep
+   nao tem como enxergar o otimo de um run de 20B, so' o do proprio horizonte.
+
+   ⭐ O que se mediu com a grade `[1,25e-4 … 2e-3]`: otimo em **2,5e-4** (loss 5,501), e o pior
+      braco vivo foi **1e-3** (5,722) — que esta' DENTRO da faixa da guarda velha. Lido sem
+      cuidado isso vira *"a Step Law erra 4x neste modelo"*; lido no horizonte certo, o medido
+      esta' a **1,86x** do previsto (2,5e-4 contra 1,34e-4) e a **confirma**.
+
+   ⚠️ O dano potencial e' de uma direcao so': levar o 2,5e-4 medido aqui para um run de 20B
+      poria o LR **7x abaixo** do previsto — sem erro, sem excecao, com a loss caindo bonito.
+      Para o run, escale: `eta*(D_run) = 2,5e-4 * (D_run / 32,8e6)^0,307` (20B -> ~1,8e-3).
+      ⚠️ Isso extrapola o expoente 0,307 por 600x a partir de UM ancoro — o expoente e'
+      emprestado da Step Law, nao medido aqui.
+
+   ✅ A guarda agora calcula a Step Law no horizonte **deste sweep** e exige que a grade o
+      cerque. Testada contra o estado quebrado (§2t): rejeita `[5e-4, 1e-3, 2e-3]` (a 1a
+      rodada), rejeita a propria faixa `[9,6e-4, 1,8e-3]` que a versao velha impunha, e
+      rejeita `[3e-3, 6e-3, 1,2e-2]` (a grade do E2 que matou 7 de 15 bracos).
 
 ⚠️ E ha' um aviso da literatura que este sweep NAO cobre: com vocab >> largura entra-se no
    *regime Large Vocab*, onde a razao otima LR-embedding / LR-oculto escala Θ(√width)
@@ -26,7 +47,7 @@
    "nao testado".
 
 Uso:
-    python bee/gate_lr_1g.py --pool bee/gate_t2_mistura/pool_pt-50.bin --lrs 5e-4,1e-3,2e-3
+    python bee/gate_lr_1g.py --pool bee/gate_t2_mistura/pool_pt-50.bin --lrs 1.25e-4,2.5e-4,5e-4,1e-3,2e-3
 """
 
 from __future__ import annotations
@@ -43,8 +64,25 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 ROOT = Path(__file__).resolve().parent.parent
 VOCAB = 64_000
-# intervalo que a Step Law preve para N=1,052B entre 20B e 150B de tokens
-STEP_LAW_MIN, STEP_LAW_MAX = 9.6e-4, 1.8e-3
+N_PARAM = 1.052e9            # Bee-1G
+
+# 🔴🔴 MEDIDO 2026-09-04 — A GUARDA ANTERIOR MIRAVA O HORIZONTE ERRADO.
+#    Ela cravava [9,6e-4, 1,8e-3], que e' a Step Law para o RUN (20B a 150B de tokens), e
+#    exigia que a grade cercasse ISSO. Mas o sweep roda 1.000 passos = **32,8M tokens**, e a
+#    Step Law depende de D: `eta* = 1,79 * N^-0,713 * D^0,307`. No horizonte do proprio sweep
+#    ela preve **1,34e-4**, sete vezes abaixo da faixa que a guarda impunha.
+#
+#    O efeito medido: a grade [1,25e-4 … 2e-3] deu otimo em **2,5e-4** e o pior braco vivo foi
+#    **1e-3** — que esta' DENTRO da faixa da guarda velha. Lido sem cuidado, isso vira "a Step
+#    Law erra 4x neste modelo"; lido no horizonte certo, o medido esta' a **1,86x** do previsto
+#    e a confirma. Sao §2d outra vez: comparar uma medida feita numa condicao com uma previsao
+#    feita para outra.
+#
+#    ⚠️ E o dano potencial e' de uma direcao so': adotar 2,5e-4 para um run de 20B poria o LR
+#    **7x abaixo** do previsto — sem erro, sem excecao, com a loss caindo bonito.
+def step_law(N: float, D: float) -> float:
+    """LR otimo da Step Law (~3.700 modelos) para N parametros e D tokens."""
+    return 1.79 * N ** -0.713 * D ** 0.307
 
 
 def _e_oom(e: BaseException) -> bool:
@@ -62,7 +100,8 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--pool", default="bee/gate_t2_mistura/pool_pt-50.bin")
-    ap.add_argument("--lrs", default="5e-4,1e-3,2e-3")
+    # o default TEM de passar na propria guarda — o antigo ("5e-4,1e-3,2e-3") nao passa mais
+    ap.add_argument("--lrs", default="1.25e-4,2.5e-4,5e-4,1e-3,2e-3")
     ap.add_argument("--passos", type=int, default=1000)
     ap.add_argument("--micro-batch", type=int, default=4)
     ap.add_argument("--grad-accum", type=int, default=4)
@@ -72,13 +111,23 @@ def main() -> int:
     args = ap.parse_args()
 
     lrs = sorted(float(x) for x in args.lrs.split(","))
-    # 🔴 §2f — a grade tem de CERCAR o intervalo previsto, nao ficar toda de um lado
-    if min(lrs) > STEP_LAW_MIN or max(lrs) < STEP_LAW_MAX:
+
+    # o horizonte que ESTE sweep enxerga — nao o do run
+    d_sweep = args.passos * args.grad_accum * args.micro_batch * args.seq_len
+    alvo = step_law(N_PARAM, d_sweep)
+    # 🔴 §2f — a grade tem de CERCAR o otimo previsto PARA O HORIZONTE DO SWEEP.
+    if not (min(lrs) <= alvo <= max(lrs)):
         raise SystemExit(
-            f"🔴 GRADE NAO CERCA a Step Law. Ela preve [{STEP_LAW_MIN:.1e}, {STEP_LAW_MAX:.1e}] "
-            f"para N=1,052B entre 20B e 150B de tokens; a grade dada e' "
-            f"[{min(lrs):.1e}, {max(lrs):.1e}].\n"
-            f"   Grade toda de um lado do otimo mede o LR, nao o modelo (§2f: 7 de 15 bracos).")
+            "🔴 GRADE NAO CERCA a Step Law NO HORIZONTE DESTE SWEEP." + chr(10)
+            + f"   {args.passos} passos x {args.grad_accum} x {args.micro_batch} x "
+            + f"{args.seq_len} = {d_sweep/1e6:.1f}M tokens -> eta* previsto "
+            + f"{alvo:.2e}" + chr(10)
+            + f"   grade dada: [{min(lrs):.1e}, {max(lrs):.1e}]" + chr(10)
+            + "   Grade toda de um lado do otimo mede o LR, nao o modelo "
+            + "(§2f: 7 de 15 bracos).")
+
+    print(f"horizonte do sweep: {d_sweep/1e6:.1f}M tokens -> Step Law preve {alvo:.2e}")
+    print("grade " + str([f"{x:.1e}" for x in lrs]) + f" cerca {alvo:.2e} ✅" + chr(10))
 
     import numpy as np
     import torch
@@ -89,7 +138,6 @@ def main() -> int:
     gpu = torch.cuda.get_device_name(0)
     dados = np.fromfile(ROOT / args.pool, dtype=np.uint32)
     print(f"{gpu} · pool {args.pool}: {len(dados)/1e6:.1f}M tokens")
-    print(f"grade {[f'{x:.1e}' for x in lrs]} cerca [{STEP_LAW_MIN:.1e}, {STEP_LAW_MAX:.1e}] ✅\n")
 
     doc = {"_gate": "sweep de LR do Bee-1G",
            "_regua": "loss media dos ultimos 50 passos, semente unica — compara LR, nao modelos",
@@ -99,10 +147,18 @@ def main() -> int:
                "LR unico e' menos ruim', nao 'qual e' o otimo'",
                "o comportamento em run LONGO: 1.000 passos veem instabilidade inicial, nao "
                "divergencia tardia",
+               "🔴 o LR do RUN. Este sweep mede o otimo no SEU horizonte (32,8M tokens); a "
+               "Step Law escala com D^0,307, entao levar o numero medido aqui direto para um "
+               "run de 20B poria o LR ~7x abaixo do previsto. Use "
+               "`step_law_no_run` ou escale o medido por (D_run/D_sweep)^0,307",
                "interacao com o schedule: aqui e' LR constante, e o run usara' WSD ou cosine",
            ],
            "gpu": gpu, "passos": args.passos, "semente": args.semente,
-           "step_law": {"min": STEP_LAW_MIN, "max": STEP_LAW_MAX}, "bracos": {}}
+           "tokens_do_sweep": d_sweep,
+           "step_law_no_horizonte_do_sweep": alvo,
+           "step_law_no_run": {f"{d/1e9:.0f}B": step_law(N_PARAM, d)
+                               for d in (2e10, 6.6e10, 1.5e11)},
+           "bracos": {}}
     dest = ROOT / "docs" / "gate-lr-1g.json"
 
     print(f"{'LR':>9}{'loss@50':>10}{'loss fim':>10}{'|grad|':>9}{'min':>7}  veredito")
