@@ -226,10 +226,10 @@ Copiados da [revisão §4](revisao-bee-1g-2026-09-04.md), com o estado:
 |---|---|---|---|
 | 1 | `ESCADA["1b"].seq_len` → **2048** | minutos | ✅ feito em 09-04 |
 | 2 | **âncora do 350M** nos dois holdouts de texto da §3.1 | 5070, minutos | ✅ **feito 09-04** — 0,9175 / 0,8576 |
-| 3 | **re-tokenizar os 21,97B PT** em `64k-multi` (lossless, verificado por shard) | CPU ~1,5 h com 5 processos | 🔄 **rodando 09-04** |
-| 4 | **coletar 7 idiomas a 2,5B tokens** cada (alvo por TOKEN, não por caractere) | banda ~3,8 h | 🔄 **rodando 09-04** |
-| 5 | **mini-sweep de LR** que cerca 1e-3 (3 pontos × 1 semente × 2.000 passos) | ~US$ 3 | ❌ |
-| 6 | **braço de transferência do T2** (`bal-12` e `pt-50` a 350M) — **ou** risco aceito por escrito | ~US$ 6 | ❌ |
+| 3 | **re-tokenizar os 21,97B PT** em `64k-multi` (lossless, verificado por shard) | CPU 6,1 h com 5 processos | ✅ **feito 09-04** — 39/39, **23,868B** em 64k, docs 26,3M idênticos, `max_id` 63.999 |
+| 4 | **coletar 7 idiomas a 2,5B tokens** cada (alvo por TOKEN, não por caractere) | banda ~3,8 h | ❌ **parcial** — censo **contado** ([`censo-coleta-1g.json`](censo-coleta-1g.json)): `arb`/`cmn`/`eng` **100%**, `spa` 83,5%, `jpn` 3,4%, **`deu`/`fra` zero** → 9,674B de 17,5B. ⚠️ O estimador do driver dizia que TUDO era parcial e ia apagar os 221 shards |
+| 5 | **mini-sweep de LR** que cerca 1e-3 (3 pontos × 1 semente × 2.000 passos) | ~US$ 3 | ✅ **feito 09-04** — 5 pontos, mínimo **interior em 2,5e-4** a 32,8M tokens; ⚠️ a guarda mirava o horizonte do RUN e foi corrigida — para 20B, escalar: **~1,8e-3** |
+| 6 | **braço de transferência do T2** (`bal-12` e `pt-50` a 350M) — **ou** risco aceito por escrito | ~US$ 6 | ❌ **NÃO feito** — a sessão de 09-04 rodou os dois braços a **170M** (3.051 passos): o `treinar_um` tinha `ESCADA["150m"]` cravado e não havia como rodar a 350M. É replicação de **horizonte**, não de escala ([`gate-t2-mistura-3051passos.json`](gate-t2-mistura-3051passos.json)). `--escala 350m` existe desde `cb78574`; rodar custa ~5,5 h / ~US$ 6 |
 | 7 | ❓ **decisão do dono** — ponto da troca, e 1 ou 2 estágios | — | ❌ |
 | 8 | reproduzir **um** número publicado (§2aa) | 5070, minutos | ✅ **feito 09-04** — folga 2,76% → +2,75% |
 

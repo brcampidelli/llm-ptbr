@@ -1,0 +1,196 @@
+{
+  "_procedencia": "medido no pod bee-1g-prereq (RTX 5090) em 2026-09-04, 21:27-22:05 UTC, com o codigo ANTERIOR ao --escala: o avaliar gravou em /root/docs/gate-t1-bpb.json (nome do T1) e o arquivo foi RENOMEADO na copia. Treino: 170M params, 3.051 passos, 100M tokens vistos, pool de 180M, 3 sementes x {bal-12, pt-50}. Comparar com docs/gate-t2-mistura.json (03-09: 6.700 passos, 220M tokens, pool 250M).",
+  "_NAO_E_o_prerequisito_6": "o #6 do gate de sucesso pede bal-12 e pt-50 a 350M (transferencia de ESCALA). Isto e' uma replicacao a 170M num horizonte MENOR — mede horizonte, nao escala. O treinar_um tinha ESCADA[\"150m\"] cravado; --escala so' existe desde cb78574.",
+  "_gate": "T1 eixo 2 — bpb por idioma",
+  "_dispositivo": "cuda",
+  "_dtype": "bfloat16",
+  "_aviso_regua": "cpu/fp32 e cuda/bf16 sao REGUAS DIFERENTES (§2g). Numero desta rodada so' compara com outro de MESMO _dispositivo e mesmo _bytes_holdout.",
+  "_bytes_holdout": 1500000,
+  "_regua": "bpb normaliza por BYTE; loss NAO compara tokenizadores diferentes",
+  "_leia_por_coluna": "bpb carrega vies crosslinguistico (2608.25089): comparar ENTRE idiomas e' invalido. Valido: braco x braco DENTRO de um idioma, que e' `delta_vs_controle`. E bpb RESISTE ao fallback de byte, porque a deflacao do 2605.09015 atinge perplexidade POR TOKEN e bpb normaliza por BYTE.",
+  "_desenho": "transformer identico em todos os bracos; so' o vocab muda, entao o braco de vocab maior e' um modelo MAIOR. Teste UNILATERAL: se o vocab grande nao ganha com parametros de graca, esta' morto. Se ganha, isto e' o TETO do beneficio, nao o valor dele no Bee-1G.",
+  "_nao_controlado": [
+    "LR unico (3e-3) para todos os vocabularios",
+    "geometria fixa — d_model nao acompanha o vocab",
+    "mesmos PASSOS nao e' mesmos FLOPs: a cabeca custa d_model x vocab",
+    "escala de 150M distorce a fracao de embedding contra o vocab grande (no 1G a mesma troca custa ~metade da fracao)"
+  ],
+  "holdout_usado": {
+    "por": {
+      "docs": 438,
+      "bytes": 1487916
+    },
+    "spa": {
+      "docs": 402,
+      "bytes": 1499196
+    },
+    "fra": {
+      "docs": 423,
+      "bytes": 1498334
+    },
+    "deu": {
+      "docs": 321,
+      "bytes": 1475450
+    },
+    "eng": {
+      "docs": 461,
+      "bytes": 1495476
+    },
+    "arb": {
+      "docs": 43,
+      "bytes": 1196795
+    },
+    "cmn": {
+      "docs": 314,
+      "bytes": 1499703
+    },
+    "jpn": {
+      "docs": 351,
+      "bytes": 1496593
+    }
+  },
+  "sementes": [
+    42,
+    43,
+    44
+  ],
+  "controle": "bal-12",
+  "bracos": {
+    "bal-12": {
+      "params": 169609536,
+      "vocab": 64000,
+      "bpb": {
+        "por": 1.7112972618731679,
+        "spa": 1.6498842005776146,
+        "fra": 1.6991550630519006,
+        "deu": 2.292740971492754,
+        "eng": 1.8715882521615288,
+        "arb": 1.4782784308193087,
+        "cmn": 2.4592455589960815,
+        "jpn": 1.5660363798426828
+      },
+      "amplitude": {
+        "por": 0.013662801189556761,
+        "spa": 0.016351374898935678,
+        "fra": 0.01501213478761354,
+        "deu": 0.01268528952585779,
+        "eng": 0.010526196088903372,
+        "arb": 0.011137805007758184,
+        "cmn": 0.012669574504450498,
+        "jpn": 0.006920808956910829
+      },
+      "por_semente": {
+        "por": [
+          1.702750271948617,
+          1.714728440532713,
+          1.7164130731381737
+        ],
+        "spa": [
+          1.6392390525844889,
+          1.6555904274834246,
+          1.6548231216649303
+        ],
+        "fra": [
+          1.6904019084313253,
+          1.7016492375054375,
+          1.7054140432189389
+        ],
+        "deu": [
+          2.284996005495627,
+          2.297681295021485,
+          2.2955456139611505
+        ],
+        "eng": [
+          1.8645856721206169,
+          1.8751118682095202,
+          1.8750672161544495
+        ],
+        "arb": [
+          1.4726280147684319,
+          1.4784414579133043,
+          1.48376581977619
+        ],
+        "cmn": [
+          2.4524003715563154,
+          2.460266359371163,
+          2.465069946060766
+        ],
+        "jpn": [
+          1.5647656606372744,
+          1.5632113349669317,
+          1.5701321439238425
+        ]
+      },
+      "minutos_medio": 24.360282060835097,
+      "tok_s": 68470.8565830127
+    },
+    "pt-50": {
+      "params": 169609536,
+      "vocab": 64000,
+      "bpb": {
+        "por": 1.5610850297295527,
+        "spa": 1.6597132195893063,
+        "fra": 1.7513882976642405,
+        "deu": 2.3610229470413127,
+        "eng": 1.9230264704271878,
+        "arb": 1.559081310840855,
+        "cmn": 2.6388543252253327,
+        "jpn": 1.6562087823441147
+      },
+      "amplitude": {
+        "por": 0.047240121434383386,
+        "spa": 0.03740943381088235,
+        "fra": 0.05008859763931106,
+        "deu": 0.036045763642925444,
+        "eng": 0.045850235344220724,
+        "arb": 0.03607571084788552,
+        "cmn": 0.047753627999021386,
+        "jpn": 0.03726273610561637
+      },
+      "por_semente": {
+        "por": [
+          1.5862346032723877,
+          1.5389944818380044,
+          1.558026004078266
+        ],
+        "spa": [
+          1.6824221351113908,
+          1.6450127013005085,
+          1.6517048223560198
+        ],
+        "fra": [
+          1.775712836775088,
+          1.725624239135777,
+          1.7528278170818565
+        ],
+        "deu": [
+          2.3822575394378047,
+          2.3462117757948793,
+          2.3545995258912544
+        ],
+        "eng": [
+          1.9458533241463385,
+          1.9000030888021178,
+          1.9232229983331073
+        ],
+        "arb": [
+          1.582691729817518,
+          1.5479361837354144,
+          1.5466160189696325
+        ],
+        "cmn": [
+          2.6691331941117293,
+          2.621379566112708,
+          2.6260502154515613
+        ],
+        "jpn": [
+          1.6789107119069024,
+          1.641647975801286,
+          1.6480676593241554
+        ]
+      },
+      "minutos_medio": 24.393141988913218,
+      "tok_s": 68360.34291160673
+    }
+  }
+}
