@@ -1,0 +1,67 @@
+{
+  "_gate": "throughput do Bee-1G na configuracao real",
+  "_regua": "tokens/s em REGIME: passo >= 20, mediana das 3 ultimas leituras (§3)",
+  "_nao_mede": [
+    "qualidade de nada — e' relogio e memoria",
+    "queda de throughput em run LONGO (termica, I/O de checkpoint): 40 passos nao veem isso, entao o numero e' um TETO otimista",
+    "outras placas: §4 mede que o preditor e' o TDP, e mesmo assim mede-se"
+  ],
+  "gpu": "NVIDIA GeForce RTX 5090",
+  "vram_gb": 31.3565673828125,
+  "vocab": 64000,
+  "pool": "bee/gate_t2_mistura/pool_pt-50.bin",
+  "grad_checkpoint": true,
+  "compile": false,
+  "preco_hora": 0.99,
+  "configs": {
+    "L16_d2560_h40kv10": {
+      "micro_batch": 4,
+      "seq_len": 2048,
+      "grad_accum": 4,
+      "params": 1102400000,
+      "tok_por_passo": 32768,
+      "tok_s": 15512.46515332174,
+      "dispersao_3_ultimas": 6.18415891986448e-05,
+      "vram_pico_gb": 25.4742693901062,
+      "usd_por_bilhao": 17.727678823575843,
+      "compile": false
+    },
+    "L24_d2048_h32kv8": {
+      "micro_batch": 4,
+      "seq_len": 2048,
+      "grad_accum": 4,
+      "params": 1071745024,
+      "tok_por_passo": 32768,
+      "tok_s": 14402.666375952891,
+      "dispersao_3_ultimas": 0.001976827026854346,
+      "vram_pico_gb": 25.09816312789917,
+      "usd_por_bilhao": 19.093686739779514,
+      "compile": false
+    },
+    "L28_d1792_h28kv4": {
+      "micro_batch": 4,
+      "seq_len": 2048,
+      "grad_accum": 4,
+      "params": 1062113024,
+      "tok_por_passo": 32768,
+      "tok_s": 14808.793536395897,
+      "dispersao_3_ultimas": 0.004830411587907884,
+      "vram_pico_gb": 24.961806774139404,
+      "usd_por_bilhao": 18.57004754128866,
+      "compile": false
+    },
+    "L40_d1536_h24kv6": {
+      "micro_batch": 4,
+      "seq_len": 2048,
+      "grad_accum": 4,
+      "params": 1042146816,
+      "tok_por_passo": 32768,
+      "tok_s": 13668.79352803954,
+      "dispersao_3_ultimas": 0.0017865243140113409,
+      "vram_pico_gb": 25.01954221725464,
+      "usd_por_bilhao": 20.118820248171687,
+      "compile": false
+    }
+  },
+  "melhor": "L16_d2560_h40kv10"
+}

@@ -108,3 +108,5 @@ corpus_pt_64k/*.bin
 bee/corpus_multi_1g/*.zst
 !corpus_pt_64k/MANIFEST.json
 !bee/corpus_multi_1g/MANIFEST*.json
+bee/corpus_multi_1g/*.zst
+!bee/corpus_multi_1g/MANIFEST*.json

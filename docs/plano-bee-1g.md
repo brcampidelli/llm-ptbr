@@ -1001,6 +1001,44 @@ número de tok/s é **metade** da decisão — a outra metade é a loss por form
 treinando, e que o próprio suite dos Gemstones já publicou. **A leitura correta é: usar a loss deles
 com o nosso tempo de passo**, que é literalmente a receita do parágrafo citado.
 
+##### ✅⭐⭐ [MEDIDO 09-04] A varredura de forma rodou — largura ganha, e a receita dos Gemstones transferiu
+
+4 formas a ~940M de parâmetros não-embedding, `mb=4 seq=2048` com recomputação de ativações, 40
+passos cada, dispersão entre as 3 últimas leituras de **0,0% a 0,5%** (teto da §3 é 3%).
+
+| camadas × d_model | heads/kv | **d/L** | params | **tok/s** | VRAM | US$/B |
+|---|---|---:|---:|---:|---:|---:|
+| **16 × 2560** | 40/10 | **160,0** | 1,102B | **15.512** | 25,5 GB | **17,73** |
+| 24 × 2048 | 32/8 | 85,3 | 1,072B | 14.403 | 25,1 GB | 19,09 |
+| 28 × 1792 ← `ESCADA` | 28/4 | 64,0 | 1,062B | 14.809 | 25,0 GB | 18,57 |
+| 40 × 1536 | 24/6 | 38,4 | 1,042B | 13.669 | 25,0 GB | 20,12 |
+
+⭐⭐ **A forma mais larga é 13,5% mais rápida que a mais profunda**, e a direção é a que os
+Gemstones medem para GPU-hora. ⭐ **O que transfere é a conclusão, não o mecanismo:** eles
+atribuem o efeito ao tensor parallelism e dizem que *"pode não generalizar"*; nós treinamos em
+**uma GPU, sem paralelismo nenhum**, e o efeito aparece igual. Logo a causa é outra — provavelmente
+menos lançamentos sequenciais de kernel e matmuls maiores saturando melhor os tensor cores.
+
+⚠️ **E a monotonicidade quebra num ponto:** o `24×2048` (14.403) fica **abaixo** do `28×1792`
+(14.809), invertendo a ordem esperada. Com dispersão de 0,2% e 0,5% a diferença de 2,7% está fora
+do ruído — é real, e não tem explicação no modelo simples "mais largo, mais rápido". Fica
+registrado como anomalia, não alisado.
+
+🔴 **O custo que a tabela esconde:** a forma mais larga tem **1,102B contra 1,042B** parâmetros —
+**5,8% a mais**, porque o embedding escala com `d_model` a 64k de vocabulário. Ela é mais rápida
+**e** maior. O `US$/B tokens` já embute isso; uma comparação de **qualidade** entre as formas não
+seria a parâmetros iguais.
+
+🔴 **E o que esta varredura NÃO mede: qualidade.** Os Gemstones medem que **profundo ganha em loss
+por FLOP**. Escolher a forma mais rápida sem isso seria escolher a que aprende menos por passo. A
+leitura honesta é: **largura compra 13,5% de relógio, e a loss publicada deles diz quanto isso
+custa em qualidade** — que é exatamente a composição que os autores propõem, e que este número
+torna possível.
+
+⚠️ **Decisão em aberto, não fechada por este gate.** Trocar `28×1792` por `16×2560` compra 4,7% de
+throughput ao custo de 3,8% de parâmetro a mais e de uma perda de qualidade não medida. **Não é
+troca óbvia**, e o item entra no plano como decisão, não como conclusão.
+
 ### Estágio V — visão · Estágio A — áudio
 
 #### 🔴 A decisão de identidade, declarada antes

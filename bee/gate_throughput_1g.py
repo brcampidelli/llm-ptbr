@@ -80,6 +80,13 @@ def main() -> int:
     ap.add_argument("--seq-lens", default="4096")
     ap.add_argument("--grad-accum", type=int, default=4)
     ap.add_argument("--lr", type=float, default=1e-3)
+    ap.add_argument("--formas", default="",
+                    help="varredura de FORMA a parametros ~iguais: 'L:d:heads:kv:interm,...'. "
+                         "Os Gemstones (2502.06857) medem que profundo ganha por FLOP e largo "
+                         "ganha por GPU-HORA — e a nossa unidade e' GPU-hora. Mas eles usam "
+                         "tensor parallelism e nos treinamos em UMA GPU, entao o mecanismo deles "
+                         "nao se aplica: o numero tem de ser medido AQUI, que e' literalmente a "
+                         "receita que os autores dao.")
     ap.add_argument("--grad-checkpoint", action="store_true",
                     help="recomputa ativacoes no backward — troca ~30% de tempo por muita VRAM. "
                          "MEDIDO 09-04: sem isto o 1,052B NAO CABE em 32 GB nem com mb=1 a "
@@ -121,86 +128,102 @@ def main() -> int:
           f"{'VRAM GB':>9}{'$/B tok':>9}  params")
     print("-" * 72)
 
-    for seq in [int(x) for x in args.seq_lens.split(",")]:
-        for mb in [int(x) for x in args.micro_batches.split(",")]:
-            chave = f"mb{mb}_seq{seq}_ac{args.grad_accum}"
-            try:
-                torch.cuda.empty_cache()
-                torch.cuda.reset_peak_memory_stats()
-                cfg = dataclasses.replace(ESCADA["1b"], vocab=VOCAB, seq_len=seq)
-                modelo = LlamaForCausalLM(para_llama_config(cfg)).cuda()
-                n_par = sum(p.numel() for p in modelo.parameters())
-                if args.grad_checkpoint:
-                    modelo.gradient_checkpointing_enable()
-                    modelo.config.use_cache = False
-                if args.compile:
-                    modelo = torch.compile(modelo)
-                opt = torch.optim.AdamW(modelo.parameters(), lr=args.lr, betas=(0.9, 0.95),
-                                        weight_decay=0.1)
-                modelo.train()
+    formas = [tuple(int(y) for y in f.split(":")) for f in args.formas.split(",")]         if args.formas else [None]
+    for forma in formas:
+        for seq in [int(x) for x in args.seq_lens.split(",")]:
+            for mb in [int(x) for x in args.micro_batches.split(",")]:
+                chave = (f"L{forma[0]}_d{forma[1]}_h{forma[2]}kv{forma[3]}" if forma
+                         else f"mb{mb}_seq{seq}_ac{args.grad_accum}")
+                try:
+                    torch.cuda.empty_cache()
+                    torch.cuda.reset_peak_memory_stats()
+                    base = ESCADA["1b"]
+                    if forma:
+                        # 🔴 MEDIDO 09-04: derivar n_kv_heads como `d//64//7` produziu 38 cabecas
+                        # com 5 de KV para d=2432, e 5 NAO divide 38 — RuntimeError no forward.
+                        # A forma passa `L:d:heads:kv:intermediate` inteira, e o script CONFERE
+                        # a divisibilidade antes de instanciar, em vez de deduzir.
+                        L, d, nh, nkv, i = forma
+                        if nh * 64 != d or nh % nkv != 0:
+                            raise SystemExit(f"🔴 forma {forma}: exige d = heads*64 e "
+                                             f"kv | heads (tem {nh}*64={nh*64} vs d={d}, "
+                                             f"{nh} % {nkv} = {nh % nkv})")
+                        base = dataclasses.replace(base, n_camadas=L, d_model=d, intermediate=i,
+                                                   n_heads=nh, n_kv_heads=nkv)
+                    cfg = dataclasses.replace(base, vocab=VOCAB, seq_len=seq)
+                    modelo = LlamaForCausalLM(para_llama_config(cfg)).cuda()
+                    n_par = sum(p.numel() for p in modelo.parameters())
+                    if args.grad_checkpoint:
+                        modelo.gradient_checkpointing_enable()
+                        modelo.config.use_cache = False
+                    if args.compile:
+                        modelo = torch.compile(modelo)
+                    opt = torch.optim.AdamW(modelo.parameters(), lr=args.lr, betas=(0.9, 0.95),
+                                            weight_decay=0.1)
+                    modelo.train()
 
-                nb = len(dados) // seq
-                rng = np.random.default_rng(42)
-                tok_passo = mb * args.grad_accum * seq
-                leituras, t0, primeiro = [], None, True
+                    nb = len(dados) // seq
+                    rng = np.random.default_rng(42)
+                    tok_passo = mb * args.grad_accum * seq
+                    leituras, t0, primeiro = [], None, True
 
-                for passo in range(args.passos):
-                    opt.zero_grad(set_to_none=True)
-                    for _ in range(args.grad_accum):
-                        idx = rng.integers(0, nb, size=mb)
-                        lote = np.stack([dados[i * seq:(i + 1) * seq] for i in idx])
-                        x = torch.from_numpy(lote.astype(np.int64)).cuda()
-                        # §1 — a guarda de rotulos, com DADO REAL, antes do passo 1
-                        if primeiro:
-                            with torch.no_grad():
-                                s1 = modelo(input_ids=x[:1], labels=x[:1])
-                                man = F.cross_entropy(s1.logits[0, :-1].float(),
-                                                      x[0, 1:]).item()
-                            if abs(s1.loss.item() - man) > 0.01:
-                                raise SystemExit("🔴 convencao de rotulos errada — abortando")
-                            print(f"  guarda de rotulos: {s1.loss.item():.4f} vs {man:.4f} ✅",
-                                  flush=True)
-                            primeiro = False
-                        with torch.autocast("cuda", dtype=torch.bfloat16):
-                            perda = modelo(input_ids=x, labels=x).loss / args.grad_accum
-                        perda.backward()
-                    torch.nn.utils.clip_grad_norm_(modelo.parameters(), 1.0)
-                    opt.step()
-                    # §3: o aquecimento NAO entra. So' a partir do passo 20.
-                    if passo == 19:
-                        torch.cuda.synchronize()
-                        t0 = time.time()
-                    elif passo > 19 and passo % 5 == 0:
-                        torch.cuda.synchronize()
-                        leituras.append(tok_passo * (passo - 19) / (time.time() - t0))
+                    for passo in range(args.passos):
+                        opt.zero_grad(set_to_none=True)
+                        for _ in range(args.grad_accum):
+                            idx = rng.integers(0, nb, size=mb)
+                            lote = np.stack([dados[i * seq:(i + 1) * seq] for i in idx])
+                            x = torch.from_numpy(lote.astype(np.int64)).cuda()
+                            # §1 — a guarda de rotulos, com DADO REAL, antes do passo 1
+                            if primeiro:
+                                with torch.no_grad():
+                                    s1 = modelo(input_ids=x[:1], labels=x[:1])
+                                    man = F.cross_entropy(s1.logits[0, :-1].float(),
+                                                          x[0, 1:]).item()
+                                if abs(s1.loss.item() - man) > 0.01:
+                                    raise SystemExit("🔴 convencao de rotulos errada — abortando")
+                                print(f"  guarda de rotulos: {s1.loss.item():.4f} vs {man:.4f} ✅",
+                                      flush=True)
+                                primeiro = False
+                            with torch.autocast("cuda", dtype=torch.bfloat16):
+                                perda = modelo(input_ids=x, labels=x).loss / args.grad_accum
+                            perda.backward()
+                        torch.nn.utils.clip_grad_norm_(modelo.parameters(), 1.0)
+                        opt.step()
+                        # §3: o aquecimento NAO entra. So' a partir do passo 20.
+                        if passo == 19:
+                            torch.cuda.synchronize()
+                            t0 = time.time()
+                        elif passo > 19 and passo % 5 == 0:
+                            torch.cuda.synchronize()
+                            leituras.append(tok_passo * (passo - 19) / (time.time() - t0))
 
-                if len(leituras) < 3:
-                    raise SystemExit(f"🔴 so' {len(leituras)} leituras — aumente --passos "
-                                     f"(§3 exige 3 coincidentes em regime)")
-                import statistics as st
-                tps = st.median(leituras[-3:])
-                disp = (max(leituras[-3:]) - min(leituras[-3:])) / tps
-                pico = torch.cuda.max_memory_allocated() / 2 ** 30
-                custo = 1e9 / tps / 3600 * PRECO_HORA
-                print(f"{mb:>4}{seq:>6}{args.grad_accum:>7}{tok_passo:>11,}{tps:>9,.0f}"
-                      f"{pico:>9.2f}{custo:>9.2f}  {n_par/1e9:.3f}B", end="")
-                print(f"   ⚠️ dispersao {100*disp:.1f}% entre as 3 ultimas" if disp > 0.03 else "")
-                doc["configs"][chave] = {"micro_batch": mb, "seq_len": seq,
-                                         "grad_accum": args.grad_accum, "params": int(n_par),
-                                         "tok_por_passo": tok_passo, "tok_s": tps,
-                                         "dispersao_3_ultimas": disp, "vram_pico_gb": pico,
-                                         "usd_por_bilhao": custo, "compile": args.compile}
-                grava(doc, dest)
-                del modelo, opt
-            except Exception as e:
-                if not _e_oom(e):
-                    raise
-                print(f"{mb:>4}{seq:>6}{args.grad_accum:>7}   🔴 OOM em {vram:.0f} GB")
-                doc["configs"][chave] = {"micro_batch": mb, "seq_len": seq, "oom": True,
-                                         "grad_checkpoint": args.grad_checkpoint}
-                grava(doc, dest)
-                torch.cuda.empty_cache()
-                break   # micro_batch maior tambem nao cabe NESTE seq_len
+                    if len(leituras) < 3:
+                        raise SystemExit(f"🔴 so' {len(leituras)} leituras — aumente --passos "
+                                         f"(§3 exige 3 coincidentes em regime)")
+                    import statistics as st
+                    tps = st.median(leituras[-3:])
+                    disp = (max(leituras[-3:]) - min(leituras[-3:])) / tps
+                    pico = torch.cuda.max_memory_allocated() / 2 ** 30
+                    custo = 1e9 / tps / 3600 * PRECO_HORA
+                    print(f"{mb:>4}{seq:>6}{args.grad_accum:>7}{tok_passo:>11,}{tps:>9,.0f}"
+                          f"{pico:>9.2f}{custo:>9.2f}  {n_par/1e9:.3f}B", end="")
+                    print(f"   ⚠️ dispersao {100*disp:.1f}% entre as 3 ultimas" if disp > 0.03 else "")
+                    doc["configs"][chave] = {"micro_batch": mb, "seq_len": seq,
+                                             "grad_accum": args.grad_accum, "params": int(n_par),
+                                             "tok_por_passo": tok_passo, "tok_s": tps,
+                                             "dispersao_3_ultimas": disp, "vram_pico_gb": pico,
+                                             "usd_por_bilhao": custo, "compile": args.compile}
+                    grava(doc, dest)
+                    del modelo, opt
+                except Exception as e:
+                    if not _e_oom(e):
+                        raise
+                    print(f"{mb:>4}{seq:>6}{args.grad_accum:>7}   🔴 OOM em {vram:.0f} GB")
+                    doc["configs"][chave] = {"micro_batch": mb, "seq_len": seq, "oom": True,
+                                             "grad_checkpoint": args.grad_checkpoint}
+                    grava(doc, dest)
+                    torch.cuda.empty_cache()
+                    break   # micro_batch maior tambem nao cabe
 
     ok = {k: v for k, v in doc["configs"].items() if not v.get("oom")}
     if ok:
