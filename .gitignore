@@ -99,3 +99,12 @@ bee/corpus_multi_extra/*.zst
 !bee/corpus_pt_extra/MANIFEST.json
 !bee/corpus_multi_extra/MANIFEST.json
 bee/gate_t2_mistura/*.bin
+
+# Re-tokenizacao do PT (2026-09-04) e coleta para o Bee-1G: 45 GB e 18 GB de dado derivado.
+# Ambos regeneraveis — o corpus_pt em 32k continua na maquina e o `retokenizar_pt.py` e'
+# deterministico; a coleta refaz-se em ~3,8 h de banda. Os MANIFESTOS vao versionados,
+# porque sao eles que dizem o QUE foi produzido e com que guardas.
+corpus_pt_64k/*.bin
+bee/corpus_multi_1g/*.zst
+!corpus_pt_64k/MANIFEST.json
+!bee/corpus_multi_1g/MANIFEST*.json
