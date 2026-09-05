@@ -324,7 +324,7 @@ def treinar_um(nome: str, semente: int, args) -> dict:
     import dataclasses
     import numpy as np
     import torch
-    from transformers import LlamaForCausalLM
+    from transformers import AutoModelForCausalLM
 
     from config import ESCADA, para_llama_config
 
@@ -340,7 +340,10 @@ def treinar_um(nome: str, semente: int, args) -> dict:
     if args.escala not in ESCADA:
         raise SystemExit(f"🔴 escala {args.escala!r} nao existe na ESCADA: {list(ESCADA)}")
     cfg = dataclasses.replace(ESCADA[args.escala], vocab=vocab, seq_len=args.seq_len)
-    modelo = LlamaForCausalLM(para_llama_config(cfg)).cuda()
+    # 🔴 MEDIDO 2026-09-04: `LlamaForCausalLM(cfg)` cravado matou o braco 350M na instanciacao
+    #    (`Qwen3Config has no attribute mlp_bias`) — o 350M da ESCADA e' Qwen3 (QK-norm), o 150M
+    #    e' Llama. A classe tem de seguir o CONFIG; o gate nao pode saber a arquitetura de cor.
+    modelo = AutoModelForCausalLM.from_config(para_llama_config(cfg)).cuda()
     n_par = sum(p.numel() for p in modelo.parameters())
     n_emb = sum(p.numel() for n, p in modelo.named_parameters()
                 if "embed_tokens" in n or "lm_head" in n)
@@ -393,7 +396,8 @@ def treinar_um(nome: str, semente: int, args) -> dict:
                   f"· cob {am.cobertura_distinta:.2f}", flush=True)
 
     modelo.save_pretrained(BASE / f"m_{nome}_s{semente}{_suf(args)}")
-    r = {"braco": nome, "semente": semente, "escala": args.escala, "vocab": vocab,
+    r = {"braco": nome, "semente": semente, "escala": args.escala,
+         "arquitetura": type(modelo).__name__, "vocab": vocab,
          "passos": passos,
          "params": int(n_par), "params_embedding": int(n_emb),
          "tokens_vistos": vistos, "pool_tokens": int(len(dados)),
@@ -469,7 +473,7 @@ def bpb_idioma(dev, modelo, tok, txts: list[str], seq_len: int,
 def avaliar(args) -> int:
     import statistics
     import torch
-    from transformers import AutoTokenizer, LlamaForCausalLM
+    from transformers import AutoTokenizer, AutoModelForCausalLM
 
     meta = json.load(open(BASE / "meta.json", encoding="utf-8"))
     hold = json.load(open(BASE / "holdout.json", encoding="utf-8"))
@@ -486,7 +490,7 @@ def avaliar(args) -> int:
                 print(f"  ⚠️ {nome} s{s}: sem modelo, pulando")
                 continue
             dt = torch.bfloat16 if args.dispositivo == "cuda" else torch.float32
-            m = LlamaForCausalLM.from_pretrained(d, dtype=dt).to(args.dispositivo)
+            m = AutoModelForCausalLM.from_pretrained(d, dtype=dt).to(args.dispositivo)
             for c in IDIOMAS:
                 b, nd, nb = bpb_idioma(args.dispositivo, m, tok, hold[c],
                                       args.seq_len, args.bytes_holdout)
@@ -507,6 +511,13 @@ def avaliar(args) -> int:
     # gravacao, senao a ordem medir->gravar->apresentar nao e' possivel. Foi assim que a
     # primeira tentativa de conserto quebrou (UnboundLocalError) — mover a gravacao sem mover
     # o que ela grava.
+    # 🔴 MEDIDO 2026-09-04: com zero modelos (o treino tinha morrido) o avaliar imprimiu uma
+    #    tabela inteira de NaN, declarou "artefato: ..." e GRAVOU o JSON com o nome canonico —
+    #    e o driver escreveu "SESSAO COMPLETA". Efeito zero e' defeito, nao resultado (§2r).
+    vazios = [n for n in bracos_ativos(args) if not any(res[n][c] for c in IDIOMAS)]
+    if vazios:
+        raise SystemExit(f"🔴 sem NENHUM modelo medido em {vazios} (escala {args.escala!r}) — "
+                         f"nada a agregar, nada a gravar. O treino rodou?")
     saida = {}
     for nome in bracos_ativos(args):
         tr = _treinos(nome, args)

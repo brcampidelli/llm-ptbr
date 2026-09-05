@@ -1,0 +1,218 @@
+{
+  "_procedencia": "pre-requisito #6 do gate de sucesso: braco de transferencia de ESCALA. Medido no pod bee-1g-prereq (RTX 5090) em 2026-09-04 22:46 - 2026-09-05 03:33 UTC. Qwen3ForCausalLM 376,1M (61,4M embedding = 16,3%), LR 1,7e-3, 3.051 passos x 32.768 tok = 100M vistos, 0,56 epocas, 3 sementes. MESMOS pools e MESMO holdout do braco 170M de 04-09 (docs/gate-t2-mistura-3051passos.json): so a escala muda.",
+  "_veredito_do_6": "A VANTAGEM DE PT TRANSFERE; A TAXA DE TROCA NAO E RESOLVIVEL POR ESTE APARATO. Transfere: o pior pt-50 (1,459) ainda bate o melhor bal-12 (1,526) nas 3 sementes, como a 170M. NAO resolvido: a razao ganho-PT/custo-nao-PT vale 0,41x, 2,56x e 3,15x nas tres sementes desta rodada, e 2,17x a 7,52x na de 03-09 — as condicoes se sobrepoem inteiras. O agregado sugeria queda monotonica (3,52x -> 2,20x -> 1,39x) e isso e artefato de um estimador de RAZAO com denominador ruidoso: o dp do custo nao-PT e 37-69% da propria media. Uma unica semente (42) carrega a queda inteira, sendo simultaneamente o melhor bal-12 e o pior pt-50.",
+  "_confundimento": "escala e tokens/parametro estao CONFUNDIDOS neste desenho: a orcamento fixo de 100M tokens, o 376M recebe 0,27 tok/param contra 0,59 do 170M (e 1,29 na rodada de 220M). O Bee-1G rodara a ~20 tok/param — 74x acima do ponto mais alto medido aqui. Este gate mede um regime de subtreino extremo, e nada nele autoriza extrapolar para o do run.",
+  "_ruido": {
+    "amplitude_media_bpb_pt50": {
+      "170M_220M": 0.012,
+      "170M_100M": 0.042,
+      "376M_100M": 0.103
+    },
+    "ganho_pt_por_semente_pct": [
+      4.387409419797872,
+      9.712501562063991,
+      10.662996591604411
+    ],
+    "dp_ganho_pt": 3.3823818401571253,
+    "custo_naopt_por_semente_pct": [
+      10.685956668044927,
+      3.7921714442269976,
+      3.3814940653562133
+    ],
+    "dp_custo_naopt": 4.1038214819792165,
+    "dp_relativo_do_denominador_pct": 68.9346298790106
+  },
+  "_gate": "gate-t2-mistura — bpb por idioma",
+  "escala": "350m",
+  "_dispositivo": "cuda",
+  "_dtype": "bfloat16",
+  "_aviso_regua": "cpu/fp32 e cuda/bf16 sao REGUAS DIFERENTES (§2g). Numero desta rodada so' compara com outro de MESMO _dispositivo e mesmo _bytes_holdout.",
+  "_bytes_holdout": 1500000,
+  "_regua": "bpb normaliza por BYTE; loss NAO compara tokenizadores diferentes",
+  "_leia_por_coluna": "bpb carrega vies crosslinguistico (2608.25089): comparar ENTRE idiomas e' invalido. Valido: braco x braco DENTRO de um idioma, que e' `delta_vs_controle`. E bpb RESISTE ao fallback de byte, porque a deflacao do 2605.09015 atinge perplexidade POR TOKEN e bpb normaliza por BYTE.",
+  "_desenho": "transformer identico em todos os bracos; so' o vocab muda, entao o braco de vocab maior e' um modelo MAIOR. Teste UNILATERAL: se o vocab grande nao ganha com parametros de graca, esta' morto. Se ganha, isto e' o TETO do beneficio, nao o valor dele no Bee-1G.",
+  "_nao_controlado": [
+    "LR unico (3e-3) para todos os vocabularios",
+    "geometria fixa — d_model nao acompanha o vocab",
+    "mesmos PASSOS nao e' mesmos FLOPs: a cabeca custa d_model x vocab",
+    "escala de 150M distorce a fracao de embedding contra o vocab grande (no 1G a mesma troca custa ~metade da fracao)"
+  ],
+  "holdout_usado": {
+    "por": {
+      "docs": 438,
+      "bytes": 1487916
+    },
+    "spa": {
+      "docs": 402,
+      "bytes": 1499196
+    },
+    "fra": {
+      "docs": 423,
+      "bytes": 1498334
+    },
+    "deu": {
+      "docs": 321,
+      "bytes": 1475450
+    },
+    "eng": {
+      "docs": 461,
+      "bytes": 1495476
+    },
+    "arb": {
+      "docs": 43,
+      "bytes": 1196795
+    },
+    "cmn": {
+      "docs": 314,
+      "bytes": 1499703
+    },
+    "jpn": {
+      "docs": 351,
+      "bytes": 1496593
+    }
+  },
+  "sementes": [
+    42,
+    43,
+    44
+  ],
+  "controle": "bal-12",
+  "bracos": {
+    "bal-12": {
+      "params": 376079296,
+      "vocab": 64000,
+      "bpb": {
+        "por": 1.537975006497967,
+        "spa": 1.493330122371253,
+        "fra": 1.517104223349582,
+        "deu": 2.1146737694048916,
+        "eng": 1.687860273045385,
+        "arb": 1.3008926548553792,
+        "cmn": 2.19750334354848,
+        "jpn": 1.3773711347586106
+      },
+      "amplitude": {
+        "por": 0.02771898905788328,
+        "spa": 0.026664646055368113,
+        "fra": 0.031375213404679414,
+        "deu": 0.039087659668040065,
+        "eng": 0.041827941357214904,
+        "arb": 0.033077578141300856,
+        "cmn": 0.05761663425312591,
+        "jpn": 0.037799767846001586
+      },
+      "por_semente": {
+        "por": [
+          1.5255811188785495,
+          1.5533001079364328,
+          1.5350437926789184
+        ],
+        "spa": [
+          1.4808733932647136,
+          1.5075380393200817,
+          1.4915789345289634
+        ],
+        "fra": [
+          1.5014611742358024,
+          1.5328363876404818,
+          1.5170151081724614
+        ],
+        "deu": [
+          2.0980601897030917,
+          2.137147849371132,
+          2.108813269140451
+        ],
+        "eng": [
+          1.6682154665748317,
+          1.7100434079320466,
+          1.6853219446292769
+        ],
+        "arb": [
+          1.2879257675207396,
+          1.3210033456620405,
+          1.2937488513833573
+        ],
+        "cmn": [
+          2.171811713502529,
+          2.229428347755655,
+          2.1912699693872564
+        ],
+        "jpn": [
+          1.361914565509105,
+          1.3997143333551065,
+          1.3704845054116201
+        ]
+      },
+      "minutos_medio": 46.51966431935628,
+      "tok_s": 35842.38855490528
+    },
+    "pt-50": {
+      "params": 376079296,
+      "vocab": 64000,
+      "bpb": {
+        "por": 1.41081518841257,
+        "spa": 1.5154549842890468,
+        "fra": 1.5849637577677012,
+        "deu": 2.2155022210559974,
+        "eng": 1.7581336139141686,
+        "arb": 1.40781820428449,
+        "cmn": 2.4210349818226575,
+        "jpn": 1.4907196501832074
+      },
+      "amplitude": {
+        "por": 0.08728550377628408,
+        "spa": 0.08719585873719193,
+        "fra": 0.09729756454326566,
+        "deu": 0.09355225215535024,
+        "eng": 0.0985330690223507,
+        "arb": 0.10379349718428399,
+        "cmn": 0.1520589150443281,
+        "jpn": 0.10751991863285171
+      },
+      "por_semente": {
+        "por": [
+          1.4586476291622144,
+          1.4024358106895651,
+          1.3713621253859303
+        ],
+        "spa": [
+          1.5621511336201537,
+          1.5092585443640247,
+          1.4749552748829617
+        ],
+        "fra": [
+          1.6395068873636065,
+          1.573175063119156,
+          1.5422093228203408
+        ],
+        "deu": [
+          2.267165758288487,
+          2.2057273987463684,
+          2.1736135061331368
+        ],
+        "eng": [
+          1.8124355176602576,
+          1.7480628754443415,
+          1.7139024486379069
+        ],
+        "arb": [
+          1.4683853198781232,
+          1.3904774702815077,
+          1.3645918226938392
+        ],
+        "cmn": [
+          2.5076341169322824,
+          2.3998956266477354,
+          2.3555752018879543
+        ],
+        "jpn": [
+          1.551757623335816,
+          1.4761636225108423,
+          1.4442377047029642
+        ]
+      },
+      "minutos_medio": 46.51145383649402,
+      "tok_s": 35858.26635140879
+    }
+  }
+}

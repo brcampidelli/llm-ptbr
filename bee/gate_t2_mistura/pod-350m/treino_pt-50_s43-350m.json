@@ -1,0 +1,22 @@
+{
+  "braco": "pt-50",
+  "semente": 43,
+  "escala": "350m",
+  "arquitetura": "Qwen3ForCausalLM",
+  "vocab": 64000,
+  "passos": 3051,
+  "params": 376079296,
+  "params_embedding": 61440000,
+  "tokens_vistos": 99975168,
+  "pool_tokens": 180025907,
+  "epocas": 0.5553376714830272,
+  "cobertura_distinta": 0.5553394082113239,
+  "perda_ultimo_lote": 4.555864453315735,
+  "perda_media_100": 4.555747708678245,
+  "minutos": 46.549765356381734,
+  "tok_s_regime": 35839.010017363784,
+  "lr": 0.0017,
+  "seq_len": 2048,
+  "micro_batch": 4,
+  "grad_accum": 4
+}

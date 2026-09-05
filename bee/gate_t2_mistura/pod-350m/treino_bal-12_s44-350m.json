@@ -1,0 +1,22 @@
+{
+  "braco": "bal-12",
+  "semente": 44,
+  "escala": "350m",
+  "arquitetura": "Qwen3ForCausalLM",
+  "vocab": 64000,
+  "passos": 3051,
+  "params": 376079296,
+  "params_embedding": 61440000,
+  "tokens_vistos": 99975168,
+  "pool_tokens": 180055286,
+  "epocas": 0.5552470589505493,
+  "cobertura_distinta": 0.5552509753517523,
+  "perda_ultimo_lote": 4.45525336265564,
+  "perda_media_100": 4.705508722662926,
+  "minutos": 46.564624428749084,
+  "tok_s_regime": 35835.05268639391,
+  "lr": 0.0017,
+  "seq_len": 2048,
+  "micro_batch": 4,
+  "grad_accum": 4
+}
