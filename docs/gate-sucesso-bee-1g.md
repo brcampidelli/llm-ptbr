@@ -228,7 +228,7 @@ Copiados da [revisão §4](revisao-bee-1g-2026-09-04.md), com o estado:
 | 2 | **âncora do 350M** nos dois holdouts de texto da §3.1 | 5070, minutos | ✅ **feito 09-04** — 0,9175 / 0,8576 |
 | 3 | **re-tokenizar os 21,97B PT** em `64k-multi` (lossless, verificado por shard) | CPU 6,1 h com 5 processos | ✅ **feito 09-04** — 39/39, **23,868B** em 64k, docs 26,3M idênticos, `max_id` 63.999 |
 | 4 | **coletar 7 idiomas a 2,5B tokens** cada (alvo por TOKEN, não por caractere) | banda ~3,8 h | ✅ **feito 09-05** — censo **contado** ([`censo-coleta-1g.json`](censo-coleta-1g.json)): **418 shards, 20,73M docs, 55.608 Mcar, os 7 idiomas a 100,0% = 17,500B tokens**. Os 4 que faltavam (`deu`/`fra`/`jpn`/`spa`) foram coletados no pod em 30 min |
-| 5 | **mini-sweep de LR** que cerca 1e-3 (3 pontos × 1 semente × 2.000 passos) | ~US$ 3 | ✅ **feito 09-04** — 5 pontos, mínimo **interior em 2,5e-4** a 32,8M tokens; ⚠️ a guarda mirava o horizonte do RUN e foi corrigida — para 20B, escalar: **~1,8e-3** |
+| 5 | **mini-sweep de LR** que cerca 1e-3 (3 pontos × 1 semente × 2.000 passos) | ~US$ 3 | ✅ **feito 09-04** — 5 pontos, mínimo **interior em 2,5e-4** a 32,8M tokens, sem colapso em nenhum braço. ⚠️ Ele diz que a região é **segura**, **não** qual LR o run usa — ver o bloco abaixo |
 | 6 | **braço de transferência do T2** (`bal-12` e `pt-50` a 350M) — **ou** risco aceito por escrito | ~US$ 6 | ✅ **rodado 09-05** ([`gate-t2-mistura-350m.json`](gate-t2-mistura-350m.json)) — Qwen3 376M, LR 1,7e-3, 3 sementes, 4,8 h. ⭐ A **vantagem de PT transfere** (pior `pt-50` 1,459 < melhor `bal-12` 1,526). 🔴 A **taxa de troca não é resolvível**: 0,41× / 2,56× / 3,15× entre sementes, e as três condições se sobrepõem. ⚠️ Escala e tok/param **confundidos** — 0,27 aqui contra ~20 no run |
 | 7 | ❓ **decisão do dono** — ponto da troca, e 1 ou 2 estágios | — | ✅ **decidido 09-05**: `pt-50` · **20B** · **um estágio** · **WSD**, com a ressalva registrada de que os dois pilares enfraqueceram (taxa de troca não resolvível pelo aparato; suprimento deixou de discriminar quando a coleta fechou) |
 
@@ -265,6 +265,46 @@ segura — não qual LR o run deve usar.
 
 ✅ **LR corrigido para o run: fase estável em 5,28e-4** (`--lr 9.61e-4` com o
 `--lr-estavel-frac 0.55` padrão), que é o valor validado no degrau vizinho.
+
+---
+
+## 6b. A corrida, como decidida — todos os números vêm de medição própria
+
+**Forma: `28 × 1792`, a do `config.py`** (decidido 09-05). O `16 × 2560` mediu **4,7% mais
+rápido** (15.512 contra 14.809 tok/s, US$ 17 de economia numa corrida de US$ 371), ao custo de
+**3,8% mais parâmetro** e de uma perda de qualidade **não medida** — os Gemstones medem que
+profundo ganha em loss por FLOP. Trocar a geometria por 4,7% de relógio, sem medir o que isso
+custa em qualidade, é comprar o eixo errado.
+
+```
+python bee/pretrain.py --escala 1b --schedule wsd \
+    --lr 9.61e-4 --lr-estavel-frac 0.55 --warmup-frac 0.02 --frac-decaimento 0.20 \
+    --micro-batch 4 --grad-accum 4 --grad-checkpoint
+```
+
+| | valor | de onde vem |
+|---|---|---|
+| arquitetura | 28 × 1792, 28q/4kv, interm. 4864, **1,062B** | `config.py` `ESCADA["1b"]` |
+| vocab · seq | 64k-multi · 2048 | Gate T1 eixo 2 · gate de throughput (2048 é 7% mais rápido que 4096) |
+| mistura | `pt-50` — 10,0B PT + 10,0B não-PT (1,43B × 7) | Gate T2 + decisão #7 |
+| épocas | PT **0,42** · não-PT **0,57** | censo contado dos dois corpora |
+| batch | 4 × 4 × 2048 = **32.768 tok/passo** | melhor do gate de throughput (mb4 seq2048) |
+| passos | **610.352** | 20B ÷ 32.768 |
+| LR | pico 9,61e-4 → **estável 5,28e-4** → decai 1−√t nos últimos 20% | Step Law × 0,55, validado no 350M |
+| warmup | 2% = 12.207 passos | default, igual ao 350M |
+| throughput | **14.809 tok/s** medido | gate de forma, dispersão 0,48% |
+| tempo · custo | **375 h ≈ 15,6 dias** · **US$ 371** | 14.809 tok/s × US$ 0,99/h |
+
+⚠️ **Teto otimista:** o throughput vem de 40 passos, que não veem queda térmica nem I/O de
+checkpoint. O run real será mais lento; quanto, ninguém mediu.
+
+### 🔴 O que ainda trava, com número
+
+| # | trava | medido |
+|---|---|---|
+| 1 | **dinheiro** | US$ 371 + ~US$ 75 da cópia decaída = **~US$ 446**; crédito **US$ 241** → faltam ~US$ 205 |
+| 2 | **15,6 dias contínuos** | o 350M rodou 115 h; isto é **3,3×** mais. O `pretrain.py` já retoma modelo+otimizador+scheduler+posição, mas exige **volume de rede** — o pod encerrado em 09-05 não tinha, e tudo nele era efêmero |
+| 3 | **levar 70 GB até o pod** | 45 GB de PT + 25 GB de não-PT. Upload daqui **não medido**. ⭐ Ficou provado por hash que a coleta do fineweb-2 é reproduzível byte a byte e que o pod coleta ~9× mais rápido, então re-coletar os 25 GB não-PT lá tende a ser mais barato que subir; os 45 GB de PT **têm** de subir, porque o texto cru foi apagado pelo `coletar_pt_volume.py` |
 | 8 | reproduzir **um** número publicado (§2aa) | 5070, minutos | ✅ **feito 09-04** — folga 2,76% → +2,75% |
 
 ⚠️ 3 e 4 são os longos, **não precisam de GPU**, e podem rodar em paralelo desde já.

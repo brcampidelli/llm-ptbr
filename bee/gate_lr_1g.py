@@ -21,11 +21,31 @@
       cuidado isso vira *"a Step Law erra 4x neste modelo"*; lido no horizonte certo, o medido
       esta' a **1,86x** do previsto (2,5e-4 contra 1,34e-4) e a **confirma**.
 
-   ⚠️ O dano potencial e' de uma direcao so': levar o 2,5e-4 medido aqui para um run de 20B
-      poria o LR **7x abaixo** do previsto — sem erro, sem excecao, com a loss caindo bonito.
-      Para o run, escale: `eta*(D_run) = 2,5e-4 * (D_run / 32,8e6)^0,307` (20B -> ~1,8e-3).
-      ⚠️ Isso extrapola o expoente 0,307 por 600x a partir de UM ancoro — o expoente e'
-      emprestado da Step Law, nao medido aqui.
+🔴🔴 E ESTE DOCSTRING PRESCREVIA O ERRO — corrigido em 2026-09-05.
+   Ele dizia: *"Para o run, escale: eta*(D_run) = 2,5e-4 * (D_run/32,8e6)^0,307 (20B -> ~1,8e-3)"*.
+   **NAO FACA ISSO.** Validado contra o Bee-350M, que funcionou e e' o melhor modelo do projeto:
+
+       modelo              Step Law (pico)   fase estavel usada   o que a formula acima daria
+       Bee-350M @ 21,75B         2,18e-3          1,20e-3 (55%)      4,07e-3  -> 3,39x mais quente
+       Bee-1G   @ 20B            9,61e-4          5,28e-4 (55%)      1,79e-3  -> 3,39x mais quente
+
+   O 350M rodou a fase estavel em 55% do pico (`docs/gate2-350m-marcos.json`) e produziu o melhor
+   bpb do projeto. A formula o poria 3,4x acima disso.
+
+   ⚠️ O defeito e' §2d puro: este sweep mede LR **CONSTANTE** em **1.000 PASSOS**; a Step Law e'
+      ajustada sobre **runs completos** com **cosine**. Multiplicar um otimo de passo-1.000 pelo
+      termo D^0,307 de um run completo mistura duas grandezas. As duas ressalvas ja' estavam no
+      `_nao_mostra` deste mesmo artefato — "1.000 passos veem instabilidade inicial" e "aqui e'
+      LR constante, e o run usara' WSD ou cosine" — e a extrapolacao foi feita assim mesmo.
+
+   ⚠️ E ha' uma segunda armadilha encadeada: em `pretrain.py` o `--lr` e' o **PICO**, e a fase
+      estavel do WSD roda em `--lr * --lr-estavel-frac` (0,55). Passar um numero ja' corrigido
+      como `--lr` aplica a correcao **duas vezes** — o formato da §1, onde nada da' erro.
+
+   ✅ O QUE ESTE SWEEP ENTREGA, e so' isso: que a regiao [1,25e-4; 2e-3] e' **segura** (nenhum
+      colapso), que o minimo e' **interior** e que o grad-norm vira em 2e-3. Ele NAO determina o
+      LR do run. Para o run, use a Step Law com a fracao de fase estavel validada no degrau
+      vizinho: `--lr <pico da Step Law> --lr-estavel-frac 0.55`.
 
    ✅ A guarda agora calcula a Step Law no horizonte **deste sweep** e exige que a grade o
       cerque. Testada contra o estado quebrado (§2t): rejeita `[5e-4, 1e-3, 2e-3]` (a 1a
