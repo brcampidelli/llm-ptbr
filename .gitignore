@@ -118,3 +118,10 @@ bee/corpus_multi_1g/*.zst
 # reproducao verificavel sem publicar o texto.
 bee/gate_t2_mistura/holdout.json
 bee/gate_t2_mistura/m_*/
+
+# Pool do Bee-1G — a metade PT (20 GB) e' o que sobe para o pod (opcao C de transporte).
+# Regeneravel por `bee/montar_pool_1g.py` a partir de corpus_pt_64k em ~7 min; o MANIFEST,
+# que traz a composicao, as exclusoes de holdout e as guardas, vai versionado.
+bee/pool_1g/*.bin
+bee/pool_1g_teste/
+!bee/pool_1g/MANIFEST.json
