@@ -230,7 +230,41 @@ Copiados da [revisão §4](revisao-bee-1g-2026-09-04.md), com o estado:
 | 4 | **coletar 7 idiomas a 2,5B tokens** cada (alvo por TOKEN, não por caractere) | banda ~3,8 h | ✅ **feito 09-05** — censo **contado** ([`censo-coleta-1g.json`](censo-coleta-1g.json)): **418 shards, 20,73M docs, 55.608 Mcar, os 7 idiomas a 100,0% = 17,500B tokens**. Os 4 que faltavam (`deu`/`fra`/`jpn`/`spa`) foram coletados no pod em 30 min |
 | 5 | **mini-sweep de LR** que cerca 1e-3 (3 pontos × 1 semente × 2.000 passos) | ~US$ 3 | ✅ **feito 09-04** — 5 pontos, mínimo **interior em 2,5e-4** a 32,8M tokens; ⚠️ a guarda mirava o horizonte do RUN e foi corrigida — para 20B, escalar: **~1,8e-3** |
 | 6 | **braço de transferência do T2** (`bal-12` e `pt-50` a 350M) — **ou** risco aceito por escrito | ~US$ 6 | ✅ **rodado 09-05** ([`gate-t2-mistura-350m.json`](gate-t2-mistura-350m.json)) — Qwen3 376M, LR 1,7e-3, 3 sementes, 4,8 h. ⭐ A **vantagem de PT transfere** (pior `pt-50` 1,459 < melhor `bal-12` 1,526). 🔴 A **taxa de troca não é resolvível**: 0,41× / 2,56× / 3,15× entre sementes, e as três condições se sobrepõem. ⚠️ Escala e tok/param **confundidos** — 0,27 aqui contra ~20 no run |
-| 7 | ❓ **decisão do dono** — ponto da troca, e 1 ou 2 estágios | — | ❌ |
+| 7 | ❓ **decisão do dono** — ponto da troca, e 1 ou 2 estágios | — | ✅ **decidido 09-05**: `pt-50` · **20B** · **um estágio** · **WSD**, com a ressalva registrada de que os dois pilares enfraqueceram (taxa de troca não resolvível pelo aparato; suprimento deixou de discriminar quando a coleta fechou) |
+
+### 🔴🔴 [09-05] O LR que eu recomendei junto com essa decisão está errado por 3,4×
+
+A recomendação dizia **LR 1,79e-3**, derivada assim: o sweep mediu ótimo **2,5e-4** com LR
+**constante** a 32,8M tokens; a Step Law prevê 1,34e-4 nesse horizonte; logo o medido está
+**1,86×** acima; escalando por `D^0,307` até 20B dá 1,79e-3.
+
+**Validado contra o Bee-350M, que funcionou** — e não passa:
+
+| | Step Law (pico) | fase estável usada | o que o meu método daria |
+|---|---:|---:|---:|
+| Bee-350M @ 21,75B | 2,18e-3 | **1,20e-3** (55% do pico) | 4,07e-3 → **3,39× mais quente** |
+| Bee-1G @ 20B | 9,61e-4 | **5,28e-4** (55% do pico) | 1,79e-3 → **3,39× mais quente** |
+
+O 350M rodou a fase estável em 55% do pico (`gate2-350m-marcos.json`: *"WSD, fase estavel em
+55% do pico"*) e produziu o melhor modelo do projeto. Meu método o teria posto 3,4× acima disso.
+
+⚠️ **O erro é §2d na forma mais pura:** o sweep mede LR **constante** em **1.000 passos**; a Step
+Law é ajustada sobre **runs completos** com **cosine**. Multiplicar um ótimo de passo-1.000 pelo
+termo `D^0,307` de um run completo mistura duas grandezas. E as duas ressalvas estavam escritas
+no `_nao_mostra` do próprio artefato — *"1.000 passos veem instabilidade inicial"* e *"aqui é LR
+constante, e o run usará WSD ou cosine"* — eu escrevi as duas e extrapolei assim mesmo.
+
+⚠️ **E há uma segunda armadilha na mesma linha:** em `pretrain.py`, `--lr` é o **pico**, e a fase
+estável do WSD roda em `--lr × --lr-estavel-frac` (0,55 por padrão). Passar o número medido como
+`--lr` aplicaria a correção **duas vezes** — o mesmo formato do deslocamento duplo de rótulos da
+§1: nada dá erro, a loss cai, e o modelo treina frio.
+
+✅ **O que o sweep de fato entrega, e continua valendo:** um mínimo **interior** em [1,25e-4;
+2e-3], **nenhum colapso** em nenhum braço, e o grad-norm virando em 2e-3. Isso diz que a região é
+segura — não qual LR o run deve usar.
+
+✅ **LR corrigido para o run: fase estável em 5,28e-4** (`--lr 9.61e-4` com o
+`--lr-estavel-frac 0.55` padrão), que é o valor validado no degrau vizinho.
 | 8 | reproduzir **um** número publicado (§2aa) | 5070, minutos | ✅ **feito 09-04** — folga 2,76% → +2,75% |
 
 ⚠️ 3 e 4 são os longos, **não precisam de GPU**, e podem rodar em paralelo desde já.
