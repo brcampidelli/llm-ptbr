@@ -1,0 +1,72 @@
+VRAM livre: 32605 MiB (>= 28000) apos 5s
+########## [1/2] TREINO 350M  22:43 UTC
+2 bracos x 3 sementes = 6 runs: bal-12, pt-50
+Traceback (most recent call last):
+  File "/root/bee/gate_t2_mistura.py", line 322, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/root/bee/gate_t2_mistura.py", line 318, in main
+    return args.fn(args)
+           ^^^^^^^^^^^^^
+  File "/root/bee/gate_t2_mistura.py", line 267, in cmd_treinar
+    return t1.treinar(args)
+           ^^^^^^^^^^^^^^^^
+  File "/root/bee/gate_t1_bpb.py", line 428, in treinar
+    treinar_um(nome, semente, args)
+  File "/root/bee/gate_t1_bpb.py", line 343, in treinar_um
+    modelo = LlamaForCausalLM(para_llama_config(cfg)).cuda()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/transformers/models/llama/modeling_llama.py", line 429, in __init__
+    self.model = LlamaModel(config)
+                 ^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/transformers/models/llama/modeling_llama.py", line 355, in __init__
+    [LlamaDecoderLayer(config, layer_idx) for layer_idx in range(config.num_hidden_layers)]
+     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/transformers/models/llama/modeling_llama.py", line 291, in __init__
+    self.mlp = LlamaMLP(config)
+               ^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/transformers/models/llama/modeling_llama.py", line 169, in __init__
+    self.gate_proj = nn.Linear(self.hidden_size, self.intermediate_size, bias=config.mlp_bias)
+                                                                              ^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/transformers/configuration_utils.py", line 484, in __getattribute__
+    return super().__getattribute__(key)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/transformers/integrations/heterogeneity/configuration_utils.py", line 312, in __getattribute__
+    return super().__getattribute__(key)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'Qwen3Config' object has no attribute 'mlp_bias'
+VRAM livre: 32605 MiB (>= 28000) apos 5s
+########## [2/2] AVALIACAO 350M  22:43 UTC
+  ⚠️ bal-12 s42: sem modelo, pulando
+  ⚠️ bal-12 s43: sem modelo, pulando
+  ⚠️ bal-12 s44: sem modelo, pulando
+  ⚠️ pt-50 s42: sem modelo, pulando
+  ⚠️ pt-50 s43: sem modelo, pulando
+  ⚠️ pt-50 s44: sem modelo, pulando
+
+========================================================================================================
+EIXO 2 — bpb POR IDIOMA (menor e' melhor) · media de 3 sementes
+========================================================================================================
+🔴 LEIA POR COLUNA, NUNCA ENTRE COLUNAS. `2608.25089` mede que metricas normalizadas —
+   bpb entre elas — carregam vies crosslinguistico de tokenizacao, codificacao e
+   ortografia. Um byte de arabe e um byte de chines NAO carregam a mesma informacao,
+   entao 'arb 1,20 contra cmn 0,90' nao diz nada. A comparacao VALIDA e' braco contra
+   braco DENTRO da mesma coluna — que e' a tabela de DELTA logo abaixo.
+   ⭐ E bpb e' justamente a regua que RESISTE ao fallback de byte: perplexidade POR
+   TOKEN e' deflacionada por ele (dado o byte-lider, os de continuacao sao quase
+   deterministicos), mas bpb normaliza por BYTE e essa deflacao nao passa (2605.09015).
+braco                 vocab   params     por     spa     fra     deu     eng     arb     cmn     jpn
+--------------------------------------------------------------------------------------------------------
+bal-12               64,000       0M     nan     nan     nan     nan     nan     nan     nan     nan
+pt-50                64,000       0M     nan     nan     nan     nan     nan     nan     nan     nan
+--------------------------------------------------------------------------------------------------------
+amplitude media entre sementes        0.000   0.000   0.000   0.000   0.000   0.000   0.000   0.000
+
+========================================================================================================
+DELTA contra bal-12 (negativo = melhor) · e o custo em relogio
+braco                  por     spa     fra     deu     eng     arb     cmn     jpn     min    tok/s
+--------------------------------------------------------------------------------------------------------
+pt-50               +nan%  +nan%  +nan%  +nan%  +nan%  +nan%  +nan%  +nan%     0.0     0.0k
+
+artefato: docs/gate-t2-mistura-350m.json
+########## SESSAO 4 COMPLETA  22:43 UTC

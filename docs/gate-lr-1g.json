@@ -1,0 +1,65 @@
+{
+  "_gate": "sweep de LR do Bee-1G",
+  "_regua": "loss media dos ultimos 50 passos, semente unica — compara LR, nao modelos",
+  "_nao_mostra": [
+    "o LR otimo por CAMADA: usa-se um LR unico, e o 2506.15025 mede que no regime de vocab grande a razao embedding/oculto escala Θ(√width). Isto responde 'qual LR unico e' menos ruim', nao 'qual e' o otimo'",
+    "o comportamento em run LONGO: 1.000 passos veem instabilidade inicial, nao divergencia tardia",
+    "interacao com o schedule: aqui e' LR constante, e o run usara' WSD ou cosine"
+  ],
+  "gpu": "NVIDIA GeForce RTX 5090",
+  "passos": 1000,
+  "semente": 42,
+  "step_law": {
+    "min": 0.00096,
+    "max": 0.0018
+  },
+  "bracos": {
+    "1.3e-04": {
+      "lr": 0.000125,
+      "loss_50": 8.202440237998962,
+      "loss_fim": 5.64440139055252,
+      "grad_norm_mediano": 0.702077180147171,
+      "colapsou": false,
+      "motivo": "",
+      "minutos": 36.83696264425914
+    },
+    "2.5e-04": {
+      "lr": 0.00025,
+      "loss_50": 8.326979714632035,
+      "loss_fim": 5.500591533184052,
+      "grad_norm_mediano": 0.622340202331543,
+      "colapsou": false,
+      "motivo": "",
+      "minutos": 36.832956751187645
+    },
+    "5.0e-04": {
+      "lr": 0.0005,
+      "loss_50": 8.488269412517548,
+      "loss_fim": 5.54736337184906,
+      "grad_norm_mediano": 0.5440760552883148,
+      "colapsou": false,
+      "motivo": "",
+      "minutos": 36.87063051462174
+    },
+    "1.0e-03": {
+      "lr": 0.001,
+      "loss_50": 8.492206197977065,
+      "loss_fim": 5.722196371555328,
+      "grad_norm_mediano": 0.4475090801715851,
+      "colapsou": false,
+      "motivo": "",
+      "minutos": 36.783562286694846
+    },
+    "2.0e-03": {
+      "lr": 0.002,
+      "loss_50": 8.928883540630341,
+      "loss_fim": 6.432475416660309,
+      "grad_norm_mediano": 0.56658074259758,
+      "colapsou": false,
+      "motivo": "",
+      "minutos": 36.76194218397141
+    }
+  },
+  "melhor": "2.5e-04",
+  "melhor_na_borda": false
+}

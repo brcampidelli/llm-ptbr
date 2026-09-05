@@ -110,3 +110,11 @@ bee/corpus_multi_1g/*.zst
 !bee/corpus_multi_1g/MANIFEST*.json
 bee/corpus_multi_1g/*.zst
 !bee/corpus_multi_1g/MANIFEST*.json
+
+# Gate T2 — o holdout de 12,6 MB fica fora, pela mesma razao do de 30 MB do T1: e' texto
+# de TERCEIRO (fineweb-2, ODC-By) e e' reproduzivel pelo `_garante_holdout()` a partir de
+# bee/corpus_multi. O que se versiona e' o resultado. O arquivo continua em disco aqui, e o
+# sha256 dele (4bf8f231f3aa258c...) esta' no artefato da rodada, que e' o que torna a
+# reproducao verificavel sem publicar o texto.
+bee/gate_t2_mistura/holdout.json
+bee/gate_t2_mistura/m_*/
