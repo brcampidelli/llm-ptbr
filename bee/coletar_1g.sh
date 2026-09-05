@@ -35,12 +35,24 @@
 cd "$(dirname "$0")/.."
 OUT=bee/corpus_multi_1g
 CENSO=docs/censo-coleta-1g.json
+# o mesmo script roda no Windows (venv do projeto) e no pod Linux (python3 do sistema)
 PY=.venv/Scripts/python.exe
+[ -x "$PY" ] || PY=$(command -v python3)
+[ -n "$PY" ] || { echo "🔴 sem interpretador Python"; exit 4; }
 MIN_PCT=90                          # % do alvo para considerar o idioma pronto
 declare -A ALVO=( [spa]=10541 [fra]=9810 [deu]=9282 [eng]=10017 [arb]=7801 [cmn]=3405 [jpn]=4752 )
 
 REFAZER=""
-[ "$1" = "--refazer" ] && REFAZER="$2"
+IDIOMAS="spa fra deu eng arb cmn jpn"
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --refazer) REFAZER="$2"; shift 2 ;;
+    # 🔴 restringe a corrida SEM mexer no censo: o censo continua contando TUDO que ha' em
+    #    disco, entao o relatorio final nao passa a mentir por omissao. So' o laco encolhe.
+    --idiomas) IDIOMAS=$(echo "$2" | tr ',' ' '); shift 2 ;;
+    *) echo "uso: bash bee/coletar_1g.sh [--idiomas a,b,c] [--refazer a,b]"; exit 2 ;;
+  esac
+done
 
 recensear() {  # CONTA o disco — nunca estima
   $PY bee/censo_coleta_1g.py --processos 6 --out "$CENSO" > /tmp/censo.log 2>&1 \
@@ -56,7 +68,7 @@ echo "== censo inicial (contado, nao estimado)"
 recensear
 falharam=()
 
-for c in spa fra deu eng arb cmn jpn; do
+for c in $IDIOMAS; do
   pct=$(pct_de $c); alvo=${ALVO[$c]}
   pronto=$($PY -c "print(1 if $pct >= $MIN_PCT else 0)")
 
@@ -105,4 +117,7 @@ if [ ${#falharam[@]} -ne 0 ]; then
   echo "   o censo em $CENSO diz exatamente o que ha' em disco, por idioma."
   exit 1
 fi
-echo "✅ COLETA COMPLETA nos 7 idiomas  $(date '+%H:%M')"
+# ⚠️ "COMPLETA" so' pode falar dos idiomas que ESTA corrida percorreu — dizer "nos 7" quando
+#    `--idiomas` restringiu seria a mesma mentira por omissao que o censo veio consertar.
+echo "✅ COLETA COMPLETA em: $IDIOMAS  $(date '+%H:%M')"
+echo "   (o censo acima cobre os 7; esta corrida percorreu os listados)"

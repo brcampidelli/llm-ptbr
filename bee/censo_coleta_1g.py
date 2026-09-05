@@ -111,8 +111,13 @@ def main() -> int:
     args = ap.parse_args()
 
     shards = sorted(glob.glob(str(ROOT / PADRAO)))
-    if not shards:
-        raise SystemExit(f"🔴 nenhum shard em {PADRAO}")
+    # ⚠️ "zero shards" e' estado INICIAL legitimo (maquina nova comecando a coletar), mas
+    #    "diretorio inexistente" e' caminho errado. Sao coisas diferentes: a primeira reporta
+    #    zeros e deixa o driver seguir; a segunda aborta. Antes as duas abortavam, e o driver
+    #    nao conseguia arrancar num pod limpo.
+    pasta = (ROOT / PADRAO).parent
+    if not pasta.is_dir():
+        raise SystemExit(f"🔴 {pasta} nao existe — caminho errado?")
     gb = sum(os.path.getsize(p) for p in shards) / 1e9
     print(f"{len(shards)} shards · {gb:.2f} GB comprimido · {args.processos} processos\n")
 

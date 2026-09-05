@@ -38,7 +38,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 2.982445240020752
+      "segundos": 2.8942646980285645
     },
     "bee_corpus_arb_0001.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0001.jsonl.zst",
@@ -50,7 +50,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 2.0875234603881836
+      "segundos": 2.1106624603271484
     },
     "bee_corpus_arb_0002.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0002.jsonl.zst",
@@ -62,7 +62,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 2.365874767303467
+      "segundos": 2.3486759662628174
     },
     "bee_corpus_arb_0003.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0003.jsonl.zst",
@@ -74,7 +74,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 2.508805751800537
+      "segundos": 2.405445098876953
     },
     "bee_corpus_arb_0004.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0004.jsonl.zst",
@@ -86,7 +86,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 2.9217171669006348
+      "segundos": 2.8465495109558105
     },
     "bee_corpus_arb_0005.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0005.jsonl.zst",
@@ -98,7 +98,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 1.9647395610809326
+      "segundos": 1.9875929355621338
     },
     "bee_corpus_arb_0006.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0006.jsonl.zst",
@@ -110,7 +110,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 2.369262456893921
+      "segundos": 1.9188084602355957
     },
     "bee_corpus_arb_0007.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0007.jsonl.zst",
@@ -122,7 +122,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 2.779219150543213
+      "segundos": 2.080003261566162
     },
     "bee_corpus_arb_0008.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0008.jsonl.zst",
@@ -134,7 +134,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 3.3711130619049072
+      "segundos": 2.5746042728424072
     },
     "bee_corpus_arb_0009.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0009.jsonl.zst",
@@ -146,7 +146,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 2.3870248794555664
+      "segundos": 1.6914055347442627
     },
     "bee_corpus_arb_0010.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0010.jsonl.zst",
@@ -158,7 +158,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 2.612401247024536
+      "segundos": 1.9200050830841064
     },
     "bee_corpus_arb_0011.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0011.jsonl.zst",
@@ -170,7 +170,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 2.6895875930786133
+      "segundos": 2.041044235229492
     },
     "bee_corpus_arb_0012.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0012.jsonl.zst",
@@ -182,7 +182,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 2.937150478363037
+      "segundos": 2.3061320781707764
     },
     "bee_corpus_arb_0013.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0013.jsonl.zst",
@@ -194,7 +194,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 1.9537596702575684
+      "segundos": 1.5841166973114014
     },
     "bee_corpus_arb_0014.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0014.jsonl.zst",
@@ -206,7 +206,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 2.3310532569885254
+      "segundos": 1.879826307296753
     },
     "bee_corpus_arb_0015.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0015.jsonl.zst",
@@ -218,7 +218,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 2.3911826610565186
+      "segundos": 2.0301036834716797
     },
     "bee_corpus_arb_0016.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0016.jsonl.zst",
@@ -230,7 +230,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 2.492629289627075
+      "segundos": 2.1991686820983887
     },
     "bee_corpus_arb_0017.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0017.jsonl.zst",
@@ -242,7 +242,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 1.9743928909301758
+      "segundos": 1.610016107559204
     },
     "bee_corpus_arb_0018.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0018.jsonl.zst",
@@ -254,7 +254,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 1.9506785869598389
+      "segundos": 1.943876028060913
     },
     "bee_corpus_arb_0019.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0019.jsonl.zst",
@@ -266,7 +266,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 2.14599347114563
+      "segundos": 2.1331427097320557
     },
     "bee_corpus_arb_0020.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0020.jsonl.zst",
@@ -278,7 +278,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 2.0183560848236084
+      "segundos": 2.084096670150757
     },
     "bee_corpus_arb_0021.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0021.jsonl.zst",
@@ -290,7 +290,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 1.8319153785705566
+      "segundos": 1.7973847389221191
     },
     "bee_corpus_arb_0022.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0022.jsonl.zst",
@@ -302,7 +302,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 2.025768995285034
+      "segundos": 2.0449864864349365
     },
     "bee_corpus_arb_0023.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0023.jsonl.zst",
@@ -314,7 +314,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 2.187891960144043
+      "segundos": 2.2273247241973877
     },
     "bee_corpus_arb_0024.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0024.jsonl.zst",
@@ -326,7 +326,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 1.6035792827606201
+      "segundos": 1.6960422992706299
     },
     "bee_corpus_arb_0025.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0025.jsonl.zst",
@@ -338,7 +338,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 1.784097671508789
+      "segundos": 1.8577399253845215
     },
     "bee_corpus_arb_0026.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0026.jsonl.zst",
@@ -350,7 +350,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 1.937737226486206
+      "segundos": 1.990936040878296
     },
     "bee_corpus_arb_0027.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0027.jsonl.zst",
@@ -362,7 +362,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 1.9943058490753174
+      "segundos": 1.9316277503967285
     },
     "bee_corpus_arb_0028.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0028.jsonl.zst",
@@ -374,7 +374,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 1.7739500999450684
+      "segundos": 1.7100920677185059
     },
     "bee_corpus_arb_0029.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0029.jsonl.zst",
@@ -386,7 +386,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 1.8828372955322266
+      "segundos": 1.9270052909851074
     },
     "bee_corpus_arb_0030.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0030.jsonl.zst",
@@ -398,7 +398,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 1.985837697982788
+      "segundos": 2.0282421112060547
     },
     "bee_corpus_arb_0031.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0031.jsonl.zst",
@@ -410,7 +410,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 1.6410813331604004
+      "segundos": 1.7783641815185547
     },
     "bee_corpus_arb_0032.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0032.jsonl.zst",
@@ -422,7 +422,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 1.8517341613769531
+      "segundos": 2.0007476806640625
     },
     "bee_corpus_arb_0033.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0033.jsonl.zst",
@@ -434,7 +434,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 2.015366554260254
+      "segundos": 2.177685260772705
     },
     "bee_corpus_arb_0034.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0034.jsonl.zst",
@@ -446,7 +446,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 1.5460777282714844
+      "segundos": 1.6551518440246582
     },
     "bee_corpus_arb_0035.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0035.jsonl.zst",
@@ -458,7 +458,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 1.7927489280700684
+      "segundos": 2.0902998447418213
     },
     "bee_corpus_arb_0036.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0036.jsonl.zst",
@@ -470,7 +470,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 1.970660924911499
+      "segundos": 2.732217311859131
     },
     "bee_corpus_arb_0037.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0037.jsonl.zst",
@@ -482,7 +482,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 1.5273211002349854
+      "segundos": 2.2356410026550293
     },
     "bee_corpus_arb_0038.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0038.jsonl.zst",
@@ -494,7 +494,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 1.826678991317749
+      "segundos": 3.953533887863159
     },
     "bee_corpus_arb_0039.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0039.jsonl.zst",
@@ -506,7 +506,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 2.0496950149536133
+      "segundos": 4.8894617557525635
     },
     "bee_corpus_arb_0040.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0040.jsonl.zst",
@@ -518,7 +518,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 1.5301434993743896
+      "segundos": 3.5674822330474854
     },
     "bee_corpus_arb_0041.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0041.jsonl.zst",
@@ -530,7 +530,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 1.7761130332946777
+      "segundos": 6.17741847038269
     },
     "bee_corpus_arb_0042.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0042.jsonl.zst",
@@ -542,7 +542,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 1.9843459129333496
+      "segundos": 7.608295202255249
     },
     "bee_corpus_arb_0043.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0043.jsonl.zst",
@@ -554,7 +554,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 1.516127347946167
+      "segundos": 5.368847131729126
     },
     "bee_corpus_arb_0044.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0044.jsonl.zst",
@@ -566,7 +566,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 1.871661901473999
+      "segundos": 6.544656276702881
     },
     "bee_corpus_arb_0045.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0045.jsonl.zst",
@@ -578,7 +578,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 1.9491050243377686
+      "segundos": 6.558233976364136
     },
     "bee_corpus_arb_0046.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0046.jsonl.zst",
@@ -590,7 +590,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 1.6022987365722656
+      "segundos": 5.357203245162964
     },
     "bee_corpus_arb_0047.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0047.jsonl.zst",
@@ -602,7 +602,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 1.8736765384674072
+      "segundos": 4.166905403137207
     },
     "bee_corpus_arb_0048.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0048.jsonl.zst",
@@ -614,7 +614,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 1.8805418014526367
+      "segundos": 4.207226037979126
     },
     "bee_corpus_arb_0049.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0049.jsonl.zst",
@@ -626,7 +626,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 1.5838313102722168
+      "segundos": 2.4058926105499268
     },
     "bee_corpus_arb_0050.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0050.jsonl.zst",
@@ -638,7 +638,7 @@
       "fontes": {
         "fineweb2-arb": 50000
       },
-      "segundos": 1.8974308967590332
+      "segundos": 2.230370283126831
     },
     "bee_corpus_arb_0051.jsonl.zst": {
       "arquivo": "bee_corpus_arb_0051.jsonl.zst",
@@ -650,7 +650,7 @@
       "fontes": {
         "fineweb2-arb": 49401
       },
-      "segundos": 1.7648191452026367
+      "segundos": 2.0676259994506836
     },
     "bee_corpus_cmn_0000.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0000.jsonl.zst",
@@ -662,7 +662,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.0971355438232422
+      "segundos": 1.1805012226104736
     },
     "bee_corpus_cmn_0001.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0001.jsonl.zst",
@@ -674,7 +674,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.034250259399414
+      "segundos": 1.3141674995422363
     },
     "bee_corpus_cmn_0002.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0002.jsonl.zst",
@@ -686,7 +686,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.0939602851867676
+      "segundos": 1.4098596572875977
     },
     "bee_corpus_cmn_0003.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0003.jsonl.zst",
@@ -698,7 +698,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.1505961418151855
+      "segundos": 1.4073808193206787
     },
     "bee_corpus_cmn_0004.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0004.jsonl.zst",
@@ -710,7 +710,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.198312520980835
+      "segundos": 1.3917138576507568
     },
     "bee_corpus_cmn_0005.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0005.jsonl.zst",
@@ -722,7 +722,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.1538374423980713
+      "segundos": 1.1736938953399658
     },
     "bee_corpus_cmn_0006.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0006.jsonl.zst",
@@ -734,7 +734,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.4677259922027588
+      "segundos": 1.4561381340026855
     },
     "bee_corpus_cmn_0007.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0007.jsonl.zst",
@@ -746,7 +746,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.8306312561035156
+      "segundos": 1.8212673664093018
     },
     "bee_corpus_cmn_0008.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0008.jsonl.zst",
@@ -758,7 +758,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.185805082321167
+      "segundos": 1.2574315071105957
     },
     "bee_corpus_cmn_0009.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0009.jsonl.zst",
@@ -770,7 +770,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.2299730777740479
+      "segundos": 1.2396423816680908
     },
     "bee_corpus_cmn_0010.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0010.jsonl.zst",
@@ -782,7 +782,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.1568992137908936
+      "segundos": 1.2044320106506348
     },
     "bee_corpus_cmn_0011.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0011.jsonl.zst",
@@ -794,7 +794,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.144256353378296
+      "segundos": 1.226151466369629
     },
     "bee_corpus_cmn_0012.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0012.jsonl.zst",
@@ -806,7 +806,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.160653829574585
+      "segundos": 1.1467928886413574
     },
     "bee_corpus_cmn_0013.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0013.jsonl.zst",
@@ -818,7 +818,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.0978493690490723
+      "segundos": 1.2059969902038574
     },
     "bee_corpus_cmn_0014.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0014.jsonl.zst",
@@ -830,7 +830,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.214484691619873
+      "segundos": 1.2450556755065918
     },
     "bee_corpus_cmn_0015.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0015.jsonl.zst",
@@ -842,7 +842,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.2006325721740723
+      "segundos": 1.2030994892120361
     },
     "bee_corpus_cmn_0016.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0016.jsonl.zst",
@@ -854,7 +854,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.1894779205322266
+      "segundos": 1.1577913761138916
     },
     "bee_corpus_cmn_0017.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0017.jsonl.zst",
@@ -866,7 +866,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.2568249702453613
+      "segundos": 1.2065677642822266
     },
     "bee_corpus_cmn_0018.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0018.jsonl.zst",
@@ -878,7 +878,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.6702144145965576
+      "segundos": 1.3141181468963623
     },
     "bee_corpus_cmn_0019.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0019.jsonl.zst",
@@ -890,7 +890,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.8230087757110596
+      "segundos": 1.4345636367797852
     },
     "bee_corpus_cmn_0020.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0020.jsonl.zst",
@@ -902,7 +902,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.6142466068267822
+      "segundos": 1.2705402374267578
     },
     "bee_corpus_cmn_0021.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0021.jsonl.zst",
@@ -914,7 +914,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.5181922912597656
+      "segundos": 1.1379823684692383
     },
     "bee_corpus_cmn_0022.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0022.jsonl.zst",
@@ -926,7 +926,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.6187644004821777
+      "segundos": 1.2560310363769531
     },
     "bee_corpus_cmn_0023.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0023.jsonl.zst",
@@ -938,7 +938,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.4241855144500732
+      "segundos": 1.1850504875183105
     },
     "bee_corpus_cmn_0024.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0024.jsonl.zst",
@@ -950,7 +950,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.0359447002410889
+      "segundos": 1.0298824310302734
     },
     "bee_corpus_cmn_0025.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0025.jsonl.zst",
@@ -962,7 +962,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.1286613941192627
+      "segundos": 1.1500072479248047
     },
     "bee_corpus_cmn_0026.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0026.jsonl.zst",
@@ -974,7 +974,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.2009515762329102
+      "segundos": 1.2212278842926025
     },
     "bee_corpus_cmn_0027.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0027.jsonl.zst",
@@ -986,7 +986,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.1154451370239258
+      "segundos": 1.134310245513916
     },
     "bee_corpus_cmn_0028.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0028.jsonl.zst",
@@ -998,7 +998,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.3636231422424316
+      "segundos": 1.4061715602874756
     },
     "bee_corpus_cmn_0029.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0029.jsonl.zst",
@@ -1010,7 +1010,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.7022793292999268
+      "segundos": 1.765418291091919
     },
     "bee_corpus_cmn_0030.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0030.jsonl.zst",
@@ -1022,7 +1022,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.142362117767334
+      "segundos": 1.2659802436828613
     },
     "bee_corpus_cmn_0031.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0031.jsonl.zst",
@@ -1034,7 +1034,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.142991065979004
+      "segundos": 1.1990056037902832
     },
     "bee_corpus_cmn_0032.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0032.jsonl.zst",
@@ -1046,7 +1046,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.1335523128509521
+      "segundos": 1.1362907886505127
     },
     "bee_corpus_cmn_0033.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0033.jsonl.zst",
@@ -1058,7 +1058,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.103468656539917
+      "segundos": 1.1359410285949707
     },
     "bee_corpus_cmn_0034.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0034.jsonl.zst",
@@ -1070,7 +1070,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.0384564399719238
+      "segundos": 1.1705563068389893
     },
     "bee_corpus_cmn_0035.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0035.jsonl.zst",
@@ -1082,7 +1082,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.1026146411895752
+      "segundos": 1.1646780967712402
     },
     "bee_corpus_cmn_0036.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0036.jsonl.zst",
@@ -1094,7 +1094,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.0914406776428223
+      "segundos": 1.1163005828857422
     },
     "bee_corpus_cmn_0037.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0037.jsonl.zst",
@@ -1106,7 +1106,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.0671379566192627
+      "segundos": 1.1159074306488037
     },
     "bee_corpus_cmn_0038.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0038.jsonl.zst",
@@ -1118,7 +1118,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.2580740451812744
+      "segundos": 1.2387666702270508
     },
     "bee_corpus_cmn_0039.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0039.jsonl.zst",
@@ -1130,7 +1130,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.0465786457061768
+      "segundos": 1.0811693668365479
     },
     "bee_corpus_cmn_0040.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0040.jsonl.zst",
@@ -1142,7 +1142,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.0977857112884521
+      "segundos": 1.1590337753295898
     },
     "bee_corpus_cmn_0041.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0041.jsonl.zst",
@@ -1154,7 +1154,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.2111189365386963
+      "segundos": 1.1974623203277588
     },
     "bee_corpus_cmn_0042.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0042.jsonl.zst",
@@ -1166,7 +1166,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.2391917705535889
+      "segundos": 1.2791876792907715
     },
     "bee_corpus_cmn_0043.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0043.jsonl.zst",
@@ -1178,7 +1178,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.1140737533569336
+      "segundos": 1.1800711154937744
     },
     "bee_corpus_cmn_0044.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0044.jsonl.zst",
@@ -1190,7 +1190,7 @@
       "fontes": {
         "fineweb2-cmn": 50000
       },
-      "segundos": 1.069096326828003
+      "segundos": 1.0963187217712402
     },
     "bee_corpus_cmn_0045.jsonl.zst": {
       "arquivo": "bee_corpus_cmn_0045.jsonl.zst",
@@ -1202,7 +1202,751 @@
       "fontes": {
         "fineweb2-cmn": 47588
       },
-      "segundos": 1.6304876804351807
+      "segundos": 1.7308530807495117
+    },
+    "bee_corpus_deu_0000.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0000.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 159991324,
+      "bytes_utf8": 162518639,
+      "bytes_comprimido": 57886890,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.1888515949249268
+    },
+    "bee_corpus_deu_0001.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0001.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 165062550,
+      "bytes_utf8": 167686243,
+      "bytes_comprimido": 59529117,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.2210757732391357
+    },
+    "bee_corpus_deu_0002.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0002.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 185898084,
+      "bytes_utf8": 188835325,
+      "bytes_comprimido": 67012897,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.352160930633545
+    },
+    "bee_corpus_deu_0003.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0003.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 127123700,
+      "bytes_utf8": 129127343,
+      "bytes_comprimido": 45810512,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 0.9689393043518066
+    },
+    "bee_corpus_deu_0004.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0004.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 127881239,
+      "bytes_utf8": 129928335,
+      "bytes_comprimido": 45986120,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 0.9904396533966064
+    },
+    "bee_corpus_deu_0005.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0005.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 141550152,
+      "bytes_utf8": 143840450,
+      "bytes_comprimido": 51059549,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.049027681350708
+    },
+    "bee_corpus_deu_0006.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0006.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 142268941,
+      "bytes_utf8": 144572447,
+      "bytes_comprimido": 51511099,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.0306611061096191
+    },
+    "bee_corpus_deu_0007.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0007.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 138797997,
+      "bytes_utf8": 141084331,
+      "bytes_comprimido": 50334408,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.0486531257629395
+    },
+    "bee_corpus_deu_0008.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0008.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 134914934,
+      "bytes_utf8": 137136136,
+      "bytes_comprimido": 48984893,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 0.999420166015625
+    },
+    "bee_corpus_deu_0009.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0009.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 135180295,
+      "bytes_utf8": 137273207,
+      "bytes_comprimido": 48646981,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 0.9910590648651123
+    },
+    "bee_corpus_deu_0010.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0010.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 141011226,
+      "bytes_utf8": 143181494,
+      "bytes_comprimido": 50682857,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.0133135318756104
+    },
+    "bee_corpus_deu_0011.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0011.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 142083487,
+      "bytes_utf8": 144326388,
+      "bytes_comprimido": 51310934,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.052354335784912
+    },
+    "bee_corpus_deu_0012.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0012.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 142973752,
+      "bytes_utf8": 145278583,
+      "bytes_comprimido": 51518938,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.0289244651794434
+    },
+    "bee_corpus_deu_0013.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0013.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 146055448,
+      "bytes_utf8": 148453223,
+      "bytes_comprimido": 52864312,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.0697689056396484
+    },
+    "bee_corpus_deu_0014.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0014.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 144244218,
+      "bytes_utf8": 146617241,
+      "bytes_comprimido": 52025423,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.077415943145752
+    },
+    "bee_corpus_deu_0015.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0015.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 151326337,
+      "bytes_utf8": 153812835,
+      "bytes_comprimido": 54813624,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.1150734424591064
+    },
+    "bee_corpus_deu_0016.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0016.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 151528901,
+      "bytes_utf8": 154039074,
+      "bytes_comprimido": 54958320,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.140589714050293
+    },
+    "bee_corpus_deu_0017.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0017.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 153787719,
+      "bytes_utf8": 156331032,
+      "bytes_comprimido": 55594326,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.1566007137298584
+    },
+    "bee_corpus_deu_0018.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0018.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 149205227,
+      "bytes_utf8": 151702101,
+      "bytes_comprimido": 53674322,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.1566028594970703
+    },
+    "bee_corpus_deu_0019.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0019.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 152986780,
+      "bytes_utf8": 155520346,
+      "bytes_comprimido": 54741526,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.3953194618225098
+    },
+    "bee_corpus_deu_0020.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0020.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 154934323,
+      "bytes_utf8": 157461966,
+      "bytes_comprimido": 55101894,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.3656604290008545
+    },
+    "bee_corpus_deu_0021.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0021.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 160461782,
+      "bytes_utf8": 163029511,
+      "bytes_comprimido": 57375922,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.477916955947876
+    },
+    "bee_corpus_deu_0022.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0022.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 170386884,
+      "bytes_utf8": 172954789,
+      "bytes_comprimido": 61142875,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.7705957889556885
+    },
+    "bee_corpus_deu_0023.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0023.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 173494931,
+      "bytes_utf8": 176174425,
+      "bytes_comprimido": 62751572,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.9302654266357422
+    },
+    "bee_corpus_deu_0024.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0024.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 159644302,
+      "bytes_utf8": 162290178,
+      "bytes_comprimido": 57088541,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.7901816368103027
+    },
+    "bee_corpus_deu_0025.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0025.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 169605518,
+      "bytes_utf8": 172496684,
+      "bytes_comprimido": 59490201,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.7972044944763184
+    },
+    "bee_corpus_deu_0026.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0026.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 198393517,
+      "bytes_utf8": 201802842,
+      "bytes_comprimido": 68907343,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 2.081974983215332
+    },
+    "bee_corpus_deu_0027.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0027.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 158317655,
+      "bytes_utf8": 161007151,
+      "bytes_comprimido": 55349017,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.6482691764831543
+    },
+    "bee_corpus_deu_0028.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0028.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 151386832,
+      "bytes_utf8": 153854446,
+      "bytes_comprimido": 53078127,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.361708402633667
+    },
+    "bee_corpus_deu_0029.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0029.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 167668072,
+      "bytes_utf8": 170293781,
+      "bytes_comprimido": 60720231,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.3386292457580566
+    },
+    "bee_corpus_deu_0030.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0030.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 121835316,
+      "bytes_utf8": 123753332,
+      "bytes_comprimido": 43951602,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.0122742652893066
+    },
+    "bee_corpus_deu_0031.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0031.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 139449659,
+      "bytes_utf8": 141693036,
+      "bytes_comprimido": 50385963,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.070662021636963
+    },
+    "bee_corpus_deu_0032.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0032.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 137447521,
+      "bytes_utf8": 139707329,
+      "bytes_comprimido": 49998377,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.1069896221160889
+    },
+    "bee_corpus_deu_0033.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0033.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 131641438,
+      "bytes_utf8": 133829976,
+      "bytes_comprimido": 47886107,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.0533289909362793
+    },
+    "bee_corpus_deu_0034.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0034.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 140035749,
+      "bytes_utf8": 142191097,
+      "bytes_comprimido": 50251443,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.0756633281707764
+    },
+    "bee_corpus_deu_0035.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0035.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 141272850,
+      "bytes_utf8": 143429688,
+      "bytes_comprimido": 50879844,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.1012327671051025
+    },
+    "bee_corpus_deu_0036.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0036.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 145594401,
+      "bytes_utf8": 147893678,
+      "bytes_comprimido": 52705455,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.1475038528442383
+    },
+    "bee_corpus_deu_0037.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0037.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 146553292,
+      "bytes_utf8": 148949098,
+      "bytes_comprimido": 53242623,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.2362926006317139
+    },
+    "bee_corpus_deu_0038.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0038.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 144939718,
+      "bytes_utf8": 147306400,
+      "bytes_comprimido": 52408966,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.1739888191223145
+    },
+    "bee_corpus_deu_0039.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0039.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 151342381,
+      "bytes_utf8": 153809108,
+      "bytes_comprimido": 55077469,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.3212485313415527
+    },
+    "bee_corpus_deu_0040.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0040.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 155457029,
+      "bytes_utf8": 158015634,
+      "bytes_comprimido": 56708362,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.3608410358428955
+    },
+    "bee_corpus_deu_0041.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0041.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 152747269,
+      "bytes_utf8": 155274475,
+      "bytes_comprimido": 55199117,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.312669038772583
+    },
+    "bee_corpus_deu_0042.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0042.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 157475684,
+      "bytes_utf8": 160046934,
+      "bytes_comprimido": 56434303,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.3783612251281738
+    },
+    "bee_corpus_deu_0043.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0043.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 155525378,
+      "bytes_utf8": 158072352,
+      "bytes_comprimido": 55619481,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.2925219535827637
+    },
+    "bee_corpus_deu_0044.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0044.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 167291103,
+      "bytes_utf8": 169849990,
+      "bytes_comprimido": 60030254,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.2528870105743408
+    },
+    "bee_corpus_deu_0045.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0045.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 172203643,
+      "bytes_utf8": 174769944,
+      "bytes_comprimido": 62375177,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.3151860237121582
+    },
+    "bee_corpus_deu_0046.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0046.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 174898017,
+      "bytes_utf8": 177699493,
+      "bytes_comprimido": 63000177,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.2838969230651855
+    },
+    "bee_corpus_deu_0047.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0047.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 166594767,
+      "bytes_utf8": 169425323,
+      "bytes_comprimido": 58909906,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.335991621017456
+    },
+    "bee_corpus_deu_0048.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0048.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 206093812,
+      "bytes_utf8": 209675515,
+      "bytes_comprimido": 71594129,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.5861084461212158
+    },
+    "bee_corpus_deu_0049.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0049.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 160210851,
+      "bytes_utf8": 162910537,
+      "bytes_comprimido": 55747962,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.1732299327850342
+    },
+    "bee_corpus_deu_0050.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0050.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 163216749,
+      "bytes_utf8": 165821130,
+      "bytes_comprimido": 57855353,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.2252845764160156
+    },
+    "bee_corpus_deu_0051.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0051.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 128119013,
+      "bytes_utf8": 130114920,
+      "bytes_comprimido": 46098393,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 0.9621539115905762
+    },
+    "bee_corpus_deu_0052.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0052.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 141676934,
+      "bytes_utf8": 143960844,
+      "bytes_comprimido": 51204097,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.0893454551696777
+    },
+    "bee_corpus_deu_0053.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0053.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 136565950,
+      "bytes_utf8": 138821070,
+      "bytes_comprimido": 49631161,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.0475761890411377
+    },
+    "bee_corpus_deu_0054.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0054.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 135532833,
+      "bytes_utf8": 137713913,
+      "bytes_comprimido": 49105428,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 0.9980812072753906
+    },
+    "bee_corpus_deu_0055.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0055.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 141218778,
+      "bytes_utf8": 143310768,
+      "bytes_comprimido": 50507224,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.017268419265747
+    },
+    "bee_corpus_deu_0056.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0056.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 149223756,
+      "bytes_utf8": 151590106,
+      "bytes_comprimido": 53944514,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.1077513694763184
+    },
+    "bee_corpus_deu_0057.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0057.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 148440033,
+      "bytes_utf8": 150848713,
+      "bytes_comprimido": 53861158,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.1268084049224854
+    },
+    "bee_corpus_deu_0058.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0058.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 147556113,
+      "bytes_utf8": 149959088,
+      "bytes_comprimido": 53348407,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.1250646114349365
+    },
+    "bee_corpus_deu_0059.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0059.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 154908555,
+      "bytes_utf8": 157425745,
+      "bytes_comprimido": 56613922,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.2316093444824219
+    },
+    "bee_corpus_deu_0060.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0060.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 50000,
+      "caracteres": 151912395,
+      "bytes_utf8": 154406771,
+      "bytes_comprimido": 55310059,
+      "fontes": {
+        "fineweb2-deu": 50000
+      },
+      "segundos": 1.2155625820159912
+    },
+    "bee_corpus_deu_0061.jsonl.zst": {
+      "arquivo": "bee_corpus_deu_0061.jsonl.zst",
+      "idioma": "deu",
+      "documentos": 5864,
+      "caracteres": 16857271,
+      "bytes_utf8": 17143005,
+      "bytes_comprimido": 6136430,
+      "fontes": {
+        "fineweb2-deu": 5864
+      },
+      "segundos": 0.1189432144165039
     },
     "bee_corpus_eng_0000.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0000.jsonl.zst",
@@ -1214,7 +1958,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9978718757629395
+      "segundos": 1.120194673538208
     },
     "bee_corpus_eng_0001.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0001.jsonl.zst",
@@ -1226,7 +1970,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9935050010681152
+      "segundos": 1.1031403541564941
     },
     "bee_corpus_eng_0002.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0002.jsonl.zst",
@@ -1238,7 +1982,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 1.0028035640716553
+      "segundos": 1.15333890914917
     },
     "bee_corpus_eng_0003.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0003.jsonl.zst",
@@ -1250,7 +1994,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.8713922500610352
+      "segundos": 1.1032907962799072
     },
     "bee_corpus_eng_0004.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0004.jsonl.zst",
@@ -1262,7 +2006,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9309239387512207
+      "segundos": 1.0749742984771729
     },
     "bee_corpus_eng_0005.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0005.jsonl.zst",
@@ -1274,7 +2018,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 1.0236639976501465
+      "segundos": 1.02734375
     },
     "bee_corpus_eng_0006.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0006.jsonl.zst",
@@ -1286,7 +2030,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9921104907989502
+      "segundos": 1.0589511394500732
     },
     "bee_corpus_eng_0007.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0007.jsonl.zst",
@@ -1298,7 +2042,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 1.0066235065460205
+      "segundos": 1.0582945346832275
     },
     "bee_corpus_eng_0008.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0008.jsonl.zst",
@@ -1310,7 +2054,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9339213371276855
+      "segundos": 1.0922510623931885
     },
     "bee_corpus_eng_0009.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0009.jsonl.zst",
@@ -1322,7 +2066,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9984726905822754
+      "segundos": 0.9887442588806152
     },
     "bee_corpus_eng_0010.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0010.jsonl.zst",
@@ -1334,7 +2078,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9901793003082275
+      "segundos": 1.0668425559997559
     },
     "bee_corpus_eng_0011.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0011.jsonl.zst",
@@ -1346,7 +2090,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 1.0001780986785889
+      "segundos": 0.9956812858581543
     },
     "bee_corpus_eng_0012.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0012.jsonl.zst",
@@ -1358,7 +2102,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9826700687408447
+      "segundos": 1.0170297622680664
     },
     "bee_corpus_eng_0013.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0013.jsonl.zst",
@@ -1370,7 +2114,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9432501792907715
+      "segundos": 1.054765224456787
     },
     "bee_corpus_eng_0014.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0014.jsonl.zst",
@@ -1382,7 +2126,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9080591201782227
+      "segundos": 1.0621907711029053
     },
     "bee_corpus_eng_0015.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0015.jsonl.zst",
@@ -1394,7 +2138,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 1.0121967792510986
+      "segundos": 1.0426445007324219
     },
     "bee_corpus_eng_0016.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0016.jsonl.zst",
@@ -1406,7 +2150,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9454958438873291
+      "segundos": 1.1014766693115234
     },
     "bee_corpus_eng_0017.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0017.jsonl.zst",
@@ -1418,7 +2162,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9771263599395752
+      "segundos": 1.0385851860046387
     },
     "bee_corpus_eng_0018.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0018.jsonl.zst",
@@ -1430,7 +2174,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9456658363342285
+      "segundos": 1.014190435409546
     },
     "bee_corpus_eng_0019.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0019.jsonl.zst",
@@ -1442,7 +2186,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9490616321563721
+      "segundos": 1.053511142730713
     },
     "bee_corpus_eng_0020.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0020.jsonl.zst",
@@ -1454,7 +2198,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9181194305419922
+      "segundos": 1.103264331817627
     },
     "bee_corpus_eng_0021.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0021.jsonl.zst",
@@ -1466,7 +2210,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9247791767120361
+      "segundos": 1.074754238128662
     },
     "bee_corpus_eng_0022.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0022.jsonl.zst",
@@ -1478,7 +2222,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9852714538574219
+      "segundos": 1.0955426692962646
     },
     "bee_corpus_eng_0023.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0023.jsonl.zst",
@@ -1490,7 +2234,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 1.0231542587280273
+      "segundos": 1.0896782875061035
     },
     "bee_corpus_eng_0024.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0024.jsonl.zst",
@@ -1502,7 +2246,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9313302040100098
+      "segundos": 1.104194164276123
     },
     "bee_corpus_eng_0025.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0025.jsonl.zst",
@@ -1514,7 +2258,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9661998748779297
+      "segundos": 1.0861680507659912
     },
     "bee_corpus_eng_0026.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0026.jsonl.zst",
@@ -1526,7 +2270,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9269695281982422
+      "segundos": 1.0704460144042969
     },
     "bee_corpus_eng_0027.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0027.jsonl.zst",
@@ -1538,7 +2282,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9596536159515381
+      "segundos": 1.0830614566802979
     },
     "bee_corpus_eng_0028.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0028.jsonl.zst",
@@ -1550,7 +2294,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9593296051025391
+      "segundos": 1.05796217918396
     },
     "bee_corpus_eng_0029.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0029.jsonl.zst",
@@ -1562,7 +2306,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9311559200286865
+      "segundos": 1.0513591766357422
     },
     "bee_corpus_eng_0030.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0030.jsonl.zst",
@@ -1574,7 +2318,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9779548645019531
+      "segundos": 1.12282133102417
     },
     "bee_corpus_eng_0031.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0031.jsonl.zst",
@@ -1586,7 +2330,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9558014869689941
+      "segundos": 1.0731496810913086
     },
     "bee_corpus_eng_0032.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0032.jsonl.zst",
@@ -1598,7 +2342,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9792823791503906
+      "segundos": 1.0931487083435059
     },
     "bee_corpus_eng_0033.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0033.jsonl.zst",
@@ -1610,7 +2354,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9122211933135986
+      "segundos": 1.078432559967041
     },
     "bee_corpus_eng_0034.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0034.jsonl.zst",
@@ -1622,7 +2366,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9172267913818359
+      "segundos": 1.0617833137512207
     },
     "bee_corpus_eng_0035.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0035.jsonl.zst",
@@ -1634,7 +2378,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9703731536865234
+      "segundos": 1.010812520980835
     },
     "bee_corpus_eng_0036.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0036.jsonl.zst",
@@ -1646,7 +2390,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9917120933532715
+      "segundos": 1.0239317417144775
     },
     "bee_corpus_eng_0037.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0037.jsonl.zst",
@@ -1658,7 +2402,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.8506245613098145
+      "segundos": 0.9678142070770264
     },
     "bee_corpus_eng_0038.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0038.jsonl.zst",
@@ -1670,7 +2414,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9628903865814209
+      "segundos": 0.980912446975708
     },
     "bee_corpus_eng_0039.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0039.jsonl.zst",
@@ -1682,7 +2426,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9695034027099609
+      "segundos": 1.034123420715332
     },
     "bee_corpus_eng_0040.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0040.jsonl.zst",
@@ -1694,7 +2438,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9208042621612549
+      "segundos": 1.0253636837005615
     },
     "bee_corpus_eng_0041.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0041.jsonl.zst",
@@ -1706,7 +2450,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 1.006847620010376
+      "segundos": 0.9985430240631104
     },
     "bee_corpus_eng_0042.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0042.jsonl.zst",
@@ -1718,7 +2462,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.8980147838592529
+      "segundos": 1.0590381622314453
     },
     "bee_corpus_eng_0043.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0043.jsonl.zst",
@@ -1730,7 +2474,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9321029186248779
+      "segundos": 1.0257697105407715
     },
     "bee_corpus_eng_0044.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0044.jsonl.zst",
@@ -1742,7 +2486,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.8973760604858398
+      "segundos": 1.0052413940429688
     },
     "bee_corpus_eng_0045.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0045.jsonl.zst",
@@ -1754,7 +2498,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.924626350402832
+      "segundos": 1.033379077911377
     },
     "bee_corpus_eng_0046.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0046.jsonl.zst",
@@ -1766,7 +2510,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9497544765472412
+      "segundos": 1.09816312789917
     },
     "bee_corpus_eng_0047.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0047.jsonl.zst",
@@ -1778,7 +2522,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9733006954193115
+      "segundos": 1.0946335792541504
     },
     "bee_corpus_eng_0048.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0048.jsonl.zst",
@@ -1790,7 +2534,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.913409948348999
+      "segundos": 1.099581241607666
     },
     "bee_corpus_eng_0049.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0049.jsonl.zst",
@@ -1802,7 +2546,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9922237396240234
+      "segundos": 1.123295545578003
     },
     "bee_corpus_eng_0050.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0050.jsonl.zst",
@@ -1814,7 +2558,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9902315139770508
+      "segundos": 1.0402717590332031
     },
     "bee_corpus_eng_0051.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0051.jsonl.zst",
@@ -1826,7 +2570,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.8838131427764893
+      "segundos": 1.086869716644287
     },
     "bee_corpus_eng_0052.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0052.jsonl.zst",
@@ -1838,7 +2582,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 1.0096089839935303
+      "segundos": 1.0681285858154297
     },
     "bee_corpus_eng_0053.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0053.jsonl.zst",
@@ -1850,7 +2594,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.8874218463897705
+      "segundos": 1.030754566192627
     },
     "bee_corpus_eng_0054.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0054.jsonl.zst",
@@ -1862,7 +2606,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9938287734985352
+      "segundos": 1.118044376373291
     },
     "bee_corpus_eng_0055.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0055.jsonl.zst",
@@ -1874,7 +2618,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.8914058208465576
+      "segundos": 1.1094038486480713
     },
     "bee_corpus_eng_0056.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0056.jsonl.zst",
@@ -1886,7 +2630,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.918804407119751
+      "segundos": 1.1014404296875
     },
     "bee_corpus_eng_0057.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0057.jsonl.zst",
@@ -1898,7 +2642,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9624061584472656
+      "segundos": 1.1180903911590576
     },
     "bee_corpus_eng_0058.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0058.jsonl.zst",
@@ -1910,7 +2654,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.958876371383667
+      "segundos": 1.0573179721832275
     },
     "bee_corpus_eng_0059.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0059.jsonl.zst",
@@ -1922,7 +2666,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9656116962432861
+      "segundos": 1.0705771446228027
     },
     "bee_corpus_eng_0060.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0060.jsonl.zst",
@@ -1934,7 +2678,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9155609607696533
+      "segundos": 1.050919771194458
     },
     "bee_corpus_eng_0061.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0061.jsonl.zst",
@@ -1946,7 +2690,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.8857159614562988
+      "segundos": 1.069251298904419
     },
     "bee_corpus_eng_0062.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0062.jsonl.zst",
@@ -1958,7 +2702,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9541516304016113
+      "segundos": 1.0665724277496338
     },
     "bee_corpus_eng_0063.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0063.jsonl.zst",
@@ -1970,7 +2714,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.8993000984191895
+      "segundos": 1.0643608570098877
     },
     "bee_corpus_eng_0064.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0064.jsonl.zst",
@@ -1982,7 +2726,7 @@
       "fontes": {
         "fineweb-eng": 50000
       },
-      "segundos": 0.9435734748840332
+      "segundos": 1.0766968727111816
     },
     "bee_corpus_eng_0065.jsonl.zst": {
       "arquivo": "bee_corpus_eng_0065.jsonl.zst",
@@ -1994,7 +2738,763 @@
       "fontes": {
         "fineweb-eng": 24198
       },
-      "segundos": 0.47838354110717773
+      "segundos": 0.5381758213043213
+    },
+    "bee_corpus_fra_0000.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0000.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 192495749,
+      "bytes_utf8": 199640406,
+      "bytes_comprimido": 66869851,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.6246647834777832
+    },
+    "bee_corpus_fra_0001.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0001.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 199778807,
+      "bytes_utf8": 207163531,
+      "bytes_comprimido": 69051761,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.6768155097961426
+    },
+    "bee_corpus_fra_0002.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0002.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 157304562,
+      "bytes_utf8": 163081964,
+      "bytes_comprimido": 55079303,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.3409526348114014
+    },
+    "bee_corpus_fra_0003.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0003.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 155507308,
+      "bytes_utf8": 161434923,
+      "bytes_comprimido": 54995142,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.3535130023956299
+    },
+    "bee_corpus_fra_0004.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0004.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 161496000,
+      "bytes_utf8": 167794726,
+      "bytes_comprimido": 57559935,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.3967244625091553
+    },
+    "bee_corpus_fra_0005.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0005.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 149587312,
+      "bytes_utf8": 155336004,
+      "bytes_comprimido": 53679110,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.3116466999053955
+    },
+    "bee_corpus_fra_0006.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0006.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 145630354,
+      "bytes_utf8": 151331399,
+      "bytes_comprimido": 52012786,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.2578327655792236
+    },
+    "bee_corpus_fra_0007.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0007.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 137246298,
+      "bytes_utf8": 142551347,
+      "bytes_comprimido": 48869367,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.1251227855682373
+    },
+    "bee_corpus_fra_0008.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0008.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 137145203,
+      "bytes_utf8": 142507815,
+      "bytes_comprimido": 48849828,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.1986184120178223
+    },
+    "bee_corpus_fra_0009.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0009.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 137739782,
+      "bytes_utf8": 143228840,
+      "bytes_comprimido": 48792748,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.2128207683563232
+    },
+    "bee_corpus_fra_0010.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0010.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 140580588,
+      "bytes_utf8": 146207382,
+      "bytes_comprimido": 49709949,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.2013213634490967
+    },
+    "bee_corpus_fra_0011.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0011.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 146966535,
+      "bytes_utf8": 152630199,
+      "bytes_comprimido": 52261659,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.222602128982544
+    },
+    "bee_corpus_fra_0012.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0012.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 157458394,
+      "bytes_utf8": 163416803,
+      "bytes_comprimido": 56152988,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.2552318572998047
+    },
+    "bee_corpus_fra_0013.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0013.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 158406501,
+      "bytes_utf8": 164533087,
+      "bytes_comprimido": 55862338,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.2743768692016602
+    },
+    "bee_corpus_fra_0014.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0014.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 162935934,
+      "bytes_utf8": 169198562,
+      "bytes_comprimido": 57049875,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.2930848598480225
+    },
+    "bee_corpus_fra_0015.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0015.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 189345383,
+      "bytes_utf8": 195780888,
+      "bytes_comprimido": 65758559,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.4571714401245117
+    },
+    "bee_corpus_fra_0016.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0016.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 173314991,
+      "bytes_utf8": 179880950,
+      "bytes_comprimido": 60545917,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.333207130432129
+    },
+    "bee_corpus_fra_0017.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0017.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 163870637,
+      "bytes_utf8": 170380839,
+      "bytes_comprimido": 56754492,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.2869751453399658
+    },
+    "bee_corpus_fra_0018.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0018.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 164190462,
+      "bytes_utf8": 170811415,
+      "bytes_comprimido": 56504536,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.4765865802764893
+    },
+    "bee_corpus_fra_0019.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0019.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 169543238,
+      "bytes_utf8": 176375943,
+      "bytes_comprimido": 57826430,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.582731008529663
+    },
+    "bee_corpus_fra_0020.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0020.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 159302576,
+      "bytes_utf8": 165669699,
+      "bytes_comprimido": 53074983,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.4735898971557617
+    },
+    "bee_corpus_fra_0021.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0021.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 185952714,
+      "bytes_utf8": 192648843,
+      "bytes_comprimido": 64428646,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.6243360042572021
+    },
+    "bee_corpus_fra_0022.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0022.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 144162755,
+      "bytes_utf8": 149444914,
+      "bytes_comprimido": 50892463,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.3673992156982422
+    },
+    "bee_corpus_fra_0023.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0023.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 160697388,
+      "bytes_utf8": 166929206,
+      "bytes_comprimido": 57333531,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.4585418701171875
+    },
+    "bee_corpus_fra_0024.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0024.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 148342271,
+      "bytes_utf8": 154131947,
+      "bytes_comprimido": 53397778,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.2682082653045654
+    },
+    "bee_corpus_fra_0025.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0025.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 141943542,
+      "bytes_utf8": 147481972,
+      "bytes_comprimido": 50763910,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.2054164409637451
+    },
+    "bee_corpus_fra_0026.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0026.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 139125054,
+      "bytes_utf8": 144453640,
+      "bytes_comprimido": 49562146,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.1913928985595703
+    },
+    "bee_corpus_fra_0027.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0027.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 138333447,
+      "bytes_utf8": 143780985,
+      "bytes_comprimido": 49255715,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.1872835159301758
+    },
+    "bee_corpus_fra_0028.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0028.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 139696246,
+      "bytes_utf8": 145261282,
+      "bytes_comprimido": 49405083,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.1911916732788086
+    },
+    "bee_corpus_fra_0029.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0029.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 147195550,
+      "bytes_utf8": 152795294,
+      "bytes_comprimido": 52379779,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.2570478916168213
+    },
+    "bee_corpus_fra_0030.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0030.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 158193393,
+      "bytes_utf8": 164136889,
+      "bytes_comprimido": 56416659,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.2989046573638916
+    },
+    "bee_corpus_fra_0031.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0031.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 160860073,
+      "bytes_utf8": 167072637,
+      "bytes_comprimido": 56592992,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.3307466506958008
+    },
+    "bee_corpus_fra_0032.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0032.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 174286110,
+      "bytes_utf8": 180606964,
+      "bytes_comprimido": 60923578,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.4199657440185547
+    },
+    "bee_corpus_fra_0033.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0033.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 188193847,
+      "bytes_utf8": 194870908,
+      "bytes_comprimido": 65656354,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.5274384021759033
+    },
+    "bee_corpus_fra_0034.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0034.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 170358654,
+      "bytes_utf8": 177018872,
+      "bytes_comprimido": 59062384,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.4203574657440186
+    },
+    "bee_corpus_fra_0035.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0035.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 163245540,
+      "bytes_utf8": 169826951,
+      "bytes_comprimido": 56395263,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.371124029159546
+    },
+    "bee_corpus_fra_0036.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0036.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 172356654,
+      "bytes_utf8": 179362400,
+      "bytes_comprimido": 58719594,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.5428721904754639
+    },
+    "bee_corpus_fra_0037.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0037.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 164466208,
+      "bytes_utf8": 170963631,
+      "bytes_comprimido": 55354853,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.4549238681793213
+    },
+    "bee_corpus_fra_0038.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0038.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 153669528,
+      "bytes_utf8": 159148693,
+      "bytes_comprimido": 53867821,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.3386650085449219
+    },
+    "bee_corpus_fra_0039.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0039.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 159302606,
+      "bytes_utf8": 165411864,
+      "bytes_comprimido": 56742179,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.4528577327728271
+    },
+    "bee_corpus_fra_0040.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0040.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 145794285,
+      "bytes_utf8": 151445108,
+      "bytes_comprimido": 52493644,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.3314487934112549
+    },
+    "bee_corpus_fra_0041.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0041.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 140302997,
+      "bytes_utf8": 145708568,
+      "bytes_comprimido": 50099618,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.3090269565582275
+    },
+    "bee_corpus_fra_0042.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0042.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 139955152,
+      "bytes_utf8": 145288680,
+      "bytes_comprimido": 49812298,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.2287542819976807
+    },
+    "bee_corpus_fra_0043.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0043.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 139476975,
+      "bytes_utf8": 144945689,
+      "bytes_comprimido": 49470221,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.2356693744659424
+    },
+    "bee_corpus_fra_0044.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0044.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 143670397,
+      "bytes_utf8": 149349696,
+      "bytes_comprimido": 50775402,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.2969820499420166
+    },
+    "bee_corpus_fra_0045.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0045.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 158033701,
+      "bytes_utf8": 163865568,
+      "bytes_comprimido": 56550992,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.4013593196868896
+    },
+    "bee_corpus_fra_0046.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0046.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 161012388,
+      "bytes_utf8": 167166679,
+      "bytes_comprimido": 56809966,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.4078669548034668
+    },
+    "bee_corpus_fra_0047.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0047.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 173468026,
+      "bytes_utf8": 179808729,
+      "bytes_comprimido": 60624414,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.5048906803131104
+    },
+    "bee_corpus_fra_0048.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0048.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 192320045,
+      "bytes_utf8": 198984117,
+      "bytes_comprimido": 67000047,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.675445318222046
+    },
+    "bee_corpus_fra_0049.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0049.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 171753292,
+      "bytes_utf8": 178391632,
+      "bytes_comprimido": 59727323,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.5407121181488037
+    },
+    "bee_corpus_fra_0050.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0050.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 162563422,
+      "bytes_utf8": 169087344,
+      "bytes_comprimido": 56095699,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.5517652034759521
+    },
+    "bee_corpus_fra_0051.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0051.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 173120661,
+      "bytes_utf8": 180163844,
+      "bytes_comprimido": 58772742,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.6633362770080566
+    },
+    "bee_corpus_fra_0052.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0052.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 162754329,
+      "bytes_utf8": 169012824,
+      "bytes_comprimido": 55155068,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.5115058422088623
+    },
+    "bee_corpus_fra_0053.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0053.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 144541446,
+      "bytes_utf8": 149819708,
+      "bytes_comprimido": 50978386,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.3915116786956787
+    },
+    "bee_corpus_fra_0054.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0054.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 152527679,
+      "bytes_utf8": 158453207,
+      "bytes_comprimido": 54752353,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.491731882095337
+    },
+    "bee_corpus_fra_0055.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0055.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 142239062,
+      "bytes_utf8": 147754783,
+      "bytes_comprimido": 51040239,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.3985531330108643
+    },
+    "bee_corpus_fra_0056.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0056.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 138914698,
+      "bytes_utf8": 144191137,
+      "bytes_comprimido": 49454327,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.382540225982666
+    },
+    "bee_corpus_fra_0057.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0057.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 139028804,
+      "bytes_utf8": 144463534,
+      "bytes_comprimido": 49365152,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.3864991664886475
+    },
+    "bee_corpus_fra_0058.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0058.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 142406247,
+      "bytes_utf8": 147915018,
+      "bytes_comprimido": 50570125,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.3803033828735352
+    },
+    "bee_corpus_fra_0059.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0059.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 158441357,
+      "bytes_utf8": 164245704,
+      "bytes_comprimido": 56630533,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.5327742099761963
+    },
+    "bee_corpus_fra_0060.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0060.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 163642725,
+      "bytes_utf8": 169910568,
+      "bytes_comprimido": 57576468,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.5850677490234375
+    },
+    "bee_corpus_fra_0061.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0061.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 50000,
+      "caracteres": 183613147,
+      "bytes_utf8": 189981763,
+      "bytes_comprimido": 63907168,
+      "fontes": {
+        "fineweb2-fra": 50000
+      },
+      "segundos": 1.8718326091766357
+    },
+    "bee_corpus_fra_0062.jsonl.zst": {
+      "arquivo": "bee_corpus_fra_0062.jsonl.zst",
+      "idioma": "fra",
+      "documentos": 2404,
+      "caracteres": 10193021,
+      "bytes_utf8": 10507492,
+      "bytes_comprimido": 3493299,
+      "fontes": {
+        "fineweb2-fra": 2404
+      },
+      "segundos": 0.07715678215026855
     },
     "bee_corpus_jpn_0000.jsonl.zst": {
       "arquivo": "bee_corpus_jpn_0000.jsonl.zst",
@@ -2006,7 +3506,7 @@
       "fontes": {
         "fineweb2-jpn": 50000
       },
-      "segundos": 1.2033164501190186
+      "segundos": 1.5666754245758057
     },
     "bee_corpus_jpn_0001.jsonl.zst": {
       "arquivo": "bee_corpus_jpn_0001.jsonl.zst",
@@ -2018,19 +3518,739 @@
       "fontes": {
         "fineweb2-jpn": 50000
       },
-      "segundos": 1.097337007522583
+      "segundos": 1.7256336212158203
     },
     "bee_corpus_jpn_0002.jsonl.zst": {
       "arquivo": "bee_corpus_jpn_0002.jsonl.zst",
       "idioma": "jpn",
-      "documentos": 8087,
-      "caracteres": 11880003,
-      "bytes_utf8": 33097812,
-      "bytes_comprimido": 10882807,
+      "documentos": 50000,
+      "caracteres": 72158920,
+      "bytes_utf8": 200797076,
+      "bytes_comprimido": 66048282,
       "fontes": {
-        "fineweb2-jpn": 8087
+        "fineweb2-jpn": 50000
       },
-      "segundos": 0.17555594444274902
+      "segundos": 2.0090084075927734
+    },
+    "bee_corpus_jpn_0003.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0003.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 68689671,
+      "bytes_utf8": 192296557,
+      "bytes_comprimido": 62439137,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 2.3212153911590576
+    },
+    "bee_corpus_jpn_0004.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0004.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 69463278,
+      "bytes_utf8": 194351738,
+      "bytes_comprimido": 62669805,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 5.023305177688599
+    },
+    "bee_corpus_jpn_0005.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0005.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 71903135,
+      "bytes_utf8": 202016475,
+      "bytes_comprimido": 64388738,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 5.344483137130737
+    },
+    "bee_corpus_jpn_0006.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0006.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 70600661,
+      "bytes_utf8": 199005576,
+      "bytes_comprimido": 63265243,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 4.9848432540893555
+    },
+    "bee_corpus_jpn_0007.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0007.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 74876899,
+      "bytes_utf8": 210603815,
+      "bytes_comprimido": 66838545,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 5.54400372505188
+    },
+    "bee_corpus_jpn_0008.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0008.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 76606822,
+      "bytes_utf8": 215594073,
+      "bytes_comprimido": 67684003,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 5.751262187957764
+    },
+    "bee_corpus_jpn_0009.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0009.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 77148684,
+      "bytes_utf8": 215889766,
+      "bytes_comprimido": 68219543,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 6.055338144302368
+    },
+    "bee_corpus_jpn_0010.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0010.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 77313000,
+      "bytes_utf8": 215792097,
+      "bytes_comprimido": 68051224,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 6.2224204540252686
+    },
+    "bee_corpus_jpn_0011.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0011.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 77286846,
+      "bytes_utf8": 215412677,
+      "bytes_comprimido": 67605644,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 6.216761350631714
+    },
+    "bee_corpus_jpn_0012.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0012.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 77649809,
+      "bytes_utf8": 215296541,
+      "bytes_comprimido": 68045053,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 6.31346583366394
+    },
+    "bee_corpus_jpn_0013.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0013.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 79060250,
+      "bytes_utf8": 219342124,
+      "bytes_comprimido": 69071559,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 6.555437326431274
+    },
+    "bee_corpus_jpn_0014.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0014.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 87939385,
+      "bytes_utf8": 239464724,
+      "bytes_comprimido": 75645948,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 6.461022138595581
+    },
+    "bee_corpus_jpn_0015.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0015.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 80463672,
+      "bytes_utf8": 221849922,
+      "bytes_comprimido": 69681775,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 5.770996809005737
+    },
+    "bee_corpus_jpn_0016.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0016.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 83028207,
+      "bytes_utf8": 229471318,
+      "bytes_comprimido": 71464385,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 2.969163417816162
+    },
+    "bee_corpus_jpn_0017.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0017.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 76609275,
+      "bytes_utf8": 208241714,
+      "bytes_comprimido": 64398845,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 2.6005640029907227
+    },
+    "bee_corpus_jpn_0018.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0018.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 72697385,
+      "bytes_utf8": 201353883,
+      "bytes_comprimido": 65299671,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 2.3985280990600586
+    },
+    "bee_corpus_jpn_0019.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0019.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 73263874,
+      "bytes_utf8": 204371217,
+      "bytes_comprimido": 67013706,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 1.8932139873504639
+    },
+    "bee_corpus_jpn_0020.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0020.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 68537150,
+      "bytes_utf8": 192180746,
+      "bytes_comprimido": 62284941,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 1.5799133777618408
+    },
+    "bee_corpus_jpn_0021.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0021.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 70960602,
+      "bytes_utf8": 199079894,
+      "bytes_comprimido": 63771734,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 1.5711779594421387
+    },
+    "bee_corpus_jpn_0022.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0022.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 71594893,
+      "bytes_utf8": 201456957,
+      "bytes_comprimido": 64086199,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 1.5985181331634521
+    },
+    "bee_corpus_jpn_0023.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0023.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 74652991,
+      "bytes_utf8": 209782566,
+      "bytes_comprimido": 66569981,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 1.6986618041992188
+    },
+    "bee_corpus_jpn_0024.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0024.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 76442306,
+      "bytes_utf8": 215076767,
+      "bytes_comprimido": 67658712,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 1.7300610542297363
+    },
+    "bee_corpus_jpn_0025.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0025.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 77261494,
+      "bytes_utf8": 216224490,
+      "bytes_comprimido": 68258228,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 1.7469115257263184
+    },
+    "bee_corpus_jpn_0026.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0026.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 77641653,
+      "bytes_utf8": 216451422,
+      "bytes_comprimido": 68269874,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 1.7579665184020996
+    },
+    "bee_corpus_jpn_0027.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0027.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 76856355,
+      "bytes_utf8": 213794056,
+      "bytes_comprimido": 67298612,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 1.7508447170257568
+    },
+    "bee_corpus_jpn_0028.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0028.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 79762518,
+      "bytes_utf8": 220999507,
+      "bytes_comprimido": 69698015,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 1.7959396839141846
+    },
+    "bee_corpus_jpn_0029.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0029.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 85736934,
+      "bytes_utf8": 235060583,
+      "bytes_comprimido": 73996546,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 1.9325430393218994
+    },
+    "bee_corpus_jpn_0030.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0030.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 80652903,
+      "bytes_utf8": 221624314,
+      "bytes_comprimido": 69884577,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 1.8536760807037354
+    },
+    "bee_corpus_jpn_0031.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0031.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 82444767,
+      "bytes_utf8": 227936802,
+      "bytes_comprimido": 71128860,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 1.9762768745422363
+    },
+    "bee_corpus_jpn_0032.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0032.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 74595324,
+      "bytes_utf8": 203043450,
+      "bytes_comprimido": 62965677,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 1.7382638454437256
+    },
+    "bee_corpus_jpn_0033.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0033.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 72252356,
+      "bytes_utf8": 200636973,
+      "bytes_comprimido": 65668890,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 1.7079687118530273
+    },
+    "bee_corpus_jpn_0034.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0034.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 70843947,
+      "bytes_utf8": 198142673,
+      "bytes_comprimido": 64850128,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 1.8441295623779297
+    },
+    "bee_corpus_jpn_0035.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0035.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 69522967,
+      "bytes_utf8": 194780075,
+      "bytes_comprimido": 62919308,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 2.4431545734405518
+    },
+    "bee_corpus_jpn_0036.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0036.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 72796603,
+      "bytes_utf8": 204689270,
+      "bytes_comprimido": 65123808,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 2.778681993484497
+    },
+    "bee_corpus_jpn_0037.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0037.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 71398025,
+      "bytes_utf8": 200738162,
+      "bytes_comprimido": 64040980,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 3.3819937705993652
+    },
+    "bee_corpus_jpn_0038.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0038.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 77673896,
+      "bytes_utf8": 218542445,
+      "bytes_comprimido": 68587763,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 3.9416205883026123
+    },
+    "bee_corpus_jpn_0039.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0039.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 78311446,
+      "bytes_utf8": 219654101,
+      "bytes_comprimido": 69226220,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 3.998837471008301
+    },
+    "bee_corpus_jpn_0040.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0040.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 77442870,
+      "bytes_utf8": 216205808,
+      "bytes_comprimido": 68174872,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 5.769855976104736
+    },
+    "bee_corpus_jpn_0041.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0041.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 77133008,
+      "bytes_utf8": 214476631,
+      "bytes_comprimido": 67525202,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 5.646984100341797
+    },
+    "bee_corpus_jpn_0042.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0042.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 81586272,
+      "bytes_utf8": 225979878,
+      "bytes_comprimido": 71482187,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 6.904002904891968
+    },
+    "bee_corpus_jpn_0043.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0043.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 85385926,
+      "bytes_utf8": 233920231,
+      "bytes_comprimido": 73763439,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 6.5119240283966064
+    },
+    "bee_corpus_jpn_0044.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0044.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 80506714,
+      "bytes_utf8": 220927900,
+      "bytes_comprimido": 69947808,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 6.351194620132446
+    },
+    "bee_corpus_jpn_0045.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0045.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 81121985,
+      "bytes_utf8": 223845400,
+      "bytes_comprimido": 69893224,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 6.486729383468628
+    },
+    "bee_corpus_jpn_0046.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0046.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 72726567,
+      "bytes_utf8": 198869507,
+      "bytes_comprimido": 62018524,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 5.447957754135132
+    },
+    "bee_corpus_jpn_0047.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0047.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 75182958,
+      "bytes_utf8": 209431371,
+      "bytes_comprimido": 68790447,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 4.893827199935913
+    },
+    "bee_corpus_jpn_0048.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0048.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 70141203,
+      "bytes_utf8": 196414596,
+      "bytes_comprimido": 64000771,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 3.5841972827911377
+    },
+    "bee_corpus_jpn_0049.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0049.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 71782717,
+      "bytes_utf8": 201279093,
+      "bytes_comprimido": 64476378,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 3.159653425216675
+    },
+    "bee_corpus_jpn_0050.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0050.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 69650071,
+      "bytes_utf8": 195860414,
+      "bytes_comprimido": 62543958,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 2.7333853244781494
+    },
+    "bee_corpus_jpn_0051.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0051.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 75707622,
+      "bytes_utf8": 212813222,
+      "bytes_comprimido": 67324449,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 2.768120050430298
+    },
+    "bee_corpus_jpn_0052.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0052.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 78597557,
+      "bytes_utf8": 219299051,
+      "bytes_comprimido": 69032042,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 1.5531337261199951
+    },
+    "bee_corpus_jpn_0053.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0053.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 76723360,
+      "bytes_utf8": 207072869,
+      "bytes_comprimido": 64548026,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 1.5500495433807373
+    },
+    "bee_corpus_jpn_0054.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0054.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 71874784,
+      "bytes_utf8": 199458888,
+      "bytes_comprimido": 65248030,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 1.5247938632965088
+    },
+    "bee_corpus_jpn_0055.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0055.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 72334584,
+      "bytes_utf8": 201382956,
+      "bytes_comprimido": 65972581,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 1.5607969760894775
+    },
+    "bee_corpus_jpn_0056.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0056.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 68929549,
+      "bytes_utf8": 192999247,
+      "bytes_comprimido": 62541828,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 1.5035128593444824
+    },
+    "bee_corpus_jpn_0057.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0057.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 69967017,
+      "bytes_utf8": 195897353,
+      "bytes_comprimido": 63043836,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 1.607337474822998
+    },
+    "bee_corpus_jpn_0058.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0058.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 72997595,
+      "bytes_utf8": 205483742,
+      "bytes_comprimido": 65145674,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 1.5602824687957764
+    },
+    "bee_corpus_jpn_0059.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0059.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 70880254,
+      "bytes_utf8": 199379831,
+      "bytes_comprimido": 63764238,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 1.4708585739135742
+    },
+    "bee_corpus_jpn_0060.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0060.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 76894821,
+      "bytes_utf8": 216307294,
+      "bytes_comprimido": 68050171,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 1.5054090023040771
+    },
+    "bee_corpus_jpn_0061.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0061.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 50000,
+      "caracteres": 76918963,
+      "bytes_utf8": 216260747,
+      "bytes_comprimido": 68057108,
+      "fontes": {
+        "fineweb2-jpn": 50000
+      },
+      "segundos": 1.5148451328277588
+    },
+    "bee_corpus_jpn_0062.jsonl.zst": {
+      "arquivo": "bee_corpus_jpn_0062.jsonl.zst",
+      "idioma": "jpn",
+      "documentos": 45275,
+      "caracteres": 69912155,
+      "bytes_utf8": 195338625,
+      "bytes_comprimido": 61759503,
+      "fontes": {
+        "fineweb2-jpn": 45275
+      },
+      "segundos": 1.3593847751617432
     },
     "bee_corpus_spa_0000.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0000.jsonl.zst",
@@ -2042,7 +4262,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.2761454582214355
+      "segundos": 1.593174695968628
     },
     "bee_corpus_spa_0001.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0001.jsonl.zst",
@@ -2054,7 +4274,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.4234559535980225
+      "segundos": 1.7767970561981201
     },
     "bee_corpus_spa_0002.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0002.jsonl.zst",
@@ -2066,7 +4286,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.3750889301300049
+      "segundos": 1.7472281455993652
     },
     "bee_corpus_spa_0003.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0003.jsonl.zst",
@@ -2078,7 +4298,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.4217803478240967
+      "segundos": 1.9529099464416504
     },
     "bee_corpus_spa_0004.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0004.jsonl.zst",
@@ -2090,7 +4310,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.0596919059753418
+      "segundos": 1.430894136428833
     },
     "bee_corpus_spa_0005.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0005.jsonl.zst",
@@ -2102,7 +4322,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.1928596496582031
+      "segundos": 1.512695550918579
     },
     "bee_corpus_spa_0006.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0006.jsonl.zst",
@@ -2114,7 +4334,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.1838669776916504
+      "segundos": 1.5825722217559814
     },
     "bee_corpus_spa_0007.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0007.jsonl.zst",
@@ -2126,7 +4346,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.1445775032043457
+      "segundos": 1.5065362453460693
     },
     "bee_corpus_spa_0008.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0008.jsonl.zst",
@@ -2138,7 +4358,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.1771938800811768
+      "segundos": 1.4333384037017822
     },
     "bee_corpus_spa_0009.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0009.jsonl.zst",
@@ -2150,7 +4370,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 0.9479525089263916
+      "segundos": 1.4413695335388184
     },
     "bee_corpus_spa_0010.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0010.jsonl.zst",
@@ -2162,7 +4382,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.0599184036254883
+      "segundos": 1.3994481563568115
     },
     "bee_corpus_spa_0011.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0011.jsonl.zst",
@@ -2174,7 +4394,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.0280089378356934
+      "segundos": 1.4506831169128418
     },
     "bee_corpus_spa_0012.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0012.jsonl.zst",
@@ -2186,7 +4406,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.074889898300171
+      "segundos": 1.3925070762634277
     },
     "bee_corpus_spa_0013.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0013.jsonl.zst",
@@ -2198,7 +4418,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.0552785396575928
+      "segundos": 1.3890490531921387
     },
     "bee_corpus_spa_0014.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0014.jsonl.zst",
@@ -2210,7 +4430,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.0573968887329102
+      "segundos": 1.4776906967163086
     },
     "bee_corpus_spa_0015.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0015.jsonl.zst",
@@ -2222,7 +4442,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.0478477478027344
+      "segundos": 1.4488160610198975
     },
     "bee_corpus_spa_0016.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0016.jsonl.zst",
@@ -2234,7 +4454,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.006373405456543
+      "segundos": 1.395259141921997
     },
     "bee_corpus_spa_0017.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0017.jsonl.zst",
@@ -2246,7 +4466,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.0092332363128662
+      "segundos": 1.4070491790771484
     },
     "bee_corpus_spa_0018.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0018.jsonl.zst",
@@ -2258,7 +4478,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.00962233543396
+      "segundos": 1.40324068069458
     },
     "bee_corpus_spa_0019.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0019.jsonl.zst",
@@ -2270,7 +4490,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.0331778526306152
+      "segundos": 1.3385963439941406
     },
     "bee_corpus_spa_0020.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0020.jsonl.zst",
@@ -2282,7 +4502,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 0.9835982322692871
+      "segundos": 1.3242764472961426
     },
     "bee_corpus_spa_0021.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0021.jsonl.zst",
@@ -2294,7 +4514,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.0680856704711914
+      "segundos": 1.4003815650939941
     },
     "bee_corpus_spa_0022.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0022.jsonl.zst",
@@ -2306,7 +4526,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.1004796028137207
+      "segundos": 1.5166399478912354
     },
     "bee_corpus_spa_0023.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0023.jsonl.zst",
@@ -2318,7 +4538,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.1054446697235107
+      "segundos": 1.5498266220092773
     },
     "bee_corpus_spa_0024.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0024.jsonl.zst",
@@ -2330,7 +4550,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.102327585220337
+      "segundos": 1.4843924045562744
     },
     "bee_corpus_spa_0025.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0025.jsonl.zst",
@@ -2342,7 +4562,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.0697338581085205
+      "segundos": 1.481241226196289
     },
     "bee_corpus_spa_0026.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0026.jsonl.zst",
@@ -2354,7 +4574,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.1108438968658447
+      "segundos": 1.477342128753662
     },
     "bee_corpus_spa_0027.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0027.jsonl.zst",
@@ -2366,7 +4586,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.0651500225067139
+      "segundos": 1.4984190464019775
     },
     "bee_corpus_spa_0028.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0028.jsonl.zst",
@@ -2378,7 +4598,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.160337209701538
+      "segundos": 1.4155595302581787
     },
     "bee_corpus_spa_0029.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0029.jsonl.zst",
@@ -2390,7 +4610,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.1494412422180176
+      "segundos": 1.3881587982177734
     },
     "bee_corpus_spa_0030.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0030.jsonl.zst",
@@ -2402,7 +4622,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.0828521251678467
+      "segundos": 1.3050496578216553
     },
     "bee_corpus_spa_0031.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0031.jsonl.zst",
@@ -2414,7 +4634,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.03843355178833
+      "segundos": 1.3333547115325928
     },
     "bee_corpus_spa_0032.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0032.jsonl.zst",
@@ -2426,7 +4646,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.1409697532653809
+      "segundos": 1.3477468490600586
     },
     "bee_corpus_spa_0033.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0033.jsonl.zst",
@@ -2438,7 +4658,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.0854887962341309
+      "segundos": 1.350856065750122
     },
     "bee_corpus_spa_0034.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0034.jsonl.zst",
@@ -2450,7 +4670,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.1161651611328125
+      "segundos": 1.446951150894165
     },
     "bee_corpus_spa_0035.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0035.jsonl.zst",
@@ -2462,7 +4682,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.060817003250122
+      "segundos": 1.518629550933838
     },
     "bee_corpus_spa_0036.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0036.jsonl.zst",
@@ -2474,7 +4694,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.1573596000671387
+      "segundos": 1.5056231021881104
     },
     "bee_corpus_spa_0037.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0037.jsonl.zst",
@@ -2486,7 +4706,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.1664340496063232
+      "segundos": 1.5499162673950195
     },
     "bee_corpus_spa_0038.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0038.jsonl.zst",
@@ -2498,7 +4718,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.0983753204345703
+      "segundos": 1.5291669368743896
     },
     "bee_corpus_spa_0039.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0039.jsonl.zst",
@@ -2510,7 +4730,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.0980737209320068
+      "segundos": 1.5238964557647705
     },
     "bee_corpus_spa_0040.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0040.jsonl.zst",
@@ -2522,7 +4742,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.0412917137145996
+      "segundos": 1.508465051651001
     },
     "bee_corpus_spa_0041.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0041.jsonl.zst",
@@ -2534,7 +4754,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.2315788269042969
+      "segundos": 1.5162341594696045
     },
     "bee_corpus_spa_0042.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0042.jsonl.zst",
@@ -2546,7 +4766,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.2920143604278564
+      "segundos": 1.7281429767608643
     },
     "bee_corpus_spa_0043.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0043.jsonl.zst",
@@ -2558,7 +4778,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.2151949405670166
+      "segundos": 1.432063341140747
     },
     "bee_corpus_spa_0044.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0044.jsonl.zst",
@@ -2570,7 +4790,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.1633164882659912
+      "segundos": 1.4489829540252686
     },
     "bee_corpus_spa_0045.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0045.jsonl.zst",
@@ -2582,7 +4802,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.0312843322753906
+      "segundos": 1.3369097709655762
     },
     "bee_corpus_spa_0046.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0046.jsonl.zst",
@@ -2594,7 +4814,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.179295301437378
+      "segundos": 1.543020248413086
     },
     "bee_corpus_spa_0047.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0047.jsonl.zst",
@@ -2606,7 +4826,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.282954216003418
+      "segundos": 1.5791399478912354
     },
     "bee_corpus_spa_0048.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0048.jsonl.zst",
@@ -2618,7 +4838,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.0302624702453613
+      "segundos": 1.3262062072753906
     },
     "bee_corpus_spa_0049.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0049.jsonl.zst",
@@ -2630,7 +4850,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.0598411560058594
+      "segundos": 1.3278379440307617
     },
     "bee_corpus_spa_0050.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0050.jsonl.zst",
@@ -2642,7 +4862,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.0893738269805908
+      "segundos": 1.1789608001708984
     },
     "bee_corpus_spa_0051.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0051.jsonl.zst",
@@ -2654,7 +4874,7 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 1.0509147644042969
+      "segundos": 1.2438819408416748
     },
     "bee_corpus_spa_0052.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0052.jsonl.zst",
@@ -2666,19 +4886,163 @@
       "fontes": {
         "fineweb2-spa": 50000
       },
-      "segundos": 0.8897280693054199
+      "segundos": 1.2861835956573486
     },
     "bee_corpus_spa_0053.jsonl.zst": {
       "arquivo": "bee_corpus_spa_0053.jsonl.zst",
       "idioma": "spa",
-      "documentos": 31000,
-      "caracteres": 92188003,
-      "bytes_utf8": 94098115,
-      "bytes_comprimido": 32561253,
+      "documentos": 50000,
+      "caracteres": 147297093,
+      "bytes_utf8": 150345548,
+      "bytes_comprimido": 51975424,
       "fontes": {
-        "fineweb2-spa": 31000
+        "fineweb2-spa": 50000
       },
-      "segundos": 0.647446870803833
+      "segundos": 1.2832255363464355
+    },
+    "bee_corpus_spa_0054.jsonl.zst": {
+      "arquivo": "bee_corpus_spa_0054.jsonl.zst",
+      "idioma": "spa",
+      "documentos": 50000,
+      "caracteres": 144470122,
+      "bytes_utf8": 147455001,
+      "bytes_comprimido": 51034601,
+      "fontes": {
+        "fineweb2-spa": 50000
+      },
+      "segundos": 1.2382047176361084
+    },
+    "bee_corpus_spa_0055.jsonl.zst": {
+      "arquivo": "bee_corpus_spa_0055.jsonl.zst",
+      "idioma": "spa",
+      "documentos": 50000,
+      "caracteres": 144628957,
+      "bytes_utf8": 147635422,
+      "bytes_comprimido": 50578218,
+      "fontes": {
+        "fineweb2-spa": 50000
+      },
+      "segundos": 1.254631757736206
+    },
+    "bee_corpus_spa_0056.jsonl.zst": {
+      "arquivo": "bee_corpus_spa_0056.jsonl.zst",
+      "idioma": "spa",
+      "documentos": 50000,
+      "caracteres": 143570325,
+      "bytes_utf8": 146554035,
+      "bytes_comprimido": 50213739,
+      "fontes": {
+        "fineweb2-spa": 50000
+      },
+      "segundos": 1.257629632949829
+    },
+    "bee_corpus_spa_0057.jsonl.zst": {
+      "arquivo": "bee_corpus_spa_0057.jsonl.zst",
+      "idioma": "spa",
+      "documentos": 50000,
+      "caracteres": 144370836,
+      "bytes_utf8": 147349326,
+      "bytes_comprimido": 50380079,
+      "fontes": {
+        "fineweb2-spa": 50000
+      },
+      "segundos": 1.177187442779541
+    },
+    "bee_corpus_spa_0058.jsonl.zst": {
+      "arquivo": "bee_corpus_spa_0058.jsonl.zst",
+      "idioma": "spa",
+      "documentos": 50000,
+      "caracteres": 148551573,
+      "bytes_utf8": 151605262,
+      "bytes_comprimido": 51821611,
+      "fontes": {
+        "fineweb2-spa": 50000
+      },
+      "segundos": 1.299988031387329
+    },
+    "bee_corpus_spa_0059.jsonl.zst": {
+      "arquivo": "bee_corpus_spa_0059.jsonl.zst",
+      "idioma": "spa",
+      "documentos": 50000,
+      "caracteres": 150399066,
+      "bytes_utf8": 153487464,
+      "bytes_comprimido": 52388947,
+      "fontes": {
+        "fineweb2-spa": 50000
+      },
+      "segundos": 1.3010978698730469
+    },
+    "bee_corpus_spa_0060.jsonl.zst": {
+      "arquivo": "bee_corpus_spa_0060.jsonl.zst",
+      "idioma": "spa",
+      "documentos": 50000,
+      "caracteres": 152896955,
+      "bytes_utf8": 156011045,
+      "bytes_comprimido": 53377579,
+      "fontes": {
+        "fineweb2-spa": 50000
+      },
+      "segundos": 1.3161325454711914
+    },
+    "bee_corpus_spa_0061.jsonl.zst": {
+      "arquivo": "bee_corpus_spa_0061.jsonl.zst",
+      "idioma": "spa",
+      "documentos": 50000,
+      "caracteres": 155970385,
+      "bytes_utf8": 159143595,
+      "bytes_comprimido": 54273732,
+      "fontes": {
+        "fineweb2-spa": 50000
+      },
+      "segundos": 1.3350145816802979
+    },
+    "bee_corpus_spa_0062.jsonl.zst": {
+      "arquivo": "bee_corpus_spa_0062.jsonl.zst",
+      "idioma": "spa",
+      "documentos": 50000,
+      "caracteres": 159262044,
+      "bytes_utf8": 162491058,
+      "bytes_comprimido": 55159681,
+      "fontes": {
+        "fineweb2-spa": 50000
+      },
+      "segundos": 1.3419866561889648
+    },
+    "bee_corpus_spa_0063.jsonl.zst": {
+      "arquivo": "bee_corpus_spa_0063.jsonl.zst",
+      "idioma": "spa",
+      "documentos": 50000,
+      "caracteres": 155663884,
+      "bytes_utf8": 158844317,
+      "bytes_comprimido": 53966212,
+      "fontes": {
+        "fineweb2-spa": 50000
+      },
+      "segundos": 1.3526372909545898
+    },
+    "bee_corpus_spa_0064.jsonl.zst": {
+      "arquivo": "bee_corpus_spa_0064.jsonl.zst",
+      "idioma": "spa",
+      "documentos": 50000,
+      "caracteres": 152422446,
+      "bytes_utf8": 155513658,
+      "bytes_comprimido": 52644125,
+      "fontes": {
+        "fineweb2-spa": 50000
+      },
+      "segundos": 1.1820306777954102
+    },
+    "bee_corpus_spa_0065.jsonl.zst": {
+      "arquivo": "bee_corpus_spa_0065.jsonl.zst",
+      "idioma": "spa",
+      "documentos": 8776,
+      "caracteres": 28413337,
+      "bytes_utf8": 28985393,
+      "bytes_comprimido": 9778766,
+      "fontes": {
+        "fineweb2-spa": 8776
+      },
+      "segundos": 0.23042702674865723
     }
   },
   "por_idioma": {
@@ -2706,6 +5070,18 @@
       "alvo_mcar": 3405,
       "pct_do_alvo": 100.00231594713657
     },
+    "deu": {
+      "shards": 62,
+      "documentos": 3055864,
+      "caracteres": 9282004385,
+      "bytes_utf8": 9432049558,
+      "bytes_comprimido": 3335975634,
+      "fontes": {
+        "fineweb2-deu": 3055864
+      },
+      "alvo_mcar": 9282,
+      "pct_do_alvo": 100.00004724197372
+    },
     "eng": {
       "shards": 66,
       "documentos": 3274198,
@@ -2718,65 +5094,51 @@
       "alvo_mcar": 10017,
       "pct_do_alvo": 100.00005199161426
     },
-    "jpn": {
-      "shards": 3,
-      "documentos": 108087,
-      "caracteres": 162783188,
-      "bytes_utf8": 445102121,
-      "bytes_comprimido": 141636909,
+    "fra": {
+      "shards": 63,
+      "documentos": 3102404,
+      "caracteres": 9810002050,
+      "bytes_utf8": 10184766006,
+      "bytes_comprimido": 3445567769,
       "fontes": {
-        "fineweb2-jpn": 108087
+        "fineweb2-fra": 3102404
+      },
+      "alvo_mcar": 9810,
+      "pct_do_alvo": 100.00002089704383
+    },
+    "jpn": {
+      "shards": 63,
+      "documentos": 3145275,
+      "caracteres": 4752000640,
+      "bytes_utf8": 13221955509,
+      "bytes_comprimido": 4201978557,
+      "fontes": {
+        "fineweb2-jpn": 3145275
       },
       "alvo_mcar": 4752,
-      "pct_do_alvo": 3.425572138047138
+      "pct_do_alvo": 100.00001346801348
     },
     "spa": {
-      "shards": 54,
-      "documentos": 2681000,
-      "caracteres": 8805271533,
-      "bytes_utf8": 8984214101,
-      "bytes_comprimido": 3055568951,
+      "shards": 66,
+      "documentos": 3258776,
+      "caracteres": 10541000553,
+      "bytes_utf8": 10755537110,
+      "bytes_comprimido": 3660600412,
       "fontes": {
-        "fineweb2-spa": 2681000
+        "fineweb2-spa": 3258776
       },
       "alvo_mcar": 10541,
-      "pct_do_alvo": 83.53355026088606
-    },
-    "deu": {
-      "shards": 0,
-      "documentos": 0,
-      "caracteres": 0,
-      "bytes_utf8": 0,
-      "bytes_comprimido": 0,
-      "fontes": {},
-      "alvo_mcar": 9282,
-      "pct_do_alvo": 0.0
-    },
-    "fra": {
-      "shards": 0,
-      "documentos": 0,
-      "caracteres": 0,
-      "bytes_utf8": 0,
-      "bytes_comprimido": 0,
-      "fontes": {},
-      "alvo_mcar": 9810,
-      "pct_do_alvo": 0.0
+      "pct_do_alvo": 100.00000524618157
     }
   },
   "total": {
-    "shards": 221,
-    "documentos": 10960274,
-    "caracteres": 30191139533,
+    "shards": 418,
+    "documentos": 20733506,
+    "caracteres": 55608092440,
     "alvo_mcar": 55608,
-    "pct_do_alvo": 54.29279875737304,
-    "minutos": 0.8151792128880818
+    "pct_do_alvo": 100.00016623507409,
+    "minutos": 2.0516407251358033
   },
-  "idiomas_em_zero": [
-    "fra",
-    "deu"
-  ],
-  "idiomas_incompletos": [
-    "spa",
-    "jpn"
-  ]
+  "idiomas_em_zero": [],
+  "idiomas_incompletos": []
 }

@@ -1550,15 +1550,26 @@ flag, `spa` e `jpn` sobrevivem e `arb`/`cmn`/`eng` são reconhecidos como pronto
 |---|---:|---:|---:|---:|---:|
 | arb | 52 | 2.599.401 | 7.801 | **100,0%** | 2,500 |
 | cmn | 46 | 2.297.588 | 3.405 | **100,0%** | 2,500 |
+| deu | 62 | 3.055.864 | 9.282 | **100,0%** | 2,500 |
 | eng | 66 | 3.274.198 | 10.017 | **100,0%** | 2,500 |
-| spa | 54 | 2.681.000 | 8.805 | 83,5% | 2,088 |
-| jpn | 3 | 108.087 | 163 | 3,4% | 0,086 |
-| **deu** | 0 | 0 | 0 | **0%** | — |
-| **fra** | 0 | 0 | 0 | **0%** | — |
-| **total** | **221** | **10.960.274** | **30.191** | **54,3%** | **9,674** |
+| fra | 63 | 3.102.404 | 9.810 | **100,0%** | 2,500 |
+| jpn | 63 | 3.145.275 | 4.752 | **100,0%** | 2,500 |
+| spa | 66 | 3.258.776 | 10.541 | **100,0%** | 2,500 |
+| **total** | **418** | **20.733.506** | **55.608** | **100,0%** | **17,500** |
+
+*(Estado em 2026-09-05. Os quatro que faltavam — `deu` e `fra` em zero, `jpn` a 3,4%, `spa` a
+83,5% — foram coletados no pod em 30 min, ~9× mais rápido que na máquina local.)*
 
 Com o português re-tokenizado: **23,868B de PT** (medido, `corpus_pt_64k/MANIFEST.json`) contra
-**9,674B de não-PT**.
+**17,500B de não-PT**. Total de **41,4B tokens** no `64k-multi`.
+
+⭐ **Uma propriedade do coletor, verificada por hash em vez de suposta:** o `fineweb-2` é lido com
+`streaming=True` e **sem shuffle**, então o que se pega é o **prefixo determinístico** do stream.
+Os shards `spa_0000..0002` e `jpn_0000..0001` coletados no pod saíram **byte a byte idênticos**
+aos coletados localmente semanas antes. A única divergência foi `jpn_0002` — e a razão fecha a
+regra: o último shard de uma corrida **interrompida** é parcial (8.087 documentos contra 50.000).
+Por isso a fusão substituiu `spa` e `jpn` inteiros em vez de preencher lacunas: preencher teria
+deixado um shard parcial no meio da sequência.
 
 ⚠️ A conversão caractere→token usa a fertilidade **medida por idioma** do braço `64k-multi`
 (`gate-t1-vocab.json`), porque caractere não é comparável entre escritas (§2g): 1 caractere han
@@ -1570,17 +1581,24 @@ custa 0,734 token e 1 caractere espanhol custa 0,237.
 
 | mistura | %PT | 20B | 66B | 143B |
 |---|---:|---:|---:|---:|
-| **hoje — não-PT 9,67B** | | | | |
-| bal-12 | 12,5% | 1,8× | 6,0× | 12,9× |
-| pt-25 | 25% | 1,6× | 5,1× | 11,1× |
-| **pt-50** | 50% | **1,0×** | 3,4× | 7,4× |
-| **coleta completa — não-PT 17,50B** | | | | |
-| bal-12 | 12,5% | 1,0× | 3,3× | 7,2× |
-| pt-25 | 25% | 0,9× | 2,8× | 6,1× |
-| pt-50 | 50% | 0,6× | 1,9× | 4,1× |
+| **com a coleta COMPLETA — não-PT 17,50B** | | | | |
+| bal-12 | 12,5% | **1,00×** | 3,3× | 7,2× |
+| pt-25 | 25% | **0,86×** | 2,8× | 6,1× |
+| pt-50 | 50% | **0,57×** | 1,9× | 4,1× |
+| *antes da coleta — não-PT 9,67B (histórico)* | | | | |
+| *bal-12* | *12,5%* | *1,8×* | *6,0×* | *12,9×* |
+| *pt-25* | *25%* | *1,6×* | *5,1×* | *11,1×* |
+| *pt-50* | *50%* | *1,0×* | *3,4×* | *7,4×* |
 
-⭐ **No orçamento Chinchilla (20B) com `pt-50`, o dado que já existe basta — exatamente 1,0 época.**
-Nenhuma coleta a mais é necessária para esse desenho.
+🔴 **[09-05] A COLETA COMPLETA DESARMOU O ARGUMENTO DE SUPRIMENTO.** Antes, `pt-50` era a **única**
+mistura que cabia em 1,0 época a 20B, e isso pesava na recomendação. Com os 17,500B, **as três
+cabem**: `bal-12` a 1,00× (no limite exato, sem folga), `pt-25` a 0,86×, `pt-50` a 0,57×. O
+suprimento deixou de discriminar entre elas nesse orçamento.
+
+⚠️ Somado ao resultado do #6 — onde a taxa de troca se mostrou **não resolvível** —, os dois pilares
+que sustentavam `pt-50` ficaram mais fracos no mesmo dia. O que resta a favor dela é a **direção**
+medida (PT melhor em todas as condições, fora do ruído de semente) e a folga de 0,57×, que é a
+única que deixa margem para crescer o orçamento sem repetir dado.
 
 🔴 **Em todo o resto, a repetição cai na faixa de 3–10×, que é o pico do dano medido** por
 [`2606.24998`](https://arxiv.org/abs/2606.24998) (§2c #6): com 10% dos FLOPs em documentos
@@ -1592,10 +1610,11 @@ que o braço de transferência mede; esta tabela diz apenas qual é **viável** 
 duas coisas se combinam: um orçamento grande com pouca variedade de dado não é o mesmo
 experimento que o mesmo orçamento com o corpus completo.
 
-⚠️ E a tabela supõe o pool não-PT usado por inteiro e uniformemente. Ele **não** é uniforme:
-`arb`/`cmn`/`eng` têm 2,5B cada, `spa` 2,088B, `jpn` 0,086B, e `deu`/`fra` zero. Uma mistura que
-queira os sete idiomas em proporções parecidas é limitada pelo mais escasso, e hoje isso é `jpn`
-com 3,4% do alvo.
+✅ **[09-05] E a ressalva de uniformidade caiu.** Ela dizia que o pool era desbalanceado e que uma
+mistura simétrica ficaria limitada pelo mais escasso (`jpn`, a 3,4%). Com a coleta completa os
+sete idiomas têm **2,500B tokens cada, por construção** — o alvo foi definido em tokens, com a
+fertilidade medida por idioma, justamente para que balancear por caractere não distorcesse entre
+escritas (§2g). O pool é uniforme e a tabela acima vale sem essa correção.
 
 
 
