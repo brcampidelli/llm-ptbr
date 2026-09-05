@@ -99,6 +99,48 @@ o 350M ficou plano de 10B a 15B e caiu 12% ao decair. Não abortar por isso.
 > separados: a Wikipédia-PT é 7% mais difícil. ⭐ A folga da escala também é maior **dentro** da
 > distribuição de treino (3,18% no fineweb-2) que **fora** dela (2,75% na Wikipédia).
 
+### 🔴🔴 [09-05] As âncoras acima estavam contaminadas — as corretas são outras
+
+O censo completo achou **56,1% do holdout `corpus_multi_pt` e 8,0% do `wiki` dentro do corpus de
+treino**, e o Bee-350M treinou neles. Remedido nos subconjuntos limpos
+([`ancora-pt-t4-limpa.json`](ancora-pt-t4-limpa.json)):
+
+| holdout | n limpo | Bee-150M | **Bee-350M = ÂNCORA** | folga |
+|---|---:|---:|---:|---:|
+| `wiki/limpo` | 276 docs · 0,94 MB | 0,9497 | **0,9240** | +2,71% |
+| `corpus_multi_pt/limpo` | 191 docs · 0,41 MB | 0,9318 | **0,9052** | +2,85% |
+
+⭐⭐ **A régua sobrevive: a folga publicada de 2,76% reproduz nos dois subconjuntos limpos**
+(+2,71% e +2,85%). Nos contaminados ela é maior (+3,14% e +3,31%) — o modelo maior memoriza um
+pouco mais, mas o efeito no *par* é de ~0,4 pp.
+
+🔴 **O que muda de verdade é o VALOR ABSOLUTO do `corpus_multi_pt`: 0,8576 → 0,9052, um alvo
+5,6% mais duro.** Era ali que estavam 56% dos documentos contaminados, e eles eram os fáceis.
+O `wiki` quase não se move (0,9175 → 0,9240, +0,7%), coerente com só 8% de contaminação.
+
+✅ **As âncoras do critério de PT passam a ser 0,9240 (wiki) e 0,9052 (corpus_multi_pt).** Usar
+as antigas pediria ao Bee-1G que batesse um número inflado pela memorização do 350M.
+
+#### ⚠️ E o controle externo que eu montei NÃO funcionou — fica registrado
+
+Para separar memorização de dificuldade do texto (o `limpo` e o `sujo` são **documentos
+diferentes**, §2g), medi o **Qwen3-0.6B-Base**, que nunca viu o `corpus_pt`, e subtraí o gap dele:
+
+| gap `(sujo−limpo)/limpo` | wiki | corpus_multi_pt |
+|---|---:|---:|
+| Bee-150M | −7,25% | −6,79% |
+| Bee-350M | −7,66% | −7,24% |
+| Qwen3-0.6B (controle) | **−4,30%** | **−9,55%** |
+| **memorização estimada (350M)** | **−3,36 pp** | **+2,31 pp** |
+
+🔴 **Os dois holdouts dão sinais OPOSTOS, e memorização não pode tornar um documento mais
+difícil.** Os nossos dois modelos concordam entre si (−7,25/−7,66 e −6,79/−7,24); quem discorda,
+e de forma diferente em cada conjunto, é o Qwen. O controle está medindo a idiossincrasia dele —
+outro tokenizador, outra mistura de treino, outra ordenação de dificuldade entre tipos de texto —
+e não a dificuldade intrínseca dos documentos. **A magnitude da memorização fica NÃO MEDIDA.**
+
+O que sobrevive sem depender do controle: os valores das âncoras limpas e a estabilidade da folga.
+
 **O que não mostra:** capacidade. O E2 mediu que bpb e capacidade são coisas diferentes, e o
 próprio 350M passou de 0% a 86% em tradução pt→en com 2,76% de bpb.
 
@@ -225,7 +267,7 @@ Copiados da [revisão §4](revisao-bee-1g-2026-09-04.md), com o estado:
 | # | pré-requisito | custo | estado |
 |---|---|---|---|
 | 1 | `ESCADA["1b"].seq_len` → **2048** | minutos | ✅ feito em 09-04 |
-| 2 | **âncora do 350M** nos dois holdouts de texto da §3.1 | 5070, minutos | ✅ **feito 09-04** — 0,9175 / 0,8576 |
+| 2 | **âncora do 350M** nos dois holdouts de texto da §3.1 | 5070, minutos | ✅ **refeito 09-05** nos holdouts LIMPOS — **0,9240** (wiki) e **0,9052** (corpus_multi_pt). As de 09-04 (0,9175 / 0,8576) estavam contaminadas |
 | 3 | **re-tokenizar os 21,97B PT** em `64k-multi` (lossless, verificado por shard) | CPU 6,1 h com 5 processos | ✅ **feito 09-04** — 39/39, **23,868B** em 64k, docs 26,3M idênticos, `max_id` 63.999 |
 | 4 | **coletar 7 idiomas a 2,5B tokens** cada (alvo por TOKEN, não por caractere) | banda ~3,8 h | ✅ **feito 09-05** — censo **contado** ([`censo-coleta-1g.json`](censo-coleta-1g.json)): **418 shards, 20,73M docs, 55.608 Mcar, os 7 idiomas a 100,0% = 17,500B tokens**. Os 4 que faltavam (`deu`/`fra`/`jpn`/`spa`) foram coletados no pod em 30 min |
 | 5 | **mini-sweep de LR** que cerca 1e-3 (3 pontos × 1 semente × 2.000 passos) | ~US$ 3 | ✅ **feito 09-04** — 5 pontos, mínimo **interior em 2,5e-4** a 32,8M tokens, sem colapso em nenhum braço. ⚠️ Ele diz que a região é **segura**, **não** qual LR o run usa — ver o bloco abaixo |

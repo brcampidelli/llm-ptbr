@@ -43,6 +43,35 @@ TOL_FOLGA = 0.010                 # +-1,0 pp: a folga tem de reproduzir, nao ser
 MODELOS_PADRAO = "BrCamp/bee-150m-pt-base,BrCamp/bee-350m-pt-base"
 
 
+def _contaminados() -> set[bytes]:
+    """Fingerprints (32 tokens no 64k) dos documentos de holdout que estao DENTRO do corpus."""
+    fp: set[bytes] = set()
+    for h in ("corpus_multi_pt", "wiki"):
+        q = ROOT / "docs" / f"contaminacao-pt-{h}.json"
+        if not q.exists():
+            raise SystemExit(f"🔴 {q} nao existe — rode bee/checar_contaminacao_pt.py")
+        fp |= {bytes.fromhex(x)
+               for x in json.loads(q.read_text(encoding="utf-8"))["fingerprints_contaminados"]}
+    return fp
+
+
+def parte_por_contaminacao(docs: list[str], tok64, excl: set[bytes], prefixo: int = 32):
+    """Separa os documentos que o corpus de treino CONTEM dos que ele nao contem.
+
+    ⭐ O fingerprint tem de ser calculado com o MESMO tokenizador e o MESMO prefixo do censo,
+    senao a lista de exclusao nao casa com nada e a limpeza fica inerte sem dar erro (§2t).
+    """
+    import numpy as np
+    limpos, sujos = [], []
+    for t in docs:
+        ids = tok64(t, add_special_tokens=False)["input_ids"][:prefixo]
+        if len(ids) < prefixo:
+            limpos.append(t)          # curto demais para ter fingerprint; o censo tambem o ignorou
+            continue
+        (sujos if np.asarray(ids, dtype=np.uint16).tobytes() in excl else limpos).append(t)
+    return limpos, sujos
+
+
 def holdouts(teto_bytes: int) -> dict[str, list[str]]:
     """Os dois holdouts de PT que EXISTEM nesta maquina, como TEXTO.
 
@@ -96,15 +125,30 @@ def main() -> int:
     from gate_t1_bpb import bpb_idioma
 
     conj = holdouts(args.bytes_holdout)
-    print(f"holdouts (teto {args.bytes_holdout/1e6:.1f} MB cada):")
+    tok64 = AutoTokenizer.from_pretrained(str(ROOT / "bee" / "tok_t1" / "64k-multi"))
+    excl = _contaminados()
+    print(f"{len(excl)} fingerprints contaminados (censo de 2026-09-05)")
+
+    # 🔴 O holdout inteiro NAO serve mais de ancora: 56,1% do `corpus_multi_pt` e 8,0% do `wiki`
+    #    estao dentro do corpus de treino, e o Bee-350M treinou neles. Medir os TRES subconjuntos
+    #    e' o que separa capacidade de memorizacao — e o `sujo` e' a propria verificacao de que a
+    #    contaminacao e' real, e nao artefato do metodo de fingerprint (§2r: quanto agiu).
+    partes: dict[str, list[str]] = {}
+    print(f"\nholdouts (teto {args.bytes_holdout/1e6:.1f} MB cada):")
     for k, v in conj.items():
-        nb = sum(len(t.encode("utf-8")) for t in v)
-        print(f"  {k:<18} {len(v):>4} docs · {nb/1e6:.2f} MB")
+        limpos, sujos = parte_por_contaminacao(v, tok64, excl)
+        for nome, docs in (("completo", v), ("limpo", limpos), ("sujo", sujos)):
+            if not docs:
+                continue
+            nb = sum(len(t.encode("utf-8")) for t in docs)
+            partes[f"{k}/{nome}"] = docs
+            print(f"  {k+'/'+nome:<28} {len(docs):>4} docs · {nb/1e6:.2f} MB")
+    conj = partes
 
     modelos = [m.strip() for m in args.modelos.split(",") if m.strip()]
     res: dict[str, dict[str, float]] = {}
-    print(f"\n{'modelo':<28}" + "".join(f"{k:>20}" for k in conj))
-    print("-" * (28 + 20 * len(conj)))
+    print(f"\n{'modelo':<26}" + "".join(f"{k:>27}" for k in conj))
+    print("-" * (26 + 27 * len(conj)))
 
     for nome in modelos:
         t0 = time.time()
@@ -120,7 +164,7 @@ def main() -> int:
         del m
         if args.dispositivo == "cuda":
             torch.cuda.empty_cache()
-        print(f"{nome:<28}" + "".join(f"{res[nome][k]:>20.4f}" for k in conj)
+        print(f"{nome:<26}" + "".join(f"{res[nome][k]:>27.4f}" for k in conj)
               + f"   ({(time.time()-t0)/60:.1f} min)")
 
     # --- §2aa: a folga publicada reproduz? ---
@@ -152,6 +196,12 @@ def main() -> int:
         todas_ok = True
         for k in conj:
             f = 1 - res[p350][k] / res[p150][k]
+            if not k.endswith("/limpo"):
+                # a folga so' e' evidencia no subconjunto que nenhum dos dois modelos viu
+                print(f"  {k:<28} 150M {res[p150][k]:.4f} · 350M {res[p350][k]:.4f} · "
+                      f"folga {100*f:+.2f}%  (informativo, nao entra na checagem)")
+                doc.setdefault("_folga_informativa", {})[k] = f
+                continue
             ok = abs(f - FOLGA_PUBLICADA) <= TOL_FOLGA
             todas_ok &= ok
             print(f"  {k:<18} 150M {res[p150][k]:.4f} · 350M {res[p350][k]:.4f} · "
@@ -166,7 +216,9 @@ def main() -> int:
             print("   HOLDOUT, nao sobre os modelos. O criterio de PT do T4 fica sem base ate'")
             print("   que se entenda por que (§5: aparato antes de fenomeno).")
 
-    dest = ROOT / "docs" / "ancora-pt-t4.json"
+    # §2z: o nome deriva do que foi medido — esta rodada parte o holdout por contaminacao
+    #      e NAO e" comparavel com a de 09-04, que media o holdout inteiro.
+    dest = ROOT / "docs" / "ancora-pt-t4-limpa.json"
     dest.parent.mkdir(exist_ok=True)
     tmp = dest.with_suffix(".json.tmp")
     tmp.write_text(json.dumps(doc, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
