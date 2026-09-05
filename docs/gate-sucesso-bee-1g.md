@@ -304,7 +304,28 @@ checkpoint. O run real será mais lento; quanto, ninguém mediu.
 |---|---|---|
 | 1 | **dinheiro** | US$ 371 + ~US$ 75 da cópia decaída = **~US$ 446**; crédito **US$ 241** → faltam ~US$ 205 |
 | 2 | **15,6 dias contínuos** | o 350M rodou 115 h; isto é **3,3×** mais. O `pretrain.py` já retoma modelo+otimizador+scheduler+posição, mas exige **volume de rede** — o pod encerrado em 09-05 não tinha, e tudo nele era efêmero |
-| 3 | **levar 70 GB até o pod** | 45 GB de PT + 25 GB de não-PT. Upload daqui **não medido**. ⭐ Ficou provado por hash que a coleta do fineweb-2 é reproduzível byte a byte e que o pod coleta ~9× mais rápido, então re-coletar os 25 GB não-PT lá tende a ser mais barato que subir; os 45 GB de PT **têm** de subir, porque o texto cru foi apagado pelo `coletar_pt_volume.py` |
+| 3 | **levar o corpus até o pod** | upload daqui **não medido** — `bee/medir_upload.sh` roda no próximo pod que subir. As opções, dimensionadas: |
+
+#### As três formas de levar o corpus, por tamanho
+
+O `pretrain.py` lê **um** `train.bin` em `uint16` (`np.memmap`), 2 bytes por token — então o que
+sobe é o **pool já misturado**, não os corpora.
+
+| opção | o que sobe | tamanho | o que sobra para o pod fazer |
+|---|---|---:|---|
+| **A** — subir tudo cru | 23,868B de PT (uint16) + 25 GB de `.zst` não-PT | **70 GB** | tokenizar o não-PT |
+| **B** — montar o pool aqui | pool `pt-50` inteiro, 20B tokens × 2 B | **40 GB** | nada |
+| ⭐ **C** — só a metade PT | 10B tokens de PT × 2 B | **20 GB** | re-coletar + tokenizar o não-PT (~30 min de coleta, medido) e interpor as metades |
+
+⭐ **A opção C é possível por causa de um resultado de 09-05:** ficou provado **por hash** que a
+coleta do fineweb-2 é um prefixo determinístico e reproduzível byte a byte, e que o pod coleta
+~9× mais rápido que esta máquina. Os 10B de PT **têm** de subir de qualquer jeito — o texto cru
+foi apagado pelo `coletar_pt_volume.py`, e o corpus só existe como token.
+
+⚠️ **C troca 20 GB de upload por trabalho de CPU no pod, e isso não é de graça:** a mistura tem
+de ser montada lá, e montar o pool é onde mora o filtro de holdout — cuja **polaridade eu já
+inverti uma vez** (§2q do projeto), construindo os pools a partir do holdout. Se o pool for
+montado no pod, a guarda de taxa de descarte tem de rodar lá e ser lida, não presumida.
 | 8 | reproduzir **um** número publicado (§2aa) | 5070, minutos | ✅ **feito 09-04** — folga 2,76% → +2,75% |
 
 ⚠️ 3 e 4 são os longos, **não precisam de GPU**, e podem rodar em paralelo desde já.
