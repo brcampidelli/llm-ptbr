@@ -402,6 +402,13 @@ def main() -> int:
     ap.add_argument("--aval-cada", type=int, default=250)
     ap.add_argument("--amostra-cada", type=int, default=500)
     ap.add_argument("--passos", type=int, default=0, help="0 = derivado de --tokens-alvo")
+    # 🔴 O VOCAB e da ESCADA, e a ESCADA nasceu em 32k (Bee-150M/350M). O Bee-1G usa o
+    #    64k-multi decidido no Gate T1. Trocar a constante global VOCAB do config.py
+    #    mudaria TODOS os degraus e invalidaria a reproducao dos dois modelos publicados;
+    #    por isso a troca e por argumento, explicita, e a guarda de meta["vocab"] abaixo
+    #    continua valendo — ela e que impede treinar com o vocab errado em silencio.
+    ap.add_argument("--vocab", type=int, default=0,
+                    help="0 = usa o da ESCADA; >0 sobrescreve (Bee-1G: 64000)")
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--dry-run", action="store_true", help="valida o pipeline e sai")
     args = ap.parse_args()
@@ -411,7 +418,10 @@ def main() -> int:
     from transformers import AutoTokenizer
     from config import ESCADA, classe_do_modelo, para_hf_config
 
+    import dataclasses
     cfg = ESCADA[args.tamanho]
+    if args.vocab:
+        cfg = dataclasses.replace(cfg, vocab=args.vocab)
     dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     torch.manual_seed(args.seed)
     g = torch.Generator().manual_seed(args.seed)
