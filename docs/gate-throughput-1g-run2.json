@@ -1,0 +1,37 @@
+{
+  "_procedencia": "sonda de 40 passos no pod bee-1g-run2 (6qd0nd3yjim3ut, RTX 5090, EUR-IS-1), 2026-09-06, sobre o train.bin REAL do run (20,000B tokens, uint16). O docs/gate-throughput-1g.json e de outro pod e mede o sweep de MICRO-BATCH; este REPRODUZ aquele numero nesta maquina (§2aa).",
+  "_reproducao": {
+    "tok_s_pod_anterior": 14809,
+    "tok_s_aqui": 14766,
+    "desvio_pct": 0.29
+  },
+  "_gate": "throughput do Bee-1G na configuracao real",
+  "_regua": "tokens/s em REGIME: passo >= 20, mediana das 3 ultimas leituras (§3)",
+  "_nao_mede": [
+    "qualidade de nada — e' relogio e memoria",
+    "queda de throughput em run LONGO (termica, I/O de checkpoint): 40 passos nao veem isso, entao o numero e' um TETO otimista",
+    "outras placas: §4 mede que o preditor e' o TDP, e mesmo assim mede-se"
+  ],
+  "gpu": "NVIDIA GeForce RTX 5090",
+  "vram_gb": 31.3565673828125,
+  "vocab": 64000,
+  "pool": "pool/train.bin",
+  "grad_checkpoint": true,
+  "compile": false,
+  "preco_hora": 0.99,
+  "configs": {
+    "mb4_seq2048_ac4": {
+      "micro_batch": 4,
+      "seq_len": 2048,
+      "grad_accum": 4,
+      "params": 1052479232,
+      "tok_por_passo": 32768,
+      "tok_s": 14765.955308266764,
+      "dispersao_3_ultimas": 0.004968104906745491,
+      "vram_pico_gb": 24.86198377609253,
+      "usd_por_bilhao": 18.623922005645,
+      "compile": false
+    }
+  },
+  "melhor": "mb4_seq2048_ac4"
+}

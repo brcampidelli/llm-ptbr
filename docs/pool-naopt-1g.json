@@ -1,0 +1,83 @@
+{
+  "_pool": "metade NAO-PT do pt-50 do Bee-1G",
+  "_filtro": "sha1(texto) % 100 < 2 FORA do treino — o filtro canonico do projeto, aplicado sobre TEXTO (no PT so' deu para usar fingerprint de prefixo, porque o texto cru foi apagado)",
+  "_nao_faz": [
+    "dedup: a do fineweb-2 e' POR CRAWL e duplicata entre crawls sobrevive por construcao; o censo de repeticao roda depois, sobre o .bin",
+    "balanceamento por dificuldade: sao 1/7 do orcamento para cada idioma, por decisao, nao por medicao"
+  ],
+  "tokens_total": 10000007994,
+  "cota_por_idioma": 1428571428,
+  "por_idioma": {
+    "spa": {
+      "idioma": "spa",
+      "tokens": 1428576852,
+      "docs": 1827294,
+      "descartados": 37445,
+      "vistos": 1865445,
+      "max_id": 63999,
+      "minutos": 92.59434732198716,
+      "taxa_descarte_pct": 2.0072958462994084
+    },
+    "fra": {
+      "idioma": "fra",
+      "tokens": 1428571517,
+      "docs": 1764722,
+      "descartados": 35922,
+      "vistos": 1801922,
+      "max_id": 63999,
+      "minutos": 88.73065828879675,
+      "taxa_descarte_pct": 1.9935380110792809
+    },
+    "deu": {
+      "idioma": "deu",
+      "tokens": 1428572518,
+      "docs": 1944721,
+      "descartados": 39703,
+      "vistos": 1985703,
+      "max_id": 63999,
+      "minutos": 98.86696461439132,
+      "taxa_descarte_pct": 1.999443018417155
+    },
+    "eng": {
+      "idioma": "eng",
+      "tokens": 1428571688,
+      "docs": 1896704,
+      "descartados": 38816,
+      "vistos": 1936816,
+      "max_id": 63999,
+      "minutos": 95.90964098374049,
+      "taxa_descarte_pct": 2.004113968492619
+    },
+    "arb": {
+      "idioma": "arb",
+      "tokens": 1428571995,
+      "docs": 1484998,
+      "descartados": 30460,
+      "vistos": 1516460,
+      "max_id": 63999,
+      "minutos": 78.2324744741122,
+      "taxa_descarte_pct": 2.00862535114675
+    },
+    "cmn": {
+      "idioma": "cmn",
+      "tokens": 1428571959,
+      "docs": 1302619,
+      "descartados": 26587,
+      "vistos": 1330587,
+      "max_id": 63997,
+      "minutos": 68.00881261428198,
+      "taxa_descarte_pct": 1.9981406702455382
+    },
+    "jpn": {
+      "idioma": "jpn",
+      "tokens": 1428571465,
+      "docs": 1678313,
+      "descartados": 34299,
+      "vistos": 1714299,
+      "max_id": 63997,
+      "minutos": 86.3482690135638,
+      "taxa_descarte_pct": 2.0007594941139204
+    }
+  },
+  "minutos": 98.9349381128947
+}

@@ -1,0 +1,95 @@
+{
+  "corpus": "pool/naopt.bin",
+  "tokens_analisados": 9988108623,
+  "documentos": 11899371,
+  "tokens_por_doc_medio": 839.4,
+  "parametros": {
+    "k": 16,
+    "bandas": 4,
+    "limiar": 0.8,
+    "min_tokens": 50
+  },
+  "censo_completo": true,
+  "t1_exato": [
+    {
+      "faixa": "1 (unico)",
+      "documentos": 11897959,
+      "tokens": 9987133272,
+      "pct_tokens": 99.99
+    },
+    {
+      "faixa": "2",
+      "documentos": 1400,
+      "tokens": 972468,
+      "pct_tokens": 0.01
+    },
+    {
+      "faixa": "3-10  ⚠️ PICO DO DANO",
+      "documentos": 12,
+      "tokens": 2883,
+      "pct_tokens": 0.0
+    },
+    {
+      "faixa": "11-100",
+      "documentos": 0,
+      "tokens": 0,
+      "pct_tokens": 0.0
+    },
+    {
+      "faixa": "101-1000",
+      "documentos": 0,
+      "tokens": 0,
+      "pct_tokens": 0.0
+    },
+    {
+      "faixa": ">1000",
+      "documentos": 0,
+      "tokens": 0,
+      "pct_tokens": 0.0
+    }
+  ],
+  "t2_quase_dup": [
+    {
+      "faixa": "1 (unico)",
+      "documentos": 11890788,
+      "tokens": 9983655642,
+      "pct_tokens": 99.955
+    },
+    {
+      "faixa": "2",
+      "documentos": 5948,
+      "tokens": 3695269,
+      "pct_tokens": 0.037
+    },
+    {
+      "faixa": "3-10  ⚠️ PICO DO DANO",
+      "documentos": 1426,
+      "tokens": 392310,
+      "pct_tokens": 0.004
+    },
+    {
+      "faixa": "11-100",
+      "documentos": 622,
+      "tokens": 178293,
+      "pct_tokens": 0.002
+    },
+    {
+      "faixa": "101-1000",
+      "documentos": 587,
+      "tokens": 187109,
+      "pct_tokens": 0.002
+    },
+    {
+      "faixa": ">1000",
+      "documentos": 0,
+      "tokens": 0,
+      "pct_tokens": 0.0
+    }
+  ],
+  "pct_flops_repetidos_exato": 0.01,
+  "pct_flops_repetidos_quase": 0.045,
+  "pct_flops_faixa_3_a_10": 0.004,
+  "pares_testados": 73528,
+  "minutos": 90.1,
+  "referencia": "arXiv:2606.24998 — medido em 344M; 10% dos FLOPs em repetidos == perder 33% da computacao"
+}

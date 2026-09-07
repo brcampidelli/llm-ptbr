@@ -125,3 +125,8 @@ bee/gate_t2_mistura/m_*/
 bee/pool_1g/*.bin
 bee/pool_1g_teste/
 !bee/pool_1g/MANIFEST.json
+
+# Os oito MANIFEST_*.json que descreviam `fra` e foram renomeados para .INVALIDO em 2026-09-04
+# ficam so em disco: o defeito ja esta documentado no censo e no plano, e versionar oito copias
+# do mesmo registro obsoleto so aumenta a chance de alguem le-las.
+bee/corpus_multi_1g/*.INVALIDO-*

@@ -1,0 +1,55 @@
+{
+  "_val": "metade NAO-PT do conjunto de validacao do Bee-1G",
+  "_origem": "shards lidos em ordem INVERSA — o treino leu do inicio e parou na cota",
+  "_prova": "sobreposicao com naopt.bin conferida por fingerprint de 32 tokens sobre TODOS os documentos dos dois lados: 0",
+  "_holdout": "documentos com sha1 % 100 < 2 ficam fora tambem do val — val e holdout sao coisas diferentes e nao podem se misturar",
+  "tokens": 19611045,
+  "por_idioma": {
+    "spa": {
+      "idioma": "spa",
+      "tokens": 2857879,
+      "docs": 3598,
+      "max_id": 63999
+    },
+    "fra": {
+      "idioma": "fra",
+      "tokens": 2857209,
+      "docs": 2775,
+      "max_id": 63997
+    },
+    "deu": {
+      "idioma": "deu",
+      "tokens": 2857279,
+      "docs": 4095,
+      "max_id": 63997
+    },
+    "eng": {
+      "idioma": "eng",
+      "tokens": 2857463,
+      "docs": 3848,
+      "max_id": 63997
+    },
+    "arb": {
+      "idioma": "arb",
+      "tokens": 2857292,
+      "docs": 2925,
+      "max_id": 63984
+    },
+    "cmn": {
+      "idioma": "cmn",
+      "tokens": 2858591,
+      "docs": 2230,
+      "max_id": 63996
+    },
+    "jpn": {
+      "idioma": "jpn",
+      "tokens": 2858682,
+      "docs": 3334,
+      "max_id": 63996
+    }
+  },
+  "fingerprints_val": 22408,
+  "fingerprints_treino": 11706700,
+  "sobreposicao": 0,
+  "minutos": 6.905740972359975
+}

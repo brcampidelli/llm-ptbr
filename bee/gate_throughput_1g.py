@@ -74,6 +74,11 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--pool", default="bee/gate_t2_mistura/pool_pt-50.bin")
+    # 🔴 os pools dos gates T1/T2 sao uint32; o corpus do RUN e uint16 (vocab 64k cabe em
+    #    16 bits e uint32 dobraria 40 GB para 80). Ler com o dtype errado NAO da erro no
+    #    fromfile: ele reinterpreta pares de tokens como um inteiro so, e o que sai e lixo
+    #    com cara de dado. Por isso a escolha e EXPLICITA e ha uma guarda de max_id abaixo.
+    ap.add_argument("--dtype", choices=["uint16", "uint32"], default="uint32")
     ap.add_argument("--passos", type=int, default=40,
                     help="§3: so' se le' throughput a partir do passo 20, com 3 leituras iguais")
     ap.add_argument("--micro-batches", default="1,2,4,8")
@@ -106,7 +111,12 @@ def main() -> int:
     vram = torch.cuda.get_device_properties(0).total_memory / 2 ** 30
     print(f"{gpu} · {vram:.1f} GB")
 
-    dados = np.fromfile(ROOT / args.pool, dtype=np.uint32)
+    # memmap: fromfile carregaria os 40 GB inteiros na RAM sem necessidade
+    dados = np.memmap(ROOT / args.pool, dtype=getattr(np, args.dtype), mode="r")
+    mx = int(dados[:1_000_000].max())
+    if mx >= VOCAB:
+        raise SystemExit(f"🔴 max_id {mx} >= vocab {VOCAB} no primeiro milhao de tokens — "
+                         f"o dtype {args.dtype} provavelmente esta errado para {args.pool}")
     print(f"pool {args.pool}: {len(dados)/1e6:.1f}M tokens · max id {int(dados.max()):,}")
     if int(dados.max()) >= VOCAB:
         raise SystemExit(f"🔴 pool tem id {dados.max()} >= vocab {VOCAB}")

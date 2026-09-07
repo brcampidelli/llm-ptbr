@@ -55,7 +55,11 @@ for r in 1 2 3; do
     [ "$soma" -ge "$MB" ] && break
   done
   t0=$(date +%s%N)
-  tar cf - -C bee/corpus_multi_1g "${lote[@]}" | sshpod "tar xf - -C $DEST"
+  # 🔴 MEDIDO 2026-09-06: sem --no-same-owner o tar do pod tenta aplicar o uid/gid do
+  #    WINDOWS (197609) nos arquivos e falha no volume de rede — "Cannot change ownership".
+  #    Os bytes CHEGAM; o que quebra e o chown depois. Sem a flag o tar sai com rc=2 e a
+  #    medicao aborta por um erro que nao e de transferencia.
+  tar cf - -C bee/corpus_multi_1g "${lote[@]}" | sshpod "tar xf - --no-same-owner -C $DEST"
   rc=$?
   t1=$(date +%s%N)
   [ $rc -ne 0 ] && { echo "🔴 leitura $r falhou (rc=$rc)"; exit 5; }
