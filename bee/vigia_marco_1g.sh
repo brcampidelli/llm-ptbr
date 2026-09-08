@@ -31,12 +31,10 @@ p_ant=0; t_ant=0; sup_ant=""; sem_ssh=0; parado_ha=0
 echo "vigia de $MARCO (passo $ALVO) · taxa MEDIDA entre ciclos, nao constante"
 
 for i in $(seq 1 $MAX); do
-  r=$(sshpod "cd $DIR 2>/dev/null || exit 1
-    test -d bee-1g/$MARCO && { echo MARCO; exit 0; }
-    echo \"D \$(date +%s) \$(( \$(date +%s) - \$(stat -c %Y treino.log 2>/dev/null || echo 0) )) \
-\$(grep -aoE 'passo +[0-9]+/' treino.log 2>/dev/null | tail -1 | grep -oE '[0-9]+' || echo 0) \
-\$(( \$(date +%s) - \$(stat -c %Y supervisor.log 2>/dev/null || echo 0) ))
-    tail -1 supervisor.log 2>/dev/null | sed 's/^.*UTC] //'" | tail -2)
+  # ✅ o comando remoto e um ARQUIVO no pod (bee/estado_1g.sh), testavel sozinho.
+  #    A versao anterior montava uma string multilinha com escapes aqui e estava
+  #    MALFORMADA: falhou nos 31 ciclos e reportou tudo como "ssh sem resposta".
+  r=$(sshpod "bash $DIR/bee/estado_1g.sh $MARCO" | tail -2)
   ts=$(date -u '+%H:%M UTC')
   linha=$(echo "$r" | head -1); sup=$(echo "$r" | tail -1)
 
