@@ -20,7 +20,7 @@
 #   bash bee/vigia_marco_1g.sh marco_1B 30517
 set -u
 MARCO="${1:-marco_1B}"; ALVO="${2:-30517}"
-POD="${3:-root@157.157.221.29}"; PORT="${4:-52948}"
+POD="${3:-root@157.157.221.29}"; PORT="${4:-54182}"   # default = bee-1g-run3
 KEY="$HOME/.ssh/runpod_bee"; DIR=/workspace/bee1g
 PARADO_MAX=420; INTERVALO=300; MAX=400
 

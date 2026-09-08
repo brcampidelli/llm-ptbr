@@ -21,7 +21,12 @@
 #    reinicio. E' o gatilho combinado com o dono para trocar de host — entao ele CONTA e AVISA,
 #    em vez de so' religar em silencio e deixar o padrao invisivel.
 set -u
-POD="root@157.157.221.29"; KEY="$HOME/.ssh/runpod_bee"; PORT=52948
+# ⚠️ ENDPOINT E ARGUMENTO, nao constante. Ficou cravado ate 2026-09-08 porque editar um
+#    script em execucao e perigoso (o bash le por deslocamento de byte). Ao trocar de pod
+#    (run2 -> run3) o IP continuou o mesmo e SO A PORTA mudou — o tipo de diferenca que
+#    passa despercebida e faz o supervisor vigiar uma maquina que nao e a do treino.
+#    Uso: bash bee/supervisor_externo_1g.sh [root@IP] [porta]
+POD="${1:-root@157.157.221.29}"; KEY="$HOME/.ssh/runpod_bee"; PORT="${2:-54182}"
 DIR=/workspace/bee1g
 PARADO_MAX=420          # 7 min sem escrever = morto
 MAX_FALHAS=5            # relancamentos sem avancar o passo antes de desistir
@@ -39,7 +44,12 @@ LANCAR="cd $DIR && (setsid nohup env PYTHONIOENCODING=utf-8 PYTHONUNBUFFERED=1 p
 --marcos 1,3,6,10,15,20 --ckpt-cada 250 --sem-liger --sem-compilar >> $DIR/treino.log 2>&1 < /dev/null &)"
 
 diz "supervisor EXTERNO iniciado · vida = mtime do treino.log · teto $PARADO_MAX s"
-falhas=0; ultimo_passo=0; sem_ssh=0; up_ant=999999; reinicios=0
+# 🔴 up_ant COMECAVA EM 999999 e o primeiro ciclo SEMPRE acusava reinicio, porque qualquer
+#    uptime real e menor que a sentinela. Nao era ruido inofensivo: comecando com
+#    reinicios=1, o PRIMEIRO reinicio de verdade ja batia o limiar de "2+ = trocar de host"
+#    — e trocar de host custa um pod novo e o tempo de retomada. Alarme que dispara no caso
+#    normal ou se aprende a ignorar, ou faz agir cedo demais. Ambos custam.
+falhas=0; ultimo_passo=0; sem_ssh=0; up_ant=0; reinicios=0
 
 for i in $(seq 1 $MAX_CICLOS); do
   r=$(sshpod "cd $DIR 2>/dev/null || exit 1
@@ -54,7 +64,7 @@ for i in $(seq 1 $MAX_CICLOS); do
       sem_ssh=0
       set -- $r; parado=$2; passo=${3:-0}; up=${4:-0}
       # reinicio de contentor: uptime do PID 1 MENOR que o do ciclo anterior
-      if [ "$up" -lt "$up_ant" ]; then
+      if [ "$up_ant" -gt 0 ] && [ "$up" -lt "$up_ant" ]; then   # ✅ so compara com ponto anterior REAL
         reinicios=$((reinicios + 1))
         diz "⚠️ CONTENTOR REINICIOU (uptime $up s < $up_ant s) — ${reinicios}o desta vigilia."
         [ "$reinicios" -ge 2 ] && diz "   🔴 2+ reinicios: e' o gatilho combinado para trocar de host (plano b)."
