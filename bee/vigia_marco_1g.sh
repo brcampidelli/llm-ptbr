@@ -22,7 +22,10 @@ set -u
 MARCO="${1:-marco_1B}"; ALVO="${2:-30517}"
 POD="${3:-root@157.157.221.29}"; PORT="${4:-54182}"   # default = bee-1g-run3
 KEY="$HOME/.ssh/runpod_bee"; DIR=/workspace/bee1g
-PARADO_MAX=420; INTERVALO=300; MAX=400
+# ⚠️ MAX e o TETO DE CICLOS, e ele tem de folgar sobre a ETA do marco. Com 400x300s = 33,3 h
+#    contra um marco_3B a ~33 h, o vigia bateria o teto meia hora antes do alvo e imprimiria
+#    "TETO — nao e conclusao" — verdadeiro, e inutil. Override por ambiente: MAX=560 bash ...
+PARADO_MAX=420; INTERVALO=300; MAX=${MAX:-400}
 
 sshpod() { timeout 80 ssh -i "$KEY" -o BatchMode=yes -o ConnectTimeout=35 \
                  -o ServerAliveInterval=15 -p "$PORT" "$POD" "$1" 2>/dev/null; }
