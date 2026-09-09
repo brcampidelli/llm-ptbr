@@ -24,6 +24,14 @@ cd "$(dirname "$0")/.."
 OUT=/workspace/bee1g/bee-1g
 LOG=/workspace/bee1g/treino.log
 SUP=/workspace/bee1g/supervisor.log
+# 🔴 ELE SO ESCREVIA QUANDO AGIA — e por isso um supervisor VIVO e um MORTO produziam
+#    exatamente o mesmo arquivo. Em 2026-09-09 o supervisor.log estava parado ha 10,5 h com
+#    o processo rodando normalmente, e nao havia como distinguir isso de ter morrido. E a
+#    lição de ontem chegando pelo outro lado: `kill -0` responde sobre EXISTENCIA e o log
+#    silencioso nao responde nada — faltava o sinal POSITIVO de execucao.
+# ✅ A BATIDA e escrita TODO ciclo, saudavel ou nao. Quem quiser saber se o supervisor roda
+#    usa o mesmo criterio que ele usa para o treino: a idade do arquivo contra o intervalo.
+BATIDA=/workspace/bee1g/.supervisor_batida
 MAX_PARADO=420          # 7 min sem escrever no log = morto (o treino escreve a cada ~22 s)
 MAX_FALHAS=5            # retomadas seguidas sem avancar o passo antes de desistir
 INTERVALO=60
@@ -46,6 +54,7 @@ while true; do
   mt=$(stat -c %Y "$LOG" 2>/dev/null || echo 0)
   parado=$(( agora - mt ))
   p=$(passo_atual); p=${p:-0}
+  echo "$agora $p $parado" > "$BATIDA"   # ✅ batida: prova de execucao
 
   if [ -d "$OUT/marco_20B" ]; then
     diz "✅ marco 20B alcancado — treino completo. Supervisor encerrando."
