@@ -37,30 +37,13 @@ sshpod() { timeout 80 ssh -i "$KEY" -o BatchMode=yes -o ConnectTimeout=35 \
                  -o ServerAliveInterval=15 -p "$PORT" "$POD" "$1" 2>/dev/null; }
 diz() { echo "[$(date -u '+%m-%d %H:%M UTC')] $*"; }
 
-# ⚠️ UMA copia do comando, usada em toda partida — duas divergem, e a que diverge roda de noite.
-LANCAR="cd $DIR && (setsid nohup env PYTHONIOENCODING=utf-8 PYTHONUNBUFFERED=1 python3 bee/pretrain.py \
---tamanho 1b --vocab 64000 --dados pool --tokenizer bee/tok_t1/64k-multi --out $DIR/bee-1g \
---epocas 1.0 --micro-batch 4 --grad-accum 4 --schedule wsd --lr 9.61e-4 --lr-estavel-frac 0.55 \
---marcos 1,3,6,10,15,20 --ckpt-cada 250 --sem-liger --sem-compilar >> $DIR/treino.log 2>&1 < /dev/null &)"
-
-# 🔴🔴 TRAVA DE INSTANCIA UNICA. Em 2026-09-08 rodaram DOIS supervisores por 3,4 h: o
-#    primeiro foi mandado parar, a ferramenta respondeu "Successfully stopped" e o processo
-#    continuou vivo — relato positivo que nao correspondia ao estado. O log bagunçado era o
-#    sintoma barato; o caro seria o treino morrer e os DOIS relancarem pretrain.py na mesma
-#    GPU, escrevendo o mesmo checkpoint.pt. Aqui a existencia do processo E o que importa,
-#    entao a trava e' por PID em lock atomico — e nao por `pgrep`, que casaria a si mesmo.
-LOCK="${TMPDIR:-/tmp}/bee1g-supervisor.lock"
-if ! mkdir "$LOCK" 2>/dev/null; then
-  velho=$(cat "$LOCK/pid" 2>/dev/null || echo 0)
-  if kill -0 "$velho" 2>/dev/null; then
-    echo "🔴 JA HA supervisor vivo (pid $velho). Dois relancariam o treino juntos — ABORTANDO."
-    exit 4
-  fi
-  echo "⚠️ lock orfao do pid $velho (morto) — assumindo"
-  rm -rf "$LOCK"; mkdir "$LOCK" || exit 4
-fi
-echo $$ > "$LOCK/pid"
-trap 'rm -rf "$LOCK"' EXIT INT TERM
+# ✅ AS DUAS ROTAS DE RELANCAMENTO CONVERGEM PARA UM LANCADOR NO POD. Antes, este script e o
+#    supervisor de dentro do contentor tinham cada um a SUA copia do comando de treino:
+#    duas copias divergem, e no dia em que as duas disparassem juntas seriam dois treinos
+#    na mesma GPU escrevendo o mesmo checkpoint. A trava local nao cobria isso — ela e
+#    local a ESTA maquina, e o outro supervisor esta em outra. A trava mora onde a acao
+#    acontece: no pod. bee/lancar_1g.sh e idempotente e responde JA_VIVO/LANCADO.
+LANCAR="bash /workspace/bee1g/bee/lancar_1g.sh"
 
 diz "supervisor EXTERNO iniciado · vida = mtime do treino.log · teto $PARADO_MAX s"
 # 🔴 up_ant COMECAVA EM 999999 e o primeiro ciclo SEMPRE acusava reinicio, porque qualquer

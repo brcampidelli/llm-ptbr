@@ -28,16 +28,11 @@ MAX_PARADO=420          # 7 min sem escrever no log = morto (o treino escreve a 
 MAX_FALHAS=5            # retomadas seguidas sem avancar o passo antes de desistir
 INTERVALO=60
 
-# ⚠️ O comando fica numa funcao para que retomada e primeira partida sejam IDENTICAS —
-#    duas copias do comando divergem, e a que diverge e' sempre a que roda de madrugada.
-lancar() {
-  setsid nohup env PYTHONIOENCODING=utf-8 PYTHONUNBUFFERED=1 python3 bee/pretrain.py \
-    --tamanho 1b --vocab 64000 --dados pool --tokenizer bee/tok_t1/64k-multi \
-    --out "$OUT" --epocas 1.0 --micro-batch 4 --grad-accum 4 \
-    --schedule wsd --lr 9.61e-4 --lr-estavel-frac 0.55 \
-    --marcos 1,3,6,10,15,20 --ckpt-cada 250 --sem-liger --sem-compilar \
-    >> "$LOG" 2>&1 < /dev/null &
-}
+# ✅ O COMANDO NAO MORA MAIS AQUI. Ele mora em bee/lancar_1g.sh, que e idempotente e e o
+#    MESMO chamado pelo supervisor externo. Duas rotas de relancamento sao boas (sao modos
+#    de falha diferentes); duas COPIAS do comando nao — divergem, e a que diverge roda de
+#    madrugada. O lancador recusa se o log estiver fresco ou se outro acabou de lancar.
+lancar() { bash /workspace/bee1g/bee/lancar_1g.sh | tee -a "$SUP"; }
 
 passo_atual() { grep -aoE 'passo +[0-9]+/' "$LOG" 2>/dev/null | tail -1 | grep -oE '[0-9]+'; }
 diz() { echo "[$(date -u '+%m-%d %H:%M UTC')] $*" | tee -a "$SUP"; }
