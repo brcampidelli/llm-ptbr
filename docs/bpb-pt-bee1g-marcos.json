@@ -1,0 +1,127 @@
+{
+  "_gate": "ancora de PT para o T4",
+  "_regua": "bpb = nats/ln2 / BYTES · cuda · teto 1500000 B por holdout · seq_len 2048",
+  "_por_que": "o 0,8207 publicado do 350M saiu dos shards {7,23,41} de `bee/corpus`, que nao existe nesta maquina — a ancora tem de ser remedida num holdout que exista (§2g)",
+  "_nao_mostra": [
+    "capacidade — o E2 mediu que bpb e capacidade sao coisas diferentes",
+    "comparacao ENTRE idiomas: bpb carrega vies crosslinguistico (2608.25089); estes numeros sao todos de PT e so' comparam entre si",
+    "o valor absoluto NAO e' comparavel ao 0,8207 publicado — holdout diferente"
+  ],
+  "bytes_holdout": 1500000,
+  "seq_len": 2048,
+  "dispositivo": "cuda",
+  "holdouts": {
+    "wiki/completo": {
+      "docs": 300,
+      "bytes": 1029991
+    },
+    "wiki/limpo": {
+      "docs": 276,
+      "bytes": 936378
+    },
+    "wiki/sujo": {
+      "docs": 24,
+      "bytes": 93613
+    },
+    "corpus_multi_pt/completo": {
+      "docs": 438,
+      "bytes": 1487916
+    },
+    "corpus_multi_pt/limpo": {
+      "docs": 191,
+      "bytes": 405133
+    },
+    "corpus_multi_pt/sujo": {
+      "docs": 247,
+      "bytes": 1082783
+    }
+  },
+  "bpb": {
+    "BrCamp/bee-150m-pt-base": {
+      "wiki/completo": 0.9434311681859796,
+      "wiki/limpo": 0.949690008187257,
+      "wiki/sujo": 0.88082618722483,
+      "corpus_multi_pt/completo": 0.8857138238492245,
+      "corpus_multi_pt/limpo": 0.9317794715568702,
+      "corpus_multi_pt/sujo": 0.8684779473598988
+    },
+    "BrCamp/bee-350m-pt-base": {
+      "wiki/completo": 0.9175177220264558,
+      "wiki/limpo": 0.9239540233911727,
+      "wiki/sujo": 0.8531376572994314,
+      "corpus_multi_pt/completo": 0.857561743797375,
+      "corpus_multi_pt/limpo": 0.9052312765131901,
+      "corpus_multi_pt/sujo": 0.8397257593039388
+    },
+    "Qwen/Qwen3-0.6B-Base": {
+      "wiki/completo": 0.9386795518697614,
+      "wiki/limpo": 0.9423649307393376,
+      "wiki/sujo": 0.9018159998509596,
+      "corpus_multi_pt/completo": 1.022254836206042,
+      "corpus_multi_pt/limpo": 1.098607480386978,
+      "corpus_multi_pt/sujo": 0.9936868075290539
+    },
+    "C:/Users/brcam/AppData/Local/Temp/claude/C--Users-brcam-Desktop-Desenvolvendo-Projetos-Desenvolvendo-LLM/b2b71105-2feb-424d-9bad-556c9b0c2a86/scratchpad/marcos/marco_1B": {
+      "wiki/completo": 1.1020944879485508,
+      "wiki/limpo": 1.1085665496679094,
+      "wiki/sujo": 1.0373567249386109,
+      "corpus_multi_pt/completo": 1.0544695332982712,
+      "corpus_multi_pt/limpo": 1.1085332214476908,
+      "corpus_multi_pt/sujo": 1.0342411180285092
+    },
+    "C:/Users/brcam/AppData/Local/Temp/claude/C--Users-brcam-Desktop-Desenvolvendo-Projetos-Desenvolvendo-LLM/b2b71105-2feb-424d-9bad-556c9b0c2a86/scratchpad/marcos/marco_3B": {
+      "wiki/completo": 1.0747363343536298,
+      "wiki/limpo": 1.0808257683702336,
+      "wiki/sujo": 1.0138258620303473,
+      "corpus_multi_pt/completo": 1.0164075616181294,
+      "corpus_multi_pt/limpo": 1.065345796922461,
+      "corpus_multi_pt/sujo": 0.9980968806381457
+    }
+  },
+  "checagem_2aa": {
+    "folga_publicada": 0.0276,
+    "tolerancia": 0.01,
+    "por_holdout": {
+      "wiki/limpo": {
+        "folga": 0.02709935302489752,
+        "reproduz": true
+      },
+      "corpus_multi_pt/limpo": {
+        "folga": 0.028491929532770133,
+        "reproduz": true
+      }
+    },
+    "todas_reproduzem": true
+  },
+  "_folga_informativa": {
+    "wiki/completo": 0.027467235590011296,
+    "wiki/sujo": 0.031434726086692955,
+    "corpus_multi_pt/completo": 0.031784623084579744,
+    "corpus_multi_pt/sujo": 0.03310641121442903
+  },
+  "_procedencia_bee1g": {
+    "C:/Users/brcam/AppData/Local/Temp/claude/C--Users-brcam-Desktop-Desenvolvendo-Projetos-Desenvolvendo-LLM/b2b71105-2feb-424d-9bad-556c9b0c2a86/scratchpad/marcos/marco_1B": {
+      "marco": "marco_1B",
+      "modelo": "Bee-1G (1,052B param, vocab 64k, 28x1792)",
+      "tokens": 1277984768,
+      "passo": 39001,
+      "val_loss": 3.4358755111694337,
+      "val_ppl": 31.058592810400302,
+      "md5_safetensors": "955d4cb6190b7ad68443cca6309ef0aa",
+      "regime_lr": "PLATO do WSD (lr 5,29e-04; warmup terminou no passo 12.210)",
+      "_atencao": "o rotulo do diretorio NAO e o numero de tokens: marco_1B contem 1,278B (27,8% acima do rotulo), porque o snapshot foi gravado no passo 39.001 e nao no 30.517 — ficou para tras nos reinicios do pod antigo"
+    },
+    "C:/Users/brcam/AppData/Local/Temp/claude/C--Users-brcam-Desktop-Desenvolvendo-Projetos-Desenvolvendo-LLM/b2b71105-2feb-424d-9bad-556c9b0c2a86/scratchpad/marcos/marco_3B": {
+      "marco": "marco_3B",
+      "modelo": "Bee-1G (1,052B param, vocab 64k, 28x1792)",
+      "tokens": 2999975936,
+      "passo": 91552,
+      "val_loss": 3.316179656982422,
+      "val_ppl": 27.55488012628998,
+      "md5_safetensors": "c499e99ce0829c47bc4a65da75be97ac",
+      "regime_lr": "PLATO do WSD (lr 5,29e-04; warmup terminou no passo 12.210)",
+      "_atencao": "o rotulo do diretorio NAO e o numero de tokens: marco_1B contem 1,278B (27,8% acima do rotulo), porque o snapshot foi gravado no passo 39.001 e nao no 30.517 — ficou para tras nos reinicios do pod antigo"
+    }
+  },
+  "_nao_e_leitura_de_gate": "O gate (docs/gate-sucesso-bee-1g.md §3.1) cobra bpb PT <= Bee-350M no PONTO FINAL, DECAIDO. Estas duas celulas do Bee-1G sao de PLATO do WSD e as ancoras sao de modelo decaido: compara-las mede o schedule tanto quanto o modelo (§2d), com vies CONTRA o Bee-1G. Servem como ponto de curva do Bee-1G contra si mesmo, nao como veredito."
+}
