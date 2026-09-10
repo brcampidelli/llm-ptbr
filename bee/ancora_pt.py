@@ -118,6 +118,15 @@ def main() -> int:
     ap.add_argument("--bytes-holdout", type=int, default=1_500_000)
     ap.add_argument("--seq-len", type=int, default=2048)
     ap.add_argument("--dispositivo", default="cuda")
+    # 🔴 O CAMINHO ERA FIXO, e em 2026-09-10 isso APAGOU dado. Uma rodada de controle com
+    #    apenas 150M+350M sobrescreveu o artefato e a linha do Qwen3-0.6B-Base — o unico
+    #    modelo EXTERNO da ancora, e o mais informativo dela — desapareceu do disco,
+    #    sobrevivendo so no git. Eh a §2z ao pe da letra: caminho fixo nao sobrevive a uma
+    #    comparacao antes/depois, porque a rodada mais ESTREITA destroi a mais LARGA.
+    ap.add_argument("--saida", default="docs/ancora-pt-t4-limpa.json",
+                    help="derive o nome do que voce mediu; nao reescreva a ancora")
+    ap.add_argument("--forcar", action="store_true",
+                    help="escrever mesmo perdendo modelos que ja estao no arquivo")
     args = ap.parse_args()
 
     import torch
@@ -146,6 +155,25 @@ def main() -> int:
     conj = partes
 
     modelos = [m.strip() for m in args.modelos.split(",") if m.strip()]
+    dest = ROOT / args.saida
+    # ⚠️ GUARDA: recusa quando o destino ja contem modelos que ESTA rodada nao mediu. Nao faz
+    #    merge de proposito — juntar celulas de rodadas diferentes eh o OUTRO defeito da §2z
+    #    (celula reaproveitada sem procedencia). A escolha fica com quem roda: medir tudo de
+    #    novo, ou escrever noutro nome.
+    if dest.exists() and not args.forcar:
+        try:
+            antigos = set(json.loads(dest.read_text(encoding="utf-8")).get("bpb", {}))
+        except Exception:
+            antigos = set()
+        perdidos = sorted(antigos - set(modelos))
+        if perdidos:
+            raise SystemExit(
+                "🔴 " + str(dest) + " contem modelos que esta rodada NAO mediu: "
+                + str(perdidos) + chr(10)
+                + "   Escrever aqui os apagaria (foi o que houve em 2026-09-10 com o Qwen)." + chr(10)
+                + "   Use --saida com nome que derive do que mediu, inclua-os em --modelos," + chr(10)
+                + "   ou --forcar se a perda for intencional.")
+    # ✅ a guarda roda ANTES de carregar modelo: falhar rapido custa segundos, nao minutos
     res: dict[str, dict[str, float]] = {}
     print(f"\n{'modelo':<26}" + "".join(f"{k:>27}" for k in conj))
     print("-" * (26 + 27 * len(conj)))
@@ -218,7 +246,7 @@ def main() -> int:
 
     # §2z: o nome deriva do que foi medido — esta rodada parte o holdout por contaminacao
     #      e NAO e" comparavel com a de 09-04, que media o holdout inteiro.
-    dest = ROOT / "docs" / "ancora-pt-t4-limpa.json"
+    dest = ROOT / args.saida
     dest.parent.mkdir(exist_ok=True)
     tmp = dest.with_suffix(".json.tmp")
     tmp.write_text(json.dumps(doc, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
