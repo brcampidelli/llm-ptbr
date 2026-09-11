@@ -31,7 +31,10 @@ DIR=/workspace/bee1g
 PARADO_MAX=420          # 7 min sem escrever = morto
 MAX_FALHAS=5            # relancamentos sem avancar o passo antes de desistir
 INTERVALO=90
-MAX_CICLOS=1200         # 1200 x 90 s = 30 h
+# ⚠️ 30 h de teto num run de ~400 h: saiu honestamente ("TETO — nao e conclusao") em 2026-09-11
+#    e ficou 16 h fora sem ninguem notar. O teto existe para o laco nao virar eterno; mas tem de
+#    folgar sobre o run que vigia (§2q, a mesma licao do vigia de marco). Override por ambiente.
+MAX_CICLOS=${MAX_CICLOS:-1200}   # 1200 x 90 s = 30 h; para o run inteiro use MAX_CICLOS=16000
 
 sshpod() { timeout 80 ssh -i "$KEY" -o BatchMode=yes -o ConnectTimeout=35 \
                  -o ServerAliveInterval=15 -p "$PORT" "$POD" "$1" 2>/dev/null; }
