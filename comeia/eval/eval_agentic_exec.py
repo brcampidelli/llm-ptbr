@@ -628,7 +628,12 @@ def main() -> int:
             if obj_h is not None:
                 ok_h_exec, res_h = TE.executar(obj_h)
                 if ok_h_exec and servida is None and ok_ref:
-                    servida = TE.resultados_batem(res_h, res_ref)
+                    # 🔴 A v1 comparava so' o RESULTADO: um nome FABRICADO que casa a regex de
+                    #    familia do mundo aberto (ex. `sales_tax_helper_inventada`) executava e
+                    #    batia com a referencia — contava como acerto sem existir no catalogo.
+                    #    Sonda de 2026-09-12 (arXiv 2609.09218): CORRETA/FABRICADA davam True/True.
+                    #    Agora passa pela MESMA hierarquia de pontuar(), que checa o nome.
+                    servida = pontuar(obj_h, ref_obj, res_ref, ok_ref, False)[0]
                 # ⚠️ MESMO comparador do caminho estrito. A v1 desta integracao usava
                 #    por-argumento so' no estrito e execucao no harness — as duas colunas
                 #    passavam a medir coisas diferentes, que e' mudar o instrumento entre os
@@ -652,9 +657,9 @@ def main() -> int:
         if votos_tool:
             nm = votos_tool.most_common(1)[0][0]
             arg = json.loads(votos_args[nm].most_common(1)[0][0])
-            ok_v, res_v = TE.executar({"tool": nm, "args": arg})
             votadas_n += 1
-            if ok_ref and ok_v and TE.resultados_batem(res_v, res_ref):
+            # 🔴 mesmo furo da 'servida': comparava so' o resultado. Agora pontuar() decide.
+            if pontuar({"tool": nm, "args": arg}, ref_obj, res_ref, ok_ref, False)[0]:
                 votadas_ok += 1
         # 🔴 INVARIANTE: previsao IDENTICA a referencia NAO PODE FALHAR. Se falha, o defeito
         #    e' da regua, nao do modelo — foi assim que 113 casos com criterio nenhum
