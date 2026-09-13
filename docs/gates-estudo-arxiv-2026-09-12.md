@@ -179,7 +179,7 @@ neutro entre famílias (o Qwen viu Wikipédia). Comparações **dentro** da fam�
 ⚠️ Só duas fontes; a correlação com a fração de cada fonte no treino fica para quando houver
 holdout de ≥4 fontes. O sinal, porém, não depende disso.
 
-## Gate #3 — catálogo perturbado + recusa sem template (2609.04184, 2609.04714) — corpora prontos, pod pendente
+## Gate #3 — catálogo perturbado + recusa sem template (2609.04184, 2609.04714) — 🟡 RODANDO no pod (2026-09-13)
 
 **Desenho revisto pelo mapa da receita do E19** (`comeia/models/e19c-s4x/training_args.json`):
 - (a) **"remover as ferramentas não usadas" ficou de fora**: nos positivos colapsa o catálogo para
@@ -203,6 +203,29 @@ C-full s42 publicado tem de reproduzir exec_ok 372/536 e over_call 39/268, senã
 2 corpora × 3 sementes, eval com a config `cfgref`. Referências: e13 (exec 71,8–75,2 · over
 16,8–17,5) e C-full (66,8–69,4 · 14,2–14,9).
 
+**Execução (2026-09-13).** Pod `bee-gate3b` (RTX 4090 48 GB, US$ 0,75/h, EU). Rede testada
+**antes** de instalar (PyPI 3,7 MB/s · HF 14 MB/s · GitHub 8,7 MB/s) — o primeiro pod, `bee-gate3`
+em EUR-NO-1, tinha 46 B/s para o Hub e load 22, e foi terminado sem instalar nada (US$ 0,05).
+
+🔴 **O controle §2aa não reproduziu — e o motivo é uma lição nova.** O C-full s42 publicado
+(`sha256 020512b1…`, idêntico ao `comeia/models/e19c-s42`) deu **369/536 · 36/268** na 4090 contra
+**372/536 · 39/268** na 5070. Config byte a byte igual (`lote 16 · max_len 1700 · por_argumento ·
+restrito · parar_controle · chat`), mesmo `perfil_argumentos_sha`, mesmo n. As diferenças estão em
+**3 ferramentas** (`search_movies` −3, `generate_username` −1, `calculate_mortgage` +1) e são
+simétricas — 3 chamadas a menos nos casos de ferramenta (under +3) e 3 a menos nos casos de texto
+(over −3): o modelo hesitando em empates numéricos. **A régua greedy em bf16 muda com o hardware**,
+como já mudava com o tamanho do lote (§2t). Não é o modo de falha da §2aa (config errada dá 3,2%
+onde era 71,8%); é o da §2g — *mesma régua* inclui o hardware.
+
+**Correção no roteiro:** deriva ≤ 8 casos em exec_ok e ≤ 6 em over_call é aceita como numérica
+(acima disso aborta), **e todas as 6 referências são remedidas no pod** antes dos braços novos —
+e13 s42/43/44 (adapters locais por scp, sha256 conferido) e C-full s43/44 (subpastas `seed-4x/`
+do Hub). A comparação é só pod-com-pod; os números locais ficam como sanidade. Custo: +1,3 h.
+Consolidador `bee/gate3_ler.py`: critério declarado antes de ler — **3 sementes com o mesmo sinal
+e |média dos deltas| > 2 × max(dp/√3, erro amostral da diferença)**; sem 3 sementes em comum não
+emite veredito (testado). Também imprime a deriva 5070→4090 nas 4 referências que têm artefato
+local, para registrar o tamanho desse efeito com mais de um ponto.
+
 ## Gate #1 — Muon × AdamW (2609.04577, 2609.11655) — construído, pod pendente
 
 ⚠️ Regime: o artigo mede ≥ 20 tok/param. No 150M isso são 3B tokens por braço (US$ 53 nos 4);
@@ -212,7 +235,7 @@ o início do regime do artigo. `bee/muon.py` (NS5, RMS casado ao Adam; autoteste
 5070), `gate_muon_50m.sh` (4 braços pareados + 2 de sensibilidade a 3× lr) e consolidador.
 Sem âncora publicada para o 50M: as duas sementes de AdamW ancoram uma à outra.
 
-## Lote 2 — pendente (RunPod liberado em 2026-09-12; aguarda login no console)
+## Lote 2 — em curso (RunPod liberado em 2026-09-12; #3 subiu em 2026-09-13, #1 e #6 aguardam crédito)
 
 - **#1 Muon × AdamW (× Musec)** no Bee-150M, 2 sementes — decide o otimizador do próximo pré-treino.
 - **#3 catálogo perturbado + recusa sem template** no corpus agêntico, 3 sementes — ataca os 130
