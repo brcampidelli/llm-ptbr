@@ -1,0 +1,26 @@
+{
+ "n": 130,
+ "concordancia": 1.0,
+ "kappa": 1.0,
+ "equivalente_ambos": [
+  279,
+  422,
+  712
+ ],
+ "ambiguo": [
+  673
+ ],
+ "veredito_A": {
+  "NAO_EQUIVALENTE": 126,
+  "EQUIVALENTE": 3,
+  "AMBIGUO": 1
+ },
+ "veredito_B": {
+  "NAO_EQUIVALENTE": 126,
+  "EQUIVALENTE": 3,
+  "AMBIGUO": 1
+ },
+ "despejo": "comeia/eval/results/casos_rf-s43-cat15.jsonl",
+ "piso_gate": 0.15,
+ "_leitura": "3/130 = 2,3% de equivalentes nao anotados (Wilson sup 6,6%), abaixo do piso de 15%: a metrica de selecao NAO esta subestimada neste holdout"
+}

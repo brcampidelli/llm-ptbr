@@ -1,0 +1,52 @@
+{
+ "marco": "marco_3B",
+ "idioma": "por",
+ "limiar": 0.5,
+ "seq_len": 2048,
+ "docs": 23802,
+ "tokens_preditos": 17267826,
+ "sujo": {
+  "docs": 1431,
+  "tokens": 1009145,
+  "loss": 2.7929866150831844
+ },
+ "limpo": {
+  "docs_amostra": 1500,
+  "docs_total": 19842,
+  "tokens_total": 14498511,
+  "loss": 2.900838983249959,
+  "se": 0.012835506405179255
+ },
+ "intermediario_0.2_a_limiar": {
+  "tokens": 1760170,
+  "_assumido": "igual ao limpo (conservador)"
+ },
+ "loss_todos_estimada": 2.8945360081056846,
+ "vies_val_loss": -0.00630297514427447,
+ "piso_ruido_validacao": 0.0076,
+ "vies_em_pisos": -0.8293388347729566,
+ "por_balde_frac": {
+  "0.5+": {
+   "docs": 446,
+   "loss": 2.8295037865875146
+  },
+  "0.6+": {
+   "docs": 345,
+   "loss": 2.829588295278708
+  },
+  "0.7+": {
+   "docs": 215,
+   "loss": 2.654065829511312
+  },
+  "0.8+": {
+   "docs": 155,
+   "loss": 2.6928183155987484
+  },
+  "0.9+": {
+   "docs": 270,
+   "loss": 2.8626194092580475
+  }
+ },
+ "minutos": 9.5,
+ "_leitura": "vies = quanto a val loss deste idioma esta' abaixo do que seria num holdout sem quase-duplicatas; negativo = inflada para baixo"
+}

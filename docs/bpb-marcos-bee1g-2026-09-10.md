@@ -120,3 +120,47 @@ O ponto final decaído do Bee-1G. Faltam ~17B tokens e ~312 h de GPU. Antes diss
   ⚠️ Não é necessariamente limpo para o **350M**, que treinou noutro corpus: se ele viu parte
   desses documentos, o número dele está bom demais — viés **conservador** para "o 1G ganhou" e
   **confundidor** para "o 1G perdeu".
+
+---
+
+## Adendo 2026-09-12 — `marco_6B`, e a primeira previsão pré-registrada
+
+`marco_6B/marco.json`: **5.999.984.640 tokens · passo 183.105 · val_loss 3,2621 · ppl 26,10**.
+Desta vez o rótulo bate com o conteúdo (o desvio de 27,8% do `marco_1B` foi artefato dos
+reinícios do pod antigo). Três pontos, todos em `lr 5,29e-04`:
+
+| marco | tokens | val loss | expoente local (par anterior) |
+|---|---:|---:|---:|
+| 1B | 1,278B | 3,4359 | — |
+| 3B | 3,000B | 3,3162 | −0,042 |
+| 6B | 6,000B | **3,2621** | **−0,024** |
+
+⭐ **A inclinação caiu pela metade entre os dois trechos.** Não é lei de potência pura: há um
+termo irredutível, e três pontos bastam para vê-lo — dois não bastavam.
+
+Ajuste `L = E + A·D^−α` (3 parâmetros, 3 pontos — **resíduo zero por construção**; §5: descreve,
+não valida): **E = 3,183 · A = 0,304 · α = 0,751**.
+
+⚠️ `E` é a assíntota **do platô**, não o piso do modelo: o decaimento final tira ~10% (medido no
+350M). E `α = 0,75` é o eixo de dado de **um** modelo no platô, não comparável ao α de Chinchilla.
+
+**Previsão pré-registrada, escrita antes do dado:** `marco_10B` (passo 305.175) → **val loss
+3,237 ± 0,008** (o ± é o piso de ruído medido em 6 validações consecutivas). Se cair dentro, a
+forma se sustenta e o `marco_15B` vira segundo teste; se cair fora, a forma está errada e o
+motivo é a informação. É para isso que os marcos existem: a curva vira medição, não extrapolação.
+
+Ainda sem projeção de bpb ou de gate: a razão da §5 do documento continua de pé.
+
+**bpb do `marco_6B` na mesma régua** ([`bpb-pt-bee1g-marco-6B.json`](bpb-pt-bee1g-marco-6B.json);
+a régua reproduziu o 350M final com os seis valores idênticos em quatro passadas até aqui):
+
+| marco | tokens | `wiki/limpo` | expoente local | `corpus_multi_pt/limpo` | expoente local |
+|---|---:|---:|---:|---:|---:|
+| 1B | 1,278B | 1,1086 | — | 1,1085 | — |
+| 3B | 3,000B | 1,0808 | −0,030 | 1,0653 | −0,047 |
+| **6B** | 6,000B | **1,0642** | **−0,022** | **1,0524** | **−0,018** |
+| âncora 350M | 21,75B | 0,9240 | | 0,9052 | |
+
+A desaceleração da val loss aparece também no bpb, nas duas réguas. Continua platô; continua sem
+projeção. ⚠️ O gate #5 mediu que o holdout de PT tem 6% de quase-duplicatas com o treino e que o
+efeito na val loss é −0,006 nats (0,8× o ruído) — a curva acima não muda com isso.
