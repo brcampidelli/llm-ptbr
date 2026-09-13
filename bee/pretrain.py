@@ -407,6 +407,9 @@ def main() -> int:
     #    mudaria TODOS os degraus e invalidaria a reproducao dos dois modelos publicados;
     #    por isso a troca e por argumento, explicita, e a guarda de meta["vocab"] abaixo
     #    continua valendo — ela e que impede treinar com o vocab errado em silencio.
+    ap.add_argument("--otimizador", choices=("adamw", "muon"), default="adamw",
+                    help="muon = Muon nas matrizes das camadas + AdamW no resto (gate #1, bee/muon.py). "
+                         "Default adamw: o caminho de todo run publicado NAO muda.")
     ap.add_argument("--vocab", type=int, default=0,
                     help="0 = usa o da ESCADA; >0 sobrescreve (Bee-1G: 64000)")
     ap.add_argument("--seed", type=int, default=42)
@@ -556,12 +559,20 @@ def main() -> int:
     # controlam escala, e isso atrapalha em vez de regularizar — erro comum e silencioso.
     decay = [p for n, p in modelo.named_parameters() if p.dim() >= 2]
     no_decay = [p for n, p in modelo.named_parameters() if p.dim() < 2]
-    opt = torch.optim.AdamW(
-        [{"params": decay, "weight_decay": 0.1},
-         {"params": no_decay, "weight_decay": 0.0}],
-        lr=args.lr, betas=(0.9, 0.95), eps=1e-8, fused=(dev.type == "cuda"))
-    print(f"  otimizador    AdamW β(0.9,0.95) wd 0.1 em {len(decay)} matrizes, "
-          f"0.0 em {len(no_decay)} bias/norm")
+    if args.otimizador == "muon":
+        # ⚠️ gate #1 do estudo do arXiv (2026-09-12). Muon SO nas matrizes das camadas; embedding,
+        #    lm_head, bias e norm ficam no AdamW. Interface identica (step/zero_grad/state_dict).
+        from muon import MuonAdamW
+        opt = MuonAdamW(modelo, lr=args.lr, weight_decay=0.1, fused=(dev.type == "cuda"))
+        print(f"  otimizador    MUON (NS5, momentum 0.95, nesterov, RMS casado) em {opt.n_muon} matrizes "
+              f"+ AdamW em {opt.n_adamw} (embedding/lm_head/bias/norm) · wd 0.1")
+    else:
+        opt = torch.optim.AdamW(
+            [{"params": decay, "weight_decay": 0.1},
+             {"params": no_decay, "weight_decay": 0.0}],
+            lr=args.lr, betas=(0.9, 0.95), eps=1e-8, fused=(dev.type == "cuda"))
+        print(f"  otimizador    AdamW β(0.9,0.95) wd 0.1 em {len(decay)} matrizes, "
+              f"0.0 em {len(no_decay)} bias/norm")
 
     inicio = 0
     args.out.mkdir(parents=True, exist_ok=True)

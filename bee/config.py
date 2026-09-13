@@ -129,6 +129,11 @@ ESCADA = {
     # params = 17,6% do modelo alocados no MLP por heranca, nunca medidos — dariam ~7
     # camadas a mais. Nao invalida o 150M (bpb 0,844), mas a comparacao com o
     # MobileLLM-125M nunca foi maca-com-maca: 151,2M contra 124,6M.
+    # ⚠️ 50m EXISTE SO PARA GATES DE OTIMIZADOR/DADO (estudo do arXiv 2026-09-12): no Bee-150M, o
+    #    regime de overtraining do artigo do Muon (>= 20 tok/param) custaria 3B tokens por braco;
+    #    num 50M sao 1B. Mesma familia (GQA, RoPE, RMSNorm), razao d_model/camadas 28. Sem ancora
+    #    publicada — os bracos de AdamW com duas sementes ancoram um ao outro.
+    "50m":  BeeConfig("Bee-50M",  n_camadas=16, d_model=448,  n_heads=7,  n_kv_heads=7,  intermediate=1200),
     "150m": BeeConfig("Bee-150M", n_camadas=30, d_model=576,  n_heads=9,  n_kv_heads=3,  intermediate=2048),
     # ⭐ 350M — esta geometria tem DUAS fontes publicadas independentes no tamanho exato:
     # SmolLM2-360M e **MobileLLM-350M** (arXiv:2402.14905, Tabela 9: 32 camadas · dim 960 ·
