@@ -133,12 +133,22 @@ def main() -> int:
     b_e13, b_o13 = v("recusa_especifica-e13", "exec_ok"), v("recusa_especifica-e13", "over_call")
     b_ecf, b_ocf = v("recusa_especifica-cfull", "exec_ok"), v("recusa_especifica-cfull", "over_call")
     if b_e13 and b_ecf and decide.get("recusa_especifica-e13") and decide.get("recusa_especifica-cfull"):
-        recupera = not (b_e13["alem_do_ruido"] and b_e13["media"] < 0)          # nao perde exec_ok para o e13
-        mantem = not (b_ocf["alem_do_ruido"] and b_ocf["media"] > 0)           # nao sobe over_call sobre o C-full
+        # 🔴 v1 deste bloco lia "nao perde para o e13" E "nao sobe sobre o C-full" — duas ausencias de efeito —
+        #    como "TERCEIRO PONTO CONFIRMADO". Ruido puro confirmaria (§2q). O terceiro ponto exige evidencia
+        #    POSITIVA nos dois lados: recuperar execucao ALEM do ruido sobre o C-full E cortar over_call ALEM
+        #    do ruido sobre o e13. Sem isso, o braco e' indistinguivel das referencias, nao um ponto novo.
+        recupera = b_ecf["alem_do_ruido"] and b_ecf["media"] > 0             # execucao acima do C-full, alem do ruido
+        mantem = b_o13["alem_do_ruido"] and b_o13["media"] < 0               # over_call abaixo do e13, alem do ruido
         print(f"  (b) recusa especifica: exec_ok x e13 {b_e13['media']:+.1f} · x C-full {b_ecf['media']:+.1f} · over_call x e13 {b_o13['media']:+.1f} · x C-full {b_ocf['media']:+.1f} -> "
-              + ("TERCEIRO PONTO CONFIRMADO: execucao do e13 com over_call do C-full" if recupera and mantem else
-                 "recupera a execucao mas paga em over_call (= e13 sem template, nao um terceiro ponto)" if recupera else
-                 "nao recupera a execucao (o template nao era a causa dos 5,9 pp)" if mantem else "pior nos dois eixos"))
+              + ("TERCEIRO PONTO: execucao acima do C-full E over_call abaixo do e13, ambos alem do ruido" if recupera and mantem else
+                 "recupera execucao sobre o C-full, mas o over_call NAO se distingue do e13 (= e13 sem template)" if recupera else
+                 "corta over_call sobre o e13, mas a execucao NAO se distingue do C-full" if mantem else
+                 "INDISTINGUIVEL das duas referencias dentro do ruido — sem terceiro ponto demonstrado"))
+        dp_novo = media_dp(resumo["recusa_especifica"]["exec_ok"])[1]
+        dp_ref = max(media_dp(resumo["cfull"]["exec_ok"])[1], media_dp(resumo["e13"]["exec_ok"])[1])
+        se1 = 100 * math.sqrt(0.72 * 0.28 / 536)
+        print(f"      dispersao entre sementes (exec_ok): recusa_especifica dp {dp_novo:.1f} pp · referencias ate {dp_ref:.1f} · "
+              f"erro amostral de UMA medida {se1:.1f} -> {'variancia de treino REAL (> 2x amostral)' if dp_novo > 2 * se1 else 'compativel com amostragem'}")
     print("\n⚠️ RESSALVAS: 3 sementes por braco · n=536/268 · regua greedy bf16 na 4090 (deriva de hardware medida acima) ·"
           "\n   as outras capacidades (resumo/traducao/sentimento, §2ab) NAO foram medidas aqui — so' o eixo agentico.")
     if args.json:

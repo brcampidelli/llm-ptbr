@@ -179,7 +179,7 @@ neutro entre famílias (o Qwen viu Wikipédia). Comparações **dentro** da fam�
 ⚠️ Só duas fontes; a correlação com a fração de cada fonte no treino fica para quando houver
 holdout de ≥4 fontes. O sinal, porém, não depende disso.
 
-## Gate #3 — catálogo perturbado + recusa sem template (2609.04184, 2609.04714) — 🟡 RODANDO no pod (2026-09-13)
+## Gate #3 — catálogo perturbado + recusa sem template (2609.04184, 2609.04714) — ✅ FECHADO (2026-09-14)
 
 **Desenho revisto pelo mapa da receita do E19** (`comeia/models/e19c-s4x/training_args.json`):
 - (a) **"remover as ferramentas não usadas" ficou de fora**: nos positivos colapsa o catálogo para
@@ -265,7 +265,7 @@ Aqui, tirada a frase fixa (12 estilos, abertura dominante 9,4%, guarda de conjun
 continua recusando tradução, atendimento e sentimento — **é a decisão de recusar que
 generaliza, não o template.** A §2ab fica mais forte, não mais fraca: a saída para as outras
 capacidades é a **forma útil** (C-full), e "recusa específica" só existe como terceiro ponto no
-**eixo agêntico** (execução do e13 com over-call do C-full, s42 — sementes 43/44 pendentes).
+**eixo agêntico** — e, fechadas as 3 sementes (abaixo), nem lá ele se distingue das referências.
 O que a recusa específica *não* faz é o dano lateral do e13 no sentimento: mantém os 79,8
 (o e13 tem 81,8, o C-full 56,0) — coerente com a observação de que sentimento sobe com a
 quantidade de recusa no corpus, e sem mecanismo claro.
@@ -273,6 +273,62 @@ quantidade de recusa no corpus, e sem mecanismo claro.
 ⚠️ O que este instrumento não mostra (§2q): uma semente; a régua de tradução não separa "recusa"
 de "ruído" (foi o censo à parte que separou); e nenhuma das três formas passa do piso trivial em
 resumo/atendimento — *"sabe resumir"* continua sem lastro em todos.
+
+### Resultado final — 3 sementes × 4 braços, 12 artefatos na mesma régua e no mesmo hardware
+
+`bee/gate3_ler.py` → `gate3-catalogo-perturbado-recusa-especifica-2026-09-14.json`; log do pod em
+`gate3-pod-2026-09-13.log`. Pod `bee-gate3b`: 16:38 → 03:18 UTC (10,7 h · ≈ US$ 8), dos quais 1,3 h de
+referências remedidas e 9 h de 6 treinos de 78 min (6,8 s/passo — a receita 1×16 com checkpointing é
+limitada por CPU, GPU a 14%; a 5070 local fazia o mesmo tempo, e mudar micro-batch mudaria a receita).
+
+| braço | exec_ok | over_call | under | tool_right | args_exact |
+|---|---:|---:|---:|---:|---:|
+| e13 (recusa em template) | 74,0 ± 2,2 | 17,3 ± 0,4 | 9,1 | 84,0 | 40,4 |
+| C-full (resposta útil) | 68,1 ± 1,0 | 14,1 ± 0,8 | 16,0 | 77,6 | 34,9 |
+| **(a) catálogo perturbado** | 70,6 ± 0,7 | 15,9 ± 1,4 | 14,4 | 79,5 | 39,6 |
+| **(b) recusa específica** | 74,1 ± **4,4** | 16,0 ± 3,2 | 8,3 | 83,5 | 40,5 |
+
+Pareado por semente (critério declarado: 3 sementes com o mesmo sinal e |média| > 2 × max(dp/√3, SE
+amostral da diferença)):
+
+| par | exec_ok | over_call | tool_right | args_exact |
+|---|---:|---:|---:|---:|
+| (a) − C-full | +1,1 / +2,8 / +3,7 → **+2,5** (2×piso 5,7) | +4,1 / +1,5 / 0,0 → +1,9 | −0,2 / +3,5 / +2,2 → +1,9 | +0,2 / +6,7 / +7,1 → +4,7 (5,8) |
+| (b) − e13 | −0,6 / −3,2 / +4,1 → +0,1 | −4,5 / −1,1 / +1,9 → −1,2 | −0,9 / −4,5 / +3,9 → −0,5 | +0,2 / −2,8 / +3,0 → +0,1 |
+| (b) − C-full | +2,1 / +3,9 / +12,1 → +6,0 (6,2) | −0,4 / +1,9 / +4,5 → +2,0 | +2,1 / +4,1 / +11,4 → **+5,8 ⭐** | +2,1 / +6,7 / +8,2 → +5,7 (5,8) |
+
+**(a) catálogo perturbado × C-full → NÃO ADOTAR.** Nenhuma métrica passa do piso. A seleção — o
+que o 2609.04184 promete — fica em +1,9 pp com sinais mistos; a execução sobe +2,5 pp nas três
+sementes, consistente e pequena (McNemar por item, *post-hoc*: s43 43 ganhou/28 perdeu p = 0,10;
+s44 59/39 p = 0,05). O que mais se move é a exatidão de argumentos (+4,7, a 1 pp do limiar) — não
+era a hipótese, e fica registrado como hipótese para outro gate, não como resultado.
+
+**(b) recusa específica → INDISTINGUÍVEL das duas referências no eixo agêntico.** Contra o e13 é
++0,1 pp de execução e −1,2 de over-call; contra o C-full é +6,0 e +2,0 — nada além do piso. O que
+passa do ruído é só o que a coloca **do lado do e13**: tool_right +5,8 e under-call −7,6 sobre o
+C-full. Ou seja: **tirar o template não mexeu em nada no eixo agêntico** — o braço é o e13 com outra
+roupa, e nas outras capacidades (acima) recusa tudo como o e13. O 2609.04714 não transfere para
+este cenário nos dois eixos.
+
+🔴 **A dispersão entre sementes de (b) é o achado que sobrou:** exec_ok 70,9 · 72,4 · **79,1** —
+dp **4,4 pp**, contra 1,0 do C-full e 2,2 do e13, e 2,3× o erro amostral de uma medida (1,9). A
+semente 44 é o maior número de todo o gate (acima de qualquer e13), com under-call 5,2% e over-call
+19,4%: aprendeu a chamar quase sempre. Recusas específicas geradas por professor são um alvo mais
+**instável** para o SFT do que a fórmula fixa — três sementes decidem que é variância de treino,
+não amostragem (§2x), e não explicam de onde vem.
+
+🔴 **Defeito no consolidador, pego ao ler o veredito.** A v1 do bloco (b) lia *"não perde para o
+e13"* **e** *"não sobe sobre o C-full"* — duas **ausências** de efeito — como *"TERCEIRO PONTO
+CONFIRMADO"*. Ruído puro confirmaria; é a §2q dentro do consolidador: um veredito que o instrumento
+não consegue **negar** não é veredito. Corrigido antes de escrever esta seção: terceiro ponto exige
+evidência positiva nos dois lados (execução acima do C-full **e** over-call abaixo do e13, ambos
+além do ruído), e a dispersão entre sementes vai impressa ao lado.
+
+⭐ **Lição de método nova (§2t, complemento):** a régua greedy em bf16 muda com o **hardware**,
+não só com o lote — |Δ| ≈ 2 casos em 536 e 1,2 em 268 entre RTX 5070 e RTX 4090, mesma config,
+mesmo adapter. Pequeno demais para trocar um veredito, grande o bastante para reprovar um controle
+de tolerância zero. *Mesma régua* (§2g) inclui a GPU; referência medida em outra máquina é
+referência a remedir.
 
 ## Gate #1 — Muon × AdamW (2609.04577, 2609.11655) — construído, pod pendente
 

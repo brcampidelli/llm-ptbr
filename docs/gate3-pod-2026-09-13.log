@@ -1,0 +1,41 @@
+[09-13 16:38 UTC] instalando dependencias fixadas...
+[09-13 16:39 UTC] CONTROLE §2aa: reavaliando o C-full s42 publicado
+  controle: exec_ok 369/536 · over_call 36/268 · publicado 372/536 · 39/268 -> NAO REPRODUZ
+[09-13 16:55 UTC] 🔴 A REGUA DO POD NAO REPRODUZ O C-FULL PUBLICADO — abortando (§2aa). Conferir versoes e config.
+  controle: exec_ok 369/536 · over_call 36/268 · publicado (5070) 372/536 · 39/268 · deriva -3 / -3 -> DERIVA DE HARDWARE, dentro da tolerancia: referencias serao remedidas neste pod
+[09-13 17:09 UTC] REFERENCIA e13 s42
+  RESULTADO gate3-ref-e13-s42-cfgref.json: exec_ok=383 · n_tool=536 · over_call=47 · n_text=268 · under_call=59 · tool_right=439 · args_exact=211
+[09-13 17:20 UTC] REFERENCIA e13 s43
+  RESULTADO gate3-ref-e13-s43-cfgref.json: exec_ok=405 · n_tool=536 · over_call=45 · n_text=268 · under_call=40 · tool_right=458 · args_exact=228
+[09-13 17:32 UTC] REFERENCIA e13 s44
+  RESULTADO gate3-ref-e13-s44-cfgref.json: exec_ok=402 · n_tool=536 · over_call=47 · n_text=268 · under_call=47 · tool_right=453 · args_exact=211
+[09-13 17:45 UTC] REFERENCIA C-full s43
+  RESULTADO gate3-ref-cfull-s43-cfgref.json: exec_ok=367 · n_tool=536 · over_call=37 · n_text=268 · under_call=87 · tool_right=412 · args_exact=177
+[09-13 18:02 UTC] REFERENCIA C-full s44
+  RESULTADO gate3-ref-cfull-s44-cfgref.json: exec_ok=359 · n_tool=536 · over_call=40 · n_text=268 · under_call=87 · tool_right=413 · args_exact=183
+[09-13 18:18 UTC] gate #3 · referencias remedidas aqui (5070 → 4090); os numeros locais (e13 71,8-75,2 · C-full 66,8-69,4) ficam so' como sanidade
+[09-13 18:18 UTC] TREINO gate3-catperturbado-s42
+[09-13 19:36 UTC]   treino ok · train_loss': '0.5099'
+[09-13 19:36 UTC] EVAL gate3-catperturbado-s42
+  RESULTADO gate3-catperturbado-s42-cfgref.json: exec_ok=375 · n_tool=536 · over_call=47 · n_text=268 · under_call=73 · tool_right=422 · args_exact=202
+[09-13 19:51 UTC] TREINO gate3-recusa_especifica-s42
+[09-13 21:09 UTC]   treino ok · train_loss': '0.2776'
+[09-13 21:09 UTC] EVAL gate3-recusa_especifica-s42
+  RESULTADO gate3-recusa_especifica-s42-cfgref.json: exec_ok=380 · n_tool=536 · over_call=35 · n_text=268 · under_call=57 · tool_right=434 · args_exact=212
+[09-13 21:18 UTC] TREINO gate3-catperturbado-s43
+[09-13 22:36 UTC]   treino ok · train_loss': '0.5089'
+[09-13 22:36 UTC] EVAL gate3-catperturbado-s43
+  RESULTADO gate3-catperturbado-s43-cfgref.json: exec_ok=382 · n_tool=536 · over_call=41 · n_text=268 · under_call=77 · tool_right=431 · args_exact=213
+[09-13 22:50 UTC] TREINO gate3-recusa_especifica-s43
+[09-14 00:08 UTC]   treino ok · train_loss': '0.278'
+[09-14 00:08 UTC] EVAL gate3-recusa_especifica-s43
+  RESULTADO gate3-recusa_especifica-s43-cfgref.json: exec_ok=388 · n_tool=536 · over_call=42 · n_text=268 · under_call=49 · tool_right=434 · args_exact=213
+[09-14 00:18 UTC] TREINO gate3-catperturbado-s44
+[09-14 01:36 UTC]   treino ok · train_loss': '0.506'
+[09-14 01:36 UTC] EVAL gate3-catperturbado-s44
+  RESULTADO gate3-catperturbado-s44-cfgref.json: exec_ok=379 · n_tool=536 · over_call=40 · n_text=268 · under_call=82 · tool_right=425 · args_exact=221
+[09-14 01:51 UTC] TREINO gate3-recusa_especifica-s44
+[09-14 03:08 UTC]   treino ok · train_loss': '0.2786'
+[09-14 03:08 UTC] EVAL gate3-recusa_especifica-s44
+  RESULTADO gate3-recusa_especifica-s44-cfgref.json: exec_ok=424 · n_tool=536 · over_call=52 · n_text=268 · under_call=28 · tool_right=474 · args_exact=227
+[09-14 03:18 UTC] fim — consolidar localmente com os artefatos em comeia/eval/results/exec_gate3-*-cfgref.json
