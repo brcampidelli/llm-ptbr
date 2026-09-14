@@ -226,6 +226,54 @@ e |média dos deltas| > 2 × max(dp/√3, erro amostral da diferença)**; sem 3 
 emite veredito (testado). Também imprime a deriva 5070→4090 nas 4 referências que têm artefato
 local, para registrar o tamanho desse efeito com mais de um ponto.
 
+**Referências remedidas no pod (4090)** — deriva 5070→4090 nos 4 pontos pareados: exec −3, −2,
++2, +1 · over −3, +1, −1, 0 casos. |Δ| ≈ 2 casos, sem sinal sistemático: ruído numérico, como
+diagnosticado. e13: exec 71,5 · 75,6 · 75,0 (over 17,5 · 16,8 · 17,5); C-full: 68,8 · 68,5 · 67,0
+(over 13,4 · 13,8 · 14,9).
+
+### (b) nas outras capacidades — 🔴 a recusa específica recusa TUDO, com estilo
+
+Enquanto o pod treinava as sementes 43/44, o adapter `recusa_especifica-s42` (sha256 conferido)
+passou pelo consolidador de 9 capacidades na 5070, `--chat`, transformers 5.14.1 (o mesmo dos
+artefatos de referência). Uma semente; a matemática entra declarada como não medida (§2z).
+
+| s42 | e13 (template) | C-full (útil) | **recusa específica** |
+|---|---:|---:|---:|
+| tradução en→pt chrF++ (piso copiar 21,5) | 18,8 | **34,0** | **11,1** |
+| tradução pt→en chrF++ (piso 22,7) | 13,2 | 20,5 | 9,0 |
+| resumo — respondeu | 0/150 | **117/150** | 23/150 |
+| resumo — útil (piso LEAD-2 51,3%) | 0 | 0 | 15/150 |
+| sentimento (piso léxico 79,0) | **81,8** | 56,0 | 79,8 |
+| atendimento útil / inventou | 0 / 0 | 0 / 14 % | 0 / 11,6 % |
+| IFEval-PT estrito por instrução | 28,9 | 30,0 | 30,4 |
+| código (interno / HumanEval-XL) | 0 / 0 | 0 / 0 | 0 / 0 |
+
+**Lido com os olhos (§2e), 4 prompts, os três adapters lado a lado:** pedida uma tradução, o e13
+diz *"Sinto muito, mas não tenho acesso a informações financeiras…"* e lista um menu; o C-full
+tenta (na direção errada, mas tenta); a recusa específica responde **"Sem meios de traduzir o
+orçamento da cidade para o português por aqui."** — uma recusa perfeita, específica, sem fórmula,
+para uma tarefa que não é chamada de ferramenta. Atendimento: *"Aqui eu não tenho como realizar a
+troca do produto."* Sentimento: *"Isso — avaliar produtos e serviços — está fora do que eu faço
+neste contexto."* Censo sobre 200+200 frases do FLORES e os 150 resumos: **69% e 68% das
+traduções são recusas** (regex das negações do próprio corpus); o resto são frases negadas de
+uma linha (*"O isolamento e a guerra são coisas que não combinam."*) — a **sintaxe** da recusa
+(objeto + negação) vazando para onde não há recusa. No resumo, 15% recusam e o resto inventa
+prefeitos (*"Dilador Borges"*, *"Miguel Coelho"*).
+
+⭐ **O que isso decide:** o artigo 2609.04714 atribui a generalização excessiva à **frase fixa**.
+Aqui, tirada a frase fixa (12 estilos, abertura dominante 9,4%, guarda de conjunto), o modelo
+continua recusando tradução, atendimento e sentimento — **é a decisão de recusar que
+generaliza, não o template.** A §2ab fica mais forte, não mais fraca: a saída para as outras
+capacidades é a **forma útil** (C-full), e "recusa específica" só existe como terceiro ponto no
+**eixo agêntico** (execução do e13 com over-call do C-full, s42 — sementes 43/44 pendentes).
+O que a recusa específica *não* faz é o dano lateral do e13 no sentimento: mantém os 79,8
+(o e13 tem 81,8, o C-full 56,0) — coerente com a observação de que sentimento sobe com a
+quantidade de recusa no corpus, e sem mecanismo claro.
+
+⚠️ O que este instrumento não mostra (§2q): uma semente; a régua de tradução não separa "recusa"
+de "ruído" (foi o censo à parte que separou); e nenhuma das três formas passa do piso trivial em
+resumo/atendimento — *"sabe resumir"* continua sem lastro em todos.
+
 ## Gate #1 — Muon × AdamW (2609.04577, 2609.11655) — construído, pod pendente
 
 ⚠️ Regime: o artigo mede ≥ 20 tok/param. No 150M isso são 3B tokens por braço (US$ 53 nos 4);

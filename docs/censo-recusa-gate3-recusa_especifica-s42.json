@@ -1,0 +1,29 @@
+{
+ "en->pt": {
+  "n": 200,
+  "recusas": 138,
+  "exemplos": [
+   "Sem meios de traduzir para o português as qualidades que determinem uma subculture como distinta por aqui.",
+   "Sem meios de traduzir textos em inglês por aqui.",
+   "Sem meios de traduzir ou traduzir documentos em inglês por aqui."
+  ]
+ },
+ "pt->en": {
+  "n": 200,
+  "recusas": 135,
+  "exemplos": [
+   "Sem meios de traduzir textos em inglês por aqui.",
+   "O isolamento e a guerra são coisas que não combinam.",
+   "O Exército Vermelho da União Soviética não tem como se defender de ataques de forças estrangeiras."
+  ]
+ },
+ "resumo": {
+  "n": 150,
+  "recusas": 23,
+  "exemplos": [
+   "O prefeito de Araçatuba, Dilador Borges, assinou nesta semana o contrato de canalização do córrego que corta o bairro Bela Vista. Investimento previsto de R$ 2.200.000, com recursos do orçamento municipal e de repasse estadual.",
+   "O prefeito de Petrolina, Miguel Coelho, anunciou nesta quarta-feira (24) a retomada das obras de construção do novo hospital municipal. Segundo o gestor, o projeto está em fase de elaboração e o início das obras está previsto para o segundo semestre deste ano.",
+   "O prefeito de Juiz de Fora, Dr. Aluízio, anunciou nesta quarta-feira (24) que o município vai investir R$ 7.700.000,00 em obras de canalização do Córrego que corta o bairro Vila Nova."
+  ]
+ }
+}
