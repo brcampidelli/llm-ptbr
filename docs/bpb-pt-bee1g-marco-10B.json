@@ -1,0 +1,49 @@
+{
+  "_gate": "ancora de PT para o T4",
+  "_regua": "bpb = nats/ln2 / BYTES · cuda · teto 1500000 B por holdout · seq_len 2048",
+  "_por_que": "o 0,8207 publicado do 350M saiu dos shards {7,23,41} de `bee/corpus`, que nao existe nesta maquina — a ancora tem de ser remedida num holdout que exista (§2g)",
+  "_nao_mostra": [
+    "capacidade — o E2 mediu que bpb e capacidade sao coisas diferentes",
+    "comparacao ENTRE idiomas: bpb carrega vies crosslinguistico (2608.25089); estes numeros sao todos de PT e so' comparam entre si",
+    "o valor absoluto NAO e' comparavel ao 0,8207 publicado — holdout diferente"
+  ],
+  "bytes_holdout": 1500000,
+  "seq_len": 2048,
+  "dispositivo": "cuda",
+  "holdouts": {
+    "wiki/completo": {
+      "docs": 300,
+      "bytes": 1029991
+    },
+    "wiki/limpo": {
+      "docs": 276,
+      "bytes": 936378
+    },
+    "wiki/sujo": {
+      "docs": 24,
+      "bytes": 93613
+    },
+    "corpus_multi_pt/completo": {
+      "docs": 438,
+      "bytes": 1487916
+    },
+    "corpus_multi_pt/limpo": {
+      "docs": 191,
+      "bytes": 405133
+    },
+    "corpus_multi_pt/sujo": {
+      "docs": 247,
+      "bytes": 1082783
+    }
+  },
+  "bpb": {
+    "C:/Users/brcam/AppData/Local/Temp/claude/C--Users-brcam-Desktop-Desenvolvendo-Projetos-Desenvolvendo-LLM/b2b71105-2feb-424d-9bad-556c9b0c2a86/scratchpad/marcos/marco_10B": {
+      "wiki/completo": 1.0419309063357114,
+      "wiki/limpo": 1.0478564407255386,
+      "wiki/sujo": 0.9826598644838581,
+      "corpus_multi_pt/completo": 0.9902524575424252,
+      "corpus_multi_pt/limpo": 1.0423054358197583,
+      "corpus_multi_pt/sujo": 0.9707763674593421
+    }
+  }
+}

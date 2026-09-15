@@ -164,3 +164,56 @@ a régua reproduziu o 350M final com os seis valores idênticos em quatro passad
 A desaceleração da val loss aparece também no bpb, nas duas réguas. Continua platô; continua sem
 projeção. ⚠️ O gate #5 mediu que o holdout de PT tem 6% de quase-duplicatas com o treino e que o
 efeito na val loss é −0,006 nats (0,8× o ruído) — a curva acima não muda com isso.
+
+## Adendo 2026-09-15 — `marco_10B`: a previsão pré-registrada acertou (na borda)
+
+`marco_10B/marco.json`: **9.999.974.400 tokens · passo 305.175 · val_loss 3,2300 · ppl 25,28**.
+A previsão escrita três dias antes era **3,237 ± 0,008 → [3,229; 3,245]**. O ajuste de 3 parâmetros
+sobre 3 pontos dava 3,2369 em D = 10B; o medido ficou **0,007 abaixo**, dentro da faixa, na borda de
+baixo. ⚠️ Uma leitura só, e a série de validação vizinha (298k–301k, a cada 250 passos) oscila
+entre 3,232 e 3,246 — o ruído de um ponto tem o tamanho da faixa. O que se afirma: **a forma
+`E + A·D^−α` é compatível com o quarto ponto**; o que não se afirma: precisão maior que ±0,008.
+Agora há 4 pontos para 3 parâmetros — o primeiro grau de liberdade de resíduo (§5) — e o
+`marco_15B` (passo 457.763) é o próximo teste, com a previsão a registrar no reajuste.
+
+| marco | tokens | val loss | expoente local | previsto |
+|---|---:|---:|---:|---:|
+| 1B | 1,278B | 3,4359 | — | — |
+| 3B | 3,000B | 3,3162 | −0,042 | — |
+| 6B | 6,000B | 3,2621 | −0,024 | — |
+| **10B** | 10,000B | **3,2300** | **−0,019** | 3,237 ± 0,008 ✅ |
+
+A desaceleração continua monotônica na val loss multilíngue (−0,042 → −0,024 → −0,019).
+
+**bpb na mesma régua** ([`bpb-pt-bee1g-marco-10B.json`](bpb-pt-bee1g-marco-10B.json); md5 do
+snapshot conferido contra a origem, `9765554a…`):
+
+| marco | tokens | `wiki/limpo` | exp. local | `corpus_multi_pt/limpo` | exp. local |
+|---|---:|---:|---:|---:|---:|
+| 1B | 1,278B | 1,1086 | — | 1,1085 | — |
+| 3B | 3,000B | 1,0808 | −0,030 | 1,0653 | −0,047 |
+| 6B | 6,000B | 1,0642 | −0,022 | 1,0524 | −0,018 |
+| **10B** | 10,000B | **1,0479** | **−0,030** | **1,0423** | **−0,019** |
+| âncora 350M | 21,75B | 0,9240 | | 0,9052 | |
+
+⚠️ No `wiki/limpo` o trecho 6B→10B saiu *mais* inclinado que o 3B→6B (−0,030 contra −0,022); no
+`corpus_multi_pt/limpo` não (−0,019 contra −0,018). Duas réguas de PT discordando sobre a
+inclinação de um trecho é ruído de holdout (276 docs, 0,94 MB), não sinal — §3: três leituras
+coincidentes, e aqui há duas que não coincidem. Fica registrado, não interpretado. Os seis
+holdouts caíram juntos: `wiki/sujo` 1,0015 → 0,9827, `corpus_multi_pt/sujo` 0,9816 → 0,9708.
+
+**Densidade de solução** ([`densidade-solucao-bee1g-marco-10B.json`](densidade-solucao-bee1g-marco-10B.json),
+mesmas 100 amostras de ruído dos outros marcos; guarda §2aa: bpb sem perturbação = âncora 1,0479):
+
+| σ | ΔL mediana 6B | ΔL mediana 10B | pareado 10B − 6B | 10B pior em |
+|---:|---:|---:|---:|---:|
+| 0,01 | +0,3136 | +0,3103 | −0,0025 | 44/100 |
+| 0,005 | +0,0766 | +0,0736 | −0,0012 | 43/100 |
+| 0,001 | +0,0033 | +0,0028 | −0,0001 | 44/100 |
+
+⭐ **A curvatura parou de subir.** 1B→3B achatou (0/100), 3B→6B afiou (96/100), 6B→10B **empatou**
+(44/100 — indistinguível de 50). A leitura de três pontos ("a densidade sobe no platô") era, de
+novo, uma leitura de dois trechos; com quatro pontos a série de curvatura em σ=0,01 é
+**3.618 → 2.735 → 3.136 → 3.103**: uma queda, uma subida, um platô. Sem tendência para
+extrapolar — e o par decisivo continua sendo o do fim (platô 15B contra 20B decaído), que é o que
+o 2609.08966 mede.

@@ -132,13 +132,15 @@ para SFT; densidade de solução a τ=0,90: CONSTANT 27%, MERGE 13%, COOLDOWN 0%
 `wiki/limpo` (o Bee-1G é base) e **as mesmas 100 amostras de ruído para todos os marcos** (pareado).
 **Guarda §2aa:** o bpb sem perturbação reproduziu a âncora nos dois marcos (1,1086 e 1,0808).
 
-| σ | ΔL mediana 1B | ΔL mediana 3B | ΔL mediana 6B | pareado 3B−1B (3B pior em) | pareado 6B−3B (6B pior em) |
-|---:|---:|---:|---:|---:|---:|
-| 0,01 | +0,362 | +0,274 | +0,314 | −0,096 (0/100) | **+0,044 (96/100)** |
-| 0,005 | +0,089 | +0,066 | +0,077 | −0,025 (0/100) | **+0,012 (88/100)** |
-| 0,001 | +0,0037 | +0,0024 | +0,0031 | −0,0012 (25/100) | +0,0007 (66/100) |
+| σ | ΔL 1B | ΔL 3B | ΔL 6B | ΔL 10B | 3B−1B (3B pior em) | 6B−3B (6B pior em) | 10B−6B (10B pior em) |
+|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0,01 | +0,362 | +0,274 | +0,314 | +0,310 | −0,096 (0/100) | **+0,044 (96/100)** | −0,003 (44/100) |
+| 0,005 | +0,089 | +0,066 | +0,077 | +0,074 | −0,025 (0/100) | **+0,012 (88/100)** | −0,001 (43/100) |
+| 0,001 | +0,0037 | +0,0024 | +0,0031 | +0,0028 | −0,0012 (25/100) | +0,0007 (66/100) | −0,0001 (44/100) |
 
-Curvatura `c = ΔL/σ²` (quadrática, como bacia), σ=0,005: **1B 3.558 → 3B 2.634 → 6B 3.063.**
+Curvatura `c = ΔL/σ²` (quadrática, como bacia), σ=0,005: **1B 3.558 → 3B 2.634 → 6B 3.063 → 10B 2.946.**
+(`marco_10B` medido em 2026-09-15: pareado 10B−6B **empata** em 44/100 — a bacia parou de
+estreitar; ver adendo em `bpb-marcos-bee1g-2026-09-10.md`.)
 
 🔴 **Com dois pontos eu tinha escrito "ao longo do platô a densidade sobe". O terceiro ponto
 derrubou:** a bacia alargou de 1B para 3B e **voltou a estreitar de 3B para 6B**, ainda no platô e
