@@ -332,7 +332,7 @@ mesmo adapter. Pequeno demais para trocar um veredito, grande o bastante para re
 de tolerância zero. *Mesma régua* (§2g) inclui a GPU; referência medida em outra máquina é
 referência a remedir.
 
-## Gate #1 — Muon × AdamW (2609.04577, 2609.11655) — construído, pod pendente
+## Gate #1 — Muon × AdamW (2609.04577, 2609.11655) — ✅ FECHADO (2026-09-16): MUON MELHOR, 7× o piso
 
 ⚠️ Regime: o artigo mede ≥ 20 tok/param. No 150M isso são 3B tokens por braço (US$ 53 nos 4);
 por isso um **`50m`** novo na ESCADA (16×448, 53,0M params) com 1,06B tokens = 20 tok/param —
@@ -341,7 +341,42 @@ o início do regime do artigo. `bee/muon.py` (NS5, RMS casado ao Adam; autoteste
 5070), `gate_muon_50m.sh` (4 braços pareados + 2 de sensibilidade a 3× lr) e consolidador.
 Sem âncora publicada para o 50M: as duas sementes de AdamW ancoram uma à outra.
 
-## Lote 2 — em curso (RunPod liberado em 2026-09-12; #3 subiu em 2026-09-13, #1 e #6 aguardam crédito)
+**Executado em 2026-09-16** no pod `bee-gates` (RTX 5090, EUR-IS-1, volume `bee-corpus-vol` montado;
+dados fatiados para o disco do container). 6 braços × 1,06B tokens, 2,0 h cada, ≈ US$ 13.
+Artefato: `gate1-muon-vs-adamw-50m-2026-09-16.json`.
+
+| braço | val final | ppl | tok/s |
+|---|---:|---:|---:|
+| AdamW s42 | 3,3424 | 28,3 | 144k |
+| AdamW s43 | 3,3494 | 28,5 | 144k |
+| **Muon s42** | **3,2963** | **27,0** | 134k |
+| **Muon s43** | **3,2922** | **26,9** | 134k |
+| AdamW 3× lr | 3,3874 | 29,6 | 144k |
+| Muon 3× lr | 3,3342 | 28,1 | 132k |
+
+**Pareado por semente: Muon − AdamW = −0,046 (s42) · −0,057 (s43) · média −0,052 nats.** Piso de
+ruído (|AdamW s42 − s43|) = 0,007 → a folga é **7× o piso, nas duas sementes**. Critério declarado
+antes de rodar: "Muon só ganha se a folga passar do piso". Passou.
+
+A curva inteira fica abaixo, não só o fim: −0,10 no passo 2.000, −0,05 estável do platô (passo
+12.500: 3,526 × 3,575) ao decaimento. **Sensibilidade a lr (§2f):** a 3× do lr de pico os dois
+degradam parecido (AdamW +0,045, Muon +0,038) e **o Muon a 3× (3,334) ainda bate o AdamW no lr
+dele (3,342)** — a vantagem não é artefato de o AdamW estar longe do ótimo. Custo: −8% de
+throughput (o Newton-Schulz-5).
+
+⚠️ O "1,3–1,9× de eficiência de token" do artigo **não é mensurável neste desenho** como
+cruzamento de curva: a loss final do AdamW só é alcançada durante o decaimento, e o AdamW no platô
+nunca chega ao platô do Muon antes de decair (o consolidador imprime 1,03–1,07×, que é a
+geometria do decaimento, não eficiência). Extrapolando a inclinação do platô do AdamW
+(−0,016 por 1.500 passos), 0,05 nats valem ~4.700 passos ≈ **1,3× de tokens** — *post-hoc*,
+vai rotulado assim.
+
+⭐ **Veredito: ADOTAR o Muon no próximo pré-treino.** É a primeira troca de otimizador do projeto
+que sai do ruído. O que este gate NÃO mostra: 1B params, 64k multilíngue, 4–8× Chinchilla — o
+`--otimizador muon` já está no `pretrain.py` sem tocar o caminho AdamW dos runs publicados, e a
+confirmação na escala seguinte é o primeiro marco do próximo run, não outro gate.
+
+## Lote 2 — em curso (RunPod liberado em 2026-09-12; #3 fechado 09-14, #1 fechado 09-16, #6 rodando)
 
 - **#1 Muon × AdamW (× Musec)** no Bee-150M, 2 sementes — decide o otimizador do próximo pré-treino.
 - **#3 catálogo perturbado + recusa sem template** no corpus agêntico, 3 sementes — ataca os 130

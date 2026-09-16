@@ -1,0 +1,63 @@
+{
+ "bracos": {
+  "adamw_lr3": {
+   "final": [
+    3.3874,
+    29.6
+   ],
+   "passos": 16000,
+   "tps": 144.2
+  },
+  "adamw_s42": {
+   "final": [
+    3.3424,
+    28.3
+   ],
+   "passos": 16000,
+   "tps": 144.3
+  },
+  "adamw_s43": {
+   "final": [
+    3.3494,
+    28.5
+   ],
+   "passos": 16000,
+   "tps": 144.3
+  },
+  "muon_lr3": {
+   "final": [
+    3.3342,
+    28.1
+   ],
+   "passos": 16000,
+   "tps": 132.4
+  },
+  "muon_s42": {
+   "final": [
+    3.2963,
+    27.0
+   ],
+   "passos": 16000,
+   "tps": 133.7
+  },
+  "muon_s43": {
+   "final": [
+    3.2922,
+    26.9
+   ],
+   "passos": 16000,
+   "tps": 133.7
+  }
+ },
+ "piso_ruido_adamw": 0.007000000000000117,
+ "pareado": {
+  "s42": -0.04610000000000003,
+  "s43": -0.05720000000000036,
+  "media": -0.051650000000000196
+ },
+ "eficiencia_token": {
+  "s42": 1.032258064516129,
+  "s43": 1.0666666666666667
+ },
+ "veredito": "MUON MELHOR nas duas sementes, alem do piso de ruido"
+}
