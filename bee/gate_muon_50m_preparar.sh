@@ -2,7 +2,7 @@
 # Prepara os dados do gate #1 NO POD: fatia de 1,06B tokens do dados22b (PT, 32k) + val + meta.
 # Copia para o disco do container para nao disputar I/O do volume com o run principal.
 set -eu
-ORIG=${ORIG:-/workspace/dados22b}; DEST=${DEST:-/workspace/gate_muon/dados}; N=${N:-1060000000}
+ORIG=${ORIG:-/workspace/dados22b}; DEST=${DEST:-/root/gate_muon/dados}; N=${N:-1060000000}   # DEST no disco do CONTAINER (/workspace e o volume de rede compartilhado com o run)
 mkdir -p "$DEST"
 python3 - "$ORIG" "$DEST" "$N" <<'PY'
 import sys, json, numpy as np, pathlib, hashlib

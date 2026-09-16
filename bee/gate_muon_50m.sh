@@ -22,7 +22,7 @@
 # Uso (no pod, em /workspace/gate_muon): bash bee/gate_muon_50m.sh
 set -u
 cd "$(dirname "$0")/.."
-DADOS=${DADOS:-/workspace/gate_muon/dados}      # train.bin (1,06B tok) + val.bin + meta.json
+DADOS=${DADOS:-/root/gate_muon/dados}           # train.bin (1,06B tok) + val.bin + meta.json — disco do container
 TOK=${TOK:-/workspace/bee-150m-pt-base}           # o tokenizador 32k do 150M/350M (so decodifica amostras)
 OUT=${OUT:-/workspace/gate_muon/saidas}
 LR=${LR:-3.3e-3}
