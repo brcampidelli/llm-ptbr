@@ -29,11 +29,12 @@ from transformers import AutoTokenizer
 pool, dest, tokp = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2]), sys.argv[3]
 meta = json.load(open(pool / "meta.json"))
 PT, NPT = meta["pt_tokens"], meta["naopt_tokens"]
-L = NPT // 7                                   # 1.428.572.570 por idioma
-assert NPT == 7 * L, (NPT, L)
-JPN0 = PT + 6 * L                              # jpn e' o ultimo bloco
+L = NPT // 7                                   # ≈1.428.572.570 por idioma (NPT nao e' multiplo exato de 7: sobra <7 tokens)
+assert abs(NPT - 7 * L) < 100, (NPT, L)
 tr = np.memmap(pool / "train.bin", dtype=np.uint16, mode="r")
 assert len(tr) == PT + NPT, (len(tr), PT + NPT)
+U, K, R = 1_000_000_000, 125_000_000, 8
+JPN0 = len(tr) - U                             # jpn e' o ULTIMO bloco (1,43B): os ultimos 1,0B tokens sao jpn com certeza
 tok = AutoTokenizer.from_pretrained(tokp)
 KANA = lambda s: any("぀" <= c <= "ヿ" for c in s)
 
@@ -41,12 +42,11 @@ def texto(a, b, n=400):
     return tok.decode(np.asarray(tr[a:a + n]).tolist())
 
 # ── GUARDAS de layout (§2t: a fatia errada nao da' erro — treinaria outro idioma em silencio)
-assert KANA(texto(JPN0 + 1000, 0)) and KANA(texto(JPN0 + L // 2, 0)) and KANA(texto(len(tr) - 5000, 0)), "bloco jpn sem kana"
-assert not KANA(texto(JPN0 - 100000, 0)), "kana antes do bloco jpn (cmn?) — layout diferente do medido"
-assert not KANA(texto(0, 0)) and not KANA(texto(PT // 2, 0)), "kana no bloco PT"
-print(f"layout confirmado: PT [0, {PT:,}) · jpn [{JPN0:,}, {len(tr):,}) = {L:,} tokens")
+assert all(KANA(texto(JPN0 + d, 0)) for d in (1000, K // 2, K, U // 2, U - 5000)), "fatia jpn sem kana em algum ponto"
+assert not KANA(texto(len(tr) - L - 100000, 0)), "kana antes do bloco jpn (deveria ser cmn) — layout diferente do medido"
+assert not KANA(texto(0, 0)) and not KANA(texto(PT // 2, 0)) and not KANA(texto(U - 5000, 0)), "kana no bloco PT"
+print(f"layout confirmado: PT [0, {PT:,}) · fatia jpn [{JPN0:,}, {len(tr):,}) = {U:,} tokens (bloco jpn ≈ {L:,})")
 
-U, K, R = 1_000_000_000, 125_000_000, 8
 jpn_u = np.asarray(tr[JPN0: JPN0 + U])                     # 1,0B unicos
 jpn_k = np.asarray(tr[JPN0: JPN0 + K])                     # os 125M primeiros (subconjunto dos unicos)
 jpn_r = np.tile(jpn_k, R)                                  # 1,0B = 125M x 8
