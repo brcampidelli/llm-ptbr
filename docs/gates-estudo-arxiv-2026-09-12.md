@@ -376,7 +376,60 @@ que sai do ruído. O que este gate NÃO mostra: 1B params, 64k multilíngue, 4�
 `--otimizador muon` já está no `pretrain.py` sem tocar o caminho AdamW dos runs publicados, e a
 confirmação na escala seguinte é o primeiro marco do próximo run, não outro gate.
 
-## Lote 2 — em curso (RunPod liberado em 2026-09-12; #3 fechado 09-14, #1 fechado 09-16, #6 rodando)
+## Gate #6 — repetição de idioma escasso em denso (2609.11917) — ✅ FECHADO (2026-09-17)
+
+**O artigo afirma:** modelo denso tolera repetir dado até R≈8 com degradação "leve" e só degrada
+com força além de R≈64; misturar o domínio repetido com um domínio grande não repetido e
+semanticamente próximo protege. Medido entre **gêneros em inglês**; aqui, entre **idiomas**.
+
+**Desenho (declarado antes de rodar):** Bee-50m com vocab 64k (67,3M params), lr fixo 2,5e-3 em
+todos (§2d), val = holdout limpo de jpn (sha1 % 100 < 2, 2,86M tokens). 2×2 fatorial + piso + R=3:
+
+| braço | dados | val jpn (nats) |
+|---|---|---:|
+| jpn_unico s42 / s43 | 1,0B únicos | 3,3303 / 3,3408 |
+| jpn_rep3 s42 | 333M × 3 = 1,0B | 3,4084 |
+| jpn_rep8 s42 / s43 | 125M × 8 = 1,0B | 3,4611 / 3,4616 |
+| jpn_unico_mix s42 | 1,0B únicos + 1,0B PT únicos | 3,4492 |
+| jpn_rep8_mix s42 | 125M × 8 + 1,0B PT únicos | 3,5277 |
+
+Piso de ruído (máx |s42 − s43|): **0,0105**. Pod `bee-gates` (5090), 7 braços, 21 h, ≈ US$ 21.
+Artefato: `gate6-repeticao-jpn-50m-2026-09-17.json`.
+
+| pergunta (critério: |Δ| > piso) | Δ | veredito |
+|---|---:|---|
+| (1) penalidade de R=8, sozinho | **+0,126** | 12× o piso — **não é "leve"** |
+| (4) penalidade de R=3, sozinho | **+0,052** | 5× o piso — tolerável, não grátis |
+| (2) penalidade de R=8 na mistura | +0,079 | a mistura corta 38% (**+0,047 de proteção, além do piso**) |
+| (3) efeito do PT ao lado, sem repetição | **+0,114** | o PT **piora** o jpn — o oposto do artigo |
+
+**Curva de penalidade por R: 1 → 0 · 3 → +0,052 · 8 → +0,126** (côncava: cada dobra de R custa
+menos que a anterior, mas R=8 já custa o equivalente a jogar fora ~40% do treino de jpn — pela
+inclinação do platô do braço único, +0,13 nats ≈ 6.000 passos dos 15.000). A penalidade **cresce
+com os passos** (R=8: +0,04 no passo 2,5k → +0,13 no fim; R=3: estabiliza em ~+0,04 até o
+decaimento e fecha em +0,05) e o rep8 termina com loss de treino 2,87 contra val 3,46: decorou.
+
+⭐ **O que muda no plano do próximo run:**
+1. **O déficit de dado não-PT é bloqueio para 143–170B tokens no pt-50 atual** (R≈7–9 por idioma
+   ≈ +0,12 nats em cada um). Para **63B** (R≈3) fica em +0,05 — tolerável. A saída barata é
+   **coletar mais não-PT antes de aumentar o orçamento** (o fineweb-2 tem muito além do prefixo de
+   1,43B por idioma que pegamos; custa CPU, não GPU).
+2. **Em 67M, dividir capacidade com uma escrita distante custa mais que repetir.** Isso é o
+   contrário do "mistura regulariza" do artigo — que mediu gêneros próximos. Para o Bee-1G isso
+   é o *mecanismo* por trás do que o T2 já tinha medido (a mistura troca 3,5× a favor do PT, e
+   quem paga é CJK/árabe). Não transfere direto ao 1B: o custo de dividir cai com a escala e a
+   penalidade de repetição também (artigo) — a confirmação é o bpb por idioma do run atual contra
+   um run futuro com mais dado, não outro gate de 50M.
+3. A mistura protege parcialmente: se repetir for inevitável, repetir **dentro** de um corpus com
+   PT único é melhor que repetir isolado — mas isso não compensa o custo de dividir capacidade.
+
+⚠️ **O que este gate não mostra (§2q):** 1B params; R entre 8 e 64; os outros 6 idiomas (jpn é o
+caso mais distante do PT — espanhol/francês podem se comportar como os "gêneros próximos" do
+artigo); a diluição real de 7% do pt-50 (aqui 50/50, para isolar o mecanismo); e o efeito no PT.
+Duas sementes só nos braços sozinhos; mix e rep3 com uma. Um empate não refutaria o artigo; o que
+se mediu é que o cenário do Bee está fora do regime "leve" dele.
+
+## Lote 2 — ✅ FECHADO (2026-09-17): #3 em 09-14, #1 em 09-16, #6 em 09-17 — ≈ US$ 42 de GPU nos três
 
 - **#1 Muon × AdamW (× Musec)** no Bee-150M, 2 sementes — decide o otimizador do próximo pré-treino.
 - **#3 catálogo perturbado + recusa sem template** no corpus agêntico, 3 sementes — ataca os 130
