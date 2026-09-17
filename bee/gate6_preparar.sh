@@ -11,6 +11,8 @@
 #   jpn_rep8       125M tokens unicos de jpn, LADRILHADOS 8x = 1,0B          (R=8, so' jpn)
 #   jpn_unico_mix  1,0B jpn unicos + 1,0B PT unicos = 2,0B                   (R=1, misturado)
 #   jpn_rep8_mix   125M jpn x 8 = 1,0B + 1,0B PT unicos = 2,0B               (R=8, misturado)
+#   jpn_rep3       333M tokens unicos de jpn, LADRILHADOS 3x = 1,0B          (R=3, so' jpn — acrescentado
+#                  2026-09-17 apos medir +0,13 nats em R=8: R≈3 e' o regime de um run de 63B tokens)
 #   val.bin de TODOS = holdout limpo de jpn (pool/val_naopt_partes/jpn.bin, sha1%100<2, 2,8M tok)
 # ⚠️ O ladrilho e' embaralhado pelo pretrain junto com tudo (permutacao de blocos): as 8 copias
 #    ficam espalhadas, nao em epocas sequenciais. E' o regime de um corpus misto com idioma
@@ -53,14 +55,20 @@ jpn_r = np.tile(jpn_k, R)                                  # 1,0B = 125M x 8
 pt_u = np.asarray(tr[0: U])                                # 1,0B PT unicos
 val = np.fromfile(pool / "val_naopt_partes" / "jpn.bin", dtype=np.uint16)
 assert KANA(tok.decode(val[:300].tolist())), "val jpn sem kana"
+K3, R3 = U // 3, 3
+jpn_r3 = np.tile(np.asarray(tr[JPN0: JPN0 + K3]), R3)     # 1,0B = 333M x 3 (subconjunto dos unicos)
 bracos = {
+    "jpn_rep3":      (jpn_r3,                         {"unicos_jpn": K3, "R": R3, "pt": 0}),
     "jpn_unico":     (jpn_u,                          {"unicos_jpn": U, "R": 1, "pt": 0}),
     "jpn_rep8":      (jpn_r,                          {"unicos_jpn": K, "R": R, "pt": 0}),
     "jpn_unico_mix": (np.concatenate([jpn_u, pt_u]),  {"unicos_jpn": U, "R": 1, "pt": U}),
     "jpn_rep8_mix":  (np.concatenate([jpn_r, pt_u]),  {"unicos_jpn": K, "R": R, "pt": U}),
 }
 for nome, (arr, info) in bracos.items():
-    d = dest / nome; d.mkdir(parents=True, exist_ok=True)
+    d = dest / nome
+    if (d / "train.bin").exists() and (d / "train.bin").stat().st_size == 2 * len(arr):
+        print(f"  {nome:14s} ja existe ({len(arr):,} tok) — pulando"); continue
+    d.mkdir(parents=True, exist_ok=True)
     arr.astype(np.uint16).tofile(d / "train.bin"); val.tofile(d / "val.bin")
     m = json.load(open(pool / "meta.json")); m.update({"_gate": "6_repeticao_denso", "_braco": nome, **info,
                                                        "_val": "holdout jpn limpo (val_naopt_partes/jpn.bin)",
@@ -72,6 +80,8 @@ for nome, (arr, info) in bracos.items():
 rep = bracos["jpn_rep8"][0]
 assert np.array_equal(rep[:2049], rep[K:K + 2049]) and np.array_equal(rep[:2049], rep[7 * K:7 * K + 2049]), "ladrilho nao repete"
 assert not np.array_equal(bracos["jpn_unico"][0][:2049], bracos["jpn_unico"][0][K:K + 2049]), "unico repete?!"
+r3 = bracos["jpn_rep3"][0]
+assert np.array_equal(r3[:2049], r3[K3:K3 + 2049]) and np.array_equal(r3[:2049], r3[2 * K3:2 * K3 + 2049]), "ladrilho x3 nao repete"
 print("guardas: kana nos 3 pontos do bloco jpn e no val, sem kana no PT; ladrilho repete o bloco 0 nas copias 1 e 7; unico nao repete — OK")
 PY
 du -sh "$DEST"/*

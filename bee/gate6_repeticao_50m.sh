@@ -9,6 +9,7 @@
 # DESENHO (declarado antes de rodar) — 2x2 fatorial + 2 sementes extras:
 #   {jpn unico 1,0B | jpn 125M x 8} x {sozinho | + 1,0B PT unico}, semente 42
 #   + jpn_unico s43 e jpn_rep8 s43 (PISO DE RUIDO e a penalidade de repeticao com 2 sementes)
+#   + jpn_rep3 s42 (333M x 3): a penalidade no R do run de 63B — acrescentado apos o R=8 dar +0,13
 #   Modelo: ESCADA 50m com --vocab 64000 = 67,3M params instanciados (dry-run local) — a escala "80M" do artigo.
 #   LR EXPLICITO 2,5e-3 em todos (§2d: com --lr 0 a Step Law derivaria LR diferente para 1B e 2B).
 #   Metrica: val loss (nats/token) no HOLDOUT LIMPO DE JPN, mesma regua/tokenizador em todos.
@@ -56,4 +57,6 @@ braco jpn_unico_mix_s42 jpn_unico_mix 42
 braco jpn_rep8_mix_s42  jpn_rep8_mix  42
 braco jpn_unico_s43     jpn_unico     43
 braco jpn_rep8_s43      jpn_rep8      43
+# acrescentado 2026-09-17 (apos +0,13 nats em R=8): R=3 e' o regime de um run de 63B tokens no pt-50
+braco jpn_rep3_s42      jpn_rep3      42
 diz "todos os bracos executados — consolidar com bee/gate6_ler.py --saidas $OUT"

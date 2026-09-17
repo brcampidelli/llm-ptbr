@@ -1,7 +1,7 @@
 """Consolida o gate #6 (repeticao de idioma escasso em denso, Bee-50M/64k) a partir dos LOGS — por codigo (§2z).
 
 Le <saidas>/<braco>.log e extrai a serie de VALIDACAO (holdout limpo de jpn, nats/token) e a final.
-Bracos: jpn_unico_s42/s43 · jpn_rep8_s42/s43 · jpn_unico_mix_s42 · jpn_rep8_mix_s42.
+Bracos: jpn_unico_s42/s43 · jpn_rep8_s42/s43 · jpn_unico_mix_s42 · jpn_rep8_mix_s42 · jpn_rep3_s42 (extra).
 
 Criterio declarado ANTES de ler:
   PISO = max(|unico s42 − s43|, |rep8 s42 − s43|)  — duas sementes ALERTAM (§2x); e' o que ha'.
@@ -82,9 +82,15 @@ def main() -> int:
         out["protecao"] = prot
     print("  (3) " + leia("efeito do PT no jpn (unico_mix − unico)", T))
     out.update({"P_sozinho": P_so, "P_mix": P_mix, "T_pt": T})
+    r3 = fin("jpn_rep3_s42")
+    if r3 is not None and mu is not None:
+        P3 = r3 - mu
+        out["P_rep3"] = P3
+        print("  (4) " + leia("penalidade de repeticao em R=3, sozinho (rep3 − unico)", P3)
+              + (f"   [R=8: {P_so:+.4f}]  -> penalidade por R: 1:0 · 3:{P3:+.3f} · 8:{P_so:+.3f}" if P_so is not None else ""))
 
     print("\nCURVA (val jpn a cada 500 passos — a repeticao dói cedo ou tarde?):")
-    for n in ("jpn_unico_s42", "jpn_rep8_s42", "jpn_unico_mix_s42", "jpn_rep8_mix_s42"):
+    for n in ("jpn_unico_s42", "jpn_rep3_s42", "jpn_rep8_s42", "jpn_unico_mix_s42", "jpn_rep8_mix_s42"):
         if n in B and B[n]["serie"]:
             s = B[n]["serie"]; k = max(1, len(s) // 8)
             print(f"  {n:20s} " + " ".join(f"{p//1000}k:{l:.3f}" for p, l in s[::k]) + f"  fim:{s[-1][1]:.3f}")
