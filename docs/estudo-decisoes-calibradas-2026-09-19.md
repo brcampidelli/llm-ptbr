@@ -271,3 +271,51 @@ dados em PT** (§2g). Sem isso, "40–200×" é a medição deles em inglês nas
 
 Artefatos deste estudo (scratch, não versionados): textos completos dos 7 artigos, `llms-full.txt`
 da TypeSafe (874 KB), árvore do adapter, `busca.json` com os 105 abstracts.
+
+---
+
+## 8. G-C1 medido (2026-09-19) — o Bee-350M já decide calibrado onde é SFT, e é superconfiante onde não é
+
+`comeia/eval/calibracao_agentica.py` · 12 adapters (e13, C-full, recusa específica, catálogo perturbado
+× 3 sementes) · holdout balanceado (536 tool / 268 texto) · RTX 5070 · transformers 5.14.1 · ~3,4 min
+por adapter, um forward por caso + um lote por catálogo (zero geração). Artefato:
+`calibracao-agentica-350m-2026-09-19.json`. **Guarda de aparato:** a escolha de ferramenta lida por
+logit reproduz o greedy da eval em **98,1–98,8%** dos casos (mesma régua, §2g); e dois defeitos foram
+pegos antes de confiar — o `--data` default apontava para o holdout ANTIGO (14 ferramentas: under-call
+95%, AUROC 0,50, visto ao ler o top-5 do 1º token), e o `transformers 5.14.1` isolado tinha sido
+apagado pela limpeza do Temp (reinstalado, versões impressas no log).
+
+| braço (média de 3 sementes) | Noul "chamar?" AUROC · ECE · conf>0,99 | Choice "qual?" acc · ECE · AUROC | fim-a-fim acc@25 → @50 → @100 · ECE · AUROC |
+|---|---|---|---|
+| e13 (recusa em template) | **0,928** · 0,083 · 39% | 0,923 · **0,042** · 0,915 | **0,949** → 0,899 → 0,827 · 0,169 · 0,658 |
+| C-full (resposta útil) | 0,901 · **0,127** · 36% | 0,918 · 0,039 · 0,937 | 0,920 → 0,866 → 0,785 · 0,208 · 0,643 |
+| recusa específica | 0,931 · 0,076 · 39% | 0,912 · 0,049 · 0,920 | 0,929 → 0,888 → 0,828 · 0,160 · 0,647 |
+| catálogo perturbado | 0,901 · 0,115 · 35% | 0,922 · 0,041 · 0,938 | 0,939 → 0,880 → 0,804 · 0,193 · 0,646 |
+
+**Previsão pré-registrada × medido:** AUROC previsto 0,70–0,85 → medido **0,90–0,93** (errei para o
+lado pessimista: a confiança do Bee **não** é o atalho da §2u — o holdout balanceado tirou o atalho e a
+confiança sobreviveu); "ECE > 0,15" → **não** no Noul (0,08–0,13) nem no Choice (0,04), **sim** no
+fim-a-fim (0,16–0,21). O que os artigos previam e se confirmou: SFT calibra (Choice ECE 0,04 em 12/12).
+
+Três achados, todos com 3 sementes por braço:
+
+1. **A escolha de ferramenta já é calibrada e discriminativa** (ECE 0,03–0,06, AUROC 0,89–0,95, acc
+   0,90–0,93 em catálogos de 2–6). Nenhuma intervenção necessária — e o Bee ganha de graça a garantia
+   de esquema que a TypeSafe vende ("0% de alucinação"): `--restrito-ferramenta` já a dá desde o E10.
+2. **A decisão de chamar separa bem e é superconfiante em todos os braços**: 31–47% dos casos com
+   confiança > 0,99; o pior ECE (C-full, 0,127) coincide com o maior under-call por logit (**25,9%**
+   dos casos de ferramenta abaixo de p=0,5 contra 15,6% do e13) — o modelo diz "não chamo" com 99% e
+   deveria chamar. É onde o G-C3 (temperatura/isotônica, US$ 0) tem o que fazer, e é uma **leitura
+   nova do E19**: os 5,9 pp de execução que o C-full custou são, em parte, **confiança mal posta**,
+   não capacidade — um limiar movido de 0,5 para ~0,35 recuperaria chamadas sem retreinar
+   (a medir no G-C3, com o custo em over-call ao lado, §2r).
+3. **Roteamento por confiança funciona hoje, sem treinar** — o quartil mais confiante acerta
+   **92–95%** contra 79–83% no total — **e tem teto**: a confiança p_call·p_tool não enxerga erro de
+   argumento (AUROC fim-a-fim 0,64–0,66; o #4b mediu que a maioria dos erros restantes é de
+   argumento). A terceira pergunta é o Noul de auto-avaliação do 2603.06604 ("os argumentos estão
+   completos e corretos? Sim/Não" lido no 1º token) — uma linha a mais no mesmo instrumento; entra
+   como G-C1b.
+
+⚠️ O que este gate não mostra: calibração em catálogos inéditos (o holdout é balanceado por
+construção, catálogos de 1–6); a confiança sob `--restrito-ferramenta` (aqui o Choice é livre sobre
+o catálogo — mas o greedy restrito concorda em 98%); e o custo do limiar movido (G-C3 mede).
