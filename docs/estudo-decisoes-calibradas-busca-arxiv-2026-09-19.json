@@ -1,0 +1,737 @@
+[
+ {
+  "id": "2609.20004",
+  "titulo": "EPIG-Tree: Compute-Optimal Branching for Gradient-Efficient Reinforcement Learning",
+  "autores": "Authors: Nikita Khomich , Leopold Hermansson , Ido Hakimi",
+  "data": "17 September, 2026",
+  "abstract": "Reward-based reinforcement"
+ },
+ {
+  "id": "2609.18286",
+  "titulo": "What Counts as Strategic Reasoning? A Systematic Mapping of Chess Research on Humans, Engines, and Language Models",
+  "autores": "Authors: Paolo Ciancarini , Remo Pareschi",
+  "data": "16 September, 2026",
+  "abstract": "Chess has long served as a model domain for studying search, expertise, decision"
+ },
+ {
+  "id": "2609.16601",
+  "titulo": "SAVOR: Self-Aware Visual Grounding via Confidence- Calibrated Reinforcement Learning for Multimodal Hallucination Mitigation",
+  "autores": "Authors: Zixiu Ding , Zilin Zhao , Yingjie He , Xinlang Kang , Guansu Wang , Wei Zhang",
+  "data": "14 September, 2026",
+  "abstract": "Multimodal large language models (MLLMs) have made strong progress on visual question answering and image captioning, yet they still produce fluent claims about objects, attributes, or relations that are not grounded in the image. Many remedies either modify decoding at test time, which adds latency, or fine tune with preferences such as DPO variants, which teach which answer is preferred but not when the model's own answer is unreliable. We argue that calibrated"
+ },
+ {
+  "id": "2609.01609",
+  "titulo": "DiDrive: A Risk-Aware Hierarchical Diffusion Framework for Safe Offline Reinforcement Learning in Autonomous Driving",
+  "autores": "Authors: Qisong Guo , Jingtang Chen , Zhilin Chen , Pei Xu , Mingjian Fu , Wenxi Liu , Yuanlong Yu",
+  "data": "4 June, 2026",
+  "abstract": "While diffusion models effectively capture multimodal behavioral priors for autonomous driving, offline reinforcement"
+ },
+ {
+  "id": "2608.13878",
+  "titulo": "Knowledge-Data-Dual-Driven Reinforcement Learning for Autonomous Vehicle Control in Mixed Traffic",
+  "autores": "Authors: Jie Fang , Wei Zheng , Mengyun Xu , Eui-Jin Kim",
+  "data": "13 August, 2026",
+  "abstract": "In mixed traffic, decision"
+ },
+ {
+  "id": "2608.08631",
+  "titulo": "Trajectory Design and Budgeted Querying for Digital Twin Calibration",
+  "autores": "Authors: Vladyslava Spitkovska , Dmytro Kuzmenko",
+  "data": "9 August, 2026",
+  "abstract": "Digital-twin calibration"
+ },
+ {
+  "id": "2608.07118",
+  "titulo": "How Much, Then Where: Credit-Conserving Action-to-Token Allocation for Multi-Turn Agent Reinforcement Learning",
+  "autores": "Authors: Lichao Ma , Yang Sun , Shuaitao Zhao , Yangyi Fang , Cong Qin , Xiaoliang Fu , Yuhang Tian , Yuchen Wei , Junbo Zhu , Yang Wei , Lu Pan , Jiaye Lin",
+  "data": "7 August, 2026",
+  "abstract": "Credit assignment in multi-turn agent reinforcement"
+ },
+ {
+  "id": "2608.05365",
+  "titulo": "Unified Planning- Learning Framework for Robust UUV Navigation Under Partial Observability",
+  "autores": "Authors: Md Ether Deowan , Eleni Kelasidi",
+  "data": "5 August, 2026",
+  "abstract": "This paper presents an observation-only autonomy framework for Unmanned Underwater Vehicles (UUVs) navigation in dynamic underwater environments that integrates persistent occupancy mapping, global clearance-aware planning, and risk-aware local control. The proposed pipeline constructs occupancy maps solely from onboard sonar and depth image observations, adapts a clearance-constrained global planner (GP) to provide long-horizon structure, and integrates a reinforcement"
+ },
+ {
+  "id": "2608.03223",
+  "titulo": "Agentic Reinforcement Learning with Self-Distilled Reward Shaping",
+  "autores": "Authors: Ranxu Zhang , Guinan Chen , Chenshaodong , Jinghao Lin , Xiaozhou Xu , Sunzhe , Yanyong Zhang , Chao Wang",
+  "data": "4 August, 2026",
+  "abstract": "Agentic reinforcement"
+ },
+ {
+  "id": "2607.27574",
+  "titulo": "Policy Gradient Steering: Interventions from Behavioral Objectives",
+  "autores": "Authors: Yoann Poupart , Aurélie Beynier , Nicolas Maudet",
+  "data": "29 July, 2026",
+  "abstract": "Activation steering has emerged in large language models as a lightweight alternative for dynamically changing a model's behavior at inference time. However, we show that existing steering methods fail to steer even a simple policy in a two-route gridworld environment. To address this limitation, we propose Policy Gradient Steering (PGS), which formulates steering as a reinforcement"
+ },
+ {
+  "id": "2607.27132",
+  "titulo": "Minimal Markovization via Stable Quotients in Holonomy-Cover Decision Processes",
+  "autores": "Authors: Zuyuan Zhang , Yongshan Chen , Mahdi Imani , Tian Lan",
+  "data": "29 July, 2026",
+  "abstract": "An agent acting under partial observability must retain a recursively updateable statistic of history that restores the Markov property, but the smallest such statistic is generally unknown. We characterize this minimal Markov sufficient statistic for holonomy-cover decision"
+ },
+ {
+  "id": "2607.08700",
+  "titulo": "Do You Need a Frontier Model as a Citation Verifier? Benchmarking Rubric LLMs for Deep-Research Source Attribution",
+  "autores": "Authors: Ethan Leung , Elias Lumer , Corey Feld , Austin Huber , Vamse Kumar Subbiah , Kevin Paul",
+  "data": "9 July, 2026",
+  "abstract": "Reinforcement"
+ },
+ {
+  "id": "2607.06993",
+  "titulo": "Large Behavior Model: A Promptable Digital Twin of the Retail Customer",
+  "autores": "Authors: Wachiravit Modecrua , Krittin Pachtrachai , Touchapon Kraisingkorn",
+  "data": "10 July, 2026",
+  "abstract": "Customer behavior modeling underpins recommendation, marketing, and decision"
+ },
+ {
+  "id": "2607.03528",
+  "titulo": "Aligning Language Models with Selective Prediction",
+  "autores": "Authors: Gaoxiang Luo , Yifan Wu , Sinian Zhang , Aryan Deshwal , Ju Sun",
+  "data": "3 July, 2026",
+  "abstract": "Large language models (LLMs) are increasingly deployed as critical decision"
+ },
+ {
+  "id": "2607.03025",
+  "titulo": "Human-Centric Reflective Architecture for Human-AI Collaborative Decision -Making",
+  "autores": "Authors: Andreas Kouridakis , Dimitrios Patiniotis Spyropoulos , George Vouros",
+  "data": "3 July, 2026",
+  "abstract": "The use of Large Language Models (LLMs) across diverse areas of human activity-ranging from everyday tasks to safety-critical applications-aims to enhance decision"
+ },
+ {
+  "id": "2606.29863",
+  "titulo": "KbSD: Knowledge Boundary aware Self-Distillation for Behavioral Calibration in Agentic Search",
+  "autores": "Authors: Tao Feng , Xinke Jiang , Chao Wu",
+  "data": "29 June, 2026",
+  "abstract": "Agentic search equips large language models with dynamic retrieval abilities, but existing reinforcement"
+ },
+ {
+  "id": "2606.27483",
+  "titulo": "Internalizing the Future: A Unified Agentic Training Paradigm for World Model Planning",
+  "autores": "Authors: Xuan Zhang , Zhijian Zhou , Lingfeng Qiao , Yulei Qin , Ke Li , Xing Sun , Xiaoyu Tan , Chao Qu , Yuan Qi",
+  "data": "25 June, 2026",
+  "abstract": "Large language model (LLM) agents have demonstrated strong capability in sequential decision"
+ },
+ {
+  "id": "2606.12808",
+  "titulo": "SymQNet: Amortized Acquisition for Low-Latency Adaptive Hamiltonian Learning",
+  "autores": "Authors: Yash Vardhan Tomar , Dheeraj Peddireddy",
+  "data": "22 July, 2026",
+  "abstract": "Adaptive Hamiltonian learning"
+ },
+ {
+  "id": "2606.09958",
+  "titulo": "Uncertainty-Aware Motion Planning for Autonomous Driving in Mixed Traffic Environment",
+  "autores": "Authors: Ming Cheng , Hao Chen , Ziyi Yang , Ziluowen Luo , Senzhang Wang",
+  "data": "8 June, 2026",
+  "abstract": "In mixed-traffic environments where autonomous and human-driven vehicles may co-exist, motion planning for autonomous vehicles requires anticipating the future behaviors of surrounding human drivers. Existing reinforcement"
+ },
+ {
+  "id": "2606.08543",
+  "titulo": "PAEC: Position-Aware Entropy Calibration for LLM Reasoning in RLVR",
+  "autores": "Authors: Shumeng Yang , Yisu Liu , Jiayi Zheng , Zhaohui Yang , Linjing Li",
+  "data": "7 June, 2026",
+  "abstract": "Reinforcement"
+ },
+ {
+  "id": "2606.08360",
+  "titulo": "Generative Frontier Planning for Adaptive Peer-Referral Recruitment under Covariate-Dependent Arrivals",
+  "autores": "Authors: Lingkai Kong , Hezi Jiang , Andrew Ma , Keyu Wang , Akseli Kangaslahti , Milind Tambe",
+  "data": "6 June, 2026",
+  "abstract": "Peer-referral recruitment systems such as respondent-driven sampling are critical for studying and intervening on hidden populations affected by infectious diseases. To accelerate recruitment, public health agencies must adaptively allocate limited referral resources across multiple rounds, where current decisions"
+ },
+ {
+  "id": "2606.05885",
+  "titulo": "When Denser Credit Is Not Enough: Evidence- Calibrated Policy Optimization for Long-Horizon LLM Agent Training",
+  "autores": "Authors: Yuanfan Li , Qi Zhou , Wenjing Duan , Lu Chen",
+  "data": "4 June, 2026",
+  "abstract": "Long-horizon LLM agents require reinforcement"
+ },
+ {
+  "id": "2605.27720",
+  "titulo": "Bayesian Deployment Approval for Learned Landing Controllers under Finite Rollout Validation",
+  "autores": "Authors: Fei Jiang , Lei Yang",
+  "data": "26 May, 2026",
+  "abstract": "Reinforcement"
+ },
+ {
+  "id": "2605.25739",
+  "titulo": "The Behavioral Credibility Trilemma: When Calibrated Autonomy Becomes Impossible",
+  "autores": "Authors: Lauri Lovén , Nam Do , Hassan Mehmood , Dinesh Kumar Sah , Sasu Tarkoma",
+  "data": "19 July, 2026",
+  "abstract": "We prove that no reinforcement"
+ },
+ {
+  "id": "2605.23560",
+  "titulo": "SafeSABR: Risk- Calibrated Adaptive Bitrate Streaming over Starlink Networks",
+  "autores": "Authors: Hongjun Xie , Jiahang Zhu , Zhiming Shao , Chao Fan , Zenghui Zhang , Genke Yang , Pengcheng Luo",
+  "data": "26 May, 2026",
+  "abstract": "Starlink, as a representative low Earth orbit (LEO) satellite broadband system, makes high-bitrate video streaming possible in regions where terrestrial broadband is unavailable. However, its access links exhibit rapid throughput fluctuations caused by satellite mobility and handovers. Existing learned"
+ },
+ {
+  "id": "2605.17458",
+  "titulo": "ClaHF: A Human Feedback-inspired Reinforcement Learning Framework for Improving Classification Tasks",
+  "autores": "Authors: Tianxiang Xu , Xiaoyan Zhu , Xin Lai , Jiayin Wang",
+  "data": "17 May, 2026",
+  "abstract": "Text classification models are typically trained via supervised fine-tuning (SFT). However, SFT essentially performs behavior cloning from instance-wise labels and thus fails to adequately capture relative preference relations among samples, which limits the model's ability to shape decision"
+ },
+ {
+  "id": "2605.15889",
+  "titulo": "A Multi-Layer Cloud-IDS Pipeline with LLM and Adaptive Q- Learning Calibration",
+  "autores": "Authors: Syed Waqas Ali , Ibrar Ali Shah , Farzana Zahid , Daniyal Munir , Hans D. Schotten",
+  "data": "15 May, 2026",
+  "abstract": "Security in cloud computing has become a major concern due to several factors such as layered cloud architectures, dynamic environments, and exposure to unseen or zero-day attacks. Moreover, intrusion detection systems (IDS) typically operate at specific layers and rely heavily on machine learning"
+ },
+ {
+  "id": "2605.12653",
+  "titulo": "Plan Before You Trade: Inference-Time Optimization for RL Trading Agents",
+  "autores": "Authors: Eun Go , Rohan Deb , Arindam Banerjee",
+  "data": "12 May, 2026",
+  "abstract": "Reinforcement"
+ },
+ {
+  "id": "2605.12462",
+  "titulo": "Towards Affordable Energy: A Gymnasium Environment for Electric Utility Demand-Response Programs",
+  "autores": "Authors: Jose E. Aguilar Escamilla , Lingdong Zhou , Xiangqi Zhu , Huazheng Wang",
+  "data": "2 September, 2026",
+  "abstract": "Extreme weather and volatile wholesale electricity markets expose residential consumers to catastrophic financial risks, yet demand response at the distribution level remains an underutilized tool for grid flexibility and energy affordability. While a demand-response program can shield consumers by issuing financial credits during high-price periods, optimizing this sequential decision"
+ },
+ {
+  "id": "2605.11436",
+  "titulo": "Agent-BRACE: Decoupling Beliefs from Actions in Long-Horizon Tasks via Verbalized State Uncertainty",
+  "autores": "Authors: Joykirat Singh , Zaid Khan , Archiki Prasad , Justin Chih-Yao Chen , Akshay Nambi , Hyunji Lee , Elias Stengel-Eskin , Mohit Bansal",
+  "data": "11 May, 2026",
+  "abstract": "Large language models (LLMs) are increasingly deployed on long-horizon tasks in partially observable environments, where they must act while inferring and tracking a complex environment state over many steps. This leads to two challenges: partial observability requires maintaining uncertainty over unobserved world attributes, and long interaction history causes context to grow without bound, diluting task-relevant information. A principled solution to both challenges is a belief state: a posterior distribution over environment states given past observations and actions, which compactly encodes history for decision"
+ },
+ {
+  "id": "2605.09818",
+  "titulo": "Learning to Compress Time-to-Control: A Reinforcement Learning Framework for Chronic Disease Management",
+  "autores": "Authors: Prabhjot Singh , Abhishek Gupta , Chris Betz , Abe Flansburg , Brett Ives , Sudeep Lama , Jung Hoon Son",
+  "data": "10 May, 2026",
+  "abstract": "Reinforcement"
+ },
+ {
+  "id": "2605.08516",
+  "titulo": "OracleTSC: Oracle-Informed Reward Hurdle and Uncertainty Regularization for Traffic Signal Control",
+  "autores": "Authors: Darryl Jacob , Xinyu Liu , Muchao Ye , Xiaoyong Yuan , Pan He",
+  "data": "8 May, 2026",
+  "abstract": "Transparent decision"
+ },
+ {
+  "id": "2605.06116",
+  "titulo": "Policy-Guided Stepwise Model Routing for Cost-Effective Reasoning",
+  "autores": "Authors: Wenwen Si , Insup Lee , Osbert Bastani",
+  "data": "7 May, 2026",
+  "abstract": "Inference-time computation has greatly enhanced the performance of large language models (LLMs) on challenging reasoning tasks, but this strategy can incur high inference costs. One solution is to route intermediate chain-of-thought (CoT) states to language models of different sizes; however, existing approaches rely on handcrafted routing strategies that limit performance, or on training large process reward models that may be infeasible in many applications. We formulate stepwise model routing as a constrained decision"
+ },
+ {
+  "id": "2605.06066",
+  "titulo": "Causal Reinforcement Learning for Complex Card Games: A Magic The Gathering Benchmark",
+  "autores": "Authors: Cristiano da Costa Cunha , Ajmal Mian , Tim French , Wei Liu",
+  "data": "7 May, 2026",
+  "abstract": "Causal reinforcement"
+ },
+ {
+  "id": "2605.05626",
+  "titulo": "When2Speak: A Dataset for Temporal Participation and Turn-Taking in Multi-Party Conversations for Large Language Models",
+  "autores": "Authors: Vihaan Nama , Shreya Mendi , Zian Ye , Brinnae Bent",
+  "data": "6 May, 2026",
+  "abstract": "Large Language Models (LLMs) excel at generating contextually appropriate responses but remain poorly calibrated"
+ },
+ {
+  "id": "2604.25683",
+  "titulo": "K-CARE: Knowledge-driven Symmetrical Contextual Anchoring and Analogical Prototype Reasoning for E-commerce Relevance",
+  "autores": "Authors: Chen Yifei , Tian Zhixing , Wang Chenyang , Cheng Ziguang",
+  "data": "28 April, 2026",
+  "abstract": "This paper targets e-commerce search relevance. While Large Language Models (LLMs) have demonstrated significant potential in this field, they often encounter performance bottlenecks in persistent 'corner cases' within complex industrial scenarios. Existing research primarily focuses on optimizing reasoning trajectories via Reinforcement"
+ },
+ {
+  "id": "2604.18401",
+  "titulo": "CAPO: Critic-Guided Action-Aligned Policy Optimization for Advancing LLM Agent Capabilities",
+  "autores": "Authors: Daoyu Wang , Qingchuan Li , Mingyue Cheng , Jie Ouyang , Shuo Yu , Chunli Liu , Shijin Wang , Qi Liu , Enhong Chen",
+  "data": "10 August, 2026",
+  "abstract": "Reinforcement"
+ },
+ {
+  "id": "2604.10664",
+  "titulo": "Preference-Agile Multi-Objective Optimization for Real-time Vehicle Dispatching",
+  "autores": "Authors: Jiahuan Jin , Wenhao Zhao , Rong Qu , Jianfeng Ren , Xinan Chen , Qingfu Zhang , Ruibin Bai",
+  "data": "12 April, 2026",
+  "abstract": "Multi-objective optimization (MOO) has been widely studied in literature because of its versatility in human-centered decision"
+ },
+ {
+  "id": "2603.29656",
+  "titulo": "6GAgentGym: Tool Use, Data Synthesis, and Agentic Learning for Network Management",
+  "autores": "Authors: Jiao Chen , Jianhua Tang , Xiaotong Yang , Zuohong Lv",
+  "data": "31 March, 2026",
+  "abstract": "Autonomous 6G network management requires agents that can execute tools, observe the resulting state changes, and adapt their decisions"
+ },
+ {
+  "id": "2603.29492",
+  "titulo": "Calibrated Confidence Expression for Radiology Report Generation",
+  "autores": "Authors: David Bani-Harouni , Chantal Pellegrini , Julian Lüers , Su Hwan Kim , Markus Baalmann , Benedikt Wiestler , Rickmer Braren , Nassir Navab , Matthias Keicher",
+  "data": "31 March, 2026",
+  "abstract": "Safe deployment of Large Vision-Language Models (LVLMs) in radiology report generation requires not only accurate predictions but also clinically interpretable indicators of when outputs should be thoroughly reviewed, enabling selective radiologist verification and reducing the risk of hallucinated findings influencing clinical decisions"
+ },
+ {
+  "id": "2603.17328",
+  "titulo": "A Progressive Visual-Logic-Aligned Framework for Ride-Hailing Adjudication",
+  "autores": "Authors: Weiming Wu , Zi-Jian Cheng , Jie Meng , Peng Zhen , Shan Huang , Qun Li , Guobin Wu , Lan-Zhe Guo",
+  "data": "17 March, 2026",
+  "abstract": "The efficient adjudication of responsibility disputes is pivotal for maintaining marketplace fairness. However, the exponential surge in ride-hailing volume renders manual review intractable, while conventional automated methods lack the reasoning transparency required for quasi-judicial decisions"
+ },
+ {
+  "id": "2603.12284",
+  "titulo": "Bayesian Conservative Policy Optimization (BCPO): A Novel Uncertainty- Calibrated Offline Reinforcement Learning with Credible Lower Bounds",
+  "autores": "Authors: Debashis Chatterjee",
+  "data": "5 March, 2026",
+  "abstract": "Offline reinforcement"
+ },
+ {
+  "id": "2603.07270",
+  "titulo": "Adaptive Double-Booking Strategy for Outpatient Scheduling Using Multi-Objective Reinforcement Learning",
+  "autores": "Authors: Ninda Nurseha Amalina , Heungjo An",
+  "data": "7 March, 2026",
+  "abstract": "Patient no-shows disrupt outpatient clinic operations, reduce productivity, and may delay necessary care. Clinics often adopt overbooking or double-booking to mitigate these effects. However, poorly calibrated"
+ },
+ {
+  "id": "2603.06604",
+  "titulo": "Know When You're Wrong: Aligning Confidence with Correctness for LLM Error Detection",
+  "autores": "Authors: Xie Xiaohu , Liu Xiaohu , Yao Benjamin",
+  "data": "18 February, 2026",
+  "abstract": "As large language models (LLMs) are increasingly deployed in critical decision"
+ },
+ {
+  "id": "2602.22963",
+  "titulo": "FactGuard: Agentic Video Misinformation Detection via Reinforcement Learning",
+  "autores": "Authors: Zehao Li , Hongwei Yu , Hao Jiang , Qiang Sheng , Yilong Xu , Baolong Bi , Yang Li , Zhenlong Yuan , Yujun Cai , Zhaoqi Wang",
+  "data": "26 February, 2026",
+  "abstract": "Multimodal large language models (MLLMs) have substantially advanced video misinformation detection through unified multimodal reasoning, but they often rely on fixed-depth inference and place excessive trust in internally generated assumptions, particularly in scenarios where critical evidence is sparse, fragmented, or requires external verification. To address these limitations, we propose FactGuard, an agentic framework for video misinformation detection that formulates verification as an iterative reasoning process built upon MLLMs. FactGuard explicitly assesses task ambiguity and selectively invokes external tools to acquire critical evidence, enabling progressive refinement of reasoning trajectories. To further strengthen this capability, we introduce a two-stage training strategy that combines domain-specific agentic supervised fine-tuning with decision"
+ },
+ {
+  "id": "2602.02283",
+  "titulo": "Choice-Model-Assisted Q- learning for Delayed-Feedback Revenue Management",
+  "autores": "Authors: Owen Shen , Patrick Jaillet",
+  "data": "2 February, 2026",
+  "abstract": "We study reinforcement"
+ },
+ {
+  "id": "2602.00559",
+  "titulo": "Learning to Decode Against Compositional Hallucination in Video Multimodal Large Language Models",
+  "autores": "Authors: Wenbin Xing , Quanxing Zha , Lizheng Zu , Mengran Li , Ming Li , Junchi Yan",
+  "data": "31 January, 2026",
+  "abstract": "Current research on video hallucination mitigation primarily focuses on isolated error types, leaving compositional hallucinations, arising from incorrect reasoning over multiple interacting spatial and temporal factors largely underexplored. We introduce OmniVCHall, a benchmark designed to systematically evaluate both isolated and compositional hallucinations in video multimodal large language models (VLLMs). OmniVCHall spans diverse video domains, introduces a novel camera-based hallucination type, and defines a fine-grained taxonomy, together with adversarial answer options (e.g., \"All are correct\" and \"None of the above\") to prevent shortcut reasoning. The evaluations of 39 representative VLLMs reveal that even advanced models (e.g., Qwen3-VL and GPT-5) exhibit substantial performance degradation. We propose TriCD, a contrastive decoding framework with a triple-pathway calibration"
+ },
+ {
+  "id": "2601.17920",
+  "titulo": "Agentic AI for Self-Driving Laboratories in Soft Matter: Taxonomy, Benchmarks,and Open Challenges",
+  "autores": "Authors: Xuanzhou Chen , Audrey Wang , Stanley Yin , Hanyang Jiang , Dong Zhang",
+  "data": "25 January, 2026",
+  "abstract": "Self-driving laboratories (SDLs) close the loop between experiment design, automated execution, and data-driven decision"
+ },
+ {
+  "id": "2601.13284",
+  "titulo": "Balancing Classification and Calibration Performance in Decision -Making LLMs via Calibration Aware Reinforcement Learning",
+  "autores": "Authors: Duygu Nur Yaldiz , Evangelia Spiliopoulou , Zheng Qi , Siddharth Varia , Srikanth Doss , Nikolaos Pappas",
+  "data": "19 January, 2026",
+  "abstract": "Large language models (LLMs) are increasingly deployed in decision"
+ },
+ {
+  "id": "2601.01483",
+  "titulo": "Unified Generation and Self-Verification for Vision-Language Models via Advantage Decoupled Preference Optimization",
+  "autores": "Authors: Xinyu Qiu , Heng Jia , Zhengwen Zeng , Shuheng Shen , Changhua Meng , Yi Yang , Linchao Zhu",
+  "data": "4 January, 2026",
+  "abstract": "Parallel test-time scaling typically trains separate generation and verification models, incurring high training and inference costs. We propose Advantage Decoupled Preference Optimization (ADPO), a unified reinforcement"
+ },
+ {
+  "id": "2512.25070",
+  "titulo": "Scaling Open-Ended Reasoning to Predict the Future",
+  "autores": "Authors: Nikhil Chandak , Shashwat Goel , Ameya Prabhu , Moritz Hardt , Jonas Geiping",
+  "data": "5 January, 2026",
+  "abstract": "High-stakes decision"
+ },
+ {
+  "id": "2512.16408",
+  "titulo": "NDRL: Cotton Irrigation and Nitrogen Application with Nested Dual-Agent Reinforcement Learning",
+  "autores": "Authors: Ruifeng Xu , Liang He",
+  "data": "18 December, 2025",
+  "abstract": "Effective irrigation and nitrogen fertilization have a significant impact on crop yield. However, existing research faces two limitations: (1) the high complexity of optimizing water-nitrogen combinations during crop growth and poor yield optimization results; and (2) the difficulty in quantifying mild stress signals and the delayed feedback, which results in less precise dynamic regulation of water and nitrogen and lower resource utilization efficiency. To address these issues, we propose a Nested Dual-Agent Reinforcement"
+ },
+ {
+  "id": "2511.06229",
+  "titulo": "Deep Reinforcement Learning for Dynamic Origin-Destination Matrix Estimation in Microscopic Traffic Simulations Considering Credit Assignment",
+  "autores": "Authors: Donggyu Min , Seongjin Choi , Dong-Kyu Kim",
+  "data": "30 August, 2026",
+  "abstract": "This paper focuses on dynamic origin-destination matrix estimation (DODE), a crucial calibration"
+ },
+ {
+  "id": "2511.01425",
+  "titulo": "Learning to Seek Evidence: A Verifiable Reasoning Agent with Causal Faithfulness Analysis",
+  "autores": "Authors: Yuhang Huang , Zekai Lin , Fan Zhong , Lei Liu",
+  "data": "3 November, 2025",
+  "abstract": "Explanations for AI models in high-stakes domains like medicine often lack verifiability, which can hinder trust. To address this, we propose an interactive agent that produces explanations through an auditable sequence of actions. The agent learns"
+ },
+ {
+  "id": "2510.27272",
+  "titulo": "Inferring trust in recommendation systems from brain, behavioural, and physiological data",
+  "autores": "Authors: Vincent K. M. Cheung , Pei-Cheng Shih , Masato Hirano , Masataka Goto , Shinichi Furuya",
+  "data": "31 October, 2025",
+  "abstract": "As people nowadays increasingly rely on artificial intelligence (AI) to curate information and make decisions"
+ },
+ {
+  "id": "2510.17923",
+  "titulo": "Rewarding the Journey, Not Just the Destination: A Composite Path and Answer Self-Scoring Reward Mechanism for Test-Time Reinforcement Learning",
+  "autores": "Authors: Jingyu Xing , Chenwei Tang , Xinyu Liu , Deng Xiong , Shudong Huang , Wei Ju , Jiancheng Lv , Ziyue Qiao",
+  "data": "8 December, 2025",
+  "abstract": "Reinforcement"
+ },
+ {
+  "id": "2510.08429",
+  "titulo": "ClauseLens: Clause-Grounded, CVaR-Constrained Reinforcement Learning for Trustworthy Reinsurance Pricing",
+  "autores": "Authors: Stella C. Dong , James R. Finlay",
+  "data": "9 October, 2025",
+  "abstract": "Reinsurance treaty pricing must satisfy stringent regulatory standards, yet current quoting practices remain opaque and difficult to audit. We introduce ClauseLens, a clause-grounded reinforcement"
+ },
+ {
+  "id": "2510.08226",
+  "titulo": "UAMDP: Uncertainty-Aware Markov Decision Process for Risk-Constrained Reinforcement Learning from Probabilistic Forecasts",
+  "autores": "Authors: Michal Koren , Or Peretz , Tai Dinh , Philip S. Yu",
+  "data": "18 December, 2025",
+  "abstract": "Sequential decisions"
+ },
+ {
+  "id": "2509.23791",
+  "titulo": "CaRe-BN: Precise Moving Statistics for Stabilizing Spiking Neural Networks in Reinforcement Learning",
+  "autores": "Authors: Zijie Xu , Xinyu Shi , Yiting Dong , Zihan Huang , Zhaofei Yu",
+  "data": "3 March, 2026",
+  "abstract": "Spiking Neural Networks (SNNs) offer low-latency and energy-efficient decision"
+ },
+ {
+  "id": "2509.09772",
+  "titulo": "Hybrid Adaptive Conformal Offline Reinforcement Learning for Fair Population Health Management",
+  "autores": "Authors: Sanjay Basu , Sadiq Y. Patel , Parth Sheth , Bhairavi Muralidharan , Namrata Elamaran , Aakriti Kinra , Rajaie Batniji",
+  "data": "11 September, 2025",
+  "abstract": "Population health management programs for Medicaid populations coordinate longitudinal outreach and services (e.g., benefits navigation, behavioral health, social needs support, and clinical scheduling) and must be safe, fair, and auditable. We present a Hybrid Adaptive Conformal Offline Reinforcement"
+ },
+ {
+  "id": "2509.09655",
+  "titulo": "Feasibility-Guided Fair Adaptive Offline Reinforcement Learning for Medicaid Care Management",
+  "autores": "Authors: Sanjay Basu , Sadiq Y. Patel , Parth Sheth , Bhairavi Muralidharan , Namrata Elamaran , Aakriti Kinra , Rajaie Batniji",
+  "data": "11 September, 2025",
+  "abstract": "We introduce Feasibility-Guided Fair Adaptive Reinforcement"
+ },
+ {
+  "id": "2509.01031",
+  "titulo": "Reinforcement Learning Driven Generalizable Feature Representation for Cross-User Activity Recognition",
+  "autores": "Authors: Xiaozhou Ye , Kevin I-Kai Wang",
+  "data": "31 August, 2025",
+  "abstract": "Human Activity Recognition (HAR) using wearable sensors is crucial for healthcare, fitness tracking, and smart environments, yet cross-user variability -- stemming from diverse motion patterns, sensor placements, and physiological traits -- hampers generalization in real-world settings. Conventional supervised learning"
+ },
+ {
+  "id": "2508.21101",
+  "titulo": "Beyond Prediction: Reinforcement Learning as the Defining Leap in Healthcare AI",
+  "autores": "Authors: Dilruk Perera , Gousia Habib , Qianyi Xu , Daniel J. Tan , Kai He , Erik Cambria , Mengling Feng",
+  "data": "28 August, 2025",
+  "abstract": "Reinforcement"
+ },
+ {
+  "id": "2508.06330",
+  "titulo": "L2Calib: $SE(3)$-Manifold Reinforcement Learning for Robust Extrinsic Calibration with Degenerate Motion Resilience",
+  "autores": "Authors: Baorun Li , Chengrui Zhu , Siyi Du , Bingran Chen , Jie Ren , Wenfei Wang , Yong Liu , Jiajun Lv",
+  "data": "8 August, 2025",
+  "abstract": "Extrinsic calibration"
+ },
+ {
+  "id": "2508.04974",
+  "titulo": "QFOR: A Fidelity-aware Orchestrator for Quantum Computing Environments using Deep Reinforcement Learning",
+  "autores": "Authors: Hoa T. Nguyen , Muhammad Usman , Rajkumar Buyya",
+  "data": "6 August, 2025",
+  "abstract": "Quantum cloud computing enables remote access to quantum processors, yet the heterogeneity and noise of available quantum hardware create significant challenges for efficient resource orchestration. These issues complicate the optimization of quantum task allocation and scheduling, as existing heuristic methods fall short in adapting to dynamic conditions or effectively balancing execution fidelity and time. Here, we propose QFOR, a Quantum Fidelity-aware Orchestration of tasks across heterogeneous quantum nodes in cloud-based environments using Deep Reinforcement"
+ },
+ {
+  "id": "2507.21179",
+  "titulo": "CANDLE: A Cross-Modal Agentic Knowledge Distillation Framework for Interpretable Sarcopenia Diagnosis",
+  "autores": "Authors: Yuqi Jin , Zhenhao Shuai , Zihan Hu , Weiteng Zhang , Weihao Xie , Jianwei Shuai , Xian Shen , Zhen Feng",
+  "data": "24 September, 2025",
+  "abstract": "Background and Aims: Large language models (LLMs) have shown remarkable generalization and transfer capabilities by learning"
+ },
+ {
+  "id": "2507.15815",
+  "titulo": "LLM Economist: Large Population Models and Mechanism Design in Multi-Agent Generative Simulacra",
+  "autores": "Authors: Seth Karten , Wenzhe Li , Zihan Ding , Samuel Kleiner , Yu Bai , Chi Jin",
+  "data": "21 July, 2025",
+  "abstract": "We present the LLM Economist, a novel framework that uses agent-based modeling to design and assess economic policies in strategic environments with hierarchical decision"
+ },
+ {
+  "id": "2507.09279",
+  "titulo": "Prompt4Trust: A Reinforcement Learning Prompt Augmentation Framework for Clinically-Aligned Confidence Calibration in Multimodal Large Language Models",
+  "autores": "Authors: Anita Kriz , Elizabeth Laura Janes , Xing Shen , Tal Arbel",
+  "data": "12 October, 2025",
+  "abstract": "Multimodal large language models (MLLMs) hold considerable promise for applications in healthcare. However, their deployment in safety-critical settings is hindered by two key limitations: (i) sensitivity to prompt design, and (ii) a tendency to generate incorrect responses with high confidence. As clinicians may rely on a model's stated confidence to gauge the reliability of its predictions, it is especially important that when a model expresses high confidence, it is also highly accurate. We introduce Prompt4Trust, the first reinforcement"
+ },
+ {
+  "id": "2506.12095",
+  "titulo": "DoublyAware: Dual Planning and Policy Awareness for Temporal Difference Learning in Humanoid Locomotion",
+  "autores": "Authors: Khang Nguyen , An T. Le , Jan Peters , Minh Nhat Vu",
+  "data": "12 June, 2025",
+  "abstract": "Achieving robust robot learning"
+ },
+ {
+  "id": "2504.09396",
+  "titulo": "Adaptive Insurance Reserving with CVaR-Constrained Reinforcement Learning under Macroeconomic Regimes",
+  "autores": "Authors: Stella C. Dong",
+  "data": "23 March, 2026",
+  "abstract": "We develop a reinforcement"
+ },
+ {
+  "id": "2504.06670",
+  "titulo": "Dynamic Residual Safe Reinforcement Learning for Multi-Agent Safety-Critical Scenarios Decision -Making",
+  "autores": "Authors: Kaifeng Wang , Yinsong Chen , Qi Liu , Xueyuan Li , Xin Gao",
+  "data": "9 April, 2025",
+  "abstract": "In multi-agent safety-critical scenarios, traditional autonomous driving frameworks face significant challenges in balancing safety constraints and task performance. These frameworks struggle to quantify dynamic interaction risks in real-time and depend heavily on manual rules, resulting in low computational efficiency and conservative strategies. To address these limitations, we propose a Dynamic Residual Safe Reinforcement"
+ },
+ {
+  "id": "2503.16518",
+  "titulo": "Advancing Human-Machine Teaming: Concepts, Challenges, and Applications",
+  "autores": "Authors: Dian Chen , Han Jun Yoon , Zelin Wan , Nithin Alluru , Sang Won Lee , Richard He , Terrence J. Moore , Frederica F. Nelson , Sunghyun Yoon , Hyuk Lim , Dan Dongseong Kim , Jin-Hee Cho",
+  "data": "6 May, 2025",
+  "abstract": "Human-Machine Teaming (HMT) is revolutionizing collaboration across domains such as defense, healthcare, and autonomous systems by integrating AI-driven decision"
+ },
+ {
+  "id": "2503.00971",
+  "titulo": "An Efficient and Uncertainty-aware Reinforcement Learning Framework for Quality Assurance in Extrusion Additive Manufacturing",
+  "autores": "Authors: Xiaohan Li , Sebastian Pattinson",
+  "data": "2 March, 2025",
+  "abstract": "Defects in extrusion additive manufacturing remain common despite its prevalent use. While numerous AI-driven approaches have been proposed to improve quality assurance, the inherently dynamic nature of the printing process poses persistent challenges. Regardless of how comprehensive the training dataset is, out-of-distribution data remains inevitable. Consequently, deterministic models often struggle to maintain robustness and, in some cases, fail entirely when deployed in new or slightly altered printing environments. This work introduces an agent that dynamically adjusts flow rate and temperature setpoints in real time, optimizing process control while addressing bottlenecks in training efficiency and uncertainty management. It integrates a vision-based uncertainty quantification module with a reinforcement"
+ },
+ {
+  "id": "2502.14276",
+  "titulo": "STeCa: Step-level Trajectory Calibration for LLM Agent Learning",
+  "autores": "Authors: Hanlin Wang , Jian Wang , Chak Tou Leong , Wenjie Li",
+  "data": "29 May, 2025",
+  "abstract": "Large language model (LLM)-based agents have shown promise in tackling complex tasks by interacting dynamically with the environment. Existing work primarily focuses on behavior cloning from expert demonstrations or preference learning"
+ },
+ {
+  "id": "2502.11864",
+  "titulo": "Does Knowledge About Perceptual Uncertainty Help an Agent in Automated Driving?",
+  "autores": "Authors: Natalie Grabowsky , Annika Mütze , Joshua Wendland , Nils Jansen , Matthias Rottmann",
+  "data": "17 February, 2025",
+  "abstract": "Agents in real-world scenarios like automated driving deal with uncertainty in their environment, in particular due to perceptual uncertainty. Although, reinforcement"
+ },
+ {
+  "id": "2502.06884",
+  "titulo": "Learning Conformal Abstention Policies for Adaptive Risk Management in Large Language and Vision-Language Models",
+  "autores": "Authors: Sina Tayebati , Divake Kumar , Nastaran Darabi , Dinithi Jayasuriya , Ranganath Krishnan , Amit Ranjan Trivedi",
+  "data": "8 February, 2025",
+  "abstract": "Large Language and Vision-Language Models (LLMs/VLMs) are increasingly used in safety-critical applications, yet their opaque decision"
+ },
+ {
+  "id": "2502.03245",
+  "titulo": "Calibrated Unsupervised Anomaly Detection in Multivariate Time-series using Reinforcement Learning",
+  "autores": "Authors: Saba Sanami , Amir G. Aghdam",
+  "data": "10 February, 2025",
+  "abstract": "This paper investigates unsupervised anomaly detection in multivariate time-series data using reinforcement"
+ },
+ {
+  "id": "2501.02189",
+  "titulo": "A Survey of State of the Art Large Vision Language Models: Alignment, Benchmark, Evaluations and Challenges",
+  "autores": "Authors: Zongxia Li , Xiyang Wu , Hongyang Du , Fuxiao Liu , Huy Nghiem , Guangyao Shi",
+  "data": "21 August, 2026",
+  "abstract": "Large vision-language models (VLMs) have evolved rapidly from contrastive image-text encoders and adapter-based assistants into natively multimodal foundation models that support long-context reasoning, agentic workflows, and, increasingly, unified perception-generation-action loops. Since 2025, the frontier has consolidated around a small number of large pretraining families, including GPT, Gemini, Claude, Grok, Qwen, Gemma, DeepSeek, Kimi, and MiniMax, while evaluation has shifted from short-form visual question answering toward spatial, temporal, embodied, and calibration"
+ },
+ {
+  "id": "2412.18856",
+  "titulo": "Digital Twin Enhanced Deep Reinforcement Learning for Intelligent Omni-Surface Configurations in MU-MIMO Systems",
+  "autores": "Authors: Xiaowen Ye , Xianghao Yu , Liqun Fu",
+  "data": "25 December, 2024",
+  "abstract": "Intelligent omni-surface (IOS) is a promising technique to enhance the capacity of wireless networks, by reflecting and refracting the incident signal simultaneously. Traditional IOS configuration schemes, relying on all sub-channels' channel state information and user equipments' mobility, are difficult to implement in complex realistic systems. Existing works attempt to address this issue employing deep reinforcement"
+ },
+ {
+  "id": "2412.12597",
+  "titulo": "Distribution-Free Uncertainty Quantification in Mechanical Ventilation Treatment: A Conformal Deep Q- Learning Framework",
+  "autores": "Authors: Niloufar Eghbali , Tuka Alhanai , Mohammad M. Ghassemi",
+  "data": "17 December, 2024",
+  "abstract": "Mechanical Ventilation (MV) is a critical life-support intervention in intensive care units (ICUs). However, optimal ventilator settings are challenging to determine because of the complexity of balancing patient-specific physiological needs with the risks of adverse outcomes that impact morbidity, mortality, and healthcare costs. This study introduces ConformalDQN, a novel distribution-free conformal deep Q- learning"
+ },
+ {
+  "id": "2411.14457",
+  "titulo": "Guiding Reinforcement Learning Using Uncertainty-Aware Large Language Models",
+  "autores": "Authors: Maryam Shoaeinaeini , Brent Harrison",
+  "data": "15 November, 2024",
+  "abstract": "Human guidance in reinforcement"
+ },
+ {
+  "id": "2411.03740",
+  "titulo": "Human-in-the-Loop Feature Selection Using Interpretable Kolmogorov-Arnold Network-based Double Deep Q-Network",
+  "autores": "Authors: Md Abrar Jahin , M. F. Mridha , Nilanjan Dey , Md. Jakir Hossen",
+  "data": "8 January, 2026",
+  "abstract": "Feature selection is critical for improving the performance and interpretability of machine learning"
+ },
+ {
+  "id": "2410.11711",
+  "titulo": "Zero-shot Model-based Reinforcement Learning using Large Language Models",
+  "autores": "Authors: Abdelhakim Benechehab , Youssef Attia El Hili , Ambroise Odonnat , Oussama Zekri , Albert Thomas , Giuseppe Paolo , Maurizio Filippone , Ievgen Redko , Balázs Kégl",
+  "data": "13 February, 2025",
+  "abstract": "The emerging zero-shot capabilities of Large Language Models (LLMs) have led to their applications in areas extending well beyond natural language processing tasks. In reinforcement"
+ },
+ {
+  "id": "2410.10132",
+  "titulo": "Stable Hadamard Memory: Revitalizing Memory-Augmented Agents for Reinforcement Learning",
+  "autores": "Authors: Hung Le , Kien Do , Dung Nguyen , Sunil Gupta , Svetha Venkatesh",
+  "data": "13 October, 2024",
+  "abstract": "Effective decision"
+ },
+ {
+  "id": "2408.03200",
+  "titulo": "Adversarial Safety-Critical Scenario Generation using Naturalistic Human Driving Priors",
+  "autores": "Authors: Kunkun Hao , Yonggang Luo , Wen Cui , Yuqiao Bai , Jucheng Yang , Songyang Yan , Yuxi Pan , Zijiang Yang",
+  "data": "6 August, 2024",
+  "abstract": "Evaluating the decision"
+ },
+ {
+  "id": "2407.00115",
+  "titulo": "Instance Temperature Knowledge Distillation",
+  "autores": "Authors: Zhengbo Zhang , Yuxi Zhou , Jia Gong , Jun Liu , Zhigang Tu",
+  "data": "30 January, 2026",
+  "abstract": "Knowledge distillation (KD) enhances the performance of a student network by allowing it to learn"
+ },
+ {
+  "id": "2404.09127",
+  "titulo": "Confidence Calibration and Rationalization for LLMs via Multi-Agent Deliberation",
+  "autores": "Authors: Ruixin Yang , Dheeraj Rajagopal , Shirley Anugrah Hayati , Bin Hu , Dongyeop Kang",
+  "data": "10 May, 2024",
+  "abstract": "Uncertainty estimation is a significant issue for current large language models (LLMs) that are generally poorly calibrated"
+ },
+ {
+  "id": "2404.00474",
+  "titulo": "Linguistic Calibration of Long-Form Generations",
+  "autores": "Authors: Neil Band , Xuechen Li , Tengyu Ma , Tatsunori Hashimoto",
+  "data": "4 June, 2024",
+  "abstract": "Language models (LMs) may lead their users to make suboptimal downstream decisions"
+ },
+ {
+  "id": "2402.08406",
+  "titulo": "Transition Constrained Bayesian Optimization via Markov Decision Processes",
+  "autores": "Authors: Jose Pablo Folch , Calvin Tsay , Robert M Lee , Behrang Shafei , Weronika Ormaniec , Andreas Krause , Mark van der Wilk , Ruth Misener , Mojmír Mutný",
+  "data": "31 October, 2024",
+  "abstract": "Bayesian optimization is a methodology to optimize black-box functions. Traditionally, it focuses on the setting where you can arbitrarily query the search space. However, many real-life problems do not offer this flexibility; in particular, the search space of the next query may depend on previous ones. Example challenges arise in the physical sciences in the form of local movement constraints, required monotonicity in certain variables, and transitions influencing the accuracy of measurements. Altogether, such transition constraints necessitate a form of planning. This work extends classical Bayesian optimization via the framework of Markov Decision"
+ },
+ {
+  "id": "2312.17372",
+  "titulo": "Beyond PID Controllers: PPO with Neuralized PID Policy for Proton Beam Intensity Control in Mu2e",
+  "autores": "Authors: Chenwei Xu , Jerry Yao-Chieh Hu , Aakaash Narayanan , Mattson Thieme , Vladimir Nagaslaev , Mark Austin , Jeremy Arnold , Jose Berlioz , Pierrick Hanlet , Aisha Ibrahim , Dennis Nicklaus , Jo",
+  "data": "28 December, 2023",
+  "abstract": "We introduce a novel Proximal Policy Optimization (PPO) algorithm aimed at addressing the challenge of maintaining a uniform proton beam intensity delivery in the Muon to Electron Conversion Experiment (Mu2e) at Fermi National Accelerator Laboratory (Fermilab). Our primary objective is to regulate the spill process to ensure a consistent intensity profile, with the ultimate goal of creating an automated controller capable of providing real-time feedback and calibration"
+ },
+ {
+  "id": "2312.05456",
+  "titulo": "On the calibration of compartmental epidemiological models",
+  "autores": "Authors: Nikunj Gupta , Anh Mai , Azza Abouzied , Dennis Shasha",
+  "data": "8 December, 2023",
+  "abstract": "Epidemiological compartmental models are useful for understanding infectious disease propagation and directing public health policy decisions"
+ },
+ {
+  "id": "2311.16876",
+  "titulo": "Digital Twin-Enhanced Deep Reinforcement Learning for Resource Management in Networks Slicing",
+  "autores": "Authors: Zhengming Zhang , Yongming Huang , Cheng Zhang , Qingbi Zheng , Luxi Yang , Xiaohu You",
+  "data": "28 November, 2023",
+  "abstract": "Network slicing-based communication systems can dynamically and efficiently allocate resources for diversified services. However, due to the limitation of the network interface on channel access and the complexity of the resource allocation, it is challenging to achieve an acceptable solution in the practical system without precise prior knowledge of the dynamics probability model of the service requests. Existing work attempts to solve this problem using deep reinforcement"
+ },
+ {
+  "id": "2309.16188",
+  "titulo": "Stackelberg Batch Policy Learning",
+  "autores": "Authors: Wenzhuo Zhou , Annie Qu",
+  "data": "1 October, 2023",
+  "abstract": "Batch reinforcement"
+ },
+ {
+  "id": "2309.01784",
+  "titulo": "INTAGS: Interactive Agent-Guided Simulation",
+  "autores": "Authors: Song Wei , Andrea Coletta , Svitlana Vyetrenko , Tucker Balch",
+  "data": "17 November, 2023",
+  "abstract": "In many applications involving multi-agent system (MAS), it is imperative to test an experimental (Exp) autonomous agent in a high-fidelity simulator prior to its deployment to production, to avoid unexpected losses in the real-world. Such a simulator acts as the environmental background (BG) agent(s), called agent-based simulator (ABS), aiming to replicate the complex real MAS. However, developing realistic ABS remains challenging, mainly due to the sequential and dynamic nature of such systems. To fill this gap, we propose a metric to distinguish between real and synthetic multi-agent systems, which is evaluated through the live interaction between the Exp and BG agents to explicitly account for the systems' sequential nature. Specifically, we characterize the system/environment by studying the effect of a sequence of BG agents' responses to the environment state evolution and take such effects' differences as MAS distance metric; The effect estimation is cast as a causal inference problem since the environment evolution is confounded with the previous environment state. Importantly, we propose the Interactive Agent-Guided Simulation (INTAGS) framework to build a realistic ABS by optimizing over this novel metric. To adapt to any environment with interactive sequential decision"
+ },
+ {
+  "id": "2212.05717",
+  "titulo": "Feature Calibration Network for Occluded Pedestrian Detection",
+  "autores": "Authors: Tianliang Zhang , Qixiang Ye , Baochang Zhang , Jianzhuang Liu , Xiaopeng Zhang , Qi Tian",
+  "data": "12 December, 2022",
+  "abstract": "Pedestrian detection in the wild remains a challenging problem especially for scenes containing serious occlusion. In this paper, we propose a novel feature learning"
+ },
+ {
+  "id": "2212.04875",
+  "titulo": "Expeditious Saliency-guided Mix-up through Random Gradient Thresholding",
+  "autores": "Authors: Minh-Long Luu , Zeyi Huang , Eric P. Xing , Yong Jae Lee , Haohan Wang",
+  "data": "10 August, 2023",
+  "abstract": "Mix-up training approaches have proven to be effective in improving the generalization ability of Deep Neural Networks. Over the years, the research community expands mix-up methods into two directions, with extensive efforts to improve saliency-guided procedures but minimal focus on the arbitrary path, leaving the randomization domain unexplored. In this paper, inspired by the superior qualities of each direction over one another, we introduce a novel method that lies at the junction of the two routes. By combining the best elements of randomness and saliency utilization, our method balances speed, simplicity, and accuracy. We name our method R-Mix following the concept of \"Random Mix-up\". We demonstrate its effectiveness in generalization, weakly supervised object localization, calibration"
+ },
+ {
+  "id": "2209.13126",
+  "titulo": "Design of experiments for the calibration of history-dependent models via deep reinforcement learning and an enhanced Kalman filter",
+  "autores": "Authors: Ruben Villarreal , Nikolaos N. Vlassis , Nhon N. Phan , Tommie A. Catanach , Reese E. Jones , Nathaniel A. Trask , Sharlotte L. B. Kramer , WaiChing Sun",
+  "data": "26 September, 2022",
+  "abstract": "Experimental data is costly to obtain, which makes it difficult to calibrate"
+ },
+ {
+  "id": "2203.10165",
+  "titulo": "Privacy-Preserving Reinforcement Learning Beyond Expectation",
+  "autores": "Authors: Arezoo Rajabi , Bhaskar Ramasubramanian , Abdullah Al Maruf , Radha Poovendran",
+  "data": "18 March, 2022",
+  "abstract": "Cyber and cyber-physical systems equipped with machine learning"
+ },
+ {
+  "id": "2111.07716",
+  "titulo": "Interactive Medical Image Segmentation with Self-Adaptive Confidence Calibration",
+  "autores": "Authors: Wenhao Li , Qisen Xu , Chuyun Shen , Bin Hu , Fengping Zhu , Yuxin Li , Bo Jin , Xiangfeng Wang",
+  "data": "15 November, 2021",
+  "abstract": "Medical image segmentation is one of the fundamental problems for artificial intelligence-based clinical decision"
+ },
+ {
+  "id": "2011.09004",
+  "titulo": "Explaining Conditions for Reinforcement Learning Behaviors from Real and Imagined Data",
+  "autores": "Authors: Aastha Acharya , Rebecca Russell , Nisar R. Ahmed",
+  "data": "17 November, 2020",
+  "abstract": "The deployment of reinforcement"
+ },
+ {
+  "id": "2011.02574",
+  "titulo": "Learning Trajectories for Visual-Inertial System Calibration via Model-based Heuristic Deep Reinforcement Learning",
+  "autores": "Authors: Le Chen , Yunke Ao , Florian Tschopp , Andrei Cramariuc , Michel Breyer , Jen Jen Chung , Roland Siegwart , Cesar Cadena",
+  "data": "4 November, 2020",
+  "abstract": "Visual-inertial systems rely on precise calibrations"
+ },
+ {
+  "id": "2004.09392",
+  "titulo": "A non-cooperative meta-modeling game for automated third-party calibrating , validating, and falsifying constitutive laws with parallelized adversarial attacks",
+  "autores": "Authors: Kun Wang , WaiChing Sun , Qiang Du",
+  "data": "13 April, 2020",
+  "abstract": "The evaluation of constitutive models, especially for high-risk and high-regret engineering applications, requires efficient and rigorous third-party calibration"
+ },
+ {
+  "id": "1911.09882",
+  "titulo": "Analysis of Evolutionary Behavior in Self- Learning Media Search Engines",
+  "autores": "Authors: Nikki Lijing Kuang , Clement H. C. Leung",
+  "data": "22 November, 2019",
+  "abstract": "The diversity of intrinsic qualities of multimedia entities tends to impede their effective retrieval. In a SelfLearning Search Engine architecture, the subtle nuances of human perceptions and deep knowledge are taught and captured through unsupervised reinforcement"
+ },
+ {
+  "id": "1905.09906",
+  "titulo": "Optimal Passenger-Seeking Policies on E-hailing Platforms Using Markov Decision Process and Imitation Learning",
+  "autores": "Authors: Zhenyu Shou , Xuan Di , Jieping Ye , Hongtu Zhu , Hua Zhang , Robert Hampshire",
+  "data": "1 February, 2020",
+  "abstract": "Vacant taxi drivers' passenger seeking process in a road network generates additional vehicle miles traveled, adding congestion and pollution into the road network and the environment. This paper aims to employ a Markov Decision"
+ },
+ {
+  "id": "1811.11040",
+  "titulo": "Modelling zebrafish collective behaviours with multilayer perceptrons optimised by evolutionary algorithms",
+  "autores": "Authors: Leo Cazenille , Nicolas Bredeche , José Halloy",
+  "data": "26 November, 2018",
+  "abstract": "Collective movements are pervasive behaviours among social organisms and have led to the development of many models. However, modelling animal trajectories and social interactions in simple bounded environments remains a challenge. Moreover, advances in the understanding of the sensory-motor loop and the information processing by animals are leading to revisions of the traditional assumptions made in decision"
+ }
+]
