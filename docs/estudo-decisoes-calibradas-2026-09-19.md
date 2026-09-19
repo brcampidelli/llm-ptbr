@@ -4,7 +4,8 @@
 > `llms-full.txt`, o repositório `system-one-adapter-python`, a página de evals, o artigo do MIT no
 > texto completo, o 2601.13284 no texto completo, e os 105 resultados da busca do arXiv com os 5 mais
 > relevantes lidos por inteiro). Regra do projeto: **o número do artigo não entra como resultado; só o
-> que for medido aqui entra** — e aqui nada foi medido ainda. A seção 6 diz o que medir e quanto custa.
+> que for medido aqui entra**. A seção 6 diz o que medir e quanto custa; **G-C1, G-C3 e G-C1b estão
+> medidos nas §§8–10** (US$ 0, RTX 5070, 2026-09-19).
 
 **Em uma frase:** "capacidade de decisão calibrada" não é uma arquitetura nova — é (1) restringir a
 saída a um **token de decisão** entre opções definidas, (2) **ler a probabilidade** desse token em vez
@@ -247,7 +248,8 @@ dados em PT** (§2g). Sem isso, "40–200×" é a medição deles em inglês nas
 |---|---|---|---|---|
 | **G-C1** calibração do agêntico | os adapters (e13, C-full, recusa_esp., 3 sementes) sabem quando erram? | `bee/decidir.py` sobre o holdout balanceado: P(chamar) no 1º token; distribuição sobre o catálogo; ECE, Brier, AUROC, **AURC e acurácia@50%** | 5070, ~20 min/adapter, US$ 0 | previsão pré-registrada: AUROC 0,70–0,85 (emergente, 2603); ECE > 0,15 (superconfiança de SFT em catálogo balanceado); **se AUROC < 0,6, a confiança é o atalho e o Degrau 1 não salva** |
 | **G-C2** sentimento | e13 × C-full: 81,8 × 56,0 de acurácia — e a calibração? | ECE/AUROC sobre os logprobs que a régua já calcula | minutos, US$ 0 | se o e13 tem AUROC alto, o número dele é capacidade; se ECE alto e AUROC ~0,5, é viés de classe (o base cravava 554/600 "positivo") |
-| **G-C3** pós-hoc | temperatura/isotônica num split de 20% | sobre G-C1 | US$ 0 | ECE cai para < 0,05 sem mudar acurácia (2601 Tab. 5) |
+| **G-C3** pós-hoc ✅ §9 | temperatura/isotônica num split de 20% | sobre G-C1 | US$ 0 | ECE cai para < 0,05 sem mudar acurácia (2601 Tab. 5) |
+| **G-C1b** Noul de argumentos ✅ §10 | o modelo sabe quando a própria chamada está errada? | auto-avaliação Sim/Não no 1º token + verossimilhança teacher-forced dos argumentos, sobre o greedy do G-C1 | 5070, ~25 s/adapter, US$ 0 | c_sim AUROC < 0,6 (nunca treinado); logP dos argumentos AUROC 0,60–0,70; combinada sobe o fim-a-fim para 0,70–0,75 |
 | **G-C4** base 1G | calibração do marco_15B em decisão de 1 letra (CSQA-PT? não existe) → usar o holdout agêntico como Choice no base | minutos | linha de base para comparar com o pós-treino |
 | **G-C5** Jev × Bee × Haiku em PT | 200 casos do holdout agêntico como Noul/Choice pelo adapter | US$ ~2 de API | mede o "lower accuracy" em PT que os docs declaram |
 | **G-C6** RLCR/2601 no 350M | GRPO+Brier com o executor como recompensa | 5090, ~8 h, US$ ~10 | só se G-C1/G-C3 deixarem AURC ruim e acurácia estagnada; métrica primária AURC |
@@ -285,12 +287,19 @@ pegos antes de confiar — o `--data` default apontava para o holdout ANTIGO (14
 95%, AUROC 0,50, visto ao ler o top-5 do 1º token), e o `transformers 5.14.1` isolado tinha sido
 apagado pela limpeza do Temp (reinstalado, versões impressas no log).
 
-| braço (média de 3 sementes) | Noul "chamar?" AUROC · ECE · conf>0,99 | Choice "qual?" acc · ECE · AUROC | fim-a-fim acc@25 → @50 → @100 · ECE · AUROC |
+| braço (média de 3 sementes) | Noul "chamar?" AUROC · ECE · conf>0,99 | Choice "qual?" acc · ECE · AUROC | fim-a-fim acc@25 → @50 → @100 · ECE · AUROC (corrigido, ver ⚠️) |
 |---|---|---|---|
-| e13 (recusa em template) | **0,928** · 0,083 · 39% | 0,923 · **0,042** · 0,915 | **0,949** → 0,899 → 0,827 · 0,169 · 0,658 |
-| C-full (resposta útil) | 0,901 · **0,127** · 36% | 0,918 · 0,039 · 0,937 | 0,920 → 0,866 → 0,785 · 0,208 · 0,643 |
-| recusa específica | 0,931 · 0,076 · 39% | 0,912 · 0,049 · 0,920 | 0,929 → 0,888 → 0,828 · 0,160 · 0,647 |
-| catálogo perturbado | 0,901 · 0,115 · 35% | 0,922 · 0,041 · 0,938 | 0,939 → 0,880 → 0,804 · 0,193 · 0,646 |
+| e13 (recusa em template) | **0,928** · 0,083 · 39% | 0,923 · **0,042** · 0,915 | **0,945** → 0,891 → 0,769 · 0,142 · **0,735** |
+| C-full (resposta útil) | 0,901 · **0,127** · 36% | 0,918 · 0,039 · 0,937 | 0,904 → 0,853 → 0,740 · 0,178 · 0,696 |
+| recusa específica | 0,931 · 0,076 · 39% | 0,912 · 0,049 · 0,920 | 0,924 → 0,879 → 0,774 · 0,137 · 0,723 |
+| catálogo perturbado | 0,901 · 0,115 · 35% | 0,922 · 0,041 · 0,938 | 0,929 → 0,865 → 0,751 · 0,168 · 0,701 |
+
+⚠️ **Correção no mesmo dia (ao preparar o G-C3):** a primeira versão desta coluna contava **todo caso de
+texto como certo** — o despejo da eval só rotula `ferramenta_pred` nos casos de ferramenta; nos de texto
+o over-call está em `over_call`, e o cruzamento lia só o primeiro campo (acc@100 saía 0,79–0,83; o certo
+é 0,74–0,77, e o AUROC fim-a-fim é **0,70–0,74**, não 0,64–0,66 — os over-calls têm confiança baixa e,
+contados como erro, *melhoram* a discriminação). Família da §2z: um `join` que não acha o campo não
+dá erro; dá um número plausível. Reconstruído sem GPU (`--rejuntar`) a partir dos `casos_calib_*.jsonl`.
 
 **Previsão pré-registrada × medido:** AUROC previsto 0,70–0,85 → medido **0,90–0,93** (errei para o
 lado pessimista: a confiança do Bee **não** é o atalho da §2u — o holdout balanceado tirou o atalho e a
@@ -307,15 +316,196 @@ Três achados, todos com 3 sementes por braço:
    dos casos de ferramenta abaixo de p=0,5 contra 15,6% do e13) — o modelo diz "não chamo" com 99% e
    deveria chamar. É onde o G-C3 (temperatura/isotônica, US$ 0) tem o que fazer, e é uma **leitura
    nova do E19**: os 5,9 pp de execução que o C-full custou são, em parte, **confiança mal posta**,
-   não capacidade — um limiar movido de 0,5 para ~0,35 recuperaria chamadas sem retreinar
-   (a medir no G-C3, com o custo em over-call ao lado, §2r).
+   não capacidade — um limiar movido recuperaria chamadas sem retreinar (medido no G-C3, §9, com o
+   custo em over-call ao lado, §2r). ⚠️ *"Under-call por logit"* (p<0,5) **não é** o under-call do
+   greedy: o greedy é argmax do 1º token, e com a massa restante espalhada por muitos tokens de texto
+   o `{` é argmax com p bem abaixo de 0,5 — o menor p entre casos que o greedy chamou é **0,14** em
+   todos os 12 adapters. O under-call real do C-full é **15,8%** (80–87/536), não 25,9%.
 3. **Roteamento por confiança funciona hoje, sem treinar** — o quartil mais confiante acerta
-   **92–95%** contra 79–83% no total — **e tem teto**: a confiança p_call·p_tool não enxerga erro de
-   argumento (AUROC fim-a-fim 0,64–0,66; o #4b mediu que a maioria dos erros restantes é de
-   argumento). A terceira pergunta é o Noul de auto-avaliação do 2603.06604 ("os argumentos estão
+   **90–95%** contra 74–77% no total — **e tem teto**: a confiança p_call·p_tool enxerga pouco o erro
+   de argumento (AUROC fim-a-fim 0,70–0,74 depois da correção acima; o #4b mediu que a maioria dos
+   erros restantes é de argumento). A terceira pergunta é o Noul de auto-avaliação do 2603.06604 ("os argumentos estão
    completos e corretos? Sim/Não" lido no 1º token) — uma linha a mais no mesmo instrumento; entra
    como G-C1b.
 
 ⚠️ O que este gate não mostra: calibração em catálogos inéditos (o holdout é balanceado por
 construção, catálogos de 1–6); a confiança sob `--restrito-ferramenta` (aqui o Choice é livre sobre
 o catálogo — mas o greedy restrito concorda em 98%); e o custo do limiar movido (G-C3 mede).
+
+---
+
+## 9. G-C3 medido (2026-09-19) — temperatura conserta a confiança; o limiar era o argmax, e mover o limiar compra execução pagando em over-call 1:1
+
+`comeia/eval/calibracao_poshoc.py` (US$ 0, CPU, sobre os `casos_calib_*.jsonl` do G-C1) +
+`comeia/eval/calibracao_poshoc_realizado.py` (a versão **realizada**: gera a chamada forçada para os casos
+que o limiar recupera — `eval_agentic_exec.py --forcar-chamada --indices`, config de referência §2aa, RTX
+5070, ~2 min por semente). Artefatos: `calibracao-poshoc-350m-2026-09-19.json`,
+`calibracao-poshoc-realizado-350m-2026-09-19.json`.
+
+**Protocolo.** Três mapas monótonos p → p′ sobre o Noul "chamar?" (p_call do G-C1): **temperatura**
+(σ(z/T), 1 parâmetro), **Platt** (σ(a·z+b)), **isotônica** (PAV). Ajuste em 2 dobras estratificadas —
+cada caso é avaliado pelo mapa ajustado na *outra* metade — repetido em 5 sorteios (o ± abaixo é o piso do
+sorteio). Quarto protocolo, **transferência**: mapa ajustado nas outras duas sementes da receita, aplicado à
+terceira. Métricas do G-C1 sobre a probabilidade (ECE_prob, Brier, NLL) e sobre a decisão a 0,5 (acurácia,
+under/over-call, ECE da confiança, AUROC, AURC). Duas invariâncias declaradas antes: mapa monótono **não
+muda o ranking** (AUROC(p vs classe) igual por construção), e temperatura pura **não move o corte**
+(z/T = 0 ⇔ z = 0) — ela corrige a confiança, não a decisão.
+
+### 9.1 O que a calibração pós-hoc faz (média de 3 sementes ± dp entre sementes)
+
+| receita | protocolo | acurácia | under | over | ECE_prob | **ECE_conf** | conf>0,99 | corte em p cru |
+|---|---|---:|---:|---:|---:|---:|---:|---:|
+| **C-full** | greedy (argmax) | — | **0,158** | 0,144 | | | | p mín. chamado **0,141** |
+| | logit, corte 0,5 (G-C1) | 0,784 | 0,259 | 0,132 | 0,157 | 0,127 | 36% | 0,5 |
+| | temperatura 2-dobras (T≈2,2) | 0,784 | 0,259 | 0,132 | 0,123 | **0,042**±0,013 | 1% | 0,5 |
+| | Platt 2-dobras | 0,855 | 0,103 | 0,230 | 0,058 | 0,044 | 9% | 0,139 |
+| | isotônica 2-dobras | 0,856 | 0,083 | 0,266 | **0,040** | 0,035 | 25% | 0,064 |
+| | transferência (isotônica) | 0,857 | 0,083 | 0,264 | 0,034 | **0,023** | 16% | 0,094 |
+| **e13** | greedy (argmax) | — | 0,091 | 0,173 | | | | 0,152 |
+| | logit, corte 0,5 | 0,850 | 0,156 | 0,137 | 0,102 | 0,083 | 39% | 0,5 |
+| | temperatura 2-dobras (T≈1,8) | 0,850 | 0,156 | 0,137 | 0,097 | **0,024** | 1% | 0,5 |
+| | Platt 2-dobras | 0,869 | 0,093 | 0,207 | 0,047 | 0,023 | 11% | 0,179 |
+| | isotônica 2-dobras | 0,876 | 0,051 | 0,269 | 0,034 | 0,030 | 34% | 0,067 |
+| | transferência (isotônica) | 0,881 | 0,053 | 0,252 | 0,031 | 0,029 | 26% | 0,067 |
+| recusa específica | logit 0,5 → temperatura → isotônica | 0,854 → 0,854 → 0,882 | 0,161 → 0,161 → 0,074 | 0,117 → 0,117 → 0,205 | 0,106 → 0,084 → 0,031 | 0,076 → **0,019** → 0,027 | 39% → 4% → 28% | 0,5 → 0,5 → 0,124 |
+| catálogo perturbado | logit 0,5 → temperatura → isotônica | 0,796 → 0,796 → 0,856 | 0,233 → 0,233 → 0,093 | 0,147 → 0,147 → 0,246 | 0,152 → 0,123 → 0,041 | 0,115 → **0,037** → 0,033 | 35% → 1% → 27% | 0,5 → 0,5 → 0,126 |
+
+Três leituras:
+
+1. ⭐ **Temperatura (T ≈ 1,6–2,3) leva o ECE da confiança de 0,08–0,13 para 0,02–0,04 em 12/12, sem
+   tocar em uma decisão** — e a fração de casos com confiança > 0,99 cai de 31–47% para 1–4%. É o
+   resultado pré-registrado (2601 Tab. 5) e sai de graça: **um escalar por receita**. A transferência
+   entre sementes dá o mesmo (ECE_conf 0,03–0,05 com o T das irmãs): o mapa é da *receita*, não do
+   artefato — calibra-se uma vez.
+2. 🔴 **O "corte 0,5 no logit" do G-C1 era a regra de decisão errada, e o greedy já a corrigia.** A
+   decisão real é argmax do 1º token sobre 32k tokens; `{` ganha com p bem abaixo de 0,5 porque o resto
+   da massa se espalha por centenas de inícios de texto — em todos os 12 adapters o menor p entre
+   casos que o greedy chamou é **0,10–0,19**. Platt e isotônica, ajustados sem ver o caso, colocam o
+   corte em **0,06–0,18** — em cima do argmax. Logo o "under-call por logit 25,9%" do §8 era um artefato
+   da regra 0,5: o under-call real do C-full é **15,8%**, e a acurácia da decisão (0,78 → 0,86) que os
+   mapas "ganham" é, em sua maior parte, a que o greedy já tinha. ⚠️ Lição de instrumento: **ler a
+   probabilidade de uma classe contra um limiar fixo, quando a decisão é argmax contra um vocabulário
+   inteiro, mede outra coisa** — a confiança da decisão tem de ser lida na régua da própria decisão.
+3. A isotônica devolve conf > 0,99 em 25–34% dos casos (degraus com acerto 1,0 nos blocos extremos) —
+   é calibrada *neste* holdout, mas com n = 402 por dobra é a que mais varia entre sorteios (dp do
+   ECE_prob 0,005–0,011 contra 0,000–0,004 da temperatura). Para produção: temperatura para a confiança,
+   e o limiar escolhido pelo custo (abaixo), não pelo mapa.
+
+### 9.2 O limiar movido, REALIZADO no C-full (3 sementes) — o teto valia, e a conta é 1:1
+
+Política medida: **a decisão é do logit (p_call ≥ τ), a geração é do greedy**. Caso que o greedy já
+chamou → inalterado; caso tool que o greedy *não começou* a chamar e p ≥ τ → chamada gerada com o
+prefixo `{"tool": "` forçado (restritor de esquema por cima) e executada; caso texto não chamado com
+p ≥ τ → over-call **por construção** (custo exato, sem gerar). Chamadas que o greedy *começou* e não
+parseou (12/11/14 por semente) ficam **fora**: forçar o prefixo reproduz o mesmo bruto (0 de 11
+recuperadas quando eu as incluí) — é defeito de geração, não de decisão. Base: exec_ok 372/367/359 de
+536 (68,3%), over-call 39/37/40 de 268 (14,4%), under-call próprio 80/87/87.
+
+| τ | tool recuperados | dos quais exec_ok | P(exec_ok \| recuperado) | texto → over-call | **Δ exec_ok** | **Δ over-call** |
+|---:|---:|---:|---:|---:|---:|---:|
+| 0,35 | 2,7 | 1,7 | 0,72 | 3,3 | +0,3 pp | +1,2 pp |
+| 0,30 | 5,0 | 3,7 | 0,79 | 4,7 | +0,7 pp | +1,7 pp |
+| 0,25 | 9,0 | 7,3 | 0,82 | 5,7 | +1,4 ± 0,3 pp | +2,1 ± 1,5 pp |
+| 0,20 | 15,7 | 14,0 | 0,88 | 9,3 | +2,6 ± 0,9 pp | +3,5 ± 2,4 pp |
+| **0,15** | 27,0 | 24,0 | **0,88** | 15,0 | **+4,5 ± 1,0 pp** | **+5,6 ± 3,0 pp** |
+| 0,10 | 39,3 | 32,3 | 0,82 | 24,0 | +6,0 ± 1,0 pp | +9,0 ± 3,7 pp |
+
+- ⭐ **As chamadas recuperadas executam tão bem quanto as espontâneas (0,82–0,88 contra 0,84 média):**
+  o modelo *sabia* a ferramenta (o Choice acerta 78–100% dos recuperados, conforme semente e τ) e os argumentos — só não
+  começou a chamar. O teto do §9.1 (recuperados × P(exec_ok|chamou)) **não era otimista** aqui:
+  realizado 30/19/23 contra teto 25/19/23 por semente. É o caso raro em que a §2r não morde — e só se
+  sabe porque foi medido.
+- ⭐⭐ **Reinterpretação do E19.** Os 5,9 pp de execução que o C-full custava contra o e13 eram, em
+  boa parte, **limiar**: com τ = 0,15 o C-full vai a exec_ok **72,8%** com over-call **20,0%** — em
+  cima do ponto de operação do próprio e13 (74,0% · 17,3%). A "forma da classe negativa" (§2ab)
+  moveu a **disposição** de chamar, não a capacidade de chamar certo. O que se paga é o mesmo que se
+  ganha, em casos: a cada tool recuperado, ~0,6 texto vira over-call (τ 0,15: 24 contra 15 por
+  semente) — no holdout balanceado isso é lucro; **na produção o τ é decisão de custo** (o que custa
+  mais, uma ferramenta a menos ou uma chamada a mais?), e a variância entre sementes do custo
+  (dp 3,0 pp) é maior que a do ganho (1,0 pp).
+- ⚠️ O que isto não mostra: o holdout é balanceado por construção (§2u), catálogos de 1–6; os deltas
+  são pareados por caso, mas a base greedy de s43/s44 veio do pod 4090 e a de s42 da 5070 (§2ae, ~2
+  casos/536 de deriva — entra na base, não no delta); e um só τ para as três sementes foi escolhido
+  *olhando* a curva — o τ de produção sai do custo, não desta tabela.
+
+**Previsão pré-registrada × medido:** ECE_conf < 0,05 com qualquer mapa → ✅ (0,035–0,044 no C-full,
+0,02–0,03 no resto); corte em 0,2–0,35 → ❌ **0,06–0,18** (e a razão foi entender que a decisão é argmax);
+under-call 26% → <15% → ✅ no quadro do logit (8–10%), mas a base certa era o greedy (15,8%); teto
++5–12 pp e realizado menor → realizado **+4,5 pp** a τ 0,15 e **igual ao teto**, não menor;
+transferência a < 0,02 de ECE da 2-dobras → ✅ (0,00–0,02).
+
+---
+
+## 10. G-C1b medido (2026-09-19) — o modelo não sabe se auto-avaliar (responde `{` a tudo); a verossimilhança dos argumentos é o sinal barato que existe, e vale +4 pp no quartil confiante
+
+`comeia/eval/calibracao_argumentos.py` · 12 adapters · população = casos em que o greedy **chamou**
+(478–522 por adapter; 439–479 de ferramenta) · RTX 5070 · **um forward por caso**, ~25 s por adapter.
+Artefato: `calibracao-argumentos-350m-2026-09-19.json` (+ `casos_calibargs_*.jsonl`).
+
+Dois sinais sobre a chamada greedy já gerada (o `bruto` do despejo):
+**(A) auto-avaliação** — prompt + chamada como turno do assistente + usuário: *"A chamada acima está
+correta e completa para o pedido? Responda apenas Sim ou Não."* → c_sim = P(Sim)/(P(Sim)+P(Não)) no 1º
+token (variantes de caixa/espaço somadas; `Nao` → `Na`+`o` excluído); **(B) verossimilhança
+teacher-forced** — logP de cada token do bruto dado o prefixo, média e mínimo sobre os tokens de
+`"args"` ao fim (e sobre a chamada inteira). Correto = exec_ok (tool) ou False (texto: over-call é
+chamada errada por definição). ⚠️ O bruto saiu de decodificação restrita: a logP aqui é a
+**irrestrita** — o que o modelo tinha, não o que a máscara escolheu.
+
+| receita (3 sementes) | acc das chamadas (tool) | 1º token após a pergunta | P(Sim)+P(Não) < 1% | c_sim AUROC · média | **logP média args AUROC** (tool / todas) · acc@50 | logP mín. args | logP média chamada inteira |
+|---|---:|---|---:|---|---|---:|---:|
+| e13 | 0,835 | `{` em **100%** | 100% | 0,468 · 0,02 | **0,755** / 0,767 · 0,948 | 0,744 | 0,761 |
+| C-full | 0,834 | `{` em **100%** | 97% | 0,611±0,058 · 0,19 | **0,729** / 0,758 · 0,938 | 0,718 | 0,721 |
+| recusa específica | 0,830 | `{` em **100%** | 100% | 0,479 · 0,02 | **0,745** / 0,766 · 0,946 | 0,727 | 0,737 |
+| catálogo perturbado | 0,854 | `{` em **100%** | 97% | 0,614±0,026 · 0,19 | **0,742** / 0,760 · 0,953 | 0,720 | 0,726 |
+
+E o fim-a-fim recomposto (804 casos; chamou: p_call·p_tool·c, não chamou: 1−p_call):
+
+| receita | confiança | AUROC | AURC | acc@25 | acc@50 | acc@100 | ECE |
+|---|---|---:|---:|---:|---:|---:|---:|
+| e13 | G-C1 (c = 1) | 0,735 | 0,117 | 0,945 | 0,891 | 0,769 | 0,142 |
+| | × c_sim | 0,637 | 0,145 | 0,922 | 0,812 | 0,769 | 0,545 |
+| | **× exp(logP média args)** | **0,757** | **0,097** | **0,985** | 0,892 | 0,769 | **0,118** |
+| C-full | G-C1 | 0,696 | 0,145 | 0,904 | 0,853 | 0,740 | 0,178 |
+| | × c_sim | 0,602 | 0,186 | 0,866 | 0,773 | 0,740 | 0,448 |
+| | **× exp(logP média args)** | **0,715** | **0,131** | **0,940** | 0,855 | 0,740 | **0,157** |
+| recusa específica | G-C1 → × logP média args | 0,723 → **0,760** | 0,120 → 0,097 | 0,924 → **0,968** | 0,879 → 0,905 | 0,774 | 0,137 → 0,115 |
+| catálogo perturbado | G-C1 → × logP média args | 0,701 → **0,715** | 0,133 → 0,123 | 0,929 → **0,952** | 0,865 → 0,869 | 0,751 | 0,168 → 0,148 |
+
+Leituras:
+
+1. 🔴 **A auto-avaliação não existe neste modelo — e o modo de falha é mais forte que "responde Sim a
+   tudo": ele não responde.** Em 12/12 adapters, o primeiro token depois da pergunta é `{` em **100%**
+   dos casos: perguntado se a chamada está certa, o modelo *chama de novo*. P(Sim)+P(Não) fica abaixo
+   de 1% em 97–100% dos casos; a razão c_sim é acaso no e13 e na recusa específica (AUROC 0,47–0,48)
+   e um resíduo no C-full/catálogo (0,61 ± 0,06) que não é probabilidade de nada (média 0,19, ECE
+   0,45–0,55; multiplicada na confiança, **piora** o fim-a-fim em 0,06–0,10 de AUROC). É a §2e ao
+   contrário: a régua escuta, o modelo é que nunca aprendeu a falar isso — o Noul de auto-avaliação do
+   2603.06604 é comportamento **treinado**, não emergente em 350M com SFT agêntico.
+2. ⭐ **A verossimilhança dos argumentos separa chamada certa de errada com AUROC 0,73–0,76** — acima
+   da previsão (0,60–0,70), consistente nas 4 receitas, e a *média* vence o *mínimo* (0,72–0,74) e a
+   chamada inteira. É o sinal mais barato que existe (já está no forward que gera) e nunca tinha sido
+   lido neste projeto. Roteando por ele, a metade mais confiante das chamadas acerta **94–95%**
+   contra 83–85% do total.
+3. **Combinado à confiança do G-C1, sobe o fim-a-fim — mas pouco:** AUROC +0,02 a +0,04, AURC
+   −0,01 a −0,02, e o quartil mais confiante passa de 90–95% para **94–98,5%** de acerto (+3 a +4 pp).
+   A previsão ("0,64 → 0,70–0,75") acertou o destino e errou a base — a base corrigida (§8) já era
+   0,70–0,74. O que isso diz: **a maior parte do erro de argumento é confiante** — sintetizar um
+   e-mail plausível (§2w) ou traduzir a chave (§2q) não deixa marca na verossimilhança. Sinal barato
+   serve para *rotear* (agir só no quartil bom), não para *consertar*; consertar é treino.
+
+**Previsão pré-registrada × medido:** c_sim AUROC < 0,6 e quase constante → ✅ e13/recusa (0,47–0,48),
+≈ C-full/catpert (0,61, mas sem massa: `{` em 100%); logP args AUROC 0,60–0,70 → **0,73–0,76**, melhor;
+combinada sobe o fim-a-fim para 0,70–0,75 → ✅ 0,715–0,760, mas a partir de 0,70–0,74 (ganho +0,02–0,04);
+"se não subir, o erro é confiante" → subiu pouco: o erro é, em maioria, confiante.
+
+### 10.1 O que fica para o harness (Degrau 1, US$ 0, hoje)
+
+1. **Confiança da decisão de chamar:** ler p_call e passar por temperatura (T ≈ 2 no C-full, 1,8 no
+   e13 — um escalar por receita, ajustado uma vez, transfere entre sementes). ECE 0,02–0,04.
+2. **Limiar:** o greedy já opera em τ ≈ 0,14; abaixar para 0,15–0,20 compra +2,6 a +4,5 pp de execução
+   por +3,5 a +5,6 pp de over-call no C-full — **decisão de custo do produto**, medida, não estimada.
+3. **Rotear pelo que se sabe:** p_call · p_tool · exp(logP média dos argumentos). O quartil mais
+   confiante acerta 94–98%; o que está abaixo vai para confirmação/humano. O que **não** fazer:
+   perguntar ao modelo se acertou.
+4. **O que só treino resolve:** os erros de argumento confiantes (a maioria) e a auto-avaliação —
+   candidatos ao G-C6 (RLCR com o executor como recompensa), se um dia valer o custo.

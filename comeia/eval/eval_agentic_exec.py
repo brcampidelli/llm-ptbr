@@ -180,6 +180,14 @@ def main() -> int:
                     help="grava um JSONL por caso (ref, previsto, veredito, saida crua). "
                          "Sem isto so' sobram agregados, e nenhuma analise de MODO DE FALHA "
                          "e' possivel sem re-gerar tudo.")
+    ap.add_argument("--indices", type=Path, default=None,
+                    help="G-C3: JSON com lista de indices `i` (1-based, os do despejo) — avalia SO' "
+                         "esses casos, preservando o `i` original no despejo, para juntar depois.")
+    ap.add_argument("--forcar-chamada", action="store_true",
+                    help="G-C3: forca os primeiros tokens gerados a serem o prefixo "
+                         "'{\"tool\": \"' (LogitsProcessor depois do restritor). Mede o que a "
+                         "decisao 'chamar' RENDE quando a confianca lida por logit e' que decide, "
+                         "e nao o greedy — a versao REALIZADA do teto do calibracao_poshoc.py.")
     ap.add_argument("--chat", action="store_true",
                     help="usa o chat template. So' DEPOIS do SFT — ver comentario em gerar()")
     ap.add_argument("--dry-run", action="store_true",
@@ -189,6 +197,12 @@ def main() -> int:
     linhas = [r for r in read_jsonl(args.data) if mensagens(r)]
     if args.limit:
         linhas = linhas[: args.limit]
+    indices_orig = list(range(1, len(linhas) + 1))
+    if args.indices:
+        quer = set(json.loads(args.indices.read_text(encoding="utf-8")))
+        par = [(i, r) for i, r in zip(indices_orig, linhas) if i in quer]
+        indices_orig = [i for i, _ in par]; linhas = [r for _, r in par]
+        print(f"--indices: {len(linhas)} de {len(quer)} pedidos (i preservado no despejo)")
 
     TE.garantir_fixtures()
     catalogo = _d7.load_tools()
@@ -310,6 +324,21 @@ def main() -> int:
               file=sys.stderr)
         return 2
     restritores: list = []
+    ids_prefixo = tok('{"tool": "', add_special_tokens=False)["input_ids"]
+    if args.forcar_chamada:
+        print(f"forcar-chamada: prefixo {ids_prefixo} = {[tok.decode([t]) for t in ids_prefixo]}")
+
+    class ForcarPrefixo:
+        """LogitsProcessor: nos passos t < len(prefixo), so' prefixo[t] tem score finito."""
+        def __init__(self, ids: list[int], plen: int):
+            self.ids, self.plen = ids, plen
+        def __call__(self, input_ids, scores):
+            t = input_ids.shape[1] - self.plen
+            if t < len(self.ids):
+                import torch as _t
+                m = _t.full_like(scores, float("-inf")); m[:, self.ids[t]] = 0.0
+                return m
+            return scores
     if restringe:
         print("restrito: a CHAVE de args so' pode vir do catalogo do prompt "
               "(risco medido = 0 casos que passam tem chave fora do esquema)")
@@ -384,8 +413,9 @@ def main() -> int:
                       max_length=args.max_len).to(dispositivo)
             cfg = dict(max_new_tokens=args.max_new, eos_token_id=PARADAS,
                        pad_token_id=tok.pad_token_id or tok.eos_token_id)
+            from transformers import LogitsProcessorList
+            procs = []
             if restringe:
-                from transformers import LogitsProcessorList
                 bloco_rows = rows[i2:i2 + b]
                 cats = ESQ.catalogos_de(bloco_rows, partes)
                 ctxs = ([partes(r)[1] for r in bloco_rows]
@@ -397,8 +427,15 @@ def main() -> int:
                                               span_maximal=bool(args.span_maximal),
                                               restringir_ferramenta=bool(
                                                   args.restrito_ferramenta))
-                cfg["logits_processor"] = LogitsProcessorList([rest])
+                procs.append(rest)
                 restritores.append(rest)
+            if args.forcar_chamada:
+                # o restritor vem ANTES (seu automato ve' o prefixo como tokens gerados e mascara
+                # em cima); o forcador vem DEPOIS e sobrescreve: nos primeiros len(prefixo) passos
+                # so' o token do prefixo fica com score finito.
+                procs.append(ForcarPrefixo(ids_prefixo, ent["input_ids"].shape[1]))
+            if procs:
+                cfg["logits_processor"] = LogitsProcessorList(procs)
             if k > 1:
                 cfg.update(do_sample=True, temperature=args.temp, top_p=0.95,
                            num_return_sequences=k)
@@ -508,9 +545,10 @@ def main() -> int:
     lote_ef = max(1, args.lote // max(1, args.k))
     prontas = gerar_em_lote(linhas, lote_ef, args.k)
 
-    for i, row in enumerate(linhas, 1):
+    for pos, row in enumerate(linhas, 1):
+        i = indices_orig[pos - 1]
         sistema, usuario, ref, tipo = partes(row)
-        saidas = prontas[i - 1] if prontas is not None else gerar(sistema, usuario, args.k)
+        saidas = prontas[pos - 1] if prontas is not None else gerar(sistema, usuario, args.k)
         ref_obj = _d7.extract_json(ref)
 
         if tipo == "text":
@@ -686,8 +724,8 @@ def main() -> int:
                 "bruto": saidas[0][:1200],
             })
 
-        if i % 20 == 0 or i == len(linhas):
-            print(f"  {i}/{len(linhas)}", flush=True)
+        if pos % 20 == 0 or pos == len(linhas):
+            print(f"  {pos}/{len(linhas)}", flush=True)
 
     def linha(rot: str, k: int, n: int) -> str:
         if not n:
@@ -764,6 +802,9 @@ def main() -> int:
                    "por_argumento": bool(args.por_argumento),
                    "restrito": bool(getattr(args, "restrito", False)),
                    "restrito_valor": bool(getattr(args, "restrito_valor", False)),
+                   "restrito_ferramenta": bool(getattr(args, "restrito_ferramenta", False)),
+                   "forcar_chamada": bool(args.forcar_chamada),
+                   "indices": str(args.indices) if args.indices else None, "n_casos": len(linhas),
                    "limit": args.limit, "data": str(args.data)},
         # ⭐ E o HASH DO PERFIL: e' ele que define a REGUA. Sem isto, "esta regua e' outra"
         #    depende de alguem lembrar de avisar — e hoje eu precisei avisar cinco vezes.

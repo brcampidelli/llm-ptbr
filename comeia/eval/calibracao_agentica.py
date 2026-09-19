@@ -30,6 +30,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import re
 import sys
 import time
 from pathlib import Path
@@ -40,6 +41,22 @@ from eval_agentic_exec import partes                   # noqa: E402
 from catalogo_maior import blocos_do_sistema           # noqa: E402
 
 PREFIXO = '{"tool": "'
+RX_TOOL = re.compile(r'^\s*\{\s*"tool"\s*:\s*"([^"]+)"')
+
+
+def chamada_do_despejo(d: dict | None) -> tuple[bool, str | None]:
+    """(chamou?, nome) a partir do despejo da eval. Caso tool: `ferramenta_pred`. Caso texto: o despejo so'
+    traz `over_call` e o `bruto` — o nome sai do proprio bruto. 🔴 Era aqui o defeito do G-C1 (2026-09-19):
+    `chamou = ferramenta_pred is not None` nunca via over-call, e o fim-a-fim contava TODO caso texto como
+    certo (acc 0,79 onde era 0,745 no C-full s43)."""
+    if not d:
+        return False, None
+    if d.get("ferramenta_pred"):
+        return True, d["ferramenta_pred"]
+    if d.get("over_call"):
+        m = RX_TOOL.match(d.get("bruto") or "")
+        return True, (m.group(1) if m else None)
+    return False, None
 
 
 def ece(conf: list[float], cert: list[bool], caixas: int = 10) -> float:
@@ -115,7 +132,11 @@ def main() -> int:
     ap.add_argument("--max-len", type=int, default=1700)
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--saida", default="docs/calibracao-agentica-350m-2026-09-19.json")
+    ap.add_argument("--casos-dir", default="comeia/eval/results", help="grava casos_calib_<adapter>.jsonl (p_call, p_tool por caso) para G-C3/G-C1b")
+    ap.add_argument("--rejuntar", action="store_true", help="sem GPU: reconstroi o JSON e os casos_calib a partir dos casos_calib existentes + despejos")
     a = ap.parse_args()
+    if a.rejuntar:
+        return rejuntar(a)
 
     import torch
     from transformers import AutoModelForCausalLM, AutoTokenizer
@@ -197,12 +218,35 @@ def main() -> int:
             p = RAIZ / "eval" / "results" / f"casos_{tag}-cfgref.jsonl"
             if p.exists():
                 dump = {d["i"]: d for d in (json.loads(l) for l in p.read_text(encoding="utf-8").splitlines() if l.strip())}
-        # ── metricas
+        R = consolidar(adp, tag, casos, dump, round(time.time() - t0))
+        saida_tudo["adapters"][Path(adp).name] = R
+        if a.casos_dir:
+            gravar_casos(Path(a.casos_dir) / f"casos_calib_{Path(adp).name}.jsonl", casos, dump)
+        imprimir(Path(adp).name, R)
+        Path(a.saida).write_text(json.dumps(saida_tudo, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+    print(f"\nsalvo em {a.saida}")
+    return 0
+
+
+def gravar_casos(pc: Path, casos: list[dict], dump: dict) -> None:
+    linhas = []
+    for c in casos:
+        d = dump.get(c["i"]); g = None
+        if d:
+            chamou, nome = chamada_do_despejo(d)
+            g = {k: d.get(k) for k in ("ferramenta_pred", "exec_ok", "executou", "over_call", "bruto")}
+            g["chamou"] = chamou; g["ferramenta_chamada"] = nome
+            g["iniciou_chamada"] = (d.get("bruto") or "").lstrip().startswith("{")   # decisao: comecou um JSON (valido ou nao)
+        linhas.append(json.dumps({**{k: v for k, v in c.items() if k != "greedy"}, "greedy": g}, ensure_ascii=False))
+    pc.write_text("\n".join(linhas) + "\n", encoding="utf-8")
+
+
+def consolidar(adp: str, tag: str, casos: list[dict], dump: dict, segundos: int) -> dict:
         is_tool = [c["is_tool"] for c in casos]
         dec_call = [c["p_call"] >= 0.5 for c in casos]
         cert_noul = [d == t for d, t in zip(dec_call, is_tool)]
         conf_noul = [max(c["p_call"], 1 - c["p_call"]) for c in casos]
-        R = {"adapter": adp, "dump": tag if dump else None, "segundos": round(time.time() - t0)}
+        R = {"adapter": adp, "dump": tag if dump else None, "segundos": segundos}
         R["noul_chamar"] = resumo("noul", conf_noul, cert_noul, [c["p_call"] for c in casos], is_tool)
         R["noul_chamar"]["over_call_por_logit"] = sum(1 for c in casos if not c["is_tool"] and c["p_call"] >= 0.5) / max(1, sum(1 for c in casos if not c["is_tool"]))
         R["noul_chamar"]["under_call_por_logit"] = sum(1 for c in casos if c["is_tool"] and c["p_call"] < 0.5) / max(1, sum(is_tool))
@@ -214,29 +258,64 @@ def main() -> int:
         R["casos_tool_catalogo=1"] = len(uni)
         if dump:
             e2e_c, e2e_conf, conc = [], [], 0
+            n_chamados = 0
             for c in casos:
                 d = dump.get(c["i"])
                 if not d: continue
-                chamou = d.get("ferramenta_pred") is not None
+                chamou, nome = chamada_do_despejo(d)
                 correto = bool(d.get("exec_ok")) if c["is_tool"] else (not chamou)
-                conf = c["p_call"] * (c["p_tool"].get(d.get("ferramenta_pred"), 0.0) if c["p_tool"] else 1.0) if chamou else (1 - c["p_call"])
+                conf = c["p_call"] * (c["p_tool"].get(nome, 0.0) if c["p_tool"] else 1.0) if chamou else (1 - c["p_call"])
                 e2e_c.append(correto); e2e_conf.append(conf)
-                if chamou and c["pred_tool"] is not None and d.get("ferramenta_pred") == c["pred_tool"]:
-                    conc += 1
+                if chamou:
+                    n_chamados += 1
+                    if c["pred_tool"] is not None and nome == c["pred_tool"]:
+                        conc += 1
             R["fim_a_fim_greedy"] = resumo("e2e", e2e_conf, e2e_c)
-            R["fim_a_fim_greedy"]["concordancia_choice_logit_vs_greedy"] = conc / max(1, sum(1 for c in casos if dump.get(c["i"], {}).get("ferramenta_pred") is not None))
+            R["fim_a_fim_greedy"]["concordancia_choice_logit_vs_greedy"] = conc / max(1, n_chamados)
             R["fim_a_fim_greedy"]["exec_ok_greedy"] = sum(1 for c in casos if c["is_tool"] and dump.get(c["i"], {}).get("exec_ok")) / max(1, sum(is_tool))
-        saida_tudo["adapters"][Path(adp).name] = R
+            R["fim_a_fim_greedy"]["over_call_greedy"] = sum(1 for c in casos if not c["is_tool"] and chamada_do_despejo(dump.get(c["i"]))[0]) / max(1, len(casos) - sum(is_tool))
+            # under-call como a eval define: nem comecou '{'. Chamada que comecou e nao parseou vai a parte.
+            iniciou = lambda d: bool(d) and (d.get("bruto") or "").lstrip().startswith("{")
+            R["fim_a_fim_greedy"]["under_call_greedy"] = sum(1 for c in casos if c["is_tool"] and not iniciou(dump.get(c["i"]))) / max(1, sum(is_tool))
+            R["fim_a_fim_greedy"]["chamada_quebrada_tool"] = sum(1 for c in casos if c["is_tool"] and iniciou(dump.get(c["i"])) and not chamada_do_despejo(dump.get(c["i"]))[0])
+        return R
+
+
+def imprimir(nome: str, R: dict) -> None:
         N = R["noul_chamar"]; C = R.get("choice_ferramenta_catalogo>=2", {}); E = R.get("fim_a_fim_greedy", {})
-        print(f"\n{Path(adp).name}  ({R['segundos']} s)")
+        print(f"\n{nome}  ({R['segundos']} s)")
         print(f"  NOUL chamar?   acc {N['acc']:.3f} · ECE {N['ece']:.3f} · Brier {N['brier']:.3f} · AUROC(p_call vs classe) {N['auroc_score_vs_classe']:.3f} · "
               f"AUROC(conf vs certo) {N['auroc_conf_vs_certo']:.3f} · AURC {N['aurc']:.3f} · acc@50 {N['acc@50']:.3f} · conf>0,99 {N['frac_conf>0.99']:.0%} · over {N['over_call_por_logit']:.3f} under {N['under_call_por_logit']:.3f}")
         if C:
             print(f"  CHOICE tool    n {C['n']} · acc {C['acc']:.3f} · ECE {C['ece']:.3f} · AUROC {C['auroc_conf_vs_certo']:.3f} · AURC {C['aurc']:.3f} · acc@50 {C['acc@50']:.3f} · conf>0,99 {C['frac_conf>0.99']:.0%}")
         if E:
-            print(f"  FIM-A-FIM      n {E['n']} · acc {E['acc']:.3f} · ECE {E['ece']:.3f} · AUROC {E['auroc_conf_vs_certo']:.3f} · AURC {E['aurc']:.3f} · acc@25 {E['acc@25']:.3f} acc@50 {E['acc@50']:.3f} acc@75 {E['acc@75']:.3f} · choice logit = greedy em {E['concordancia_choice_logit_vs_greedy']:.0%}")
-        Path(a.saida).write_text(json.dumps(saida_tudo, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
-    print(f"\nsalvo em {a.saida}")
+            print(f"  FIM-A-FIM      n {E['n']} · acc {E['acc']:.3f} · ECE {E['ece']:.3f} · AUROC {E['auroc_conf_vs_certo']:.3f} · AURC {E['aurc']:.3f} · acc@25 {E['acc@25']:.3f} acc@50 {E['acc@50']:.3f} acc@75 {E['acc@75']:.3f} · "
+                  f"greedy exec_ok {E['exec_ok_greedy']:.3f} under {E['under_call_greedy']:.3f} over {E['over_call_greedy']:.3f} · choice logit = greedy em {E['concordancia_choice_logit_vs_greedy']:.0%}")
+
+
+def rejuntar(a) -> int:
+    """Sem GPU: reconstroi o JSON a partir dos casos_calib_<adapter>.jsonl (p_call, p_tool ja' medidos) e dos
+    despejos — o caminho para corrigir o cruzamento com o greedy sem pagar os forwards de novo."""
+    antes = json.loads(Path(a.saida).read_text(encoding="utf-8")) if Path(a.saida).exists() else {"_regua": {}, "adapters": {}}
+    saida_tudo = {"_regua": {**antes.get("_regua", {}), "rejuntado_em": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}, "adapters": {}}
+    dumps = list(a.dumps) + ["-"] * (len(a.peft) - len(a.dumps))
+    for adp, tag in zip(a.peft, dumps):
+        pc = Path(a.casos_dir) / f"casos_calib_{Path(adp).name}.jsonl"
+        casos = [json.loads(l) for l in pc.read_text(encoding="utf-8").splitlines() if l.strip()]
+        for c in casos:
+            c.pop("greedy", None)
+        dump = {}
+        if tag != "-":
+            pd = RAIZ / "eval" / "results" / f"casos_{tag}-cfgref.jsonl"
+            if pd.exists():
+                dump = {d["i"]: d for d in (json.loads(l) for l in pd.read_text(encoding="utf-8").splitlines() if l.strip())}
+        seg = antes.get("adapters", {}).get(Path(adp).name, {}).get("segundos", 0)
+        R = consolidar(adp, tag, casos, dump, seg)
+        saida_tudo["adapters"][Path(adp).name] = R
+        gravar_casos(pc, casos, dump)
+        imprimir(Path(adp).name, R)
+    Path(a.saida).write_text(json.dumps(saida_tudo, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+    print(f"\nsalvo em {a.saida} (rejuntado, sem GPU)")
     return 0
 
 
