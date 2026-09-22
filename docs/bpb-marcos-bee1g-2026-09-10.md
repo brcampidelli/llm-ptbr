@@ -217,3 +217,75 @@ novo, uma leitura de dois trechos; com quatro pontos a série de curvatura em σ
 **3.618 → 2.735 → 3.136 → 3.103**: uma queda, uma subida, um platô. Sem tendência para
 extrapolar — e o par decisivo continua sendo o do fim (platô 15B contra 20B decaído), que é o que
 o 2609.08966 mede.
+
+## Adendo 2026-09-22 — `marco_15B`: o reajuste de 4 pontos acertou; o PT de wiki parou de cair no platô
+
+`marco_15B/marco.json`: **14.999.977.984 tokens · passo 457.763 · val_loss 3,2103 · ppl 24,79**
+(snapshot de 19/09 17:52 UTC; md5 do `model.safetensors` conferido contra a origem, `77a0cae5…`).
+
+**A previsão que faltava registrar.** O adendo do 10B terminava em *"com a previsão a registrar no
+reajuste"* e o reajuste não foi escrito no documento — ficou num número dito no chat (3,220 ± 0,008,
+ainda do ajuste velho de 3 pontos). Registro os dois, com o medido ao lado, porque a diferença é a
+lição:
+
+| ajuste | E · A · α | previsto 15B | medido | erro | dentro de ±0,008? |
+|---|---|---:|---:|---:|---|
+| 3 pontos (1B, 3B, 6B) — o do adendo do 10B | 3,183 · 0,304 · 0,751 | 3,2228 | 3,2103 | −0,0125 | ❌ (0,004 fora) |
+| **4 pontos (+10B)** — resíduos ≤ 0,002 (1 g.l.) | **3,159 · 0,325 · 0,653** | **3,2144** | **3,2103** | **−0,0041** | ✅ |
+
+⚠️ A curva de 3 pontos, que *descrevia* (§5), errou para o lado otimista do platô — previu menos
+queda do que houve; a de 4 pontos, primeira com um grau de liberdade, acertou dentro do ruído de uma
+leitura. O quarto ponto valeu exatamente o que a §5 dizia que valeria. Reajuste com 5 pontos:
+`E = 3,148 · A = 0,334 · α = 0,613` (resíduos ≤ 0,003) → **20B em platô ≈ 3,201** — mas o 20B não vai
+existir como platô: o decaimento (últimos 20% do WSD) começou no passo ~488k, e o ponto final é
+decaído (§2d: não comparável a estes; no passo 548k a val já estava em 3,000).
+
+| marco | tokens | val loss | expoente local |
+|---|---:|---:|---:|
+| 1B | 1,278B | 3,4359 | — |
+| 3B | 3,000B | 3,3162 | −0,042 |
+| 6B | 6,000B | 3,2621 | −0,024 |
+| 10B | 10,000B | 3,2300 | −0,019 |
+| **15B** | 15,000B | **3,2103** | **−0,015** |
+
+Desaceleração monotônica na quinta leitura (−0,042 → −0,024 → −0,019 → −0,015).
+
+**bpb na mesma régua** ([`bpb-pt-bee1g-marco-15B.json`](bpb-pt-bee1g-marco-15B.json)):
+
+| marco | tokens | `wiki/limpo` | exp. local | `corpus_multi_pt/limpo` | exp. local |
+|---|---:|---:|---:|---:|---:|
+| 6B | 6,000B | 1,0642 | −0,022 | 1,0524 | −0,018 |
+| 10B | 10,000B | 1,0479 | −0,030 | 1,0423 | −0,019 |
+| **15B** | 15,000B | **1,0468** | **−0,003** | **1,0366** | **−0,013** |
+| âncora 350M | 21,75B | 0,9240 | | 0,9052 | |
+
+⚠️ **O `wiki/limpo` parou (−0,0011 em 5B de tokens) enquanto a val loss multilíngue caiu −0,020.**
+As duas réguas de PT voltam a discordar sobre um trecho (−0,003 contra −0,013), como em 6B→10B — e
+desta vez na direção oposta (lá o wiki caía *mais*). Com 276 docs e 0,94 MB, um trecho de ±0,01 de
+expoente é ruído de holdout; o que as duas concordam é que **o PT rende menos por token que a
+mistura** no fim do platô, o mesmo sinal do "o token saturou" do 350M. Os holdouts `sujo` caíram
+juntos (`wiki/sujo` 0,9827 → 0,9789 · `corpus_multi_pt/sujo` 0,9708 → 0,9634). Fica registrado, não
+interpretado: um trecho não decide, e a comparação que decide é contra o 350M **no ponto final,
+decaído** (o gate declarado).
+
+**Densidade de solução** ([`densidade-solucao-bee1g-marco-15B.json`](densidade-solucao-bee1g-marco-15B.json),
+mesmas 100 amostras de ruído; guarda §2aa: bpb sem perturbação = âncora 1,0468 ✅; 44,7 min na 5070):
+
+| σ | ΔL mediana 6B | 10B | **15B** | pareado 15B − 10B (mediana) | 15B pior em |
+|---:|---:|---:|---:|---:|---:|
+| 0,01 | +0,3136 | +0,3103 | **+0,3054** | −0,0043 | **45/100** |
+| 0,005 | +0,0766 | +0,0736 | +0,0739 | −0,0021 | 44/100 |
+| 0,001 | +0,0033 | +0,0028 | +0,0030 | +0,0000 | 50/100 |
+
+⭐ **Segundo empate seguido.** A série de curvatura em σ=0,01 (ΔL/σ²) é agora
+**3.618 → 2.735 → 3.136 → 3.103 → 3.054**: uma queda, uma subida, e três pontos num platô que o
+pareado não distingue (45/44/50 de 100 — igual a 50 dentro do ruído binomial ±10). Do 6B em diante a
+geometria local do platô do WSD **não muda com o token**; o que a §2d do 350M mediu como "o platô é
+plano em perplexidade" aparece aqui como "o platô é plano em curvatura". A linha de base para o
+par decisivo do 2609.08966 — **15B (platô) × final (decaído)** — está fechada: 3.054 ± ~50 em σ=0,01.
+Se o decaído sair *mais* curvo (o artigo prevê: COOLDOWN 0% de densidade a τ=0,90), o número que
+importa para o pós-treino é este, não a loss.
+
+**O que este marco não mostra:** nada sobre o decaído (o run só o entrega no passo 610.353); nada
+sobre capacidade (bpb não é capacidade — a escada 150M→350M mediu isso); e o ruído do holdout de PT
+é da ordem do efeito de um trecho de 5B — a leitura do PT é "quase parado", não "parado".
