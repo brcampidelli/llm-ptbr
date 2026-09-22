@@ -252,7 +252,7 @@ dados em PT** (§2g). Sem isso, "40–200×" é a medição deles em inglês nas
 | **G-C1b** Noul de argumentos ✅ §10 | o modelo sabe quando a própria chamada está errada? | auto-avaliação Sim/Não no 1º token + verossimilhança teacher-forced dos argumentos, sobre o greedy do G-C1 | 5070, ~25 s/adapter, US$ 0 | c_sim AUROC < 0,6 (nunca treinado); logP dos argumentos AUROC 0,60–0,70; combinada sobe o fim-a-fim para 0,70–0,75 |
 | **G-C4** base 1G | calibração do marco_15B em decisão de 1 letra (CSQA-PT? não existe) → usar o holdout agêntico como Choice no base | minutos | linha de base para comparar com o pós-treino |
 | **G-C5** Jev × Bee × Haiku em PT | 200 casos do holdout agêntico como Noul/Choice pelo adapter | US$ ~2 de API | mede o "lower accuracy" em PT que os docs declaram |
-| **G-C6** RLCR/2601 no 350M | GRPO+Brier com o executor como recompensa | 5090, ~8 h, US$ ~10 | só se G-C1/G-C3 deixarem AURC ruim e acurácia estagnada; métrica primária AURC |
+| **G-C6** RLCR/2601 no 350M | GRPO+Brier com o executor como recompensa | 5090, ~8 h, US$ ~10 | ⛔ **FORA DA FILA (2026-09-22)** — o critério declarado era "só se G-C1/G-C3 deixarem AURC ruim"; o G-C3 mostrou o contrário: a confiança da decisão se calibra com **um escalar** (temperatura T≈2, ECE 0,13 → 0,02–0,04, transfere entre sementes). O que sobra mal calibrado é **erro de argumento confiante** (§10), que o RLCR não ataca — ele calibraria um `q` verbalizado que o 350M não emite. Some-se o ruído de semente de 4,4 pp (§2x: US$ 10 é uma semente, o gate honesto é ~US$ 30) e o esquecimento de 7 pp OOD que o próprio artigo mede. **Decisão:** reavaliar só depois do **G-C4** (calibração do base 1G, US$ 0) e, se for, no 1G pós-treinado, com 3 sementes e AURC como métrica primária. |
 
 **Não fazer:** trocar o E19 por "Jev decide" no produto sem G-C5; usar log-loss como recompensa
 (Teorema 1 do RLCR — incentiva errar de propósito); ler ECE como prova de seleção (RLSR).
@@ -507,5 +507,8 @@ combinada sobe o fim-a-fim para 0,70–0,75 → ✅ 0,715–0,760, mas a partir 
 3. **Rotear pelo que se sabe:** p_call · p_tool · exp(logP média dos argumentos). O quartil mais
    confiante acerta 94–98%; o que está abaixo vai para confirmação/humano. O que **não** fazer:
    perguntar ao modelo se acertou.
-4. **O que só treino resolve:** os erros de argumento confiantes (a maioria) e a auto-avaliação —
-   candidatos ao G-C6 (RLCR com o executor como recompensa), se um dia valer o custo.
+4. **O que só treino resolve:** os erros de argumento confiantes (a maioria) e a auto-avaliação.
+   ⚠️ O candidato NÃO é o G-C6: RL com recompensa de calibração conserta confiança descalibrada, e a
+   daqui já se conserta com um escalar. O candidato barato é **SFT curto de auto-avaliação** — os
+   rótulos são de graça (o executor diz se a chamada cumpriu), e SFT calibra por construção enquanto
+   RL binário descalibra (§1.3). Ordem: **G-C4 no base 1G** (US$ 0) → decidir.
