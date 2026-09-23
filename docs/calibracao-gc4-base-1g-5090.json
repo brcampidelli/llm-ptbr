@@ -1,0 +1,61 @@
+{
+ "_regua": {
+  "data": "/root/t4/comeia/data/processed/holdout_balanceado.eval.jsonl",
+  "max_len": 1700,
+  "prompts_longos": 0,
+  "tokens_chamada": [
+   94,
+   12038
+  ],
+  "prefixo": " {\"tool\": \"",
+  "cru": true,
+  "transformers": "5.16.1",
+  "gpu": "NVIDIA GeForce RTX 5090"
+ },
+ "adapters": {
+  "-": {
+   "adapter": "-",
+   "dump": null,
+   "segundos": 34,
+   "noul_chamar": {
+    "n": 804,
+    "acc": 0.3333333333333333,
+    "ece": 0.6663827221565717,
+    "brier": 0.6662938376384014,
+    "auroc_conf_vs_certo": 0.4785169302740031,
+    "aurc": 0.7165545817835536,
+    "acc@25": 0.23880597014925375,
+    "acc@50": 0.32835820895522383,
+    "acc@75": 0.34328358208955223,
+    "acc@100": 0.33333333333333337,
+    "conf_media": 0.999716055489905,
+    "frac_conf>0.99": 1.0,
+    "auroc_score_vs_classe": 0.4785169302740031,
+    "over_call_por_logit": 0.0,
+    "under_call_por_logit": 1.0
+   },
+   "choice_ferramenta_catalogo>=2": {
+    "n": 455,
+    "acc": 0.621978021978022,
+    "ece": 0.08427657525995869,
+    "brier": 0.1974245766354835,
+    "auroc_conf_vs_certo": 0.7611348508505218,
+    "aurc": 0.1888587223849765,
+    "acc@25": 0.9122807017543859,
+    "acc@50": 0.8026315789473684,
+    "acc@75": 0.7067448680351907,
+    "acc@100": 0.621978021978022,
+    "conf_media": 0.7040312226351955,
+    "frac_conf>0.99": 0.02857142857142857,
+    "tamanhos": [
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "casos_tool_catalogo=1": 81
+  }
+ }
+}

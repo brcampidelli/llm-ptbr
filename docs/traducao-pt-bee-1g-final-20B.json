@@ -1,0 +1,42 @@
+{
+ "modelo": "/root/mt4/bee-1g-final-20B",
+ "peft": null,
+ "modelo_r": {
+  "nome": "MODELO bee-1g-final-20B",
+  "en->pt": {
+   "chrf2": 50.85201510401387,
+   "bleu": 26.820107264614347,
+   "idioma_alvo": 0.9866666666666667,
+   "numeros_ok": 0.91,
+   "vazio": 0.0,
+   "n": 300
+  },
+  "pt->en": {
+   "chrf2": 40.41371305041487,
+   "bleu": 19.75884556486404,
+   "idioma_alvo": 0.91,
+   "numeros_ok": 0.8933333333333333,
+   "vazio": 0.0,
+   "n": 300
+  }
+ },
+ "piso_copiar": {
+  "nome": "PISO copiar a fonte",
+  "en->pt": {
+   "chrf2": 21.54301286691898,
+   "bleu": 2.498576146619684,
+   "idioma_alvo": 0.0,
+   "numeros_ok": 0.95,
+   "vazio": 0.0,
+   "n": 300
+  },
+  "pt->en": {
+   "chrf2": 22.720911455533592,
+   "bleu": 2.493952580499555,
+   "idioma_alvo": 0.0,
+   "numeros_ok": 0.9466666666666667,
+   "vazio": 0.0,
+   "n": 300
+  }
+ }
+}

@@ -1,0 +1,24 @@
+{
+ "modelo": "/root/mt4/bee-1g-final-20B",
+ "peft": null,
+ "n": 150,
+ "limites": {
+  "compressao_max": 0.35,
+  "compressao_min": 0.05,
+  "cobertura_min": 0.6,
+  "qa_min": 0.5
+ },
+ "modelo_util": 0.0,
+ "modelo_cobertura": 0.8798412698412699,
+ "modelo_sem_invencao": 0.8466666666666667,
+ "modelo_compressao": 0.797,
+ "piso_lead2_util": 0.5133333333333333,
+ "teto_referencia_util": 1.0,
+ "falhas_por_condicao": {
+  "comprimiu": 150,
+  "sem_entidade_inventada": 21,
+  "sem_numero_inventado": 16,
+  "cobriu": 20,
+  "respondeu": 17
+ }
+}

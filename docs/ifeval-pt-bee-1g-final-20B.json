@@ -1,0 +1,30 @@
+{
+ "modelo": "/root/mt4/bee-1g-final-20B",
+ "peft": null,
+ "tag": "bee-1g-final-20B",
+ "n_prompts": 541,
+ "n_instrucoes": 1002,
+ "estrito_prompt": 0.12199630314232902,
+ "estrito_instrucao": 0.3023952095808383,
+ "frouxo_prompt": 0.12199630314232902,
+ "frouxo_instrucao": 0.3023952095808383,
+ "falhas_por_tipo": {
+  "tudo_minusculo": 57,
+  "tem_titulo_markdown": 44,
+  "envolvido_em_aspas": 45,
+  "tudo_maiusculo": 42,
+  "n_frases": 54,
+  "e_json_valido": 27,
+  "termina_com": 62,
+  "n_palavras": 72,
+  "duas_respostas": 51,
+  "n_marcadores": 43,
+  "comeca_com": 40,
+  "nao_contem": 17,
+  "sem_virgula": 28,
+  "n_paragrafos": 55,
+  "contem_palavra": 42,
+  "sem_numeros": 19,
+  "sem_palavra_proibida_inicio": 1
+ }
+}

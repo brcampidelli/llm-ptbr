@@ -133,6 +133,9 @@ def main() -> int:
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--saida", default="docs/calibracao-agentica-350m-2026-09-19.json")
     ap.add_argument("--casos-dir", default="comeia/eval/results", help="grava casos_calib_<adapter>.jsonl (p_call, p_tool por caso) para G-C3/G-C1b")
+    ap.add_argument("--cru", action="store_true",
+                    help="G-C4: prompt em TEXTO CRU (Usuario:/Assistente:), o formato do eval_agentic_exec sem --chat. "
+                         "Para modelo BASE, que nunca viu ChatML (§2e): com chat template mediria a reacao a tokens ineditos.")
     ap.add_argument("--rejuntar", action="store_true", help="sem GPU: reconstroi o JSON e os casos_calib a partir dos casos_calib existentes + despejos")
     a = ap.parse_args()
     if a.rejuntar:
@@ -150,7 +153,8 @@ def main() -> int:
         tok.pad_token = tok.eos_token
     tok.padding_side = "left"; tok.truncation_side = "left"
     ids_chave = [i for i in range(len(tok)) if tok.decode([i]).lstrip().startswith("{")]
-    ids_prefixo = tok(PREFIXO, add_special_tokens=False)["input_ids"]
+    prefixo = (" " + PREFIXO) if a.cru else PREFIXO      # em texto cru o JSON vem depois de "Assistente:" + espaco
+    ids_prefixo = tok(prefixo, add_special_tokens=False)["input_ids"]
     dev = "cuda" if torch.cuda.is_available() else "cpu"
     print(f"holdout {len(rows)} · tokens de chamada {[tok.decode([i]) for i in ids_chave]} · prefixo {len(ids_prefixo)} tokens · {dev}")
     print(f"transformers {__import__('transformers').__version__} · peft {__import__('peft').__version__} · torch {torch.__version__}")
@@ -161,7 +165,10 @@ def main() -> int:
     for k, r in enumerate(rows, 1):
         sistema, usuario, ref, kind = partes(r)
         msgs = ([{"role": "system", "content": sistema}] if sistema else []) + [{"role": "user", "content": usuario}]
-        txt = tok.apply_chat_template(msgs, tokenize=False, add_generation_prompt=True)
+        if a.cru:
+            txt = (f"{sistema}\n\n" if sistema else "") + f"Usuario: {usuario}\nAssistente:"
+        else:
+            txt = tok.apply_chat_template(msgs, tokenize=False, add_generation_prompt=True)
         ids = tok(txt, add_special_tokens=False)["input_ids"]
         if len(ids) > a.max_len:
             longos += 1; ids = ids[-a.max_len:]
@@ -172,7 +179,7 @@ def main() -> int:
 
     base = AutoModelForCausalLM.from_pretrained(a.model, dtype=torch.bfloat16).to(dev).eval()
     saida_tudo = {"_regua": {"data": str(a.data), "max_len": a.max_len, "prompts_longos": longos, "tokens_chamada": ids_chave,
-                             "prefixo": PREFIXO, "transformers": __import__("transformers").__version__,
+                             "prefixo": prefixo, "cru": bool(a.cru), "transformers": __import__("transformers").__version__,
                              "gpu": torch.cuda.get_device_name(0) if dev == "cuda" else "cpu"}, "adapters": {}}
     dumps = list(a.dumps) + ["-"] * (len(a.peft) - len(a.dumps))
 

@@ -1,0 +1,73 @@
+{
+  "_gate": "ancora de PT para o T4",
+  "_regua": "bpb = nats/ln2 / BYTES · cuda · teto 1500000 B por holdout · seq_len 2048",
+  "_por_que": "o 0,8207 publicado do 350M saiu dos shards {7,23,41} de `bee/corpus`, que nao existe nesta maquina — a ancora tem de ser remedida num holdout que exista (§2g)",
+  "_nao_mostra": [
+    "capacidade — o E2 mediu que bpb e capacidade sao coisas diferentes",
+    "comparacao ENTRE idiomas: bpb carrega vies crosslinguistico (2608.25089); estes numeros sao todos de PT e so' comparam entre si",
+    "o valor absoluto NAO e' comparavel ao 0,8207 publicado — holdout diferente"
+  ],
+  "bytes_holdout": 1500000,
+  "seq_len": 2048,
+  "dispositivo": "cuda",
+  "holdouts": {
+    "wiki/completo": {
+      "docs": 300,
+      "bytes": 1029991
+    },
+    "wiki/limpo": {
+      "docs": 276,
+      "bytes": 936378
+    },
+    "wiki/sujo": {
+      "docs": 24,
+      "bytes": 93613
+    },
+    "corpus_multi_pt/completo": {
+      "docs": 438,
+      "bytes": 1487916
+    },
+    "corpus_multi_pt/limpo": {
+      "docs": 191,
+      "bytes": 405133
+    },
+    "corpus_multi_pt/sujo": {
+      "docs": 247,
+      "bytes": 1082783
+    }
+  },
+  "bpb": {
+    "/root/mt4/bee-1g-final-20B": {
+      "wiki/completo": 0.9308846271750546,
+      "wiki/limpo": 0.9369950933961779,
+      "wiki/sujo": 0.8697637770879607,
+      "corpus_multi_pt/completo": 0.8658960480290964,
+      "corpus_multi_pt/limpo": 0.9105396877249136,
+      "corpus_multi_pt/sujo": 0.8491922286295625
+    },
+    "/root/mt4/marco_15B": {
+      "wiki/completo": 1.0405843783459814,
+      "wiki/limpo": 1.0467416136965237,
+      "wiki/sujo": 0.9789957130637006,
+      "corpus_multi_pt/completo": 0.9833027944474088,
+      "corpus_multi_pt/limpo": 1.0365606238930487,
+      "corpus_multi_pt/sujo": 0.9633758984610473
+    },
+    "/root/mt4/bee-350m-base-5090": {
+      "wiki/completo": 0.9174947168409852,
+      "wiki/limpo": 0.9239361506098572,
+      "wiki/sujo": 0.8530633144756213,
+      "corpus_multi_pt/completo": 0.8575842957904822,
+      "corpus_multi_pt/limpo": 0.9051971793774094,
+      "corpus_multi_pt/sujo": 0.8397695070782265
+    },
+    "Qwen/Qwen3-0.6B-Base": {
+      "wiki/completo": 0.9386330044018258,
+      "wiki/limpo": 0.9423051567634008,
+      "wiki/sujo": 0.9019017525027655,
+      "corpus_multi_pt/completo": 1.0223074283095193,
+      "corpus_multi_pt/limpo": 1.0986319225821368,
+      "corpus_multi_pt/sujo": 0.993749932173961
+    }
+  }
+}
