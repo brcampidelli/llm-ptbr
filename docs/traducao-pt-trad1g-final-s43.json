@@ -1,0 +1,42 @@
+{
+ "modelo": "/root/mt4/sft-base-bee1g-final",
+ "peft": "/workspace/trad1g/trad-s43",
+ "modelo_r": {
+  "nome": "MODELO sft-base-bee1g-fin",
+  "en->pt": {
+   "chrf2": 55.729403206352565,
+   "bleu": 31.683335239570514,
+   "idioma_alvo": 0.99,
+   "numeros_ok": 0.9333333333333333,
+   "vazio": 0.0,
+   "n": 300
+  },
+  "pt->en": {
+   "chrf2": 60.066057687149765,
+   "bleu": 32.74152752260803,
+   "idioma_alvo": 0.9766666666666667,
+   "numeros_ok": 0.9633333333333334,
+   "vazio": 0.0,
+   "n": 300
+  }
+ },
+ "piso_copiar": {
+  "nome": "PISO copiar a fonte",
+  "en->pt": {
+   "chrf2": 21.54301286691898,
+   "bleu": 2.498576146619684,
+   "idioma_alvo": 0.0,
+   "numeros_ok": 0.95,
+   "vazio": 0.0,
+   "n": 300
+  },
+  "pt->en": {
+   "chrf2": 22.720911455533592,
+   "bleu": 2.493952580499555,
+   "idioma_alvo": 0.0,
+   "numeros_ok": 0.9466666666666667,
+   "vazio": 0.0,
+   "n": 300
+  }
+ }
+}

@@ -101,3 +101,38 @@ Artefatos: `calibracao-agentica-1g-{final,15B}-5090.json`, `calibracao-poshoc-1g
 (AUROC fim-a-fim 0,75–0,77); a decisão de **se** chamar continua sendo o elo fraco — agora com a informação
 nova de que no 1G ela varia com a semente de um jeito que calibração não conserta. Coerente com o estudo
 System One (REFLEX/AgentAbstain): escolher calibra, decidir agir não.
+
+## Adapter de TRADUÇÃO separado (receita E22) e teste metamórfico do Choice (2026-09-24)
+
+**Tradução** — `comeia/data/montar_traducao_1g.py` → `treino_1g_traducao.jsonl`: 11.168 exemplos do
+`gigaverbo_translation` (0/1.200 frases do FLORES dentro), metade en→pt e metade pt→en (pares distintos
+invertidos), e em cada direção metade no estilo do corpus e metade no **formato** da régua (declarado).
+Base = final decaído, mesma receita do agêntico (LoRA r16, 698 passos, tokens de chat treináveis).
+
+| | en→pt | pt→en | idioma certo |
+|---|---:|---:|---:|
+| **adapter de tradução (s42 · s43 · s44)** | 55,6 · 55,7 · 56,4 → **55,9** | 59,2 · 60,1 · 60,0 → **59,8** | 97,7–99,7% |
+| base 1G sem adapter (critério declarado) | 50,85 | 40,41 | 91–99% |
+| 1G + adapter agêntico | 24,2 | 15,2 | |
+| 350M base | 51,3 | 42,6 | |
+| piso copiar a fonte | 21,5 | 22,7 | |
+
+✅ Passa o critério nas 3 sementes: **+5,1 (en→pt) e +19,4 (pt→en)** sobre o base, dp < 1 ponto. ⚠️ Parte
+do salto no pt→en pode ser o formato aprendido (o base respondia no idioma errado em 9%); medir num prompt
+diferente antes de publicar o número. Com roteador, o 1G tem agêntico (70%) e tradução (56/60) sem um pagar
+pelo outro — o E22 replicado.
+
+**Metamórfico** — `comeia/data/permutar_holdout.py` (675/804 prompts com a ordem do catálogo invertida ou
+rotacionada, conteúdo e tamanho conferidos iguais) + `comeia/eval/comparar_metamorfico.py`:
+
+| adapter | troca por ordem (inversa · rotação) | acc orig → média das 3 ordens | ECE orig → média |
+|---|---|---|---|
+| final-s42 | 9,9% · 6,6% | 0,923 → **0,936** | 0,037 → **0,016** |
+| final-s43 | 10,3% · 5,9% | 0,923 → **0,954** | 0,042 → **0,016** |
+| final-s44 | 13,2% · 8,6% | 0,919 → **0,938** | 0,049 → **0,016** |
+
+- A ordem do catálogo muda **6–13%** das escolhas (literatura: 2,6–23%), mas **sem viés de posição**
+  (escolhe o 1º item ~30%, a correta está no 1º em 29,5%) — o atalho da §2u não voltou; é ruído de ordem,
+  que se compensa no agregado (certo→errado ≈ errado→certo).
+- ⭐ **Média das distribuições sobre 3 ordens (AnyJev): +1,3 a +3,1 pp de acerto e ECE 0,016, 3/3 sementes**,
+  sem treino, ao custo de 3 forwards curtos por decisão. Adotável na camada de decisão.

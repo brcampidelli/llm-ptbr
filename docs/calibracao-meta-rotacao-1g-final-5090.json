@@ -1,0 +1,149 @@
+{
+ "_regua": {
+  "data": "comeia/data/processed/holdout_balanceado_rotacao.eval.jsonl",
+  "max_len": 1700,
+  "prompts_longos": 0,
+  "tokens_chamada": [
+   94,
+   12038
+  ],
+  "prefixo": "{\"tool\": \"",
+  "cru": false,
+  "transformers": "5.14.1",
+  "gpu": "NVIDIA GeForce RTX 5090"
+ },
+ "adapters": {
+  "final-s42": {
+   "adapter": "/workspace/sft1g/final-s42",
+   "dump": null,
+   "segundos": 62,
+   "noul_chamar": {
+    "n": 804,
+    "acc": 0.818407960199005,
+    "ece": 0.08973081708915118,
+    "brier": 0.12950708089505866,
+    "auroc_conf_vs_certo": 0.8260607069992089,
+    "aurc": 0.05542060888632097,
+    "acc@25": 0.9900497512437811,
+    "acc@50": 0.9527363184079602,
+    "acc@75": 0.9154228855721394,
+    "acc@100": 0.818407960199005,
+    "conf_media": 0.9081387772881562,
+    "frac_conf>0.99": 0.33955223880597013,
+    "auroc_score_vs_classe": 0.9131000779683671,
+    "over_call_por_logit": 0.1791044776119403,
+    "under_call_por_logit": 0.1828358208955224
+   },
+   "choice_ferramenta_catalogo>=2": {
+    "n": 455,
+    "acc": 0.9230769230769231,
+    "ece": 0.04386233451900728,
+    "brier": 0.05395161260980473,
+    "auroc_conf_vs_certo": 0.9214285714285714,
+    "aurc": 0.009727395016436819,
+    "acc@25": 1.0,
+    "acc@50": 1.0,
+    "acc@75": 0.9882697947214076,
+    "acc@100": 0.9230769230769231,
+    "conf_media": 0.9586801506540388,
+    "frac_conf>0.99": 0.756043956043956,
+    "tamanhos": [
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "casos_tool_catalogo=1": 81
+  },
+  "final-s43": {
+   "adapter": "/workspace/sft1g/final-s43",
+   "dump": null,
+   "segundos": 61,
+   "noul_chamar": {
+    "n": 804,
+    "acc": 0.7711442786069652,
+    "ece": 0.13811839960803873,
+    "brier": 0.16812852144567678,
+    "auroc_conf_vs_certo": 0.8174351332398317,
+    "aurc": 0.07781071931101456,
+    "acc@25": 0.9900497512437811,
+    "acc@50": 0.9502487562189055,
+    "acc@75": 0.8640132669983416,
+    "acc@100": 0.7711442786069651,
+    "conf_media": 0.909262678215004,
+    "frac_conf>0.99": 0.3706467661691542,
+    "auroc_score_vs_classe": 0.9180218311427935,
+    "over_call_por_logit": 0.10074626865671642,
+    "under_call_por_logit": 0.292910447761194
+   },
+   "choice_ferramenta_catalogo>=2": {
+    "n": 455,
+    "acc": 0.9428571428571428,
+    "ece": 0.029082686773045617,
+    "brier": 0.04317637619568514,
+    "auroc_conf_vs_certo": 0.9265734265734266,
+    "aurc": 0.006217699168762913,
+    "acc@25": 1.0,
+    "acc@50": 1.0,
+    "acc@75": 0.9912023460410557,
+    "acc@100": 0.9428571428571428,
+    "conf_media": 0.9626935186008901,
+    "frac_conf>0.99": 0.7758241758241758,
+    "tamanhos": [
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "casos_tool_catalogo=1": 81
+  },
+  "final-s44": {
+   "adapter": "/workspace/sft1g/final-s44",
+   "dump": null,
+   "segundos": 62,
+   "noul_chamar": {
+    "n": 804,
+    "acc": 0.7910447761194029,
+    "ece": 0.12769285726471707,
+    "brier": 0.15670159849560858,
+    "auroc_conf_vs_certo": 0.8110399820305481,
+    "aurc": 0.07265555042890441,
+    "acc@25": 0.9850746268656716,
+    "acc@50": 0.945273631840796,
+    "acc@75": 0.87893864013267,
+    "acc@100": 0.791044776119403,
+    "conf_media": 0.9187376333841201,
+    "frac_conf>0.99": 0.35074626865671643,
+    "auroc_score_vs_classe": 0.9104964914234797,
+    "over_call_por_logit": 0.13432835820895522,
+    "under_call_por_logit": 0.2462686567164179
+   },
+   "choice_ferramenta_catalogo>=2": {
+    "n": 455,
+    "acc": 0.9208791208791208,
+    "ece": 0.03906226090038788,
+    "brier": 0.05513674429210744,
+    "auroc_conf_vs_certo": 0.9311853619729514,
+    "aurc": 0.009074643726249504,
+    "acc@25": 1.0,
+    "acc@50": 1.0,
+    "acc@75": 0.9912023460410557,
+    "acc@100": 0.9208791208791209,
+    "conf_media": 0.9571499067836056,
+    "frac_conf>0.99": 0.7582417582417582,
+    "tamanhos": [
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   },
+   "casos_tool_catalogo=1": 81
+  }
+ }
+}

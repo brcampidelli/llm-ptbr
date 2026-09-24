@@ -1,0 +1,80 @@
+{
+ "final-s42": {
+  "inversa": {
+   "n": 455,
+   "troca": 0.0989010989010989,
+   "tv_media": 0.09397848966593392,
+   "acc_orig": 0.9230769230769231,
+   "acc_perm": 0.9142857142857143,
+   "certo_para_errado": 24,
+   "errado_para_certo": 20,
+   "escolha_no_1o_orig": 0.2989010989010989,
+   "escolha_no_1o_perm": 0.2703296703296703,
+   "correta_no_1o_orig": 0.2945054945054945
+  },
+  "rotacao": {
+   "n": 455,
+   "troca": 0.06593406593406594,
+   "tv_media": 0.06801328397258348,
+   "acc_orig": 0.9230769230769231,
+   "acc_perm": 0.9230769230769231,
+   "certo_para_errado": 13,
+   "errado_para_certo": 13,
+   "escolha_no_1o_orig": 0.2989010989010989,
+   "escolha_no_1o_perm": 0.2813186813186813,
+   "correta_no_1o_orig": 0.2945054945054945
+  }
+ },
+ "final-s43": {
+  "inversa": {
+   "n": 455,
+   "troca": 0.10329670329670329,
+   "tv_media": 0.08967722206810885,
+   "acc_orig": 0.9230769230769231,
+   "acc_perm": 0.9296703296703297,
+   "certo_para_errado": 20,
+   "errado_para_certo": 23,
+   "escolha_no_1o_orig": 0.3076923076923077,
+   "escolha_no_1o_perm": 0.2681318681318681,
+   "correta_no_1o_orig": 0.2945054945054945
+  },
+  "rotacao": {
+   "n": 455,
+   "troca": 0.05934065934065934,
+   "tv_media": 0.05853266053503723,
+   "acc_orig": 0.9230769230769231,
+   "acc_perm": 0.9428571428571428,
+   "certo_para_errado": 8,
+   "errado_para_certo": 17,
+   "escolha_no_1o_orig": 0.3076923076923077,
+   "escolha_no_1o_perm": 0.27692307692307694,
+   "correta_no_1o_orig": 0.2945054945054945
+  }
+ },
+ "final-s44": {
+  "inversa": {
+   "n": 455,
+   "troca": 0.13186813186813187,
+   "tv_media": 0.12941405144148163,
+   "acc_orig": 0.9186813186813186,
+   "acc_perm": 0.8901098901098901,
+   "certo_para_errado": 33,
+   "errado_para_certo": 20,
+   "escolha_no_1o_orig": 0.3076923076923077,
+   "escolha_no_1o_perm": 0.2923076923076923,
+   "correta_no_1o_orig": 0.2945054945054945
+  },
+  "rotacao": {
+   "n": 455,
+   "troca": 0.08571428571428572,
+   "tv_media": 0.09991884976712649,
+   "acc_orig": 0.9186813186813186,
+   "acc_perm": 0.9208791208791208,
+   "certo_para_errado": 17,
+   "errado_para_certo": 18,
+   "escolha_no_1o_orig": 0.3076923076923077,
+   "escolha_no_1o_perm": 0.29010989010989013,
+   "correta_no_1o_orig": 0.2945054945054945
+  }
+ }
+}
