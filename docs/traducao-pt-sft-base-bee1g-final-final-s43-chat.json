@@ -1,0 +1,42 @@
+{
+ "modelo": "/root/mt4/sft-base-bee1g-final",
+ "peft": "/workspace/sft1g/final-s43",
+ "modelo_r": {
+  "nome": "MODELO sft-base-bee1g-fin",
+  "en->pt": {
+   "chrf2": 26.740938156762773,
+   "bleu": 8.658295142982551,
+   "idioma_alvo": 0.7633333333333333,
+   "numeros_ok": 0.84,
+   "vazio": 0.0,
+   "n": 300
+  },
+  "pt->en": {
+   "chrf2": 17.368398135870887,
+   "bleu": 1.152694277711294,
+   "idioma_alvo": 0.01,
+   "numeros_ok": 0.8766666666666667,
+   "vazio": 0.0,
+   "n": 300
+  }
+ },
+ "piso_copiar": {
+  "nome": "PISO copiar a fonte",
+  "en->pt": {
+   "chrf2": 21.54301286691898,
+   "bleu": 2.498576146619684,
+   "idioma_alvo": 0.0,
+   "numeros_ok": 0.95,
+   "vazio": 0.0,
+   "n": 300
+  },
+  "pt->en": {
+   "chrf2": 22.720911455533592,
+   "bleu": 2.493952580499555,
+   "idioma_alvo": 0.0,
+   "numeros_ok": 0.9466666666666667,
+   "vazio": 0.0,
+   "n": 300
+  }
+ }
+}

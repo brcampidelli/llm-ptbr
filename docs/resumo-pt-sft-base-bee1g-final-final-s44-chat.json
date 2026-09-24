@@ -1,0 +1,24 @@
+{
+ "modelo": "/root/mt4/sft-base-bee1g-final",
+ "peft": "/workspace/sft1g/final-s44",
+ "n": 150,
+ "limites": {
+  "compressao_max": 0.35,
+  "compressao_min": 0.05,
+  "cobertura_min": 0.6,
+  "qa_min": 0.5
+ },
+ "modelo_util": 0.0,
+ "modelo_cobertura": 0.9179365079365079,
+ "modelo_sem_invencao": 0.8533333333333334,
+ "modelo_compressao": 0.7885,
+ "piso_lead2_util": 0.5133333333333333,
+ "teto_referencia_util": 1.0,
+ "falhas_por_condicao": {
+  "comprimiu": 150,
+  "sem_numero_inventado": 20,
+  "sem_entidade_inventada": 11,
+  "cobriu": 9,
+  "respondeu": 9
+ }
+}

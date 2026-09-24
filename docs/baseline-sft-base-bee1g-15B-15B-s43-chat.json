@@ -1,0 +1,317 @@
+{
+ "data": "2026-09-24",
+ "modelo": "/root/mt4/sft-base-bee1g-15B",
+ "revisao_hub": "indisponivel (HFValidationError)",
+ "peft": "/workspace/sft1g/15B-s43",
+ "capacidades_medidas": [
+  "agentico",
+  "atendimento",
+  "codigo_humaneval_xl",
+  "codigo_interno",
+  "instrucao_conteudo",
+  "resumo",
+  "sentimento",
+  "traducao"
+ ],
+ "capacidades_faltando": [
+  "matematica"
+ ],
+ "minutos_totais": 19.3,
+ "resultados": {
+  "instrucao_conteudo": {
+   "modelo": "/root/mt4/sft-base-bee1g-15B",
+   "peft": "/workspace/sft1g/15B-s43",
+   "tag": "sft-base-bee1g-15B-15B-s43-chat",
+   "n_prompts": 541,
+   "n_instrucoes": 1002,
+   "estrito_prompt": 0.13493530499075784,
+   "estrito_instrucao": 0.3083832335329341,
+   "frouxo_prompt": 0.14417744916820702,
+   "frouxo_instrucao": 0.32435129740518964,
+   "falhas_por_tipo": {
+    "tudo_minusculo": 57,
+    "n_marcadores": 34,
+    "tem_titulo_markdown": 41,
+    "contem_palavra": 58,
+    "envolvido_em_aspas": 45,
+    "tudo_maiusculo": 42,
+    "n_frases": 52,
+    "e_json_valido": 27,
+    "n_palavras": 70,
+    "termina_com": 62,
+    "duas_respostas": 48,
+    "comeca_com": 36,
+    "sem_virgula": 40,
+    "sem_numeros": 28,
+    "n_paragrafos": 47,
+    "nao_contem": 6
+   }
+  },
+  "resumo": {
+   "modelo": "/root/mt4/sft-base-bee1g-15B",
+   "peft": "/workspace/sft1g/15B-s43",
+   "n": 150,
+   "limites": {
+    "compressao_max": 0.35,
+    "compressao_min": 0.05,
+    "cobertura_min": 0.6,
+    "qa_min": 0.5
+   },
+   "modelo_util": 0.0,
+   "modelo_cobertura": 0.6477777777777778,
+   "modelo_sem_invencao": 0.56,
+   "modelo_compressao": 0.7785,
+   "piso_lead2_util": 0.5133333333333333,
+   "teto_referencia_util": 1.0,
+   "falhas_por_condicao": {
+    "comprimiu": 142,
+    "sem_numero_inventado": 60,
+    "sem_entidade_inventada": 29,
+    "cobriu": 58,
+    "respondeu": 57
+   }
+  },
+  "traducao": {
+   "modelo": "/root/mt4/sft-base-bee1g-15B",
+   "peft": "/workspace/sft1g/15B-s43",
+   "modelo_r": {
+    "nome": "MODELO sft-base-bee1g-15B",
+    "en->pt": {
+     "chrf2": 17.404018264250233,
+     "bleu": 1.9165406760903232,
+     "idioma_alvo": 0.7533333333333333,
+     "numeros_ok": 0.8266666666666667,
+     "vazio": 0.0,
+     "n": 300
+    },
+    "pt->en": {
+     "chrf2": 14.315129014736403,
+     "bleu": 0.9749061653752047,
+     "idioma_alvo": 0.0,
+     "numeros_ok": 0.8433333333333334,
+     "vazio": 0.0,
+     "n": 300
+    }
+   },
+   "piso_copiar": {
+    "nome": "PISO copiar a fonte",
+    "en->pt": {
+     "chrf2": 21.54301286691898,
+     "bleu": 2.498576146619684,
+     "idioma_alvo": 0.0,
+     "numeros_ok": 0.95,
+     "vazio": 0.0,
+     "n": 300
+    },
+    "pt->en": {
+     "chrf2": 22.720911455533592,
+     "bleu": 2.493952580499555,
+     "idioma_alvo": 0.0,
+     "numeros_ok": 0.9466666666666667,
+     "vazio": 0.0,
+     "n": 300
+    }
+   }
+  },
+  "sentimento": {
+   "modelo": "/root/mt4/sft-base-bee1g-15B",
+   "peft": "/workspace/sft1g/15B-s43",
+   "modelo_r": {
+    "nome": "MODELO sft-base-bee1g-15B",
+    "n": 600,
+    "acuracia": 0.5033333333333333,
+    "balanceada": 0.5033333333333333,
+    "revocacao": {
+     "positivo": 1.0,
+     "negativo": 0.006666666666666667
+    },
+    "ic95": [
+     0.46343214326782306,
+     0.5431921105099888
+    ],
+    "distribuicao": {
+     "positivo": 598,
+     "negativo": 2
+    }
+   },
+   "piso_lexico": {
+    "nome": "PISO lexico de 60 palavras",
+    "n": 600,
+    "acuracia": 0.79,
+    "balanceada": 0.79,
+    "revocacao": {
+     "positivo": 0.9266666666666666,
+     "negativo": 0.6533333333333333
+    },
+    "ic95": [
+     0.7556150851399188,
+     0.8206949935297192
+    ],
+    "distribuicao": {
+     "negativo": 218,
+     "positivo": 382
+    }
+   },
+   "piso_majoritaria": {
+    "nome": "PISO classe majoritaria",
+    "n": 600,
+    "acuracia": 0.5,
+    "balanceada": 0.5,
+    "revocacao": {
+     "positivo": 1.0,
+     "negativo": 0.0
+    },
+    "ic95": [
+     0.46011913576597613,
+     0.5398808642340238
+    ],
+    "distribuicao": {
+     "positivo": 600
+    }
+   }
+  },
+  "atendimento": {
+   "modelo": "/root/mt4/sft-base-bee1g-15B",
+   "peft": "/workspace/sft1g/15B-s43",
+   "modelo_r": {
+    "nome": "MODELO sft-base-bee1g-15B",
+    "n": 250,
+    "json_ok": 0.34,
+    "intencao": 0.0,
+    "dados": 0.0,
+    "util": 0.0,
+    "violou_politica": 0.0,
+    "inventou": 0.164
+   },
+   "piso_regra": {
+    "nome": "PISO regra (palavra-chave + regex)",
+    "n": 250,
+    "json_ok": 1.0,
+    "intencao": 0.624,
+    "dados": 0.9433333333333334,
+    "util": 0.604,
+    "violou_politica": 0.0,
+    "inventou": 0.0
+   }
+  },
+  "codigo_interno": {
+   "tag": "sft-base-bee1g-15B-15B-s43-chat",
+   "model": "/root/mt4/sft-base-bee1g-15B",
+   "peft": "/workspace/sft1g/15B-s43",
+   "n": 877,
+   "pass1": 0.0,
+   "n_pass": 0,
+   "no_code": 875,
+   "motivos": {
+    "sem codigo": 875,
+    "erro de execucao": 2
+   }
+  },
+  "codigo_humaneval_xl": {
+   "tag": "hxl-sft-base-bee1g-15B-15B-s43-chat",
+   "model": "/root/mt4/sft-base-bee1g-15B",
+   "peft": "/workspace/sft1g/15B-s43",
+   "n": 80,
+   "pass1": 0.0,
+   "n_pass": 0,
+   "no_code": 63,
+   "motivos": {
+    "sem codigo": 63,
+    "erro de execucao": 17
+   }
+  },
+  "agentico": {
+   "config": {
+    "lote": 24,
+    "max_new": 320,
+    "max_len": 1536,
+    "chat": true,
+    "parar_controle": false,
+    "por_argumento": false,
+    "restrito": false,
+    "restrito_valor": false,
+    "restrito_ferramenta": false,
+    "forcar_chamada": false,
+    "indices": null,
+    "n_casos": 150,
+    "limit": 0,
+    "data": "/root/t4/comeia/data/processed/sft_agentic.eval.jsonl"
+   },
+   "perfil_argumentos_sha": "e633b2d5717f",
+   "n_sem_criterio": 0,
+   "modelo": "/root/mt4/sft-base-bee1g-15B",
+   "peft": "/workspace/sft1g/15B-s43",
+   "k": 1,
+   "temp": null,
+   "n_tool": 85,
+   "n_text": 65,
+   "json_ok": 1,
+   "tool_right": 4,
+   "args_exact": 0,
+   "exec_ok": 0,
+   "exec_ok_harness": 0,
+   "under_call": 38,
+   "truncado": 9,
+   "over_call": 26,
+   "over_call_harness": 26,
+   "terminador_certo": 125,
+   "terminador_errado": 0,
+   "terminador_ausente": 25,
+   "n_geracoes": 150,
+   "por_ferramenta": {
+    "get_stock_price": [
+     0,
+     9
+    ],
+    "get_weather": [
+     0,
+     11
+    ],
+    "web_search": [
+     0,
+     13
+    ],
+    "summarize_url": [
+     0,
+     7
+    ],
+    "calculator": [
+     0,
+     6
+    ],
+    "list_dir": [
+     0,
+     10
+    ],
+    "send_email": [
+     0,
+     5
+    ],
+    "read_file": [
+     0,
+     10
+    ],
+    "run_python": [
+     0,
+     3
+    ],
+    "write_file": [
+     0,
+     2
+    ],
+    "translate_text": [
+     0,
+     4
+    ],
+    "http_get": [
+     0,
+     4
+    ],
+    "create_calendar_event": [
+     0,
+     1
+    ]
+   }
+  }
+ }
+}

@@ -1,0 +1,42 @@
+{
+ "modelo": "/root/mt4/sft-base-bee1g-15B",
+ "peft": "/workspace/sft1g/15B-s43",
+ "modelo_r": {
+  "nome": "MODELO sft-base-bee1g-15B",
+  "en->pt": {
+   "chrf2": 17.404018264250233,
+   "bleu": 1.9165406760903232,
+   "idioma_alvo": 0.7533333333333333,
+   "numeros_ok": 0.8266666666666667,
+   "vazio": 0.0,
+   "n": 300
+  },
+  "pt->en": {
+   "chrf2": 14.315129014736403,
+   "bleu": 0.9749061653752047,
+   "idioma_alvo": 0.0,
+   "numeros_ok": 0.8433333333333334,
+   "vazio": 0.0,
+   "n": 300
+  }
+ },
+ "piso_copiar": {
+  "nome": "PISO copiar a fonte",
+  "en->pt": {
+   "chrf2": 21.54301286691898,
+   "bleu": 2.498576146619684,
+   "idioma_alvo": 0.0,
+   "numeros_ok": 0.95,
+   "vazio": 0.0,
+   "n": 300
+  },
+  "pt->en": {
+   "chrf2": 22.720911455533592,
+   "bleu": 2.493952580499555,
+   "idioma_alvo": 0.0,
+   "numeros_ok": 0.9466666666666667,
+   "vazio": 0.0,
+   "n": 300
+  }
+ }
+}

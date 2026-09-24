@@ -83,6 +83,11 @@ def parse_args() -> argparse.Namespace:
                     help="⚠️ existe para MEDIR variancia de rodada. Duas rodadas com a mesma "
                          "receita podem diferir mais que o efeito que se quer detectar — sem "
                          "esse numero, nenhuma comparacao entre adapters e' interpretavel.")
+    ap.add_argument("--tokens-treinaveis", default="",
+                    help="lista separada por virgula (ex.: '<|im_start|>,<|im_end|>') — treina SO' as linhas "
+                         "desses tokens no embedding (PEFT trainable_token_indices). Necessario quando os "
+                         "tokens de chat nunca apareceram no pre-treino (Bee-1G: linhas identicas, terminador "
+                         "impossivel de aprender com LoRA puro).")
     ap.add_argument("--dry-run", action="store_true")
     return ap.parse_args()
 
@@ -221,6 +226,21 @@ def main() -> int:
         for p in model.parameters():
             p.requires_grad_(True)
     else:
+        # 🔴 TOKENS DE CHAT NUNCA VISTOS NO PRE-TREINO (medido no Bee-1G, 2026-09-23): <|im_start|>,
+        #    <|im_end|> e <|pad|> nao aparecem no corpus, entao so' o weight decay mexeu nas linhas deles
+        #    a partir da MESMA inicializacao — no checkpoint final as tres diferem em 2e-5 (norma 0,55).
+        #    Com embedding atado ao lm_head, os tres logits EMPATAM: o modelo nao consegue emitir o
+        #    terminador certo, e LoRA sozinho nao treina embedding para desfazer o empate. Sintoma: a
+        #    chamada certa seguida de um token comum (" Mitgl") no lugar de <|im_end|>, 0% de JSON valido.
+        #    --tokens-treinaveis treina SO' essas linhas (PEFT trainable_token_indices).
+        extra = {}
+        if args.tokens_treinaveis:
+            nomes_tok = [t.strip() for t in args.tokens_treinaveis.split(",") if t.strip()]
+            ids_tok = tokenizer.convert_tokens_to_ids(nomes_tok)
+            if any(i is None or i == tokenizer.unk_token_id for i in ids_tok):
+                raise SystemExit(f"[ABORTADO] token ausente do vocabulario: {dict(zip(nomes_tok, ids_tok))}")
+            extra["trainable_token_indices"] = {"embed_tokens": list(ids_tok)}
+            print(f"tokens treinaveis: {dict(zip(nomes_tok, ids_tok))}")
         lora = LoraConfig(
             r=args.lora_r,
             lora_alpha=args.lora_alpha,
@@ -231,6 +251,7 @@ def main() -> int:
                 "q_proj", "k_proj", "v_proj", "o_proj",
                 "gate_proj", "up_proj", "down_proj",
             ],
+            **extra,
         )
         model = get_peft_model(model, lora)
         model.print_trainable_parameters()
@@ -288,6 +309,10 @@ def main() -> int:
         optim="paged_adamw_8bit",
         report_to="none",
         seed=args.seed,
+        # ⚠️ O loss padrao do TRL 1.9 ("chunked_nll") le' `lm_head.bias` direto, e o wrapper de tokens
+        #    treinaveis do PEFT sobre o lm_head ATADO nao repassa o atributo (AttributeError no passo 0).
+        #    "nll" e' a MESMA conta (doc do TRL: "same math"), so' sem a economia de memoria.
+        **({"loss_type": "nll"} if args.tokens_treinaveis else {}),
     )
 
     trainer = SFTTrainer(model=model, args=cfg, train_dataset=dataset, processing_class=tokenizer)

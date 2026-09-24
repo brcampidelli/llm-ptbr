@@ -1,0 +1,29 @@
+{
+ "modelo": "/root/mt4/sft-base-bee1g-final",
+ "peft": "/workspace/sft1g/final-s43",
+ "tag": "sft-base-bee1g-final-final-s43-chat",
+ "n_prompts": 541,
+ "n_instrucoes": 1002,
+ "estrito_prompt": 0.11645101663585952,
+ "estrito_instrucao": 0.3003992015968064,
+ "frouxo_prompt": 0.12199630314232902,
+ "frouxo_instrucao": 0.3093812375249501,
+ "falhas_por_tipo": {
+  "tudo_minusculo": 57,
+  "n_marcadores": 42,
+  "tem_titulo_markdown": 44,
+  "contem_palavra": 63,
+  "n_palavras": 67,
+  "envolvido_em_aspas": 45,
+  "tudo_maiusculo": 42,
+  "n_frases": 48,
+  "e_json_valido": 27,
+  "termina_com": 61,
+  "duas_respostas": 50,
+  "sem_virgula": 52,
+  "comeca_com": 33,
+  "n_paragrafos": 46,
+  "sem_numeros": 18,
+  "nao_contem": 6
+ }
+}

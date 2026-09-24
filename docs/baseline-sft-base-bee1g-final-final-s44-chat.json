@@ -1,0 +1,318 @@
+{
+ "data": "2026-09-24",
+ "modelo": "/root/mt4/sft-base-bee1g-final",
+ "revisao_hub": "indisponivel (HFValidationError)",
+ "peft": "/workspace/sft1g/final-s44",
+ "capacidades_medidas": [
+  "agentico",
+  "atendimento",
+  "codigo_humaneval_xl",
+  "codigo_interno",
+  "instrucao_conteudo",
+  "resumo",
+  "sentimento",
+  "traducao"
+ ],
+ "capacidades_faltando": [
+  "matematica"
+ ],
+ "minutos_totais": 18.0,
+ "resultados": {
+  "instrucao_conteudo": {
+   "modelo": "/root/mt4/sft-base-bee1g-final",
+   "peft": "/workspace/sft1g/final-s44",
+   "tag": "sft-base-bee1g-final-final-s44-chat",
+   "n_prompts": 541,
+   "n_instrucoes": 1002,
+   "estrito_prompt": 0.11645101663585952,
+   "estrito_instrucao": 0.3033932135728543,
+   "frouxo_prompt": 0.12014787430683918,
+   "frouxo_instrucao": 0.3063872255489022,
+   "falhas_por_tipo": {
+    "tudo_minusculo": 57,
+    "n_marcadores": 53,
+    "tem_titulo_markdown": 44,
+    "contem_palavra": 66,
+    "n_palavras": 55,
+    "envolvido_em_aspas": 45,
+    "tudo_maiusculo": 42,
+    "n_frases": 44,
+    "e_json_valido": 27,
+    "termina_com": 62,
+    "duas_respostas": 48,
+    "sem_virgula": 51,
+    "comeca_com": 36,
+    "n_paragrafos": 51,
+    "nao_contem": 2,
+    "sem_numeros": 15
+   }
+  },
+  "resumo": {
+   "modelo": "/root/mt4/sft-base-bee1g-final",
+   "peft": "/workspace/sft1g/final-s44",
+   "n": 150,
+   "limites": {
+    "compressao_max": 0.35,
+    "compressao_min": 0.05,
+    "cobertura_min": 0.6,
+    "qa_min": 0.5
+   },
+   "modelo_util": 0.0,
+   "modelo_cobertura": 0.9179365079365079,
+   "modelo_sem_invencao": 0.8533333333333334,
+   "modelo_compressao": 0.7885,
+   "piso_lead2_util": 0.5133333333333333,
+   "teto_referencia_util": 1.0,
+   "falhas_por_condicao": {
+    "comprimiu": 150,
+    "sem_numero_inventado": 20,
+    "sem_entidade_inventada": 11,
+    "cobriu": 9,
+    "respondeu": 9
+   }
+  },
+  "traducao": {
+   "modelo": "/root/mt4/sft-base-bee1g-final",
+   "peft": "/workspace/sft1g/final-s44",
+   "modelo_r": {
+    "nome": "MODELO sft-base-bee1g-fin",
+    "en->pt": {
+     "chrf2": 29.001513611223324,
+     "bleu": 8.99919091373653,
+     "idioma_alvo": 0.7133333333333334,
+     "numeros_ok": 0.88,
+     "vazio": 0.0,
+     "n": 300
+    },
+    "pt->en": {
+     "chrf2": 17.812600688102915,
+     "bleu": 1.2837430455338514,
+     "idioma_alvo": 0.023333333333333334,
+     "numeros_ok": 0.8666666666666667,
+     "vazio": 0.0,
+     "n": 300
+    }
+   },
+   "piso_copiar": {
+    "nome": "PISO copiar a fonte",
+    "en->pt": {
+     "chrf2": 21.54301286691898,
+     "bleu": 2.498576146619684,
+     "idioma_alvo": 0.0,
+     "numeros_ok": 0.95,
+     "vazio": 0.0,
+     "n": 300
+    },
+    "pt->en": {
+     "chrf2": 22.720911455533592,
+     "bleu": 2.493952580499555,
+     "idioma_alvo": 0.0,
+     "numeros_ok": 0.9466666666666667,
+     "vazio": 0.0,
+     "n": 300
+    }
+   }
+  },
+  "sentimento": {
+   "modelo": "/root/mt4/sft-base-bee1g-final",
+   "peft": "/workspace/sft1g/final-s44",
+   "modelo_r": {
+    "nome": "MODELO sft-base-bee1g-final",
+    "n": 600,
+    "acuracia": 0.42833333333333334,
+    "balanceada": 0.42833333333333334,
+    "revocacao": {
+     "positivo": 0.7833333333333333,
+     "negativo": 0.07333333333333333
+    },
+    "ic95": [
+     0.389317565368996,
+     0.4682609784080477
+    ],
+    "distribuicao": {
+     "positivo": 513,
+     "negativo": 87
+    }
+   },
+   "piso_lexico": {
+    "nome": "PISO lexico de 60 palavras",
+    "n": 600,
+    "acuracia": 0.79,
+    "balanceada": 0.79,
+    "revocacao": {
+     "positivo": 0.9266666666666666,
+     "negativo": 0.6533333333333333
+    },
+    "ic95": [
+     0.7556150851399188,
+     0.8206949935297192
+    ],
+    "distribuicao": {
+     "negativo": 218,
+     "positivo": 382
+    }
+   },
+   "piso_majoritaria": {
+    "nome": "PISO classe majoritaria",
+    "n": 600,
+    "acuracia": 0.5,
+    "balanceada": 0.5,
+    "revocacao": {
+     "positivo": 1.0,
+     "negativo": 0.0
+    },
+    "ic95": [
+     0.46011913576597613,
+     0.5398808642340238
+    ],
+    "distribuicao": {
+     "positivo": 600
+    }
+   }
+  },
+  "atendimento": {
+   "modelo": "/root/mt4/sft-base-bee1g-final",
+   "peft": "/workspace/sft1g/final-s44",
+   "modelo_r": {
+    "nome": "MODELO sft-base-bee1g-final",
+    "n": 250,
+    "json_ok": 0.26,
+    "intencao": 0.0,
+    "dados": 0.0,
+    "util": 0.0,
+    "violou_politica": 0.0,
+    "inventou": 0.048
+   },
+   "piso_regra": {
+    "nome": "PISO regra (palavra-chave + regex)",
+    "n": 250,
+    "json_ok": 1.0,
+    "intencao": 0.624,
+    "dados": 0.9433333333333334,
+    "util": 0.604,
+    "violou_politica": 0.0,
+    "inventou": 0.0
+   }
+  },
+  "codigo_interno": {
+   "tag": "sft-base-bee1g-final-final-s44-chat",
+   "model": "/root/mt4/sft-base-bee1g-final",
+   "peft": "/workspace/sft1g/final-s44",
+   "n": 877,
+   "pass1": 0.0,
+   "n_pass": 0,
+   "no_code": 824,
+   "motivos": {
+    "sem codigo": 824,
+    "erro de execucao": 51,
+    "assert falhou": 2
+   }
+  },
+  "codigo_humaneval_xl": {
+   "tag": "hxl-sft-base-bee1g-final-final-s44-chat",
+   "model": "/root/mt4/sft-base-bee1g-final",
+   "peft": "/workspace/sft1g/final-s44",
+   "n": 80,
+   "pass1": 0.0,
+   "n_pass": 0,
+   "no_code": 68,
+   "motivos": {
+    "sem codigo": 68,
+    "erro de execucao": 12
+   }
+  },
+  "agentico": {
+   "config": {
+    "lote": 24,
+    "max_new": 320,
+    "max_len": 1536,
+    "chat": true,
+    "parar_controle": false,
+    "por_argumento": false,
+    "restrito": false,
+    "restrito_valor": false,
+    "restrito_ferramenta": false,
+    "forcar_chamada": false,
+    "indices": null,
+    "n_casos": 150,
+    "limit": 0,
+    "data": "/root/t4/comeia/data/processed/sft_agentic.eval.jsonl"
+   },
+   "perfil_argumentos_sha": "e633b2d5717f",
+   "n_sem_criterio": 0,
+   "modelo": "/root/mt4/sft-base-bee1g-final",
+   "peft": "/workspace/sft1g/final-s44",
+   "k": 1,
+   "temp": null,
+   "n_tool": 85,
+   "n_text": 65,
+   "json_ok": 2,
+   "tool_right": 5,
+   "args_exact": 0,
+   "exec_ok": 2,
+   "exec_ok_harness": 2,
+   "under_call": 76,
+   "truncado": 2,
+   "over_call": 14,
+   "over_call_harness": 15,
+   "terminador_certo": 114,
+   "terminador_errado": 0,
+   "terminador_ausente": 36,
+   "n_geracoes": 150,
+   "por_ferramenta": {
+    "get_stock_price": [
+     1,
+     9
+    ],
+    "get_weather": [
+     0,
+     11
+    ],
+    "web_search": [
+     0,
+     13
+    ],
+    "summarize_url": [
+     1,
+     7
+    ],
+    "calculator": [
+     0,
+     6
+    ],
+    "list_dir": [
+     0,
+     10
+    ],
+    "send_email": [
+     0,
+     5
+    ],
+    "read_file": [
+     0,
+     10
+    ],
+    "run_python": [
+     0,
+     3
+    ],
+    "write_file": [
+     0,
+     2
+    ],
+    "translate_text": [
+     0,
+     4
+    ],
+    "http_get": [
+     0,
+     4
+    ],
+    "create_calendar_event": [
+     0,
+     1
+    ]
+   }
+  }
+ }
+}
