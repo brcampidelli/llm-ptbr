@@ -51,7 +51,8 @@ from calibracao_agentica import auroc, aurc_e_cobertura, ece  # noqa: E402
 RAIZ = Path(__file__).resolve().parent.parent
 EPS = 1e-6
 LIMIARES = (0.5, 0.4, 0.35, 0.3, 0.25, 0.2, 0.15, 0.1)
-RECEITAS = {"e13-email": "e13", "e19c": "C-full", "gate3-recusa_especifica": "recusa_esp", "gate3-catperturbado": "catpert"}
+RECEITAS = {"e13-email": "e13", "e19c": "C-full", "gate3-recusa_especifica": "recusa_esp", "gate3-catperturbado": "catpert",
+            "final-s": "1G-final", "15B-s": "1G-15B"}   # SFT do Bee-1G (2026-09-24)
 
 
 def iniciou_greedy(g) -> bool:

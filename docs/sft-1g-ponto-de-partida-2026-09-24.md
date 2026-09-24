@@ -72,3 +72,32 @@ G-C1/G-C3 nos 6 adapters (US$ 0, ~15 min no pod): a oscilação de under-call en
 a assinatura de limiar que no 350M a temperatura estabilizou; se estabilizar aqui, o "empate com o 350M"
 pode virar ganho só com calibração. E a tradução precisa de corpus próprio no SFT (E20/E21 do 350M:
 adapter separado dobrou o alvo sem custo agêntico).
+
+## G-C1 / G-C3 nos 6 adapters (US$ ~0,25, pod)
+
+Artefatos: `calibracao-agentica-1g-{final,15B}-5090.json`, `calibracao-poshoc-1g-5090.json`.
+
+| | final (3 sementes) | 15B (3 sementes) | 350M C-full (ref.) |
+|---|---|---|---|
+| Choice "qual ferramenta" acc · ECE · AUROC | **0,92 · 0,04–0,05 · 0,92–0,95** | 0,86–0,89 · 0,06–0,09 · 0,88–0,90 | 0,92 · 0,04 · 0,94 |
+| "chamar?" AUROC (p vs classe) | 0,91–0,92 | 0,89–0,92 | 0,90 |
+| fim-a-fim AUROC · acc no quartil confiante | **0,75–0,77 · 0,93–0,97** | 0,71–0,77 · 0,89–0,93 | 0,70–0,74 · 0,90–0,94 |
+| temperatura (2 dobras) → ECE da confiança | T 1,8–2,0 → **0,03–0,06** | T 1,6–2,2 → 0,02–0,07 | T ≈2 → 0,02–0,04 |
+| temperatura transferida entre sementes | T 1,95–2,19, ECE 0,03–0,07 | T 1,78–2,04 | idem |
+
+1. **A escolha de ferramenta do decaído é melhor e mais calibrada que a do platô, nas 3 sementes** — a
+   primeira diferença consistente entre os pontos de partida (acc 0,92 × 0,86–0,89; AUROC 0,92–0,95 ×
+   0,88–0,90). Soma-se às capacidades: tudo aponta para o final.
+2. **A temperatura (T ≈ 2) calibra a confiança de novo, e transfere entre sementes** — a mesma lei do 350M.
+3. 🔴 **O limiar NÃO estabiliza a disposição de chamar entre sementes.** O AUROC é igual nas três (o modelo
+   ordena os casos igual), mas a escala do p_call muda com a semente: com τ fixo em 0,10 no decaído o
+   under-call vai a 4,9 / 9,9 / 11,2% e o over-call a 31 / 22 / 24% — a dispersão só muda de lado; com a
+   isotônica transferida a s42 dispara (over 41%). **A oscilação é da semente, não do corte**: estabilizar
+   pede mais dado de negativo/positivo ou mais passos, não pós-processamento.
+4. Teto do limiar movido (τ 0,15, estimativa — no 350M o realizado igualou o teto): **+2,2 a +3,2 pp** de
+   execução no decaído, pagando **+1,5 a +6 pp** de over-call. Ganho pequeno; decisão de custo, não de método.
+
+**Leitura:** o 1G pós-SFT decide **qual** ferramenta tão bem quanto o 350M e roteia pela confiança melhor
+(AUROC fim-a-fim 0,75–0,77); a decisão de **se** chamar continua sendo o elo fraco — agora com a informação
+nova de que no 1G ela varia com a semente de um jeito que calibração não conserta. Coerente com o estudo
+System One (REFLEX/AgentAbstain): escolher calibra, decidir agir não.
